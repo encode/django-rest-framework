@@ -1,487 +1,2765 @@
-<!DOCTYPE html>
-<html lang="en">
 
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <meta charset="utf-8">
-  <title>2 - Requests and responses - Django REST framework</title>
-  <link href="../../img/favicon.ico" rel="icon" type="image/x-icon">
-  <link rel="canonical" href="https://www.django-rest-framework.org/tutorial/2-requests-and-responses/" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Django, API, REST, 2 - Requests and responses">
-  <meta name="author" content="Tom Christie">
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Django REST framework - Web APIs for Django">
+      
+      
+      
+        <link rel="canonical" href="https://www.django-rest-framework.org/tutorial/2-requests-and-responses/">
+      
+      
+        <link rel="prev" href="../1-serialization/">
+      
+      
+        <link rel="next" href="../3-class-based-views/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../theme/img/favicon.ico">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+    
+    
+      
+        <title>2 - Requests and responses - Django REST framework</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.618322db.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
 
-  <!-- Le styles -->
-  <link href="../../css/prettify.css" rel="stylesheet">
-  <link href="../../css/bootstrap.css" rel="stylesheet">
-  <link href="../../css/bootstrap-responsive.css" rel="stylesheet">
-  <link href="../../css/default.css" rel="stylesheet">
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../theme/stylesheets/extra.css">
+    
+      <link rel="stylesheet" href="../../theme/stylesheets/prettify.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
   
-    <link href="../../css/copy-button.css" rel="stylesheet">
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#tutorial-2-requests-and-responses" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
   
 
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Django REST framework" class="md-header__button md-logo" aria-label="Django REST framework" data-md-component="logo">
+      
+  <img src="../../theme/img/logo.png" alt="logo">
 
-  <script type="text/javascript">
-    var _gaq = _gaq || [];
-    _gaq.push(['_setAccount', 'UA-18852272-2']);
-    _gaq.push(['_trackPageview']);
-
-    (function() {
-      var ga = document.createElement('script');
-      ga.type = 'text/javascript';
-      ga.async = true;
-      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-      var s = document.getElementsByTagName('script')[0];
-      s.parentNode.insertBefore(ga, s);
-    })();
-  </script>
-
-  <style>
-  #sidebarInclude img {
-      margin-bottom: 10px;
-  }
-  #sidebarInclude a.promo {
-      color: black;
-  }
-    @media (max-width: 767px) {
-      div.promo {
-        display: none;
-      }
-    }
-  </style>
-</head>
-<body onload="prettyPrint()" class="-page">
-
-  <div class="wrapper">
-        <div class="navbar navbar-inverse navbar-fixed-top">
-      <div class="navbar-inner">
-        <div class="container-fluid">
-          <a class="repo-link btn btn-primary btn-small" href="https://github.com/encode/django-rest-framework">GitHub</a>
-          <a class="repo-link btn btn-inverse btn-small " rel="next" href="../3-class-based-views/">
-            Next <i class="icon-arrow-right icon-white"></i>
-          </a>
-          <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../1-serialization/">
-            <i class="icon-arrow-left icon-white"></i> Previous
-          </a>
-          <a id="search_modal_show" class="repo-link btn btn-inverse btn-small" href="#mkdocs_search_modal" data-toggle="modal" data-target="#mkdocs_search_modal"><i class="icon-search icon-white"></i> Search</a>
-          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </a>
-          <a class="brand" href="https://www.django-rest-framework.org/">Django REST framework</a>
-          <div class="nav-collapse collapse">
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Django REST framework
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
             
-            <!-- Main navigation -->
-            <ul class="nav navbar-nav">
-               
-              <li >
-                <a href="../..">Home</a>
-              </li>
-                
-              <li class="dropdown active">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tutorial <b class="caret"></b></a>
-                <ul class="dropdown-menu">
-                  
-                  <li >
-                    <a href="../quickstart/">Quickstart</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../1-serialization/">1 - Serialization</a>
-                  </li>
-                  
-                  <li class="active" >
-                    <a href="./">2 - Requests and responses</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../3-class-based-views/">3 - Class based views</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../4-authentication-and-permissions/">4 - Authentication and permissions</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../5-relationships-and-hyperlinked-apis/">5 - Relationships and hyperlinked APIs</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../6-viewsets-and-routers/">6 - Viewsets and routers</a>
-                  </li>
-                  
-                </ul>
-              </li>
-                
-              <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">API Guide <b class="caret"></b></a>
-                <ul class="dropdown-menu">
-                  
-                  <li >
-                    <a href="../../api-guide/requests/">Requests</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../api-guide/responses/">Responses</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../api-guide/views/">Views</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../api-guide/generic-views/">Generic views</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../api-guide/viewsets/">Viewsets</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../api-guide/routers/">Routers</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../api-guide/parsers/">Parsers</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../api-guide/renderers/">Renderers</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../api-guide/serializers/">Serializers</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../api-guide/fields/">Serializer fields</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../api-guide/relations/">Serializer relations</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../api-guide/validators/">Validators</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../api-guide/authentication/">Authentication</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../api-guide/permissions/">Permissions</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../api-guide/caching/">Caching</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../api-guide/throttling/">Throttling</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../api-guide/filtering/">Filtering</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../api-guide/pagination/">Pagination</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../api-guide/versioning/">Versioning</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../api-guide/content-negotiation/">Content negotiation</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../api-guide/metadata/">Metadata</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../api-guide/schemas/">Schemas</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../api-guide/format-suffixes/">Format suffixes</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../api-guide/reverse/">Returning URLs</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../api-guide/exceptions/">Exceptions</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../api-guide/status-codes/">Status codes</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../api-guide/testing/">Testing</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../api-guide/settings/">Settings</a>
-                  </li>
-                  
-                </ul>
-              </li>
-                
-              <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Topics <b class="caret"></b></a>
-                <ul class="dropdown-menu">
-                  
-                  <li >
-                    <a href="../../topics/documenting-your-api/">Documenting your API</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/internationalization/">Internationalization</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/ajax-csrf-cors/">AJAX, CSRF & CORS</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/html-and-forms/">HTML & Forms</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/browser-enhancements/">Browser Enhancements</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/browsable-api/">The Browsable API</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/rest-hypermedia-hateoas/">REST, Hypermedia & HATEOAS</a>
-                  </li>
-                  
-                </ul>
-              </li>
-                
-              <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Community <b class="caret"></b></a>
-                <ul class="dropdown-menu">
-                  
-                  <li >
-                    <a href="../../community/tutorials-and-resources/">Tutorials and Resources</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/third-party-packages/">Third Party Packages</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/contributing/">Contributing to REST framework</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/project-management/">Project management</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/release-notes/">Release Notes</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.16-announcement/">3.16 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.15-announcement/">3.15 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.14-announcement/">3.14 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.13-announcement/">3.13 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.12-announcement/">3.12 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.11-announcement/">3.11 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.10-announcement/">3.10 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.9-announcement/">3.9 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.8-announcement/">3.8 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.7-announcement/">3.7 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.6-announcement/">3.6 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.5-announcement/">3.5 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.4-announcement/">3.4 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.3-announcement/">3.3 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.2-announcement/">3.2 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.1-announcement/">3.1 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.0-announcement/">3.0 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/kickstarter-announcement/">Kickstarter Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/mozilla-grant/">Mozilla Grant</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/jobs/">Jobs</a>
-                  </li>
-                  
-                </ul>
-              </li>
-               
-
-            </ul>
+              2 - Requests and responses
             
-          </div>
-          <!--/.nav-collapse -->
-
+          </span>
         </div>
       </div>
     </div>
-
-    <div class="body-content">
-      <div class="container-fluid">
-        <!-- Search Modal -->
-        <div id="mkdocs_search_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            <h3 id="myModalLabel">Documentation search</h3>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m14.3 16-.7-2h-3.2l-.7 2H7.8L11 7h2l3.2 9zM20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12zm-9.15 3.96h2.3L12 9z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
           </div>
-
-          <div class="modal-body">
-            <form role="form" autocomplete="off">
-              <div class="form-group">
-                <input type="text" name="q" class="form-control" placeholder="Search..." id="mkdocs-search-query">
-              </div>
-            </form>
-            <div id="mkdocs-search-results"></div>
-          </div>
-
-          <div class="modal-footer">
-            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/encode/django-rest-framework" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
 
-        <div class="row-fluid">
-          <div class="span3">
-            <div id="table-of-contents">
-              <ul class="nav nav-list side-nav well sidebar-nav-fixed">
-                
+      </a>
+    </li>
+  
 
-                
-                  <li class="main">
-                    <a href="#tutorial-2-requests-and-responses">Tutorial 2: Requests and Responses</a>
-                  </li>
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../quickstart/" class="md-tabs__link">
+          
+  
+  
+  Tutorial
 
-                  
-                    <li>
-                      <a href="#request-objects">Request objects</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#response-objects">Response objects</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#status-codes">Status codes</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#wrapping-api-views">Wrapping API views</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#pulling-it-all-together">Pulling it all together</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#adding-optional-format-suffixes-to-our-urls">Adding optional format suffixes to our URLs</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#hows-it-looking">How's it looking?</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#whats-next">What's next?</a>
-                    </li>
-                  
-                
+        </a>
+      </li>
+    
+  
 
-                  <div class="promo">
-                    <hr/>
-                    <div id="sidebarInclude">
-                  </div>
-              </ul>
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../api-guide/requests/" class="md-tabs__link">
+          
+  
+  
+  API Guide
 
-            </div>
-          </div>
+        </a>
+      </li>
+    
+  
 
-          <div id="main-content" class="span9">
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../topics/documenting-your-api/" class="md-tabs__link">
+          
+  
+  
+  Topics
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../community/tutorials-and-resources/" class="md-tabs__link">
+          
+  
+  
+  Community
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
             
               
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
 
-              <h1 id="tutorial-2-requests-and-responses"><a class="toclink" href="#tutorial-2-requests-and-responses">Tutorial 2: Requests and Responses</a></h1>
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Django REST framework" class="md-nav__button md-logo" aria-label="Django REST framework" data-md-component="logo">
+      
+  <img src="../../theme/img/logo.png" alt="logo">
+
+    </a>
+    Django REST framework
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/encode/django-rest-framework" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorial
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tutorial
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quickstart
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1-serialization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1 - Serialization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2 - Requests and responses
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2 - Requests and responses
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#request-objects" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Request objects
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#response-objects" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Response objects
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#status-codes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Status codes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#wrapping-api-views" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Wrapping API views
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pulling-it-all-together" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pulling it all together
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#adding-optional-format-suffixes-to-our-urls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Adding optional format suffixes to our URLs
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hows-it-looking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How's it looking?
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="How&#39;s it looking?">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#browsability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Browsability
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#whats-next" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What's next?
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3-class-based-views/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3 - Class based views
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../4-authentication-and-permissions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4 - Authentication and permissions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../5-relationships-and-hyperlinked-apis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5 - Relationships and hyperlinked APIs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../6-viewsets-and-routers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6 - Viewsets and routers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-guide/requests/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Requests
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-guide/responses/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Responses
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-guide/views/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Views
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-guide/generic-views/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Generic views
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-guide/viewsets/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Viewsets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-guide/routers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Routers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-guide/parsers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Parsers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-guide/renderers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Renderers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-guide/serializers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Serializers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-guide/fields/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Serializer fields
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-guide/relations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Serializer relations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-guide/validators/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validators
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-guide/authentication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Authentication
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-guide/permissions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Permissions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-guide/caching/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Caching
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-guide/throttling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Throttling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-guide/filtering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Filtering
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-guide/pagination/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pagination
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-guide/versioning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Versioning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-guide/content-negotiation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Content negotiation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-guide/metadata/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Metadata
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-guide/schemas/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Schemas
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-guide/format-suffixes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Format suffixes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-guide/reverse/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Returning URLs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-guide/exceptions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Exceptions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-guide/status-codes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Status codes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-guide/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-guide/settings/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Settings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Topics
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Topics
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../topics/documenting-your-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Documenting your API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../topics/internationalization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Internationalization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../topics/ajax-csrf-cors/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AJAX, CSRF & CORS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../topics/html-and-forms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HTML & Forms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../topics/browser-enhancements/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Browser Enhancements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../topics/browsable-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Browsable API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../topics/rest-hypermedia-hateoas/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    REST, Hypermedia & HATEOAS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Community
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Community
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/tutorials-and-resources/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials and Resources
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/third-party-packages/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Third Party Packages
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing to REST framework
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/project-management/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project management
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/release-notes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release Notes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.16-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.16 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.15-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.15 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.14-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.14 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.13-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.13 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.12-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.12 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.11-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.11 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.10-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.10 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.9-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.9 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.8-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.8 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.7-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.7 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.6-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.6 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.5-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.5 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.4-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.4 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.3-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.3 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.2-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.2 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.1-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.1 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.0-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.0 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/kickstarter-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kickstarter Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/mozilla-grant/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mozilla Grant
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/jobs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Jobs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+                
+
+
+
+  
+
+
+  <nav class="md-path" aria-label="Navigation" >
+    <ol class="md-path__list">
+      
+        
+  
+  
+    <li class="md-path__item">
+      <a href="../.." class="md-path__link">
+        
+  <span class="md-ellipsis">
+    Home
+  </span>
+
+      </a>
+    </li>
+  
+
+      
+      
+        
+  
+  
+    
+    
+      <li class="md-path__item">
+        <a href="../quickstart/" class="md-path__link">
+          
+  <span class="md-ellipsis">
+    Tutorial
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ol>
+  </nav>
+
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="tutorial-2-requests-and-responses">Tutorial 2: Requests and Responses<a class="headerlink" href="#tutorial-2-requests-and-responses" title="Permanent link">&para;</a></h1>
 <p>From this point we're going to really start covering the core of REST framework.
 Let's introduce a couple of essential building blocks.</p>
-<h2 id="request-objects"><a class="toclink" href="#request-objects">Request objects</a></h2>
+<h2 id="request-objects">Request objects<a class="headerlink" href="#request-objects" title="Permanent link">&para;</a></h2>
 <p>REST framework introduces a <code>Request</code> object that extends the regular <code>HttpRequest</code>, and provides more flexible request parsing.  The core functionality of the <code>Request</code> object is the <code>request.data</code> attribute, which is similar to <code>request.POST</code>, but more useful for working with Web APIs.</p>
-<pre><code class="language-python">request.POST  # Only handles form data.  Only works for 'POST' method.
-request.data  # Handles arbitrary data.  Works for 'POST', 'PUT' and 'PATCH' methods.
-</code></pre>
-<h2 id="response-objects"><a class="toclink" href="#response-objects">Response objects</a></h2>
+<div class="language-python highlight"><pre><span></span><code><span class="n">request</span><span class="o">.</span><span class="n">POST</span>  <span class="c1"># Only handles form data.  Only works for &#39;POST&#39; method.</span>
+<span class="n">request</span><span class="o">.</span><span class="n">data</span>  <span class="c1"># Handles arbitrary data.  Works for &#39;POST&#39;, &#39;PUT&#39; and &#39;PATCH&#39; methods.</span>
+</code></pre></div>
+<h2 id="response-objects">Response objects<a class="headerlink" href="#response-objects" title="Permanent link">&para;</a></h2>
 <p>REST framework also introduces a <code>Response</code> object, which is a type of <code>TemplateResponse</code> that takes unrendered content and uses content negotiation to determine the correct content type to return to the client.</p>
-<pre><code class="language-python">return Response(data)  # Renders to content type as requested by the client.
-</code></pre>
-<h2 id="status-codes"><a class="toclink" href="#status-codes">Status codes</a></h2>
+<div class="language-python highlight"><pre><span></span><code><span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>  <span class="c1"># Renders to content type as requested by the client.</span>
+</code></pre></div>
+<h2 id="status-codes">Status codes<a class="headerlink" href="#status-codes" title="Permanent link">&para;</a></h2>
 <p>Using numeric HTTP status codes in your views doesn't always make for obvious reading, and it's easy to not notice if you get an error code wrong.  REST framework provides more explicit identifiers for each status code, such as <code>HTTP_400_BAD_REQUEST</code> in the <code>status</code> module.  It's a good idea to use these throughout rather than using numeric identifiers.</p>
-<h2 id="wrapping-api-views"><a class="toclink" href="#wrapping-api-views">Wrapping API views</a></h2>
+<h2 id="wrapping-api-views">Wrapping API views<a class="headerlink" href="#wrapping-api-views" title="Permanent link">&para;</a></h2>
 <p>REST framework provides two wrappers you can use to write API views.</p>
 <ol>
 <li>The <code>@api_view</code> decorator for working with function based views.</li>
@@ -489,198 +2767,223 @@ request.data  # Handles arbitrary data.  Works for 'POST', 'PUT' and 'PATCH' met
 </ol>
 <p>These wrappers provide a few bits of functionality such as making sure you receive <code>Request</code> instances in your view, and adding context to <code>Response</code> objects so that content negotiation can be performed.</p>
 <p>The wrappers also provide behavior such as returning <code>405 Method Not Allowed</code> responses when appropriate, and handling any <code>ParseError</code> exceptions that occur when accessing <code>request.data</code> with malformed input.</p>
-<h2 id="pulling-it-all-together"><a class="toclink" href="#pulling-it-all-together">Pulling it all together</a></h2>
+<h2 id="pulling-it-all-together">Pulling it all together<a class="headerlink" href="#pulling-it-all-together" title="Permanent link">&para;</a></h2>
 <p>Okay, let's go ahead and start using these new components to refactor our views slightly.</p>
-<pre><code class="language-python">from rest_framework import status
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from snippets.models import Snippet
-from snippets.serializers import SnippetSerializer
+<div class="language-python highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">rest_framework</span><span class="w"> </span><span class="kn">import</span> <span class="n">status</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rest_framework.decorators</span><span class="w"> </span><span class="kn">import</span> <span class="n">api_view</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rest_framework.response</span><span class="w"> </span><span class="kn">import</span> <span class="n">Response</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">snippets.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Snippet</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">snippets.serializers</span><span class="w"> </span><span class="kn">import</span> <span class="n">SnippetSerializer</span>
 
 
-@api_view([&quot;GET&quot;, &quot;POST&quot;])
-def snippet_list(request):
-    &quot;&quot;&quot;
-    List all code snippets, or create a new snippet.
-    &quot;&quot;&quot;
-    if request.method == &quot;GET&quot;:
-        snippets = Snippet.objects.all()
-        serializer = SnippetSerializer(snippets, many=True)
-        return Response(serializer.data)
+<span class="nd">@api_view</span><span class="p">([</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="s2">&quot;POST&quot;</span><span class="p">])</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">snippet_list</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    List all code snippets, or create a new snippet.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;GET&quot;</span><span class="p">:</span>
+        <span class="n">snippets</span> <span class="o">=</span> <span class="n">Snippet</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+        <span class="n">serializer</span> <span class="o">=</span> <span class="n">SnippetSerializer</span><span class="p">(</span><span class="n">snippets</span><span class="p">,</span> <span class="n">many</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">serializer</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
 
-    elif request.method == &quot;POST&quot;:
-        serializer = SnippetSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-</code></pre>
+    <span class="k">elif</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;POST&quot;</span><span class="p">:</span>
+        <span class="n">serializer</span> <span class="o">=</span> <span class="n">SnippetSerializer</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">serializer</span><span class="o">.</span><span class="n">is_valid</span><span class="p">():</span>
+            <span class="n">serializer</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">serializer</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="o">.</span><span class="n">HTTP_201_CREATED</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">serializer</span><span class="o">.</span><span class="n">errors</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="o">.</span><span class="n">HTTP_400_BAD_REQUEST</span><span class="p">)</span>
+</code></pre></div>
 <p>Our instance view is an improvement over the previous example.  It's a little more concise, and the code now feels very similar to if we were working with the Forms API.  We're also using named status codes, which makes the response meanings more obvious.</p>
 <p>Here is the view for an individual snippet, in the <code>views.py</code> module.</p>
-<pre><code class="language-python">@api_view([&quot;GET&quot;, &quot;PUT&quot;, &quot;DELETE&quot;])
-def snippet_detail(request, pk):
-    &quot;&quot;&quot;
-    Retrieve, update or delete a code snippet.
-    &quot;&quot;&quot;
-    try:
-        snippet = Snippet.objects.get(pk=pk)
-    except Snippet.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+<div class="language-python highlight"><pre><span></span><code><span class="nd">@api_view</span><span class="p">([</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="s2">&quot;PUT&quot;</span><span class="p">,</span> <span class="s2">&quot;DELETE&quot;</span><span class="p">])</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">snippet_detail</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">pk</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Retrieve, update or delete a code snippet.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">snippet</span> <span class="o">=</span> <span class="n">Snippet</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="n">pk</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">Snippet</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="o">.</span><span class="n">HTTP_404_NOT_FOUND</span><span class="p">)</span>
 
-    if request.method == &quot;GET&quot;:
-        serializer = SnippetSerializer(snippet)
-        return Response(serializer.data)
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;GET&quot;</span><span class="p">:</span>
+        <span class="n">serializer</span> <span class="o">=</span> <span class="n">SnippetSerializer</span><span class="p">(</span><span class="n">snippet</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">serializer</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
 
-    elif request.method == &quot;PUT&quot;:
-        serializer = SnippetSerializer(snippet, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    <span class="k">elif</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;PUT&quot;</span><span class="p">:</span>
+        <span class="n">serializer</span> <span class="o">=</span> <span class="n">SnippetSerializer</span><span class="p">(</span><span class="n">snippet</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">serializer</span><span class="o">.</span><span class="n">is_valid</span><span class="p">():</span>
+            <span class="n">serializer</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">serializer</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">serializer</span><span class="o">.</span><span class="n">errors</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="o">.</span><span class="n">HTTP_400_BAD_REQUEST</span><span class="p">)</span>
 
-    elif request.method == &quot;DELETE&quot;:
-        snippet.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-</code></pre>
+    <span class="k">elif</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;DELETE&quot;</span><span class="p">:</span>
+        <span class="n">snippet</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="o">.</span><span class="n">HTTP_204_NO_CONTENT</span><span class="p">)</span>
+</code></pre></div>
 <p>This should all feel very familiar - it is not a lot different from working with regular Django views.</p>
 <p>Notice that we're no longer explicitly tying our requests or responses to a given content type.  <code>request.data</code> can handle incoming <code>json</code> requests, but it can also handle other formats.  Similarly we're returning response objects with data, but allowing REST framework to render the response into the correct content type for us.</p>
-<h2 id="adding-optional-format-suffixes-to-our-urls"><a class="toclink" href="#adding-optional-format-suffixes-to-our-urls">Adding optional format suffixes to our URLs</a></h2>
+<h2 id="adding-optional-format-suffixes-to-our-urls">Adding optional format suffixes to our URLs<a class="headerlink" href="#adding-optional-format-suffixes-to-our-urls" title="Permanent link">&para;</a></h2>
 <p>To take advantage of the fact that our responses are no longer hardwired to a single content type let's add support for format suffixes to our API endpoints.  Using format suffixes gives us URLs that explicitly refer to a given format, and means our API will be able to handle URLs such as <a href="http://example.com/api/items/4.json"><a href="http://example.com/api/items/4.json">http://example.com/api/items/4.json</a></a>.</p>
 <p>Start by adding a <code>format</code> keyword argument to both of the views, like so.
 <code>def snippet_list(request, format=None):</code>
 and
 <code>def snippet_detail(request, pk, format=None):</code></p>
 <p>Now update the <code>snippets/urls.py</code> file slightly, to append a set of <code>format_suffix_patterns</code> in addition to the existing URLs.</p>
-<pre><code class="language-python">from django.urls import path
-from rest_framework.urlpatterns import format_suffix_patterns
-from snippets import views
+<div class="language-python highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">django.urls</span><span class="w"> </span><span class="kn">import</span> <span class="n">path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rest_framework.urlpatterns</span><span class="w"> </span><span class="kn">import</span> <span class="n">format_suffix_patterns</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">snippets</span><span class="w"> </span><span class="kn">import</span> <span class="n">views</span>
 
-urlpatterns = [
-    path(&quot;snippets/&quot;, views.snippet_list),
-    path(&quot;snippets/&lt;int:pk&gt;/&quot;, views.snippet_detail),
-]
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">path</span><span class="p">(</span><span class="s2">&quot;snippets/&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">snippet_list</span><span class="p">),</span>
+    <span class="n">path</span><span class="p">(</span><span class="s2">&quot;snippets/&lt;int:pk&gt;/&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">snippet_detail</span><span class="p">),</span>
+<span class="p">]</span>
 
-urlpatterns = format_suffix_patterns(urlpatterns)
-</code></pre>
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="n">format_suffix_patterns</span><span class="p">(</span><span class="n">urlpatterns</span><span class="p">)</span>
+</code></pre></div>
 <p>We don't necessarily need to add these extra url patterns in, but it gives us a simple, clean way of referring to a specific format.</p>
-<h2 id="hows-it-looking"><a class="toclink" href="#hows-it-looking">How's it looking?</a></h2>
+<h2 id="hows-it-looking">How's it looking?<a class="headerlink" href="#hows-it-looking" title="Permanent link">&para;</a></h2>
 <p>Go ahead and test the API from the command line, as we did in <a href="../1-serialization/">tutorial part 1</a>.  Everything is working pretty similarly, although we've got some nicer error handling if we send invalid requests.</p>
 <p>We can get a list of all of the snippets, as before.</p>
-<pre><code class="language-bash">http http://127.0.0.1:8000/snippets/
+<div class="language-bash highlight"><pre><span></span><code>http<span class="w"> </span>http://127.0.0.1:8000/snippets/
 
-HTTP/1.1 200 OK
+HTTP/1.1<span class="w"> </span><span class="m">200</span><span class="w"> </span>OK
 ...
-[
-    {
-    &quot;id&quot;: 1,
-    &quot;title&quot;: &quot;&quot;,
-    &quot;code&quot;: &quot;foo = \&quot;bar\&quot;\n&quot;,
-    &quot;linenos&quot;: false,
-    &quot;language&quot;: &quot;python&quot;,
-    &quot;style&quot;: &quot;friendly&quot;
-    },
-    {
-    &quot;id&quot;: 2,
-    &quot;title&quot;: &quot;&quot;,
-    &quot;code&quot;: &quot;print(\&quot;hello, world\&quot;)\n&quot;,
-    &quot;linenos&quot;: false,
-    &quot;language&quot;: &quot;python&quot;,
-    &quot;style&quot;: &quot;friendly&quot;
-    }
-]
-</code></pre>
+<span class="o">[</span>
+<span class="w">    </span><span class="o">{</span>
+<span class="w">    </span><span class="s2">&quot;id&quot;</span>:<span class="w"> </span><span class="m">1</span>,
+<span class="w">    </span><span class="s2">&quot;title&quot;</span>:<span class="w"> </span><span class="s2">&quot;&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;code&quot;</span>:<span class="w"> </span><span class="s2">&quot;foo = \&quot;bar\&quot;\n&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;linenos&quot;</span>:<span class="w"> </span>false,
+<span class="w">    </span><span class="s2">&quot;language&quot;</span>:<span class="w"> </span><span class="s2">&quot;python&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;style&quot;</span>:<span class="w"> </span><span class="s2">&quot;friendly&quot;</span>
+<span class="w">    </span><span class="o">}</span>,
+<span class="w">    </span><span class="o">{</span>
+<span class="w">    </span><span class="s2">&quot;id&quot;</span>:<span class="w"> </span><span class="m">2</span>,
+<span class="w">    </span><span class="s2">&quot;title&quot;</span>:<span class="w"> </span><span class="s2">&quot;&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;code&quot;</span>:<span class="w"> </span><span class="s2">&quot;print(\&quot;hello, world\&quot;)\n&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;linenos&quot;</span>:<span class="w"> </span>false,
+<span class="w">    </span><span class="s2">&quot;language&quot;</span>:<span class="w"> </span><span class="s2">&quot;python&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;style&quot;</span>:<span class="w"> </span><span class="s2">&quot;friendly&quot;</span>
+<span class="w">    </span><span class="o">}</span>
+<span class="o">]</span>
+</code></pre></div>
 <p>We can control the format of the response that we get back, either by using the <code>Accept</code> header:</p>
-<pre><code class="language-bash">http http://127.0.0.1:8000/snippets/ Accept:application/json  # Request JSON
-http http://127.0.0.1:8000/snippets/ Accept:text/html         # Request HTML
-</code></pre>
+<div class="language-bash highlight"><pre><span></span><code>http<span class="w"> </span>http://127.0.0.1:8000/snippets/<span class="w"> </span>Accept:application/json<span class="w">  </span><span class="c1"># Request JSON</span>
+http<span class="w"> </span>http://127.0.0.1:8000/snippets/<span class="w"> </span>Accept:text/html<span class="w">         </span><span class="c1"># Request HTML</span>
+</code></pre></div>
 <p>Or by appending a format suffix:</p>
-<pre><code class="language-bash">http http://127.0.0.1:8000/snippets.json  # JSON suffix
-http http://127.0.0.1:8000/snippets.api   # Browsable API suffix
-</code></pre>
+<div class="language-bash highlight"><pre><span></span><code>http<span class="w"> </span>http://127.0.0.1:8000/snippets.json<span class="w">  </span><span class="c1"># JSON suffix</span>
+http<span class="w"> </span>http://127.0.0.1:8000/snippets.api<span class="w">   </span><span class="c1"># Browsable API suffix</span>
+</code></pre></div>
 <p>Similarly, we can control the format of the request that we send, using the <code>Content-Type</code> header.</p>
-<pre><code class="language-bash"># POST using form data
-http --form POST http://127.0.0.1:8000/snippets/ code=&quot;print(123)&quot;
+<div class="language-bash highlight"><pre><span></span><code><span class="c1"># POST using form data</span>
+http<span class="w"> </span>--form<span class="w"> </span>POST<span class="w"> </span>http://127.0.0.1:8000/snippets/<span class="w"> </span><span class="nv">code</span><span class="o">=</span><span class="s2">&quot;print(123)&quot;</span>
 
-{
-    &quot;id&quot;: 3,
-    &quot;title&quot;: &quot;&quot;,
-    &quot;code&quot;: &quot;print(123)&quot;,
-    &quot;linenos&quot;: false,
-    &quot;language&quot;: &quot;python&quot;,
-    &quot;style&quot;: &quot;friendly&quot;
-}
+<span class="o">{</span>
+<span class="w">    </span><span class="s2">&quot;id&quot;</span>:<span class="w"> </span><span class="m">3</span>,
+<span class="w">    </span><span class="s2">&quot;title&quot;</span>:<span class="w"> </span><span class="s2">&quot;&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;code&quot;</span>:<span class="w"> </span><span class="s2">&quot;print(123)&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;linenos&quot;</span>:<span class="w"> </span>false,
+<span class="w">    </span><span class="s2">&quot;language&quot;</span>:<span class="w"> </span><span class="s2">&quot;python&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;style&quot;</span>:<span class="w"> </span><span class="s2">&quot;friendly&quot;</span>
+<span class="o">}</span>
 
-# POST using JSON
-http --json POST http://127.0.0.1:8000/snippets/ code=&quot;print(456)&quot;
+<span class="c1"># POST using JSON</span>
+http<span class="w"> </span>--json<span class="w"> </span>POST<span class="w"> </span>http://127.0.0.1:8000/snippets/<span class="w"> </span><span class="nv">code</span><span class="o">=</span><span class="s2">&quot;print(456)&quot;</span>
 
-{
-    &quot;id&quot;: 4,
-    &quot;title&quot;: &quot;&quot;,
-    &quot;code&quot;: &quot;print(456)&quot;,
-    &quot;linenos&quot;: false,
-    &quot;language&quot;: &quot;python&quot;,
-    &quot;style&quot;: &quot;friendly&quot;
-}
-</code></pre>
+<span class="o">{</span>
+<span class="w">    </span><span class="s2">&quot;id&quot;</span>:<span class="w"> </span><span class="m">4</span>,
+<span class="w">    </span><span class="s2">&quot;title&quot;</span>:<span class="w"> </span><span class="s2">&quot;&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;code&quot;</span>:<span class="w"> </span><span class="s2">&quot;print(456)&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;linenos&quot;</span>:<span class="w"> </span>false,
+<span class="w">    </span><span class="s2">&quot;language&quot;</span>:<span class="w"> </span><span class="s2">&quot;python&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;style&quot;</span>:<span class="w"> </span><span class="s2">&quot;friendly&quot;</span>
+<span class="o">}</span>
+</code></pre></div>
 <p>If you add a <code>--debug</code> switch to the <code>http</code> requests above, you will be able to see the request type in request headers.</p>
 <p>Now go and open the API in a web browser, by visiting <a href="http://127.0.0.1:8000/snippets/"><a href="http://127.0.0.1:8000/snippets/">http://127.0.0.1:8000/snippets/</a></a>.</p>
-<h3 id="browsability"><a class="toclink" href="#browsability">Browsability</a></h3>
+<h3 id="browsability">Browsability<a class="headerlink" href="#browsability" title="Permanent link">&para;</a></h3>
 <p>Because the API chooses the content type of the response based on the client request, it will, by default, return an HTML-formatted representation of the resource when that resource is requested by a web browser.  This allows for the API to return a fully web-browsable HTML representation.</p>
 <p>Having a web-browsable API is a huge usability win, and makes developing and using your API much easier.  It also dramatically lowers the barrier-to-entry for other developers wanting to inspect and work with your API.</p>
 <p>See the <a href="../../topics/browsable-api/">browsable api</a> topic for more information about the browsable API feature and how to customize it.</p>
-<h2 id="whats-next"><a class="toclink" href="#whats-next">What's next?</a></h2>
+<h2 id="whats-next">What's next?<a class="headerlink" href="#whats-next" title="Permanent link">&para;</a></h2>
 <p>In <a href="../3-class-based-views/">tutorial part 3</a>, we'll start using class-based views, and see how generic views reduce the amount of code we need to write.</p>
-            
 
-          </div> <!--/span-->
-        </div> <!--/row-->
-      </div> <!--/.fluid-container-->
-    </div> <!--/.body content-->
-    <div id="push"></div>
-  </div> <!--/.wrapper -->
 
-  <footer class="span12">
-    <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.
-    </p>
-  </footer>
 
-  <!-- Le javascript
-  ================================================== -->
-  <!-- Placed at the end of the document so the pages load faster -->
-  <script async src="https://fund.django-rest-framework.org/sidebar_include.js"></script>
-  <script src="../../js/jquery-1.8.1-min.js"></script>
-  <script src="../../js/prettify-1.0.js"></script>
-  <script src="../../js/bootstrap-2.1.1-min.js"></script>
-  <script src="../../js/theme.js"></script>
 
-  <script>var base_url = '../..';</script>
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
   
-  <script src="../../js/copy-button.js" defer></script>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
   
-  <script src="../../search/main.js" defer></script>
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
   
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+      <div class="md-progress" data-md-component="progress" role="progressbar"></div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["content.tabs.link", "content.code.annotate", "content.code.copy", "navigation.tabs", "navigation.tabs.sticky", "navigation.instant", "navigation.instant.prefetch", "navigation.instant.progress", "navigation.path", "navigation.sections", "navigation.top", "navigation.tracking", "search.suggest", "toc.follow", "toc.integrate"], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+    
+      <script src="../../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+        <script src="../../theme/js/prettify-1.0.js"></script>
+      
+    
+    <script>
+        document$.subscribe(function() {
+            document.querySelectorAll('pre code').forEach(code => {
+                code.parentElement.classList.add('prettyprint', 'well');
+            });
+            prettyPrint();
+        });
+    </script>
 
-  <script>
-    var shiftWindow = function() {
-      scrollBy(0, -50)
-    };
-
-    if (location.hash) shiftWindow();
-    window.addEventListener("hashchange", shiftWindow);
-
-    $('.dropdown-menu').on('click touchstart', function(event) {
-      event.stopPropagation();
-    });
-
-    // Dynamically force sidenav/dropdown to no higher than browser window
-    $('.side-nav, .dropdown-menu').css('max-height', window.innerHeight - 130);
-
-    $(function() {
-      $(window).resize(function() {
-        $('.side-nav, .dropdown-menu').css('max-height', window.innerHeight - 130);
-      });
-    });
-  </script>
-</body>
-
+  </body>
 </html>

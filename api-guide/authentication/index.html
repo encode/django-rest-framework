@@ -1,561 +1,2701 @@
-<!DOCTYPE html>
-<html lang="en">
 
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <meta charset="utf-8">
-  <title>Authentication - Django REST framework</title>
-  <link href="../../img/favicon.ico" rel="icon" type="image/x-icon">
-  <link rel="canonical" href="https://www.django-rest-framework.org/api-guide/authentication/" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Django, API, REST, Authentication">
-  <meta name="author" content="Tom Christie">
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Django REST framework - Web APIs for Django">
+      
+      
+      
+        <link rel="canonical" href="https://www.django-rest-framework.org/api-guide/authentication/">
+      
+      
+        <link rel="prev" href="../validators/">
+      
+      
+        <link rel="next" href="../permissions/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../theme/img/favicon.ico">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+    
+    
+      
+        <title>Authentication - Django REST framework</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.618322db.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
 
-  <!-- Le styles -->
-  <link href="../../css/prettify.css" rel="stylesheet">
-  <link href="../../css/bootstrap.css" rel="stylesheet">
-  <link href="../../css/bootstrap-responsive.css" rel="stylesheet">
-  <link href="../../css/default.css" rel="stylesheet">
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../theme/stylesheets/extra.css">
+    
+      <link rel="stylesheet" href="../../theme/stylesheets/prettify.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
   
-    <link href="../../css/copy-button.css" rel="stylesheet">
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#authentication" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
   
 
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Django REST framework" class="md-header__button md-logo" aria-label="Django REST framework" data-md-component="logo">
+      
+  <img src="../../theme/img/logo.png" alt="logo">
 
-  <script type="text/javascript">
-    var _gaq = _gaq || [];
-    _gaq.push(['_setAccount', 'UA-18852272-2']);
-    _gaq.push(['_trackPageview']);
-
-    (function() {
-      var ga = document.createElement('script');
-      ga.type = 'text/javascript';
-      ga.async = true;
-      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-      var s = document.getElementsByTagName('script')[0];
-      s.parentNode.insertBefore(ga, s);
-    })();
-  </script>
-
-  <style>
-  #sidebarInclude img {
-      margin-bottom: 10px;
-  }
-  #sidebarInclude a.promo {
-      color: black;
-  }
-    @media (max-width: 767px) {
-      div.promo {
-        display: none;
-      }
-    }
-  </style>
-</head>
-<body onload="prettyPrint()" class="-page">
-
-  <div class="wrapper">
-        <div class="navbar navbar-inverse navbar-fixed-top">
-      <div class="navbar-inner">
-        <div class="container-fluid">
-          <a class="repo-link btn btn-primary btn-small" href="https://github.com/encode/django-rest-framework">GitHub</a>
-          <a class="repo-link btn btn-inverse btn-small " rel="next" href="../permissions/">
-            Next <i class="icon-arrow-right icon-white"></i>
-          </a>
-          <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../validators/">
-            <i class="icon-arrow-left icon-white"></i> Previous
-          </a>
-          <a id="search_modal_show" class="repo-link btn btn-inverse btn-small" href="#mkdocs_search_modal" data-toggle="modal" data-target="#mkdocs_search_modal"><i class="icon-search icon-white"></i> Search</a>
-          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </a>
-          <a class="brand" href="https://www.django-rest-framework.org/">Django REST framework</a>
-          <div class="nav-collapse collapse">
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Django REST framework
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
             
-            <!-- Main navigation -->
-            <ul class="nav navbar-nav">
-               
-              <li >
-                <a href="../..">Home</a>
-              </li>
-                
-              <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tutorial <b class="caret"></b></a>
-                <ul class="dropdown-menu">
-                  
-                  <li >
-                    <a href="../../tutorial/quickstart/">Quickstart</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../tutorial/1-serialization/">1 - Serialization</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../tutorial/2-requests-and-responses/">2 - Requests and responses</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../tutorial/3-class-based-views/">3 - Class based views</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../tutorial/4-authentication-and-permissions/">4 - Authentication and permissions</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../tutorial/5-relationships-and-hyperlinked-apis/">5 - Relationships and hyperlinked APIs</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../tutorial/6-viewsets-and-routers/">6 - Viewsets and routers</a>
-                  </li>
-                  
-                </ul>
-              </li>
-                
-              <li class="dropdown active">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">API Guide <b class="caret"></b></a>
-                <ul class="dropdown-menu">
-                  
-                  <li >
-                    <a href="../requests/">Requests</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../responses/">Responses</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../views/">Views</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../generic-views/">Generic views</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../viewsets/">Viewsets</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../routers/">Routers</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../parsers/">Parsers</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../renderers/">Renderers</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../serializers/">Serializers</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../fields/">Serializer fields</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../relations/">Serializer relations</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../validators/">Validators</a>
-                  </li>
-                  
-                  <li class="active" >
-                    <a href="./">Authentication</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../permissions/">Permissions</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../caching/">Caching</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../throttling/">Throttling</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../filtering/">Filtering</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../pagination/">Pagination</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../versioning/">Versioning</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../content-negotiation/">Content negotiation</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../metadata/">Metadata</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../schemas/">Schemas</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../format-suffixes/">Format suffixes</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../reverse/">Returning URLs</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../exceptions/">Exceptions</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../status-codes/">Status codes</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../testing/">Testing</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../settings/">Settings</a>
-                  </li>
-                  
-                </ul>
-              </li>
-                
-              <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Topics <b class="caret"></b></a>
-                <ul class="dropdown-menu">
-                  
-                  <li >
-                    <a href="../../topics/documenting-your-api/">Documenting your API</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/internationalization/">Internationalization</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/ajax-csrf-cors/">AJAX, CSRF & CORS</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/html-and-forms/">HTML & Forms</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/browser-enhancements/">Browser Enhancements</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/browsable-api/">The Browsable API</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/rest-hypermedia-hateoas/">REST, Hypermedia & HATEOAS</a>
-                  </li>
-                  
-                </ul>
-              </li>
-                
-              <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Community <b class="caret"></b></a>
-                <ul class="dropdown-menu">
-                  
-                  <li >
-                    <a href="../../community/tutorials-and-resources/">Tutorials and Resources</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/third-party-packages/">Third Party Packages</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/contributing/">Contributing to REST framework</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/project-management/">Project management</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/release-notes/">Release Notes</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.16-announcement/">3.16 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.15-announcement/">3.15 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.14-announcement/">3.14 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.13-announcement/">3.13 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.12-announcement/">3.12 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.11-announcement/">3.11 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.10-announcement/">3.10 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.9-announcement/">3.9 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.8-announcement/">3.8 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.7-announcement/">3.7 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.6-announcement/">3.6 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.5-announcement/">3.5 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.4-announcement/">3.4 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.3-announcement/">3.3 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.2-announcement/">3.2 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.1-announcement/">3.1 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.0-announcement/">3.0 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/kickstarter-announcement/">Kickstarter Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/mozilla-grant/">Mozilla Grant</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/jobs/">Jobs</a>
-                  </li>
-                  
-                </ul>
-              </li>
-               
-
-            </ul>
+              Authentication
             
-          </div>
-          <!--/.nav-collapse -->
-
+          </span>
         </div>
       </div>
     </div>
-
-    <div class="body-content">
-      <div class="container-fluid">
-        <!-- Search Modal -->
-        <div id="mkdocs_search_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            <h3 id="myModalLabel">Documentation search</h3>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m14.3 16-.7-2h-3.2l-.7 2H7.8L11 7h2l3.2 9zM20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12zm-9.15 3.96h2.3L12 9z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
           </div>
-
-          <div class="modal-body">
-            <form role="form" autocomplete="off">
-              <div class="form-group">
-                <input type="text" name="q" class="form-control" placeholder="Search..." id="mkdocs-search-query">
-              </div>
-            </form>
-            <div id="mkdocs-search-results"></div>
-          </div>
-
-          <div class="modal-footer">
-            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/encode/django-rest-framework" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
 
-        <div class="row-fluid">
-          <div class="span3">
-            <div id="table-of-contents">
-              <ul class="nav nav-list side-nav well sidebar-nav-fixed">
-                
+      </a>
+    </li>
+  
 
-                
-                  <li class="main">
-                    <a href="#authentication">Authentication</a>
-                  </li>
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../tutorial/quickstart/" class="md-tabs__link">
+          
+  
+  
+  Tutorial
 
-                  
-                    <li>
-                      <a href="#how-authentication-is-determined">How authentication is determined</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#setting-the-authentication-scheme">Setting the authentication scheme</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#unauthorized-and-forbidden-responses">Unauthorized and Forbidden responses</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#django-51-loginrequiredmiddleware">Django 5.1+ LoginRequiredMiddleware</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#apache-mod_wsgi-specific-configuration">Apache mod_wsgi specific configuration</a>
-                    </li>
-                  
-                
-                  <li class="main">
-                    <a href="#api-reference">API Reference</a>
-                  </li>
+        </a>
+      </li>
+    
+  
 
-                  
-                    <li>
-                      <a href="#basicauthentication">BasicAuthentication</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#tokenauthentication">TokenAuthentication</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#sessionauthentication">SessionAuthentication</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#remoteuserauthentication">RemoteUserAuthentication</a>
-                    </li>
-                  
-                
-                  <li class="main">
-                    <a href="#custom-authentication">Custom authentication</a>
-                  </li>
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../requests/" class="md-tabs__link">
+          
+  
+  
+  API Guide
 
-                  
-                    <li>
-                      <a href="#example">Example</a>
-                    </li>
-                  
-                
-                  <li class="main">
-                    <a href="#third-party-packages">Third party packages</a>
-                  </li>
+        </a>
+      </li>
+    
+  
 
-                  
-                    <li>
-                      <a href="#django-rest-knox">django-rest-knox</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#django-oauth-toolkit">Django OAuth Toolkit</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#django-rest-framework-oauth">Django REST framework OAuth</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#json-web-token-authentication">JSON Web Token Authentication</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#hawk-http-authentication">Hawk HTTP Authentication</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#http-signature-authentication">HTTP Signature Authentication</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#djoser">Djoser</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#drf-auth-kit">DRF Auth Kit</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#django-rest-auth-dj-rest-auth">django-rest-auth / dj-rest-auth</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#drf-social-oauth2">drf-social-oauth2</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#drfpasswordless">drfpasswordless</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#django-rest-authemail">django-rest-authemail</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#django-rest-durin">Django-Rest-Durin</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#django-pyoidc">django-pyoidc</a>
-                    </li>
-                  
-                
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../topics/documenting-your-api/" class="md-tabs__link">
+          
+  
+  
+  Topics
 
-                  <div class="promo">
-                    <hr/>
-                    <div id="sidebarInclude">
-                  </div>
-              </ul>
+        </a>
+      </li>
+    
+  
 
-            </div>
-          </div>
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../community/tutorials-and-resources/" class="md-tabs__link">
+          
+  
+  
+  Community
 
-          <div id="main-content" class="span9">
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Django REST framework" class="md-nav__button md-logo" aria-label="Django REST framework" data-md-component="logo">
+      
+  <img src="../../theme/img/logo.png" alt="logo">
+
+    </a>
+    Django REST framework
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/encode/django-rest-framework" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorial
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tutorial
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
             
               
                 
-                  <a class="github" href="https://github.com/encode/django-rest-framework/tree/main/rest_framework/authentication.py">
-                    <span class="label label-info">authentication.py</span>
-                  </a>
-                
-              
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quickstart
+  
 
-              <h1 id="authentication"><a class="toclink" href="#authentication">Authentication</a></h1>
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/1-serialization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1 - Serialization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/2-requests-and-responses/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2 - Requests and responses
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/3-class-based-views/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3 - Class based views
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/4-authentication-and-permissions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4 - Authentication and permissions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/5-relationships-and-hyperlinked-apis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5 - Relationships and hyperlinked APIs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/6-viewsets-and-routers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6 - Viewsets and routers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../requests/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Requests
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../responses/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Responses
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../views/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Views
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../generic-views/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Generic views
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../viewsets/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Viewsets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../routers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Routers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parsers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Parsers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../renderers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Renderers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../serializers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Serializers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../fields/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Serializer fields
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../relations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Serializer relations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../validators/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validators
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Authentication
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Authentication
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#how-authentication-is-determined" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How authentication is determined
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#setting-the-authentication-scheme" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Setting the authentication scheme
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#unauthorized-and-forbidden-responses" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Unauthorized and Forbidden responses
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#django-51-loginrequiredmiddleware" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Django 5.1+ LoginRequiredMiddleware
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#apache-mod_wsgi-specific-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Apache mod_wsgi specific configuration
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../permissions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Permissions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../caching/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Caching
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../throttling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Throttling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../filtering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Filtering
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pagination/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pagination
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../versioning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Versioning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../content-negotiation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Content negotiation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../metadata/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Metadata
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../schemas/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Schemas
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../format-suffixes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Format suffixes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reverse/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Returning URLs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../exceptions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Exceptions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../status-codes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Status codes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../settings/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Settings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Topics
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Topics
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../topics/documenting-your-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Documenting your API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../topics/internationalization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Internationalization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../topics/ajax-csrf-cors/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AJAX, CSRF & CORS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../topics/html-and-forms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HTML & Forms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../topics/browser-enhancements/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Browser Enhancements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../topics/browsable-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Browsable API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../topics/rest-hypermedia-hateoas/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    REST, Hypermedia & HATEOAS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Community
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Community
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/tutorials-and-resources/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials and Resources
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/third-party-packages/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Third Party Packages
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing to REST framework
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/project-management/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project management
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/release-notes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release Notes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.16-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.16 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.15-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.15 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.14-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.14 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.13-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.13 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.12-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.12 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.11-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.11 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.10-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.10 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.9-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.9 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.8-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.8 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.7-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.7 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.6-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.6 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.5-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.5 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.4-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.4 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.3-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.3 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.2-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.2 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.1-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.1 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.0-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.0 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/kickstarter-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kickstarter Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/mozilla-grant/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mozilla Grant
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/jobs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Jobs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+                
+
+
+
+  
+
+
+  <nav class="md-path" aria-label="Navigation" >
+    <ol class="md-path__list">
+      
+        
+  
+  
+    <li class="md-path__item">
+      <a href="../.." class="md-path__link">
+        
+  <span class="md-ellipsis">
+    Home
+  </span>
+
+      </a>
+    </li>
+  
+
+      
+      
+        
+  
+  
+    
+    
+      <li class="md-path__item">
+        <a href="../requests/" class="md-path__link">
+          
+  <span class="md-ellipsis">
+    API Guide
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ol>
+  </nav>
+
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="authentication">Authentication<a class="headerlink" href="#authentication" title="Permanent link">&para;</a></h1>
 <blockquote>
 <p>Auth needs to be pluggable.</p>
 <p>&mdash; Jacob Kaplan-Moss, <a href="https://jacobian.org/writing/rest-worst-practices/">"REST worst practices"</a></p>
@@ -570,22 +2710,22 @@
 <p>Don't forget that <strong>authentication by itself won't allow or disallow an incoming request</strong>, it simply identifies the credentials that the request was made with.</p>
 <p>For information on how to set up the permission policies for your API please see the <a href="../permissions/">permissions documentation</a>.</p>
 </div>
-<h2 id="how-authentication-is-determined"><a class="toclink" href="#how-authentication-is-determined">How authentication is determined</a></h2>
+<h2 id="how-authentication-is-determined">How authentication is determined<a class="headerlink" href="#how-authentication-is-determined" title="Permanent link">&para;</a></h2>
 <p>The authentication schemes are always defined as a list of classes.  REST framework will attempt to authenticate with each class in the list, and will set <code>request.user</code> and <code>request.auth</code> using the return value of the first class that successfully authenticates.</p>
 <p>If no class authenticates, <code>request.user</code> will be set to an instance of <code>django.contrib.auth.models.AnonymousUser</code>, and <code>request.auth</code> will be set to <code>None</code>.</p>
 <p>The value of <code>request.user</code> and <code>request.auth</code> for unauthenticated requests can be modified using the <code>UNAUTHENTICATED_USER</code> and <code>UNAUTHENTICATED_TOKEN</code> settings.</p>
-<h2 id="setting-the-authentication-scheme"><a class="toclink" href="#setting-the-authentication-scheme">Setting the authentication scheme</a></h2>
+<h2 id="setting-the-authentication-scheme">Setting the authentication scheme<a class="headerlink" href="#setting-the-authentication-scheme" title="Permanent link">&para;</a></h2>
 <p>The default authentication schemes may be set globally, using the <code>DEFAULT_AUTHENTICATION_CLASSES</code> setting.  For example.</p>
-<pre><code>REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.BasicAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
+<div class="language-text highlight"><pre><span></span><code>REST_FRAMEWORK = {
+    &#39;DEFAULT_AUTHENTICATION_CLASSES&#39;: [
+        &#39;rest_framework.authentication.BasicAuthentication&#39;,
+        &#39;rest_framework.authentication.SessionAuthentication&#39;,
     ]
 }
-</code></pre>
+</code></pre></div>
 <p>You can also set the authentication scheme on a per-view or per-viewset basis,
 using the <code>APIView</code> class-based views.</p>
-<pre><code>from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+<div class="language-text highlight"><pre><span></span><code>from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -596,23 +2736,23 @@ class ExampleView(APIView):
 
     def get(self, request, format=None):
         content = {
-            'user': str(request.user),  # `django.contrib.auth.User` instance.
-            'auth': str(request.auth),  # None
+            &#39;user&#39;: str(request.user),  # `django.contrib.auth.User` instance.
+            &#39;auth&#39;: str(request.auth),  # None
         }
         return Response(content)
-</code></pre>
+</code></pre></div>
 <p>Or, if you're using the <code>@api_view</code> decorator with function based views.</p>
-<pre><code>@api_view(['GET'])
+<div class="language-text highlight"><pre><span></span><code>@api_view([&#39;GET&#39;])
 @authentication_classes([SessionAuthentication, BasicAuthentication])
 @permission_classes([IsAuthenticated])
 def example_view(request, format=None):
     content = {
-        'user': str(request.user),  # `django.contrib.auth.User` instance.
-        'auth': str(request.auth),  # None
+        &#39;user&#39;: str(request.user),  # `django.contrib.auth.User` instance.
+        &#39;auth&#39;: str(request.auth),  # None
     }
     return Response(content)
-</code></pre>
-<h2 id="unauthorized-and-forbidden-responses"><a class="toclink" href="#unauthorized-and-forbidden-responses">Unauthorized and Forbidden responses</a></h2>
+</code></pre></div>
+<h2 id="unauthorized-and-forbidden-responses">Unauthorized and Forbidden responses<a class="headerlink" href="#unauthorized-and-forbidden-responses" title="Permanent link">&para;</a></h2>
 <p>When an unauthenticated request is denied permission there are two different error codes that may be appropriate.</p>
 <ul>
 <li><a href="https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.2">HTTP 401 Unauthorized</a></li>
@@ -621,18 +2761,18 @@ def example_view(request, format=None):
 <p>HTTP 401 responses must always include a <code>WWW-Authenticate</code> header, that instructs the client how to authenticate.  HTTP 403 responses do not include the <code>WWW-Authenticate</code> header.</p>
 <p>The kind of response that will be used depends on the authentication scheme.  Although multiple authentication schemes may be in use, only one scheme may be used to determine the type of response.  <strong>The first authentication class set on the view is used when determining the type of response</strong>.</p>
 <p>Note that when a request may successfully authenticate, but still be denied permission to perform the request, in which case a <code>403 Permission Denied</code> response will always be used, regardless of the authentication scheme.</p>
-<h2 id="django-51-loginrequiredmiddleware"><a class="toclink" href="#django-51-loginrequiredmiddleware">Django 5.1+ <code>LoginRequiredMiddleware</code></a></h2>
+<h2 id="django-51-loginrequiredmiddleware">Django 5.1+ <code>LoginRequiredMiddleware</code><a class="headerlink" href="#django-51-loginrequiredmiddleware" title="Permanent link">&para;</a></h2>
 <p>If you're running Django 5.1+ and use the <a href="https://docs.djangoproject.com/en/stable/ref/middleware/#django.contrib.auth.middleware.LoginRequiredMiddleware"><code>LoginRequiredMiddleware</code></a>, please note that all views from DRF are opted-out of this middleware.  This is because the authentication in DRF is based on authentication and permissions classes, which may be determined after the middleware has been applied.  Additionally, when the request is not authenticated, the middleware redirects the user to the login page, which is not suitable for API requests, where it's preferable to return a 401 status code.</p>
 <p>REST framework offers an equivalent mechanism for DRF views via the global settings, <code>DEFAULT_AUTHENTICATION_CLASSES</code> and <code>DEFAULT_PERMISSION_CLASSES</code>.  They should be changed accordingly if you need to enforce that API requests are logged in.</p>
-<h2 id="apache-mod_wsgi-specific-configuration"><a class="toclink" href="#apache-mod_wsgi-specific-configuration">Apache mod_wsgi specific configuration</a></h2>
+<h2 id="apache-mod_wsgi-specific-configuration">Apache mod_wsgi specific configuration<a class="headerlink" href="#apache-mod_wsgi-specific-configuration" title="Permanent link">&para;</a></h2>
 <p>Note that if deploying to <a href="https://modwsgi.readthedocs.io/en/develop/configuration-directives/WSGIPassAuthorization.html">Apache using mod_wsgi</a>, the authorization header is not passed through to a WSGI application by default, as it is assumed that authentication will be handled by Apache, rather than at an application level.</p>
 <p>If you are deploying to Apache, and using any non-session based authentication, you will need to explicitly configure mod_wsgi to pass the required headers through to the application.  This can be done by specifying the <code>WSGIPassAuthorization</code> directive in the appropriate context and setting it to <code>'On'</code>.</p>
-<pre><code># this can go in either server config, virtual host, directory or .htaccess
+<div class="language-text highlight"><pre><span></span><code># this can go in either server config, virtual host, directory or .htaccess
 WSGIPassAuthorization On
-</code></pre>
+</code></pre></div>
 <hr />
-<h1 id="api-reference"><a class="toclink" href="#api-reference">API Reference</a></h1>
-<h2 id="basicauthentication"><a class="toclink" href="#basicauthentication">BasicAuthentication</a></h2>
+<h1 id="api-reference">API Reference<a class="headerlink" href="#api-reference" title="Permanent link">&para;</a></h1>
+<h2 id="basicauthentication">BasicAuthentication<a class="headerlink" href="#basicauthentication" title="Permanent link">&para;</a></h2>
 <p>This authentication scheme uses <a href="https://tools.ietf.org/html/rfc2617">HTTP Basic Authentication</a>, signed against a user's username and password.  Basic authentication is generally only appropriate for testing.</p>
 <p>If successfully authenticated, <code>BasicAuthentication</code> provides the following credentials.</p>
 <ul>
@@ -640,13 +2780,13 @@ WSGIPassAuthorization On
 <li><code>request.auth</code> will be <code>None</code>.</li>
 </ul>
 <p>Unauthenticated responses that are denied permission will result in an <code>HTTP 401 Unauthorized</code> response with an appropriate WWW-Authenticate header.  For example:</p>
-<pre><code>WWW-Authenticate: Basic realm="api"
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code>WWW-Authenticate: Basic realm=&quot;api&quot;
+</code></pre></div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>If you use <code>BasicAuthentication</code> in production you must ensure that your API is only available over <code>https</code>.  You should also ensure that your API clients will always re-request the username and password at login, and will never store those details to persistent storage.</p>
 </div>
-<h2 id="tokenauthentication"><a class="toclink" href="#tokenauthentication">TokenAuthentication</a></h2>
+<h2 id="tokenauthentication">TokenAuthentication<a class="headerlink" href="#tokenauthentication" title="Permanent link">&para;</a></h2>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The token authentication provided by Django REST framework is a fairly simple implementation.</p>
@@ -654,22 +2794,22 @@ WSGIPassAuthorization On
 </div>
 <p>This authentication scheme uses a simple token-based HTTP Authentication scheme.  Token authentication is appropriate for client-server setups, such as native desktop and mobile clients.</p>
 <p>To use the <code>TokenAuthentication</code> scheme you'll need to <a href="#setting-the-authentication-scheme">configure the authentication classes</a> to include <code>TokenAuthentication</code>, and additionally include <code>rest_framework.authtoken</code> in your <code>INSTALLED_APPS</code> setting:</p>
-<pre><code>INSTALLED_APPS = [
+<div class="language-text highlight"><pre><span></span><code>INSTALLED_APPS = [
     ...
-    'rest_framework.authtoken'
+    &#39;rest_framework.authtoken&#39;
 ]
-</code></pre>
+</code></pre></div>
 <p>Make sure to run <code>manage.py migrate</code> after changing your settings.</p>
 <p>The <code>rest_framework.authtoken</code> app provides Django database migrations.</p>
 <p>You'll also need to create tokens for your users.</p>
-<pre><code>from rest_framework.authtoken.models import Token
+<div class="language-text highlight"><pre><span></span><code>from rest_framework.authtoken.models import Token
 
 token = Token.objects.create(user=...)
 print(token.key)
-</code></pre>
+</code></pre></div>
 <p>For clients to authenticate, the token key should be included in the <code>Authorization</code> HTTP header.  The key should be prefixed by the string literal "Token", with whitespace separating the two strings.  For example:</p>
-<pre><code>Authorization: Token 9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code>Authorization: Token 9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b
+</code></pre></div>
 <p><em>If you want to use a different keyword in the header, such as <code>Bearer</code>, simply subclass <code>TokenAuthentication</code> and set the <code>keyword</code> class variable.</em></p>
 <p>If successfully authenticated, <code>TokenAuthentication</code> provides the following credentials.</p>
 <ul>
@@ -677,19 +2817,19 @@ print(token.key)
 <li><code>request.auth</code> will be a <code>rest_framework.authtoken.models.Token</code> instance.</li>
 </ul>
 <p>Unauthenticated responses that are denied permission will result in an <code>HTTP 401 Unauthorized</code> response with an appropriate WWW-Authenticate header.  For example:</p>
-<pre><code>WWW-Authenticate: Token
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code>WWW-Authenticate: Token
+</code></pre></div>
 <p>The <code>curl</code> command line tool may be useful for testing token authenticated APIs.  For example:</p>
-<pre><code>curl -X GET http://127.0.0.1:8000/api/example/ -H 'Authorization: Token 9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b'
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code>curl -X GET http://127.0.0.1:8000/api/example/ -H &#39;Authorization: Token 9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b&#39;
+</code></pre></div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>If you use <code>TokenAuthentication</code> in production you must ensure that your API is only available over <code>https</code>.</p>
 </div>
-<h3 id="generating-tokens"><a class="toclink" href="#generating-tokens">Generating Tokens</a></h3>
-<h4 id="by-using-signals"><a class="toclink" href="#by-using-signals">By using signals</a></h4>
+<h3 id="generating-tokens">Generating Tokens<a class="headerlink" href="#generating-tokens" title="Permanent link">&para;</a></h3>
+<h4 id="by-using-signals">By using signals<a class="headerlink" href="#by-using-signals" title="Permanent link">&para;</a></h4>
 <p>If you want every user to have an automatically generated Token, you can simply catch the User's <code>post_save</code> signal.</p>
-<pre><code>from django.conf import settings
+<div class="language-text highlight"><pre><span></span><code>from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
@@ -698,32 +2838,32 @@ from rest_framework.authtoken.models import Token
 def create_auth_token(sender, instance=None, created=False, **kwargs):
     if created:
         Token.objects.create(user=instance)
-</code></pre>
+</code></pre></div>
 <p>Note that you'll want to ensure you place this code snippet in an installed <code>models.py</code> module, or some other location that will be imported by Django on startup.</p>
 <p>If you've already created some users, you can generate tokens for all existing users like this:</p>
-<pre><code>from django.contrib.auth.models import User
+<div class="language-text highlight"><pre><span></span><code>from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
 
 for user in User.objects.all():
     Token.objects.get_or_create(user=user)
-</code></pre>
-<h4 id="by-exposing-an-api-endpoint"><a class="toclink" href="#by-exposing-an-api-endpoint">By exposing an api endpoint</a></h4>
+</code></pre></div>
+<h4 id="by-exposing-an-api-endpoint">By exposing an api endpoint<a class="headerlink" href="#by-exposing-an-api-endpoint" title="Permanent link">&para;</a></h4>
 <p>When using <code>TokenAuthentication</code>, you may want to provide a mechanism for clients to obtain a token given the username and password.  REST framework provides a built-in view to provide this behavior.  To use it, add the <code>obtain_auth_token</code> view to your URLconf:</p>
-<pre><code>from rest_framework.authtoken import views
+<div class="language-text highlight"><pre><span></span><code>from rest_framework.authtoken import views
 urlpatterns += [
-    path('api-token-auth/', views.obtain_auth_token)
+    path(&#39;api-token-auth/&#39;, views.obtain_auth_token)
 ]
-</code></pre>
+</code></pre></div>
 <p>Note that the URL part of the pattern can be whatever you want to use.</p>
 <p>The <code>obtain_auth_token</code> view will return a JSON response when valid <code>username</code> and <code>password</code> fields are POSTed to the view using form data or JSON:</p>
-<pre><code>{ 'token' : '9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b' }
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code>{ &#39;token&#39; : &#39;9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b&#39; }
+</code></pre></div>
 <p>Note that the default <code>obtain_auth_token</code> view explicitly uses JSON requests and responses, rather than using default renderer and parser classes in your settings.</p>
 <p>By default, there are no permissions or throttling applied to the <code>obtain_auth_token</code> view. If you do wish to apply throttling you'll need to override the view class,
 and include them using the <code>throttle_classes</code> attribute.</p>
 <p>If you need a customized version of the <code>obtain_auth_token</code> view, you can do so by subclassing the <code>ObtainAuthToken</code> view class, and using that in your url conf instead.</p>
 <p>For example, you may return additional user information beyond the <code>token</code> value:</p>
-<pre><code>from rest_framework.authtoken.views import ObtainAuthToken
+<div class="language-text highlight"><pre><span></span><code>from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 
@@ -731,39 +2871,39 @@ class CustomAuthToken(ObtainAuthToken):
 
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data,
-                                           context={'request': request})
+                                           context={&#39;request&#39;: request})
         serializer.is_valid(raise_exception=True)
-        user = serializer.validated_data['user']
+        user = serializer.validated_data[&#39;user&#39;]
         token, created = Token.objects.get_or_create(user=user)
         return Response({
-            'token': token.key,
-            'user_id': user.pk,
-            'email': user.email
+            &#39;token&#39;: token.key,
+            &#39;user_id&#39;: user.pk,
+            &#39;email&#39;: user.email
         })
-</code></pre>
+</code></pre></div>
 <p>And in your <code>urls.py</code>:</p>
-<pre><code>urlpatterns += [
-    path('api-token-auth/', CustomAuthToken.as_view())
+<div class="language-text highlight"><pre><span></span><code>urlpatterns += [
+    path(&#39;api-token-auth/&#39;, CustomAuthToken.as_view())
 ]
-</code></pre>
-<h4 id="with-django-admin"><a class="toclink" href="#with-django-admin">With Django admin</a></h4>
+</code></pre></div>
+<h4 id="with-django-admin">With Django admin<a class="headerlink" href="#with-django-admin" title="Permanent link">&para;</a></h4>
 <p>It is also possible to create Tokens manually through the admin interface. In case you are using a large user base, we recommend that you monkey patch the <code>TokenAdmin</code> class to customize it to your needs, more specifically by declaring the <code>user</code> field as <code>raw_field</code>.</p>
 <p><code>your_app/admin.py</code>:</p>
-<pre><code>from rest_framework.authtoken.admin import TokenAdmin
+<div class="language-text highlight"><pre><span></span><code>from rest_framework.authtoken.admin import TokenAdmin
 
-TokenAdmin.raw_id_fields = ['user']
-</code></pre>
-<h4 id="using-django-managepy-command"><a class="toclink" href="#using-django-managepy-command">Using Django manage.py command</a></h4>
+TokenAdmin.raw_id_fields = [&#39;user&#39;]
+</code></pre></div>
+<h4 id="using-django-managepy-command">Using Django manage.py command<a class="headerlink" href="#using-django-managepy-command" title="Permanent link">&para;</a></h4>
 <p>Since version 3.6.4 it's possible to generate a user token using the following command:</p>
-<pre><code>./manage.py drf_create_token &lt;username&gt;
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code>./manage.py drf_create_token &lt;username&gt;
+</code></pre></div>
 <p>this command will return the API token for the given user, creating it if it doesn't exist:</p>
-<pre><code>Generated token 9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b for user user1
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code>Generated token 9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b for user user1
+</code></pre></div>
 <p>In case you want to regenerate the token (for example if it has been compromised or leaked) you can pass an additional parameter:</p>
-<pre><code>./manage.py drf_create_token -r &lt;username&gt;
-</code></pre>
-<h2 id="sessionauthentication"><a class="toclink" href="#sessionauthentication">SessionAuthentication</a></h2>
+<div class="language-text highlight"><pre><span></span><code>./manage.py drf_create_token -r &lt;username&gt;
+</code></pre></div>
+<h2 id="sessionauthentication">SessionAuthentication<a class="headerlink" href="#sessionauthentication" title="Permanent link">&para;</a></h2>
 <p>This authentication scheme uses Django's default session backend for authentication.  Session authentication is appropriate for AJAX clients that are running in the same session context as your website.</p>
 <p>If successfully authenticated, <code>SessionAuthentication</code> provides the following credentials.</p>
 <ul>
@@ -777,7 +2917,7 @@ TokenAdmin.raw_id_fields = ['user']
 <p>Always use Django's standard login view when creating login pages. This will ensure your login views are properly protected.</p>
 </div>
 <p>CSRF validation in REST framework works slightly differently from standard Django due to the need to support both session and non-session based authentication to the same views. This means that only authenticated requests require CSRF tokens, and anonymous requests may be sent without CSRF tokens. This behavior is not suitable for login views, which should always have CSRF validation applied.</p>
-<h2 id="remoteuserauthentication"><a class="toclink" href="#remoteuserauthentication">RemoteUserAuthentication</a></h2>
+<h2 id="remoteuserauthentication">RemoteUserAuthentication<a class="headerlink" href="#remoteuserauthentication" title="Permanent link">&para;</a></h2>
 <p>This authentication scheme allows you to delegate authentication to your web server, which sets the <code>REMOTE_USER</code>
 environment variable.</p>
 <p>To use it, you must have <code>django.contrib.auth.backends.RemoteUserBackend</code> (or a subclass) in your
@@ -794,7 +2934,7 @@ already exist. To change this and other behavior, consult the
 <li><a href="https://httpd.apache.org/docs/2.4/howto/auth.html">Apache Authentication How-To</a></li>
 <li><a href="https://docs.nginx.com/nginx/admin-guide/security-controls/configuring-http-basic-authentication/">NGINX (Restricting Access)</a></li>
 </ul>
-<h1 id="custom-authentication"><a class="toclink" href="#custom-authentication">Custom authentication</a></h1>
+<h1 id="custom-authentication">Custom authentication<a class="headerlink" href="#custom-authentication" title="Permanent link">&para;</a></h1>
 <p>To implement a custom authentication scheme, subclass <code>BaseAuthentication</code> and override the <code>.authenticate(self, request)</code> method.  The method should return a two-tuple of <code>(user, auth)</code> if authentication succeeds, or <code>None</code> otherwise.</p>
 <p>In some circumstances instead of returning <code>None</code>, you may want to raise an <code>AuthenticationFailed</code> exception from the <code>.authenticate()</code> method.</p>
 <p>Typically the approach you should take is:</p>
@@ -808,137 +2948,165 @@ already exist. To change this and other behavior, consult the
 <p class="admonition-title">Note</p>
 <p>When your custom authenticator is invoked by the request object's <code>.user</code> or <code>.auth</code> properties, you may see an <code>AttributeError</code> re-raised as a <code>WrappedAttributeError</code>. This is necessary to prevent the original exception from being suppressed by the outer property access. Python will not recognize that the <code>AttributeError</code> originates from your custom authenticator and will instead assume that the request object does not have a <code>.user</code> or <code>.auth</code> property. These errors should be fixed or otherwise handled by your authenticator.</p>
 </div>
-<h2 id="example"><a class="toclink" href="#example">Example</a></h2>
+<h2 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h2>
 <p>The following example will authenticate any incoming request as the user given by the username in a custom request header named 'X-USERNAME'.</p>
-<pre><code>from django.contrib.auth.models import User
+<div class="language-text highlight"><pre><span></span><code>from django.contrib.auth.models import User
 from rest_framework import authentication
 from rest_framework import exceptions
 
 class ExampleAuthentication(authentication.BaseAuthentication):
     def authenticate(self, request):
-        username = request.META.get('HTTP_X_USERNAME')
+        username = request.META.get(&#39;HTTP_X_USERNAME&#39;)
         if not username:
             return None
 
         try:
             user = User.objects.get(username=username)
         except User.DoesNotExist:
-            raise exceptions.AuthenticationFailed('No such user')
+            raise exceptions.AuthenticationFailed(&#39;No such user&#39;)
 
         return (user, None)
-</code></pre>
+</code></pre></div>
 <hr />
-<h1 id="third-party-packages"><a class="toclink" href="#third-party-packages">Third party packages</a></h1>
+<h1 id="third-party-packages">Third party packages<a class="headerlink" href="#third-party-packages" title="Permanent link">&para;</a></h1>
 <p>The following third-party packages are also available.</p>
-<h2 id="django-rest-knox"><a class="toclink" href="#django-rest-knox">django-rest-knox</a></h2>
+<h2 id="django-rest-knox">django-rest-knox<a class="headerlink" href="#django-rest-knox" title="Permanent link">&para;</a></h2>
 <p><a href="https://github.com/James1345/django-rest-knox">Django-rest-knox</a> library provides models and views to handle token-based authentication in a more secure and extensible way than the built-in TokenAuthentication scheme - with Single Page Applications and Mobile clients in mind. It provides per-client tokens, and views to generate them when provided some other authentication (usually basic authentication), to delete the token (providing a server enforced logout) and to delete all tokens (logs out all clients that a user is logged into).</p>
-<h2 id="django-oauth-toolkit"><a class="toclink" href="#django-oauth-toolkit">Django OAuth Toolkit</a></h2>
+<h2 id="django-oauth-toolkit">Django OAuth Toolkit<a class="headerlink" href="#django-oauth-toolkit" title="Permanent link">&para;</a></h2>
 <p>The <a href="https://github.com/evonove/django-oauth-toolkit">Django OAuth Toolkit</a> package provides OAuth 2.0 support and works with Python 3.4+. The package is maintained by <a href="https://github.com/jazzband/">jazzband</a> and uses the excellent <a href="https://github.com/idan/oauthlib">OAuthLib</a>.  The package is well documented, and well supported and is currently our <strong>recommended package for OAuth 2.0 support</strong>.</p>
-<h3 id="installation-configuration"><a class="toclink" href="#installation-configuration">Installation &amp; configuration</a></h3>
+<h3 id="installation-configuration">Installation &amp; configuration<a class="headerlink" href="#installation-configuration" title="Permanent link">&para;</a></h3>
 <p>Install using <code>pip</code>.</p>
-<pre><code>pip install django-oauth-toolkit
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code>pip install django-oauth-toolkit
+</code></pre></div>
 <p>Add the package to your <code>INSTALLED_APPS</code> and modify your REST framework settings.</p>
-<pre><code>INSTALLED_APPS = [
+<div class="language-text highlight"><pre><span></span><code>INSTALLED_APPS = [
     ...
-    'oauth2_provider',
+    &#39;oauth2_provider&#39;,
 ]
 
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
+    &#39;DEFAULT_AUTHENTICATION_CLASSES&#39;: [
+        &#39;oauth2_provider.contrib.rest_framework.OAuth2Authentication&#39;,
     ]
 }
-</code></pre>
+</code></pre></div>
 <p>For more details see the <a href="https://django-oauth-toolkit.readthedocs.io/en/latest/rest-framework/getting_started.html">Django REST framework - Getting started</a> documentation.</p>
-<h2 id="django-rest-framework-oauth"><a class="toclink" href="#django-rest-framework-oauth">Django REST framework OAuth</a></h2>
+<h2 id="django-rest-framework-oauth">Django REST framework OAuth<a class="headerlink" href="#django-rest-framework-oauth" title="Permanent link">&para;</a></h2>
 <p>The <a href="https://jpadilla.github.io/django-rest-framework-oauth/">Django REST framework OAuth</a> package provides both OAuth1 and OAuth2 support for REST framework.</p>
 <p>This package was previously included directly in the REST framework but is now supported and maintained as a third-party package.</p>
-<h3 id="installation-configuration_1"><a class="toclink" href="#installation-configuration_1">Installation &amp; configuration</a></h3>
+<h3 id="installation-configuration_1">Installation &amp; configuration<a class="headerlink" href="#installation-configuration_1" title="Permanent link">&para;</a></h3>
 <p>Install the package using <code>pip</code>.</p>
-<pre><code>pip install djangorestframework-oauth
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code>pip install djangorestframework-oauth
+</code></pre></div>
 <p>For details on configuration and usage see the Django REST framework OAuth documentation for <a href="https://jpadilla.github.io/django-rest-framework-oauth/authentication/">authentication</a> and <a href="https://jpadilla.github.io/django-rest-framework-oauth/permissions/">permissions</a>.</p>
-<h2 id="json-web-token-authentication"><a class="toclink" href="#json-web-token-authentication">JSON Web Token Authentication</a></h2>
+<h2 id="json-web-token-authentication">JSON Web Token Authentication<a class="headerlink" href="#json-web-token-authentication" title="Permanent link">&para;</a></h2>
 <p>JSON Web Token is a fairly new standard which can be used for token-based authentication. Unlike the built-in TokenAuthentication scheme, JWT Authentication doesn't need to use a database to validate a token. A package for JWT authentication is <a href="https://github.com/davesque/django-rest-framework-simplejwt">djangorestframework-simplejwt</a> which provides some features as well as a pluggable token blacklist app.</p>
-<h2 id="hawk-http-authentication"><a class="toclink" href="#hawk-http-authentication">Hawk HTTP Authentication</a></h2>
+<h2 id="hawk-http-authentication">Hawk HTTP Authentication<a class="headerlink" href="#hawk-http-authentication" title="Permanent link">&para;</a></h2>
 <p>The <a href="https://hawkrest.readthedocs.io/en/latest/">HawkREST</a> library builds on the <a href="https://mohawk.readthedocs.io/en/latest/">Mohawk</a> library to let you work with <a href="https://github.com/hueniverse/hawk">Hawk</a> signed requests and responses in your API. <a href="https://github.com/hueniverse/hawk">Hawk</a> lets two parties securely communicate with each other using messages signed by a shared key. It is based on <a href="https://tools.ietf.org/html/draft-hammer-oauth-v2-mac-token-05">HTTP MAC access authentication</a> (which was based on parts of <a href="https://oauth.net/core/1.0a/">OAuth 1.0</a>).</p>
-<h2 id="http-signature-authentication"><a class="toclink" href="#http-signature-authentication">HTTP Signature Authentication</a></h2>
+<h2 id="http-signature-authentication">HTTP Signature Authentication<a class="headerlink" href="#http-signature-authentication" title="Permanent link">&para;</a></h2>
 <p>HTTP Signature (currently a <a href="https://datatracker.ietf.org/doc/draft-cavage-http-signatures/">IETF draft</a>) provides a way to achieve origin authentication and message integrity for HTTP messages. Similar to <a href="https://docs.aws.amazon.com/general/latest/gr/signature-version-4.html">Amazon's HTTP Signature scheme</a>, used by many of its services, it permits stateless, per-request authentication. <a href="https://github.com/etoccalino/">Elvio Toccalino</a> maintains the <a href="https://github.com/etoccalino/django-rest-framework-httpsignature">djangorestframework-httpsignature</a> (outdated) package which provides an easy-to-use HTTP Signature Authentication mechanism. You can use the updated fork version of <a href="https://github.com/etoccalino/django-rest-framework-httpsignature">djangorestframework-httpsignature</a>, which is <a href="https://github.com/ahknight/drf-httpsig">drf-httpsig</a>.</p>
-<h2 id="djoser"><a class="toclink" href="#djoser">Djoser</a></h2>
+<h2 id="djoser">Djoser<a class="headerlink" href="#djoser" title="Permanent link">&para;</a></h2>
 <p><a href="https://github.com/sunscrapers/djoser">Djoser</a> library provides a set of views to handle basic actions such as registration, login, logout, password reset and account activation. The package works with a custom user model and uses token-based authentication. This is a ready to use REST implementation of the Django authentication system.</p>
-<h2 id="drf-auth-kit"><a class="toclink" href="#drf-auth-kit">DRF Auth Kit</a></h2>
+<h2 id="drf-auth-kit">DRF Auth Kit<a class="headerlink" href="#drf-auth-kit" title="Permanent link">&para;</a></h2>
 <p><a href="https://github.com/huynguyengl99/drf-auth-kit">DRF Auth Kit</a> library provides a modern REST authentication solution with JWT cookies, social login, multi-factor authentication, and comprehensive user management. The package offers full type safety, automatic OpenAPI schema generation with DRF Spectacular. It supports multiple authentication types (JWT, DRF Token, or Custom) and includes built-in internationalization for 50+ languages.</p>
-<h2 id="django-rest-auth-dj-rest-auth"><a class="toclink" href="#django-rest-auth-dj-rest-auth">django-rest-auth / dj-rest-auth</a></h2>
+<h2 id="django-rest-auth-dj-rest-auth">django-rest-auth / dj-rest-auth<a class="headerlink" href="#django-rest-auth-dj-rest-auth" title="Permanent link">&para;</a></h2>
 <p>This library provides a set of REST API endpoints for registration, authentication (including social media authentication), password reset, retrieve and update user details, etc. By having these API endpoints, your client apps such as AngularJS, iOS, Android, and others can communicate to your Django backend site independently via REST APIs for user management.</p>
 <p>There are currently two forks of this project.</p>
 <ul>
 <li><a href="https://github.com/Tivix/django-rest-auth">Django-rest-auth</a> is the original project, <a href="https://github.com/Tivix/django-rest-auth/issues/568">but is not currently receiving updates</a>.</li>
 <li><a href="https://github.com/jazzband/dj-rest-auth">Dj-rest-auth</a> is a newer fork of the project.</li>
 </ul>
-<h2 id="drf-social-oauth2"><a class="toclink" href="#drf-social-oauth2">drf-social-oauth2</a></h2>
+<h2 id="drf-social-oauth2">drf-social-oauth2<a class="headerlink" href="#drf-social-oauth2" title="Permanent link">&para;</a></h2>
 <p><a href="https://github.com/wagnerdelima/drf-social-oauth2">Drf-social-oauth2</a> is a framework that helps you authenticate with major social oauth2 vendors, such as Facebook, Google, Twitter, Orcid, etc. It generates tokens in a JWTed way with an easy setup.</p>
-<h2 id="drfpasswordless"><a class="toclink" href="#drfpasswordless">drfpasswordless</a></h2>
+<h2 id="drfpasswordless">drfpasswordless<a class="headerlink" href="#drfpasswordless" title="Permanent link">&para;</a></h2>
 <p><a href="https://github.com/aaronn/django-rest-framework-passwordless">drfpasswordless</a> adds (Medium, Square Cash inspired) passwordless support to Django REST Framework's TokenAuthentication scheme. Users log in and sign up with a token sent to a contact point like an email address or a mobile number.</p>
-<h2 id="django-rest-authemail"><a class="toclink" href="#django-rest-authemail">django-rest-authemail</a></h2>
+<h2 id="django-rest-authemail">django-rest-authemail<a class="headerlink" href="#django-rest-authemail" title="Permanent link">&para;</a></h2>
 <p><a href="https://github.com/celiao/django-rest-authemail">django-rest-authemail</a> provides a RESTful API interface for user signup and authentication. Email addresses are used for authentication, rather than usernames.  API endpoints are available for signup, signup email verification, login, logout, password reset, password reset verification, email change, email change verification, password change, and user detail.  A fully functional example project and detailed instructions are included.</p>
-<h2 id="django-rest-durin"><a class="toclink" href="#django-rest-durin">Django-Rest-Durin</a></h2>
+<h2 id="django-rest-durin">Django-Rest-Durin<a class="headerlink" href="#django-rest-durin" title="Permanent link">&para;</a></h2>
 <p><a href="https://github.com/eshaan7/django-rest-durin">Django-Rest-Durin</a> is built with the idea to have one library that does token auth for multiple Web/CLI/Mobile API clients via one interface but allows different token configuration for each API Client that consumes the API. It provides support for multiple tokens per user via custom models, views, permissions that work with Django-Rest-Framework. The token expiration time can be different per API client and is customizable via the Django Admin Interface.</p>
 <p>More information can be found in the <a href="https://django-rest-durin.readthedocs.io/en/latest/index.html">Documentation</a>.</p>
-<h2 id="django-pyoidc"><a class="toclink" href="#django-pyoidc">django-pyoidc</a></h2>
+<h2 id="django-pyoidc">django-pyoidc<a class="headerlink" href="#django-pyoidc" title="Permanent link">&para;</a></h2>
 <p><a href="https://github.com/makinacorpus/django_pyoidc">django_pyoidc</a> adds support for OpenID Connect (OIDC) authentication. This allows you to delegate user management to an Identity Provider, which can be used to implement Single-Sign-On (SSO). It provides support for most uses-cases, such as customizing how token info are mapped to user models, using OIDC audiences for access control, etc.</p>
 <p>More information can be found in the <a href="https://django-pyoidc.readthedocs.io/latest/index.html">Documentation</a>.</p>
-            
 
-          </div> <!--/span-->
-        </div> <!--/row-->
-      </div> <!--/.fluid-container-->
-    </div> <!--/.body content-->
-    <div id="push"></div>
-  </div> <!--/.wrapper -->
 
-  <footer class="span12">
-    <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.
-    </p>
-  </footer>
 
-  <!-- Le javascript
-  ================================================== -->
-  <!-- Placed at the end of the document so the pages load faster -->
-  <script async src="https://fund.django-rest-framework.org/sidebar_include.js"></script>
-  <script src="../../js/jquery-1.8.1-min.js"></script>
-  <script src="../../js/prettify-1.0.js"></script>
-  <script src="../../js/bootstrap-2.1.1-min.js"></script>
-  <script src="../../js/theme.js"></script>
 
-  <script>var base_url = '../..';</script>
+
+
+
   
-  <script src="../../js/copy-button.js" defer></script>
-  
-  <script src="../../search/main.js" defer></script>
   
 
-  <script>
-    var shiftWindow = function() {
-      scrollBy(0, -50)
-    };
 
-    if (location.hash) shiftWindow();
-    window.addEventListener("hashchange", shiftWindow);
 
-    $('.dropdown-menu').on('click touchstart', function(event) {
-      event.stopPropagation();
-    });
 
-    // Dynamically force sidenav/dropdown to no higher than browser window
-    $('.side-nav, .dropdown-menu').css('max-height', window.innerHeight - 130);
 
-    $(function() {
-      $(window).resize(function() {
-        $('.side-nav, .dropdown-menu').css('max-height', window.innerHeight - 130);
-      });
-    });
-  </script>
-</body>
 
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+      <div class="md-progress" data-md-component="progress" role="progressbar"></div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["content.tabs.link", "content.code.annotate", "content.code.copy", "navigation.tabs", "navigation.tabs.sticky", "navigation.instant", "navigation.instant.prefetch", "navigation.instant.progress", "navigation.path", "navigation.sections", "navigation.top", "navigation.tracking", "search.suggest", "toc.follow", "toc.integrate"], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+    
+      <script src="../../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+        <script src="../../theme/js/prettify-1.0.js"></script>
+      
+    
+    <script>
+        document$.subscribe(function() {
+            document.querySelectorAll('pre code').forEach(code => {
+                code.parentElement.classList.add('prettyprint', 'well');
+            });
+            prettyPrint();
+        });
+    </script>
+
+  </body>
 </html>

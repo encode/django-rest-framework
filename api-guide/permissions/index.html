@@ -1,555 +1,2696 @@
-<!DOCTYPE html>
-<html lang="en">
 
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <meta charset="utf-8">
-  <title>Permissions - Django REST framework</title>
-  <link href="../../img/favicon.ico" rel="icon" type="image/x-icon">
-  <link rel="canonical" href="https://www.django-rest-framework.org/api-guide/permissions/" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Django, API, REST, Permissions">
-  <meta name="author" content="Tom Christie">
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Django REST framework - Web APIs for Django">
+      
+      
+      
+        <link rel="canonical" href="https://www.django-rest-framework.org/api-guide/permissions/">
+      
+      
+        <link rel="prev" href="../authentication/">
+      
+      
+        <link rel="next" href="../caching/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../theme/img/favicon.ico">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+    
+    
+      
+        <title>Permissions - Django REST framework</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.618322db.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
 
-  <!-- Le styles -->
-  <link href="../../css/prettify.css" rel="stylesheet">
-  <link href="../../css/bootstrap.css" rel="stylesheet">
-  <link href="../../css/bootstrap-responsive.css" rel="stylesheet">
-  <link href="../../css/default.css" rel="stylesheet">
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../theme/stylesheets/extra.css">
+    
+      <link rel="stylesheet" href="../../theme/stylesheets/prettify.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
   
-    <link href="../../css/copy-button.css" rel="stylesheet">
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#permissions" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
   
 
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Django REST framework" class="md-header__button md-logo" aria-label="Django REST framework" data-md-component="logo">
+      
+  <img src="../../theme/img/logo.png" alt="logo">
 
-  <script type="text/javascript">
-    var _gaq = _gaq || [];
-    _gaq.push(['_setAccount', 'UA-18852272-2']);
-    _gaq.push(['_trackPageview']);
-
-    (function() {
-      var ga = document.createElement('script');
-      ga.type = 'text/javascript';
-      ga.async = true;
-      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-      var s = document.getElementsByTagName('script')[0];
-      s.parentNode.insertBefore(ga, s);
-    })();
-  </script>
-
-  <style>
-  #sidebarInclude img {
-      margin-bottom: 10px;
-  }
-  #sidebarInclude a.promo {
-      color: black;
-  }
-    @media (max-width: 767px) {
-      div.promo {
-        display: none;
-      }
-    }
-  </style>
-</head>
-<body onload="prettyPrint()" class="-page">
-
-  <div class="wrapper">
-        <div class="navbar navbar-inverse navbar-fixed-top">
-      <div class="navbar-inner">
-        <div class="container-fluid">
-          <a class="repo-link btn btn-primary btn-small" href="https://github.com/encode/django-rest-framework">GitHub</a>
-          <a class="repo-link btn btn-inverse btn-small " rel="next" href="../caching/">
-            Next <i class="icon-arrow-right icon-white"></i>
-          </a>
-          <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../authentication/">
-            <i class="icon-arrow-left icon-white"></i> Previous
-          </a>
-          <a id="search_modal_show" class="repo-link btn btn-inverse btn-small" href="#mkdocs_search_modal" data-toggle="modal" data-target="#mkdocs_search_modal"><i class="icon-search icon-white"></i> Search</a>
-          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </a>
-          <a class="brand" href="https://www.django-rest-framework.org/">Django REST framework</a>
-          <div class="nav-collapse collapse">
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Django REST framework
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
             
-            <!-- Main navigation -->
-            <ul class="nav navbar-nav">
-               
-              <li >
-                <a href="../..">Home</a>
-              </li>
-                
-              <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tutorial <b class="caret"></b></a>
-                <ul class="dropdown-menu">
-                  
-                  <li >
-                    <a href="../../tutorial/quickstart/">Quickstart</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../tutorial/1-serialization/">1 - Serialization</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../tutorial/2-requests-and-responses/">2 - Requests and responses</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../tutorial/3-class-based-views/">3 - Class based views</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../tutorial/4-authentication-and-permissions/">4 - Authentication and permissions</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../tutorial/5-relationships-and-hyperlinked-apis/">5 - Relationships and hyperlinked APIs</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../tutorial/6-viewsets-and-routers/">6 - Viewsets and routers</a>
-                  </li>
-                  
-                </ul>
-              </li>
-                
-              <li class="dropdown active">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">API Guide <b class="caret"></b></a>
-                <ul class="dropdown-menu">
-                  
-                  <li >
-                    <a href="../requests/">Requests</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../responses/">Responses</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../views/">Views</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../generic-views/">Generic views</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../viewsets/">Viewsets</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../routers/">Routers</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../parsers/">Parsers</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../renderers/">Renderers</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../serializers/">Serializers</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../fields/">Serializer fields</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../relations/">Serializer relations</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../validators/">Validators</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../authentication/">Authentication</a>
-                  </li>
-                  
-                  <li class="active" >
-                    <a href="./">Permissions</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../caching/">Caching</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../throttling/">Throttling</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../filtering/">Filtering</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../pagination/">Pagination</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../versioning/">Versioning</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../content-negotiation/">Content negotiation</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../metadata/">Metadata</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../schemas/">Schemas</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../format-suffixes/">Format suffixes</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../reverse/">Returning URLs</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../exceptions/">Exceptions</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../status-codes/">Status codes</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../testing/">Testing</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../settings/">Settings</a>
-                  </li>
-                  
-                </ul>
-              </li>
-                
-              <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Topics <b class="caret"></b></a>
-                <ul class="dropdown-menu">
-                  
-                  <li >
-                    <a href="../../topics/documenting-your-api/">Documenting your API</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/internationalization/">Internationalization</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/ajax-csrf-cors/">AJAX, CSRF & CORS</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/html-and-forms/">HTML & Forms</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/browser-enhancements/">Browser Enhancements</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/browsable-api/">The Browsable API</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/rest-hypermedia-hateoas/">REST, Hypermedia & HATEOAS</a>
-                  </li>
-                  
-                </ul>
-              </li>
-                
-              <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Community <b class="caret"></b></a>
-                <ul class="dropdown-menu">
-                  
-                  <li >
-                    <a href="../../community/tutorials-and-resources/">Tutorials and Resources</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/third-party-packages/">Third Party Packages</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/contributing/">Contributing to REST framework</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/project-management/">Project management</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/release-notes/">Release Notes</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.16-announcement/">3.16 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.15-announcement/">3.15 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.14-announcement/">3.14 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.13-announcement/">3.13 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.12-announcement/">3.12 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.11-announcement/">3.11 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.10-announcement/">3.10 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.9-announcement/">3.9 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.8-announcement/">3.8 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.7-announcement/">3.7 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.6-announcement/">3.6 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.5-announcement/">3.5 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.4-announcement/">3.4 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.3-announcement/">3.3 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.2-announcement/">3.2 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.1-announcement/">3.1 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.0-announcement/">3.0 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/kickstarter-announcement/">Kickstarter Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/mozilla-grant/">Mozilla Grant</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/jobs/">Jobs</a>
-                  </li>
-                  
-                </ul>
-              </li>
-               
-
-            </ul>
+              Permissions
             
-          </div>
-          <!--/.nav-collapse -->
-
+          </span>
         </div>
       </div>
     </div>
-
-    <div class="body-content">
-      <div class="container-fluid">
-        <!-- Search Modal -->
-        <div id="mkdocs_search_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            <h3 id="myModalLabel">Documentation search</h3>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m14.3 16-.7-2h-3.2l-.7 2H7.8L11 7h2l3.2 9zM20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12zm-9.15 3.96h2.3L12 9z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
           </div>
-
-          <div class="modal-body">
-            <form role="form" autocomplete="off">
-              <div class="form-group">
-                <input type="text" name="q" class="form-control" placeholder="Search..." id="mkdocs-search-query">
-              </div>
-            </form>
-            <div id="mkdocs-search-results"></div>
-          </div>
-
-          <div class="modal-footer">
-            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/encode/django-rest-framework" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
 
-        <div class="row-fluid">
-          <div class="span3">
-            <div id="table-of-contents">
-              <ul class="nav nav-list side-nav well sidebar-nav-fixed">
-                
+      </a>
+    </li>
+  
 
-                
-                  <li class="main">
-                    <a href="#permissions">Permissions</a>
-                  </li>
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../tutorial/quickstart/" class="md-tabs__link">
+          
+  
+  
+  Tutorial
 
-                  
-                    <li>
-                      <a href="#how-permissions-are-determined">How permissions are determined</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#object-level-permissions">Object level permissions</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#setting-the-permission-policy">Setting the permission policy</a>
-                    </li>
-                  
-                
-                  <li class="main">
-                    <a href="#api-reference">API Reference</a>
-                  </li>
+        </a>
+      </li>
+    
+  
 
-                  
-                    <li>
-                      <a href="#allowany">AllowAny</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#isauthenticated">IsAuthenticated</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#isadminuser">IsAdminUser</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#isauthenticatedorreadonly">IsAuthenticatedOrReadOnly</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#djangomodelpermissions">DjangoModelPermissions</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#djangomodelpermissionsoranonreadonly">DjangoModelPermissionsOrAnonReadOnly</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#djangoobjectpermissions">DjangoObjectPermissions</a>
-                    </li>
-                  
-                
-                  <li class="main">
-                    <a href="#custom-permissions">Custom permissions</a>
-                  </li>
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../requests/" class="md-tabs__link">
+          
+  
+  
+  API Guide
 
-                  
-                    <li>
-                      <a href="#examples">Examples</a>
-                    </li>
-                  
-                
-                  <li class="main">
-                    <a href="#overview-of-access-restriction-methods">Overview of access restriction methods</a>
-                  </li>
+        </a>
+      </li>
+    
+  
 
-                  
-                
-                  <li class="main">
-                    <a href="#third-party-packages">Third party packages</a>
-                  </li>
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../topics/documenting-your-api/" class="md-tabs__link">
+          
+  
+  
+  Topics
 
-                  
-                    <li>
-                      <a href="#drf-access-policy">DRF - Access Policy</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#composed-permissions">Composed Permissions</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#rest-condition">REST Condition</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#dry-rest-permissions">DRY Rest Permissions</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#django-rest-framework-roles">Django Rest Framework Roles</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#rest-framework-roles">Rest Framework Roles</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#django-rest-framework-api-key">Django REST Framework API Key</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#django-rest-framework-role-filters">Django Rest Framework Role Filters</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#django-rest-framework-psq">Django Rest Framework PSQ</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#axioms-drf-py">Axioms DRF PY</a>
-                    </li>
-                  
-                
+        </a>
+      </li>
+    
+  
 
-                  <div class="promo">
-                    <hr/>
-                    <div id="sidebarInclude">
-                  </div>
-              </ul>
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../community/tutorials-and-resources/" class="md-tabs__link">
+          
+  
+  
+  Community
 
-            </div>
-          </div>
+        </a>
+      </li>
+    
+  
 
-          <div id="main-content" class="span9">
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Django REST framework" class="md-nav__button md-logo" aria-label="Django REST framework" data-md-component="logo">
+      
+  <img src="../../theme/img/logo.png" alt="logo">
+
+    </a>
+    Django REST framework
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/encode/django-rest-framework" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorial
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tutorial
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
             
               
                 
-                  <a class="github" href="https://github.com/encode/django-rest-framework/tree/main/rest_framework/permissions.py">
-                    <span class="label label-info">permissions.py</span>
-                  </a>
-                
-              
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quickstart
+  
 
-              <h1 id="permissions"><a class="toclink" href="#permissions">Permissions</a></h1>
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/1-serialization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1 - Serialization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/2-requests-and-responses/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2 - Requests and responses
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/3-class-based-views/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3 - Class based views
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/4-authentication-and-permissions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4 - Authentication and permissions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/5-relationships-and-hyperlinked-apis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5 - Relationships and hyperlinked APIs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/6-viewsets-and-routers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6 - Viewsets and routers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../requests/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Requests
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../responses/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Responses
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../views/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Views
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../generic-views/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Generic views
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../viewsets/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Viewsets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../routers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Routers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parsers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Parsers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../renderers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Renderers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../serializers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Serializers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../fields/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Serializer fields
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../relations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Serializer relations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../validators/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validators
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../authentication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Authentication
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Permissions
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Permissions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#how-permissions-are-determined" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How permissions are determined
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#object-level-permissions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Object level permissions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Object level permissions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#limitations-of-object-level-permissions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Limitations of object level permissions
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#setting-the-permission-policy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Setting the permission policy
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../caching/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Caching
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../throttling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Throttling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../filtering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Filtering
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pagination/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pagination
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../versioning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Versioning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../content-negotiation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Content negotiation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../metadata/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Metadata
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../schemas/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Schemas
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../format-suffixes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Format suffixes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reverse/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Returning URLs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../exceptions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Exceptions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../status-codes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Status codes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../settings/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Settings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Topics
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Topics
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../topics/documenting-your-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Documenting your API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../topics/internationalization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Internationalization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../topics/ajax-csrf-cors/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AJAX, CSRF & CORS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../topics/html-and-forms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HTML & Forms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../topics/browser-enhancements/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Browser Enhancements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../topics/browsable-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Browsable API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../topics/rest-hypermedia-hateoas/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    REST, Hypermedia & HATEOAS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Community
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Community
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/tutorials-and-resources/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials and Resources
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/third-party-packages/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Third Party Packages
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing to REST framework
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/project-management/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project management
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/release-notes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release Notes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.16-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.16 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.15-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.15 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.14-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.14 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.13-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.13 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.12-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.12 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.11-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.11 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.10-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.10 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.9-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.9 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.8-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.8 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.7-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.7 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.6-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.6 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.5-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.5 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.4-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.4 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.3-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.3 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.2-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.2 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.1-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.1 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.0-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.0 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/kickstarter-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kickstarter Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/mozilla-grant/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mozilla Grant
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/jobs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Jobs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+                
+
+
+
+  
+
+
+  <nav class="md-path" aria-label="Navigation" >
+    <ol class="md-path__list">
+      
+        
+  
+  
+    <li class="md-path__item">
+      <a href="../.." class="md-path__link">
+        
+  <span class="md-ellipsis">
+    Home
+  </span>
+
+      </a>
+    </li>
+  
+
+      
+      
+        
+  
+  
+    
+    
+      <li class="md-path__item">
+        <a href="../requests/" class="md-path__link">
+          
+  <span class="md-ellipsis">
+    API Guide
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ol>
+  </nav>
+
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="permissions">Permissions<a class="headerlink" href="#permissions" title="Permanent link">&para;</a></h1>
 <blockquote>
 <p>Authentication or identification by itself is not usually sufficient to gain access to information or code.  For that, the entity requesting access must have authorization.</p>
 <p>&mdash; <a href="https://developer.apple.com/library/mac/#documentation/security/Conceptual/AuthenticationAndAuthorizationGuide/Authorization/Authorization.html">Apple Developer Documentation</a></p>
@@ -559,7 +2700,7 @@
 <p>Permissions are used to grant or deny access for different classes of users to different parts of the API.</p>
 <p>The simplest style of permission would be to allow access to any authenticated user, and deny access to any unauthenticated user. This corresponds to the <code>IsAuthenticated</code> class in REST framework.</p>
 <p>A slightly less strict style of permission would be to allow full access to authenticated users, but allow read-only access to unauthenticated users. This corresponds to the <code>IsAuthenticatedOrReadOnly</code> class in REST framework.</p>
-<h2 id="how-permissions-are-determined"><a class="toclink" href="#how-permissions-are-determined">How permissions are determined</a></h2>
+<h2 id="how-permissions-are-determined">How permissions are determined<a class="headerlink" href="#how-permissions-are-determined" title="Permanent link">&para;</a></h2>
 <p>Permissions in REST framework are always defined as a list of permission classes.</p>
 <p>Before running the main body of the view each permission in the list is checked.
 If any permission check fails, an <code>exceptions.PermissionDenied</code> or <code>exceptions.NotAuthenticated</code> exception will be raised, and the main body of the view will not run.</p>
@@ -569,7 +2710,7 @@ If any permission check fails, an <code>exceptions.PermissionDenied</code> or <c
 <li>The request was not successfully authenticated, and the highest priority authentication class <em>does not</em> use <code>WWW-Authenticate</code> headers. <em>&mdash; An HTTP 403 Forbidden response will be returned.</em></li>
 <li>The request was not successfully authenticated, and the highest priority authentication class <em>does</em> use <code>WWW-Authenticate</code> headers. <em>&mdash; An HTTP 401 Unauthorized response, with an appropriate <code>WWW-Authenticate</code> header will be returned.</em></li>
 </ul>
-<h2 id="object-level-permissions"><a class="toclink" href="#object-level-permissions">Object level permissions</a></h2>
+<h2 id="object-level-permissions">Object level permissions<a class="headerlink" href="#object-level-permissions" title="Permanent link">&para;</a></h2>
 <p>REST framework permissions also support object-level permissioning.  Object level permissions are used to determine if a user should be allowed to act on a particular object, which will typically be a model instance.</p>
 <p>Object level permissions are run by REST framework's generic views when <code>.get_object()</code> is called.
 As with view level permissions, an <code>exceptions.PermissionDenied</code> exception will be raised if the user is not allowed to act on the given object.</p>
@@ -577,11 +2718,11 @@ As with view level permissions, an <code>exceptions.PermissionDenied</code> exce
 or if you override the <code>get_object</code> method on a generic view, then you'll need to explicitly call the <code>.check_object_permissions(request, obj)</code> method on the view at the point at which you've retrieved the object.</p>
 <p>This will either raise a <code>PermissionDenied</code> or <code>NotAuthenticated</code> exception, or simply return if the view has the appropriate permissions.</p>
 <p>For example:</p>
-<pre><code>def get_object(self):
-    obj = get_object_or_404(self.get_queryset(), pk=self.kwargs["pk"])
+<div class="language-text highlight"><pre><span></span><code>def get_object(self):
+    obj = get_object_or_404(self.get_queryset(), pk=self.kwargs[&quot;pk&quot;])
     self.check_object_permissions(self.request, obj)
     return obj
-</code></pre>
+</code></pre></div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>With the exception of <code>DjangoObjectPermissions</code>, the provided
@@ -592,26 +2733,26 @@ permissions, <strong>you must</strong> subclass them and implement the
 <code>has_object_permission()</code> method described in the <a href="#custom-permissions"><em>Custom
 permissions</em></a> section (below).</p>
 </div>
-<h4 id="limitations-of-object-level-permissions"><a class="toclink" href="#limitations-of-object-level-permissions">Limitations of object level permissions</a></h4>
+<h4 id="limitations-of-object-level-permissions">Limitations of object level permissions<a class="headerlink" href="#limitations-of-object-level-permissions" title="Permanent link">&para;</a></h4>
 <p>For performance reasons the generic views will not automatically apply object level permissions to each instance in a queryset when returning a list of objects.</p>
 <p>Often when you're using object level permissions you'll also want to <a href="../filtering/">filter the queryset</a> appropriately, to ensure that users only have visibility onto instances that they are permitted to view.</p>
 <p>Because the <code>get_object()</code> method is not called, object level permissions from the <code>has_object_permission()</code> method <strong>are not applied</strong> when creating objects. In order to restrict object creation you need to implement the permission check either in your Serializer class or override the <code>perform_create()</code> method of your ViewSet class.</p>
-<h2 id="setting-the-permission-policy"><a class="toclink" href="#setting-the-permission-policy">Setting the permission policy</a></h2>
+<h2 id="setting-the-permission-policy">Setting the permission policy<a class="headerlink" href="#setting-the-permission-policy" title="Permanent link">&para;</a></h2>
 <p>The default permission policy may be set globally, using the <code>DEFAULT_PERMISSION_CLASSES</code> setting.  For example.</p>
-<pre><code>REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
+<div class="language-text highlight"><pre><span></span><code>REST_FRAMEWORK = {
+    &#39;DEFAULT_PERMISSION_CLASSES&#39;: [
+        &#39;rest_framework.permissions.IsAuthenticated&#39;,
     ]
 }
-</code></pre>
+</code></pre></div>
 <p>If not specified, this setting defaults to allowing unrestricted access:</p>
-<pre><code>'DEFAULT_PERMISSION_CLASSES': [
-   'rest_framework.permissions.AllowAny',
+<div class="language-text highlight"><pre><span></span><code>&#39;DEFAULT_PERMISSION_CLASSES&#39;: [
+   &#39;rest_framework.permissions.AllowAny&#39;,
 ]
-</code></pre>
+</code></pre></div>
 <p>You can also set the authentication policy on a per-view, or per-viewset basis,
 using the <code>APIView</code> class-based views.</p>
-<pre><code>from rest_framework.permissions import IsAuthenticated
+<div class="language-text highlight"><pre><span></span><code>from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -620,29 +2761,29 @@ class ExampleView(APIView):
 
     def get(self, request, format=None):
         content = {
-            'status': 'request was permitted'
+            &#39;status&#39;: &#39;request was permitted&#39;
         }
         return Response(content)
-</code></pre>
+</code></pre></div>
 <p>Or, if you're using the <code>@api_view</code> decorator with function based views.</p>
-<pre><code>from rest_framework.decorators import api_view, permission_classes
+<div class="language-text highlight"><pre><span></span><code>from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-@api_view(['GET'])
+@api_view([&#39;GET&#39;])
 @permission_classes([IsAuthenticated])
 def example_view(request, format=None):
     content = {
-        'status': 'request was permitted'
+        &#39;status&#39;: &#39;request was permitted&#39;
     }
     return Response(content)
-</code></pre>
+</code></pre></div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>When you set new permission classes via the class attribute or decorators you're telling the view to ignore the default list set in the <code>settings.py</code> file.</p>
 </div>
 <p>Provided they inherit from <code>rest_framework.permissions.BasePermission</code>, permissions can be composed using standard Python bitwise operators. For example, <code>IsAuthenticatedOrReadOnly</code> could be written:</p>
-<pre><code>from rest_framework.permissions import BasePermission, IsAuthenticated, SAFE_METHODS
+<div class="language-text highlight"><pre><span></span><code>from rest_framework.permissions import BasePermission, IsAuthenticated, SAFE_METHODS
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -655,29 +2796,29 @@ class ExampleView(APIView):
 
     def get(self, request, format=None):
         content = {
-            'status': 'request was permitted'
+            &#39;status&#39;: &#39;request was permitted&#39;
         }
         return Response(content)
-</code></pre>
+</code></pre></div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Composition of permissions supports the <code>&amp;</code> (and), <code>|</code> (or) and <code>~</code> (not) operators, and also allows the use of brackets <code>(</code> <code>)</code> to group expressions.</p>
 <p>Operators follow the same precedence and associativity rules as standard logical operators (<code>~</code> highest, then <code>&amp;</code>, then <code>|</code>).</p>
 </div>
-<h1 id="api-reference"><a class="toclink" href="#api-reference">API Reference</a></h1>
-<h2 id="allowany"><a class="toclink" href="#allowany">AllowAny</a></h2>
+<h1 id="api-reference">API Reference<a class="headerlink" href="#api-reference" title="Permanent link">&para;</a></h1>
+<h2 id="allowany">AllowAny<a class="headerlink" href="#allowany" title="Permanent link">&para;</a></h2>
 <p>The <code>AllowAny</code> permission class will allow unrestricted access, <strong>regardless of if the request was authenticated or unauthenticated</strong>.</p>
 <p>This permission is not strictly required, since you can achieve the same result by using an empty list or tuple for the permissions setting, but you may find it useful to specify this class because it makes the intention explicit.</p>
-<h2 id="isauthenticated"><a class="toclink" href="#isauthenticated">IsAuthenticated</a></h2>
+<h2 id="isauthenticated">IsAuthenticated<a class="headerlink" href="#isauthenticated" title="Permanent link">&para;</a></h2>
 <p>The <code>IsAuthenticated</code> permission class will deny permission to any unauthenticated user, and allow permission otherwise.</p>
 <p>This permission is suitable if you want your API to only be accessible to registered users.</p>
-<h2 id="isadminuser"><a class="toclink" href="#isadminuser">IsAdminUser</a></h2>
+<h2 id="isadminuser">IsAdminUser<a class="headerlink" href="#isadminuser" title="Permanent link">&para;</a></h2>
 <p>The <code>IsAdminUser</code> permission class will deny permission to any user, unless <code>user.is_staff</code> is <code>True</code> in which case permission will be allowed.</p>
 <p>This permission is suitable if you want your API to only be accessible to a subset of trusted administrators.</p>
-<h2 id="isauthenticatedorreadonly"><a class="toclink" href="#isauthenticatedorreadonly">IsAuthenticatedOrReadOnly</a></h2>
+<h2 id="isauthenticatedorreadonly">IsAuthenticatedOrReadOnly<a class="headerlink" href="#isauthenticatedorreadonly" title="Permanent link">&para;</a></h2>
 <p>The <code>IsAuthenticatedOrReadOnly</code> will allow authenticated users to perform any request.  Requests for unauthenticated users will only be permitted if the request method is one of the "safe" methods; <code>GET</code>, <code>HEAD</code> or <code>OPTIONS</code>.</p>
 <p>This permission is suitable if you want to your API to allow read permissions to anonymous users, and only allow write permissions to authenticated users.</p>
-<h2 id="djangomodelpermissions"><a class="toclink" href="#djangomodelpermissions">DjangoModelPermissions</a></h2>
+<h2 id="djangomodelpermissions">DjangoModelPermissions<a class="headerlink" href="#djangomodelpermissions" title="Permanent link">&para;</a></h2>
 <p>This permission class ties into Django's standard <code>django.contrib.auth</code> <a href="https://docs.djangoproject.com/en/stable/topics/auth/customizing/#custom-permissions">model permissions</a>.  This permission must only be applied to views that have a <code>.queryset</code> property or <code>get_queryset()</code> method. Authorization will only be granted if the user <em>is authenticated</em> and has the <em>relevant model permissions</em> assigned. The appropriate model is determined by checking <code>get_queryset().model</code> or <code>queryset.model</code>.</p>
 <ul>
 <li><code>POST</code> requests require the user to have the <code>add</code> permission on the model.</li>
@@ -686,9 +2827,9 @@ class ExampleView(APIView):
 </ul>
 <p>The default behavior can also be overridden to support custom model permissions.  For example, you might want to include a <code>view</code> model permission for <code>GET</code> requests.</p>
 <p>To use custom model permissions, override <code>DjangoModelPermissions</code> and set the <code>.perms_map</code> property.  Refer to the source code for details.</p>
-<h2 id="djangomodelpermissionsoranonreadonly"><a class="toclink" href="#djangomodelpermissionsoranonreadonly">DjangoModelPermissionsOrAnonReadOnly</a></h2>
+<h2 id="djangomodelpermissionsoranonreadonly">DjangoModelPermissionsOrAnonReadOnly<a class="headerlink" href="#djangomodelpermissionsoranonreadonly" title="Permanent link">&para;</a></h2>
 <p>Similar to <code>DjangoModelPermissions</code>, but also allows unauthenticated users to have read-only access to the API.</p>
-<h2 id="djangoobjectpermissions"><a class="toclink" href="#djangoobjectpermissions">DjangoObjectPermissions</a></h2>
+<h2 id="djangoobjectpermissions">DjangoObjectPermissions<a class="headerlink" href="#djangoobjectpermissions" title="Permanent link">&para;</a></h2>
 <p>This permission class ties into Django's standard <a href="https://docs.djangoproject.com/en/stable/topics/auth/customizing/#handling-object-permissions">object permissions framework</a> that allows per-object permissions on models.  In order to use this permission class, you'll also need to add a permission backend that supports object-level permissions, such as <a href="https://github.com/lukaszb/django-guardian">django-guardian</a>.</p>
 <p>As with <code>DjangoModelPermissions</code>, this permission must only be applied to views that have a <code>.queryset</code> property or <code>.get_queryset()</code> method. Authorization will only be granted if the user <em>is authenticated</em> and has the <em>relevant per-object permissions</em> and <em>relevant model permissions</em> assigned.</p>
 <ul>
@@ -702,7 +2843,7 @@ class ExampleView(APIView):
 <p class="admonition-title">Note</p>
 <p>If you need object level <code>view</code> permissions for <code>GET</code>, <code>HEAD</code> and <code>OPTIONS</code> requests and are using django-guardian for your object-level permissions backend, you'll want to consider using the <code>DjangoObjectPermissionsFilter</code> class provided by the <a href="https://github.com/rpkilby/django-rest-framework-guardian"><code>djangorestframework-guardian</code> package</a>. It ensures that list endpoints only return results including objects for which the user has appropriate view permissions.</p>
 </div>
-<h1 id="custom-permissions"><a class="toclink" href="#custom-permissions">Custom permissions</a></h1>
+<h1 id="custom-permissions">Custom permissions<a class="headerlink" href="#custom-permissions" title="Permanent link">&para;</a></h1>
 <p>To implement a custom permission, override <code>BasePermission</code> and implement either, or both, of the following methods:</p>
 <ul>
 <li><code>.has_permission(self, request, view)</code></li>
@@ -710,57 +2851,57 @@ class ExampleView(APIView):
 </ul>
 <p>The methods should return <code>True</code> if the request should be granted access, and <code>False</code> otherwise.</p>
 <p>If you need to test if a request is a read operation or a write operation, you should check the request method against the constant <code>SAFE_METHODS</code>, which is a tuple containing <code>'GET'</code>, <code>'OPTIONS'</code> and <code>'HEAD'</code>.  For example:</p>
-<pre><code>if request.method in permissions.SAFE_METHODS:
+<div class="language-text highlight"><pre><span></span><code>if request.method in permissions.SAFE_METHODS:
     # Check permissions for read-only request
 else:
     # Check permissions for write request
-</code></pre>
+</code></pre></div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The instance-level <code>has_object_permission</code> method will only be called if the view-level <code>has_permission</code> checks have already passed. Also note that in order for the instance-level checks to run, the view code should explicitly call <code>.check_object_permissions(request, obj)</code>. If you are using the generic views then this will be handled for you by default. (Function-based views will need to check object permissions explicitly, raising <code>PermissionDenied</code> on failure.)</p>
 </div>
 <p>Custom permissions will raise a <code>PermissionDenied</code> exception if the test fails. To change the error message associated with the exception, implement a <code>message</code> attribute directly on your custom permission. Otherwise the <code>default_detail</code> attribute from <code>PermissionDenied</code> will be used. Similarly, to change the code identifier associated with the exception, implement a <code>code</code> attribute directly on your custom permission - otherwise the <code>default_code</code> attribute from <code>PermissionDenied</code> will be used.</p>
-<pre><code>from rest_framework import permissions
+<div class="language-text highlight"><pre><span></span><code>from rest_framework import permissions
 
 class CustomerAccessPermission(permissions.BasePermission):
-    message = 'Adding customers not allowed.'
+    message = &#39;Adding customers not allowed.&#39;
 
     def has_permission(self, request, view):
          ...
-</code></pre>
-<h2 id="examples"><a class="toclink" href="#examples">Examples</a></h2>
+</code></pre></div>
+<h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
 <p>The following is an example of a permission class that checks the incoming request's IP address against a blocklist, and denies the request if the IP has been blocked.</p>
-<pre><code>from rest_framework import permissions
+<div class="language-text highlight"><pre><span></span><code>from rest_framework import permissions
 
 class BlocklistPermission(permissions.BasePermission):
-    """
+    &quot;&quot;&quot;
     Global permission check for blocked IPs.
-    """
+    &quot;&quot;&quot;
 
     def has_permission(self, request, view):
-        ip_addr = request.META['REMOTE_ADDR']
+        ip_addr = request.META[&#39;REMOTE_ADDR&#39;]
         blocked = Blocklist.objects.filter(ip_addr=ip_addr).exists()
         return not blocked
-</code></pre>
+</code></pre></div>
 <p>As well as global permissions, that are run against all incoming requests, you can also create object-level permissions, that are only run against operations that affect a particular object instance.  For example:</p>
-<pre><code>class IsOwnerOrReadOnly(permissions.BasePermission):
-    """
+<div class="language-text highlight"><pre><span></span><code>class IsOwnerOrReadOnly(permissions.BasePermission):
+    &quot;&quot;&quot;
     Object-level permission to only allow owners of an object to edit it.
     Assumes the model instance has an `owner` attribute.
-    """
+    &quot;&quot;&quot;
 
     def has_object_permission(self, request, view, obj):
         # Read permissions are allowed to any request,
-        # so we'll always allow GET, HEAD or OPTIONS requests.
+        # so we&#39;ll always allow GET, HEAD or OPTIONS requests.
         if request.method in permissions.SAFE_METHODS:
             return True
 
         # Instance must have an attribute named `owner`.
         return obj.owner == request.user
-</code></pre>
+</code></pre></div>
 <p>Note that the generic views will check the appropriate object level permissions, but if you're writing your own custom views, you'll need to make sure you check the object level permission checks yourself.  You can do so by calling <code>self.check_object_permissions(request, obj)</code> from the view once you have the object instance.  This call will raise an appropriate <code>APIException</code> if any object-level permission checks fail, and will otherwise simply return.</p>
 <p>Also note that the generic views will only check the object-level permissions for views that retrieve a single model instance.  If you require object-level filtering of list views, you'll need to filter the queryset separately.  See the <a href="../filtering/">filtering documentation</a> for more details.</p>
-<h1 id="overview-of-access-restriction-methods"><a class="toclink" href="#overview-of-access-restriction-methods">Overview of access restriction methods</a></h1>
+<h1 id="overview-of-access-restriction-methods">Overview of access restriction methods<a class="headerlink" href="#overview-of-access-restriction-methods" title="Permanent link">&para;</a></h1>
 <p>REST framework offers three different methods to customize access restrictions on a case-by-case basis. These apply in different scenarios and have different effects and limitations.</p>
 <ul>
 <li><code>queryset</code>/<code>get_queryset()</code>: Limits the general visibility of existing objects from the database. The queryset limits which objects will be listed and which objects can be modified or deleted. The <code>get_queryset()</code> method can apply different querysets based on the current action.</li>
@@ -831,79 +2972,107 @@ class BlocklistPermission(permissions.BasePermission):
 <p>* A Serializer class should not raise PermissionDenied in a list action, or the entire list would not be returned. <br>
  ** The <code>get_*()</code> methods have access to the current view and can return different Serializer or QuerySet instances based on the request or action.</p>
 <hr />
-<h1 id="third-party-packages"><a class="toclink" href="#third-party-packages">Third party packages</a></h1>
+<h1 id="third-party-packages">Third party packages<a class="headerlink" href="#third-party-packages" title="Permanent link">&para;</a></h1>
 <p>The following third party packages are also available.</p>
-<h2 id="drf-access-policy"><a class="toclink" href="#drf-access-policy">DRF - Access Policy</a></h2>
+<h2 id="drf-access-policy">DRF - Access Policy<a class="headerlink" href="#drf-access-policy" title="Permanent link">&para;</a></h2>
 <p>The <a href="https://github.com/rsinger86/drf-access-policy">Django REST - Access Policy</a> package provides a way to define complex access rules in declarative policy classes that are attached to view sets or function-based views. The policies are defined in JSON in a format similar to AWS' Identity &amp; Access Management policies. </p>
-<h2 id="composed-permissions"><a class="toclink" href="#composed-permissions">Composed Permissions</a></h2>
+<h2 id="composed-permissions">Composed Permissions<a class="headerlink" href="#composed-permissions" title="Permanent link">&para;</a></h2>
 <p>The <a href="https://github.com/niwibe/djangorestframework-composed-permissions">Composed Permissions</a> package provides a simple way to define complex and multi-depth (with logic operators) permission objects, using small and reusable components.</p>
-<h2 id="rest-condition"><a class="toclink" href="#rest-condition">REST Condition</a></h2>
+<h2 id="rest-condition">REST Condition<a class="headerlink" href="#rest-condition" title="Permanent link">&para;</a></h2>
 <p>The <a href="https://github.com/caxap/rest_condition">REST Condition</a> package is another extension for building complex permissions in a simple and convenient way. The extension allows you to combine permissions with logical operators.</p>
-<h2 id="dry-rest-permissions"><a class="toclink" href="#dry-rest-permissions">DRY Rest Permissions</a></h2>
+<h2 id="dry-rest-permissions">DRY Rest Permissions<a class="headerlink" href="#dry-rest-permissions" title="Permanent link">&para;</a></h2>
 <p>The <a href="https://github.com/FJNR-inc/dry-rest-permissions">DRY Rest Permissions</a> package provides the ability to define different permissions for individual default and custom actions. This package is made for apps with permissions that are derived from relationships defined in the app's data model. It also supports permission checks being returned to a client app through the API's serializer. Additionally it supports adding permissions to the default and custom list actions to restrict the data they retrieve per user.</p>
-<h2 id="django-rest-framework-roles"><a class="toclink" href="#django-rest-framework-roles">Django Rest Framework Roles</a></h2>
+<h2 id="django-rest-framework-roles">Django Rest Framework Roles<a class="headerlink" href="#django-rest-framework-roles" title="Permanent link">&para;</a></h2>
 <p>The <a href="https://github.com/computer-lab/django-rest-framework-roles">Django Rest Framework Roles</a> package makes it easier to parameterize your API over multiple types of users.</p>
-<h2 id="rest-framework-roles"><a class="toclink" href="#rest-framework-roles">Rest Framework Roles</a></h2>
+<h2 id="rest-framework-roles">Rest Framework Roles<a class="headerlink" href="#rest-framework-roles" title="Permanent link">&para;</a></h2>
 <p>The <a href="https://github.com/Pithikos/rest-framework-roles">Rest Framework Roles</a> makes it super easy to protect views based on roles. Most importantly allows you to decouple accessibility logic from models and views in a clean human-readable way.</p>
-<h2 id="django-rest-framework-api-key"><a class="toclink" href="#django-rest-framework-api-key">Django REST Framework API Key</a></h2>
+<h2 id="django-rest-framework-api-key">Django REST Framework API Key<a class="headerlink" href="#django-rest-framework-api-key" title="Permanent link">&para;</a></h2>
 <p>The <a href="https://florimondmanca.github.io/djangorestframework-api-key/">Django REST Framework API Key</a> package provides permissions classes, models and helpers to add API key authorization to your API. It can be used to authorize internal or third-party backends and services (i.e. <em>machines</em>) which do not have a user account. API keys are stored securely using Django's password hashing infrastructure, and they can be viewed, edited and revoked at anytime in the Django admin.</p>
-<h2 id="django-rest-framework-role-filters"><a class="toclink" href="#django-rest-framework-role-filters">Django Rest Framework Role Filters</a></h2>
+<h2 id="django-rest-framework-role-filters">Django Rest Framework Role Filters<a class="headerlink" href="#django-rest-framework-role-filters" title="Permanent link">&para;</a></h2>
 <p>The <a href="https://github.com/allisson/django-rest-framework-role-filters">Django Rest Framework Role Filters</a> package provides simple filtering over multiple types of roles.</p>
-<h2 id="django-rest-framework-psq"><a class="toclink" href="#django-rest-framework-psq">Django Rest Framework PSQ</a></h2>
+<h2 id="django-rest-framework-psq">Django Rest Framework PSQ<a class="headerlink" href="#django-rest-framework-psq" title="Permanent link">&para;</a></h2>
 <p>The <a href="https://github.com/drf-psq/drf-psq">Django Rest Framework PSQ</a> package is an extension that gives support for having action-based <strong>permission_classes</strong>, <strong>serializer_class</strong>, and <strong>queryset</strong> dependent on permission-based rules.</p>
-<h2 id="axioms-drf-py"><a class="toclink" href="#axioms-drf-py">Axioms DRF PY</a></h2>
+<h2 id="axioms-drf-py">Axioms DRF PY<a class="headerlink" href="#axioms-drf-py" title="Permanent link">&para;</a></h2>
 <p>The <a href="https://github.com/abhishektiwari/axioms-drf-py">Axioms DRF PY</a> package is an extension that provides support for authentication and claim-based fine-grained authorization (<strong>scopes</strong>, <strong>roles</strong>, <strong>groups</strong>, <strong>permissions</strong>, etc. including object-level checks) using JWT tokens issued by an OAuth2/OIDC Authorization Server including AWS Cognito, Auth0, Okta, Microsoft Entra, etc.</p>
-            
 
-          </div> <!--/span-->
-        </div> <!--/row-->
-      </div> <!--/.fluid-container-->
-    </div> <!--/.body content-->
-    <div id="push"></div>
-  </div> <!--/.wrapper -->
 
-  <footer class="span12">
-    <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.
-    </p>
-  </footer>
 
-  <!-- Le javascript
-  ================================================== -->
-  <!-- Placed at the end of the document so the pages load faster -->
-  <script async src="https://fund.django-rest-framework.org/sidebar_include.js"></script>
-  <script src="../../js/jquery-1.8.1-min.js"></script>
-  <script src="../../js/prettify-1.0.js"></script>
-  <script src="../../js/bootstrap-2.1.1-min.js"></script>
-  <script src="../../js/theme.js"></script>
 
-  <script>var base_url = '../..';</script>
+
+
+
   
-  <script src="../../js/copy-button.js" defer></script>
-  
-  <script src="../../search/main.js" defer></script>
   
 
-  <script>
-    var shiftWindow = function() {
-      scrollBy(0, -50)
-    };
 
-    if (location.hash) shiftWindow();
-    window.addEventListener("hashchange", shiftWindow);
 
-    $('.dropdown-menu').on('click touchstart', function(event) {
-      event.stopPropagation();
-    });
 
-    // Dynamically force sidenav/dropdown to no higher than browser window
-    $('.side-nav, .dropdown-menu').css('max-height', window.innerHeight - 130);
 
-    $(function() {
-      $(window).resize(function() {
-        $('.side-nav, .dropdown-menu').css('max-height', window.innerHeight - 130);
-      });
-    });
-  </script>
-</body>
 
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+      <div class="md-progress" data-md-component="progress" role="progressbar"></div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["content.tabs.link", "content.code.annotate", "content.code.copy", "navigation.tabs", "navigation.tabs.sticky", "navigation.instant", "navigation.instant.prefetch", "navigation.instant.progress", "navigation.path", "navigation.sections", "navigation.top", "navigation.tracking", "search.suggest", "toc.follow", "toc.integrate"], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+    
+      <script src="../../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+        <script src="../../theme/js/prettify-1.0.js"></script>
+      
+    
+    <script>
+        document$.subscribe(function() {
+            document.querySelectorAll('pre code').forEach(code => {
+                code.parentElement.classList.add('prettyprint', 'well');
+            });
+            prettyPrint();
+        });
+    </script>
+
+  </body>
 </html>

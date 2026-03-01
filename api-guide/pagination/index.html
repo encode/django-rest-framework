@@ -1,515 +1,2668 @@
-<!DOCTYPE html>
-<html lang="en">
 
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <meta charset="utf-8">
-  <title>Pagination - Django REST framework</title>
-  <link href="../../img/favicon.ico" rel="icon" type="image/x-icon">
-  <link rel="canonical" href="https://www.django-rest-framework.org/api-guide/pagination/" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Django, API, REST, Pagination">
-  <meta name="author" content="Tom Christie">
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Django REST framework - Web APIs for Django">
+      
+      
+      
+        <link rel="canonical" href="https://www.django-rest-framework.org/api-guide/pagination/">
+      
+      
+        <link rel="prev" href="../filtering/">
+      
+      
+        <link rel="next" href="../versioning/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../theme/img/favicon.ico">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+    
+    
+      
+        <title>Pagination - Django REST framework</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.618322db.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
 
-  <!-- Le styles -->
-  <link href="../../css/prettify.css" rel="stylesheet">
-  <link href="../../css/bootstrap.css" rel="stylesheet">
-  <link href="../../css/bootstrap-responsive.css" rel="stylesheet">
-  <link href="../../css/default.css" rel="stylesheet">
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../theme/stylesheets/extra.css">
+    
+      <link rel="stylesheet" href="../../theme/stylesheets/prettify.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
   
-    <link href="../../css/copy-button.css" rel="stylesheet">
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#pagination" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
   
 
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Django REST framework" class="md-header__button md-logo" aria-label="Django REST framework" data-md-component="logo">
+      
+  <img src="../../theme/img/logo.png" alt="logo">
 
-  <script type="text/javascript">
-    var _gaq = _gaq || [];
-    _gaq.push(['_setAccount', 'UA-18852272-2']);
-    _gaq.push(['_trackPageview']);
-
-    (function() {
-      var ga = document.createElement('script');
-      ga.type = 'text/javascript';
-      ga.async = true;
-      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-      var s = document.getElementsByTagName('script')[0];
-      s.parentNode.insertBefore(ga, s);
-    })();
-  </script>
-
-  <style>
-  #sidebarInclude img {
-      margin-bottom: 10px;
-  }
-  #sidebarInclude a.promo {
-      color: black;
-  }
-    @media (max-width: 767px) {
-      div.promo {
-        display: none;
-      }
-    }
-  </style>
-</head>
-<body onload="prettyPrint()" class="-page">
-
-  <div class="wrapper">
-        <div class="navbar navbar-inverse navbar-fixed-top">
-      <div class="navbar-inner">
-        <div class="container-fluid">
-          <a class="repo-link btn btn-primary btn-small" href="https://github.com/encode/django-rest-framework">GitHub</a>
-          <a class="repo-link btn btn-inverse btn-small " rel="next" href="../versioning/">
-            Next <i class="icon-arrow-right icon-white"></i>
-          </a>
-          <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../filtering/">
-            <i class="icon-arrow-left icon-white"></i> Previous
-          </a>
-          <a id="search_modal_show" class="repo-link btn btn-inverse btn-small" href="#mkdocs_search_modal" data-toggle="modal" data-target="#mkdocs_search_modal"><i class="icon-search icon-white"></i> Search</a>
-          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </a>
-          <a class="brand" href="https://www.django-rest-framework.org/">Django REST framework</a>
-          <div class="nav-collapse collapse">
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Django REST framework
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
             
-            <!-- Main navigation -->
-            <ul class="nav navbar-nav">
-               
-              <li >
-                <a href="../..">Home</a>
-              </li>
-                
-              <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tutorial <b class="caret"></b></a>
-                <ul class="dropdown-menu">
-                  
-                  <li >
-                    <a href="../../tutorial/quickstart/">Quickstart</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../tutorial/1-serialization/">1 - Serialization</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../tutorial/2-requests-and-responses/">2 - Requests and responses</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../tutorial/3-class-based-views/">3 - Class based views</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../tutorial/4-authentication-and-permissions/">4 - Authentication and permissions</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../tutorial/5-relationships-and-hyperlinked-apis/">5 - Relationships and hyperlinked APIs</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../tutorial/6-viewsets-and-routers/">6 - Viewsets and routers</a>
-                  </li>
-                  
-                </ul>
-              </li>
-                
-              <li class="dropdown active">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">API Guide <b class="caret"></b></a>
-                <ul class="dropdown-menu">
-                  
-                  <li >
-                    <a href="../requests/">Requests</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../responses/">Responses</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../views/">Views</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../generic-views/">Generic views</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../viewsets/">Viewsets</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../routers/">Routers</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../parsers/">Parsers</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../renderers/">Renderers</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../serializers/">Serializers</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../fields/">Serializer fields</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../relations/">Serializer relations</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../validators/">Validators</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../authentication/">Authentication</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../permissions/">Permissions</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../caching/">Caching</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../throttling/">Throttling</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../filtering/">Filtering</a>
-                  </li>
-                  
-                  <li class="active" >
-                    <a href="./">Pagination</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../versioning/">Versioning</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../content-negotiation/">Content negotiation</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../metadata/">Metadata</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../schemas/">Schemas</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../format-suffixes/">Format suffixes</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../reverse/">Returning URLs</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../exceptions/">Exceptions</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../status-codes/">Status codes</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../testing/">Testing</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../settings/">Settings</a>
-                  </li>
-                  
-                </ul>
-              </li>
-                
-              <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Topics <b class="caret"></b></a>
-                <ul class="dropdown-menu">
-                  
-                  <li >
-                    <a href="../../topics/documenting-your-api/">Documenting your API</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/internationalization/">Internationalization</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/ajax-csrf-cors/">AJAX, CSRF & CORS</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/html-and-forms/">HTML & Forms</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/browser-enhancements/">Browser Enhancements</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/browsable-api/">The Browsable API</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/rest-hypermedia-hateoas/">REST, Hypermedia & HATEOAS</a>
-                  </li>
-                  
-                </ul>
-              </li>
-                
-              <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Community <b class="caret"></b></a>
-                <ul class="dropdown-menu">
-                  
-                  <li >
-                    <a href="../../community/tutorials-and-resources/">Tutorials and Resources</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/third-party-packages/">Third Party Packages</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/contributing/">Contributing to REST framework</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/project-management/">Project management</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/release-notes/">Release Notes</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.16-announcement/">3.16 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.15-announcement/">3.15 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.14-announcement/">3.14 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.13-announcement/">3.13 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.12-announcement/">3.12 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.11-announcement/">3.11 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.10-announcement/">3.10 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.9-announcement/">3.9 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.8-announcement/">3.8 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.7-announcement/">3.7 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.6-announcement/">3.6 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.5-announcement/">3.5 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.4-announcement/">3.4 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.3-announcement/">3.3 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.2-announcement/">3.2 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.1-announcement/">3.1 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.0-announcement/">3.0 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/kickstarter-announcement/">Kickstarter Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/mozilla-grant/">Mozilla Grant</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/jobs/">Jobs</a>
-                  </li>
-                  
-                </ul>
-              </li>
-               
-
-            </ul>
+              Pagination
             
-          </div>
-          <!--/.nav-collapse -->
-
+          </span>
         </div>
       </div>
     </div>
-
-    <div class="body-content">
-      <div class="container-fluid">
-        <!-- Search Modal -->
-        <div id="mkdocs_search_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            <h3 id="myModalLabel">Documentation search</h3>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m14.3 16-.7-2h-3.2l-.7 2H7.8L11 7h2l3.2 9zM20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12zm-9.15 3.96h2.3L12 9z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
           </div>
-
-          <div class="modal-body">
-            <form role="form" autocomplete="off">
-              <div class="form-group">
-                <input type="text" name="q" class="form-control" placeholder="Search..." id="mkdocs-search-query">
-              </div>
-            </form>
-            <div id="mkdocs-search-results"></div>
-          </div>
-
-          <div class="modal-footer">
-            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/encode/django-rest-framework" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
 
-        <div class="row-fluid">
-          <div class="span3">
-            <div id="table-of-contents">
-              <ul class="nav nav-list side-nav well sidebar-nav-fixed">
-                
+      </a>
+    </li>
+  
 
-                
-                  <li class="main">
-                    <a href="#pagination">Pagination</a>
-                  </li>
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../tutorial/quickstart/" class="md-tabs__link">
+          
+  
+  
+  Tutorial
 
-                  
-                    <li>
-                      <a href="#setting-the-pagination-style">Setting the pagination style</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#modifying-the-pagination-style">Modifying the pagination style</a>
-                    </li>
-                  
-                
-                  <li class="main">
-                    <a href="#api-reference">API Reference</a>
-                  </li>
+        </a>
+      </li>
+    
+  
 
-                  
-                    <li>
-                      <a href="#pagenumberpagination">PageNumberPagination</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#limitoffsetpagination">LimitOffsetPagination</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#cursorpagination">CursorPagination</a>
-                    </li>
-                  
-                
-                  <li class="main">
-                    <a href="#custom-pagination-styles">Custom pagination styles</a>
-                  </li>
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../requests/" class="md-tabs__link">
+          
+  
+  
+  API Guide
 
-                  
-                    <li>
-                      <a href="#example">Example</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#using-your-custom-pagination-class">Using your custom pagination class</a>
-                    </li>
-                  
-                
-                  <li class="main">
-                    <a href="#html-pagination-controls">HTML pagination controls</a>
-                  </li>
+        </a>
+      </li>
+    
+  
 
-                  
-                    <li>
-                      <a href="#customizing-the-controls">Customizing the controls</a>
-                    </li>
-                  
-                
-                  <li class="main">
-                    <a href="#third-party-packages">Third party packages</a>
-                  </li>
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../topics/documenting-your-api/" class="md-tabs__link">
+          
+  
+  
+  Topics
 
-                  
-                    <li>
-                      <a href="#drf-extensions">DRF-extensions</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#drf-proxy-pagination">drf-proxy-pagination</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#link-header-pagination">link-header-pagination</a>
-                    </li>
-                  
-                
+        </a>
+      </li>
+    
+  
 
-                  <div class="promo">
-                    <hr/>
-                    <div id="sidebarInclude">
-                  </div>
-              </ul>
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../community/tutorials-and-resources/" class="md-tabs__link">
+          
+  
+  
+  Community
 
-            </div>
-          </div>
+        </a>
+      </li>
+    
+  
 
-          <div id="main-content" class="span9">
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Django REST framework" class="md-nav__button md-logo" aria-label="Django REST framework" data-md-component="logo">
+      
+  <img src="../../theme/img/logo.png" alt="logo">
+
+    </a>
+    Django REST framework
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/encode/django-rest-framework" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorial
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tutorial
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
             
               
                 
-                  <a class="github" href="https://github.com/encode/django-rest-framework/tree/main/rest_framework/pagination.py">
-                    <span class="label label-info">pagination.py</span>
-                  </a>
-                
-              
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quickstart
+  
 
-              <h1 id="pagination"><a class="toclink" href="#pagination">Pagination</a></h1>
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/1-serialization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1 - Serialization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/2-requests-and-responses/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2 - Requests and responses
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/3-class-based-views/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3 - Class based views
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/4-authentication-and-permissions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4 - Authentication and permissions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/5-relationships-and-hyperlinked-apis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5 - Relationships and hyperlinked APIs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/6-viewsets-and-routers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6 - Viewsets and routers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../requests/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Requests
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../responses/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Responses
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../views/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Views
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../generic-views/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Generic views
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../viewsets/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Viewsets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../routers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Routers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parsers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Parsers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../renderers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Renderers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../serializers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Serializers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../fields/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Serializer fields
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../relations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Serializer relations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../validators/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validators
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../authentication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Authentication
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../permissions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Permissions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../caching/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Caching
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../throttling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Throttling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../filtering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Filtering
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pagination
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pagination
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#setting-the-pagination-style" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Setting the pagination style
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#modifying-the-pagination-style" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Modifying the pagination style
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../versioning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Versioning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../content-negotiation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Content negotiation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../metadata/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Metadata
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../schemas/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Schemas
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../format-suffixes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Format suffixes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reverse/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Returning URLs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../exceptions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Exceptions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../status-codes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Status codes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../settings/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Settings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Topics
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Topics
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../topics/documenting-your-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Documenting your API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../topics/internationalization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Internationalization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../topics/ajax-csrf-cors/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AJAX, CSRF & CORS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../topics/html-and-forms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HTML & Forms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../topics/browser-enhancements/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Browser Enhancements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../topics/browsable-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Browsable API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../topics/rest-hypermedia-hateoas/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    REST, Hypermedia & HATEOAS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Community
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Community
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/tutorials-and-resources/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials and Resources
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/third-party-packages/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Third Party Packages
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing to REST framework
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/project-management/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project management
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/release-notes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release Notes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.16-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.16 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.15-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.15 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.14-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.14 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.13-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.13 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.12-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.12 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.11-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.11 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.10-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.10 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.9-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.9 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.8-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.8 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.7-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.7 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.6-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.6 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.5-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.5 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.4-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.4 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.3-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.3 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.2-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.2 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.1-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.1 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.0-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.0 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/kickstarter-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kickstarter Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/mozilla-grant/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mozilla Grant
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/jobs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Jobs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+                
+
+
+
+  
+
+
+  <nav class="md-path" aria-label="Navigation" >
+    <ol class="md-path__list">
+      
+        
+  
+  
+    <li class="md-path__item">
+      <a href="../.." class="md-path__link">
+        
+  <span class="md-ellipsis">
+    Home
+  </span>
+
+      </a>
+    </li>
+  
+
+      
+      
+        
+  
+  
+    
+    
+      <li class="md-path__item">
+        <a href="../requests/" class="md-path__link">
+          
+  <span class="md-ellipsis">
+    API Guide
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ol>
+  </nav>
+
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="pagination">Pagination<a class="headerlink" href="#pagination" title="Permanent link">&para;</a></h1>
 <blockquote>
 <p>Django provides a few classes that help you manage paginated data – that is, data that’s split across several pages, with “Previous/Next” links.</p>
 <p>&mdash; <a href="https://docs.djangoproject.com/en/stable/topics/pagination/">Django documentation</a></p>
@@ -523,65 +2676,65 @@
 <p>The built-in styles currently all use links included as part of the content of the response. This style is more accessible when using the browsable API.</p>
 <p>Pagination is only performed automatically if you're using the generic views or viewsets. If you're using a regular <code>APIView</code>, you'll need to call into the pagination API yourself to ensure you return a paginated response. See the source code for the <code>mixins.ListModelMixin</code> and <code>generics.GenericAPIView</code> classes for an example.</p>
 <p>Pagination can be turned off by setting the pagination class to <code>None</code>.</p>
-<h2 id="setting-the-pagination-style"><a class="toclink" href="#setting-the-pagination-style">Setting the pagination style</a></h2>
+<h2 id="setting-the-pagination-style">Setting the pagination style<a class="headerlink" href="#setting-the-pagination-style" title="Permanent link">&para;</a></h2>
 <p>The pagination style may be set globally, using the <code>DEFAULT_PAGINATION_CLASS</code> and <code>PAGE_SIZE</code> setting keys. For example, to use the built-in limit/offset pagination, you would do something like this:</p>
-<pre><code>REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-    'PAGE_SIZE': 100
+<div class="language-text highlight"><pre><span></span><code>REST_FRAMEWORK = {
+    &#39;DEFAULT_PAGINATION_CLASS&#39;: &#39;rest_framework.pagination.LimitOffsetPagination&#39;,
+    &#39;PAGE_SIZE&#39;: 100
 }
-</code></pre>
+</code></pre></div>
 <p>Note that you need to set both the pagination class, and the page size that should be used.  Both <code>DEFAULT_PAGINATION_CLASS</code> and <code>PAGE_SIZE</code> are <code>None</code> by default.</p>
 <p>You can also set the pagination class on an individual view by using the <code>pagination_class</code> attribute. Typically you'll want to use the same pagination style throughout your API, although you might want to vary individual aspects of the pagination, such as default or maximum page size, on a per-view basis.</p>
-<h2 id="modifying-the-pagination-style"><a class="toclink" href="#modifying-the-pagination-style">Modifying the pagination style</a></h2>
+<h2 id="modifying-the-pagination-style">Modifying the pagination style<a class="headerlink" href="#modifying-the-pagination-style" title="Permanent link">&para;</a></h2>
 <p>If you want to modify particular aspects of the pagination style, you'll want to override one of the pagination classes, and set the attributes that you want to change.</p>
-<pre><code>class LargeResultsSetPagination(PageNumberPagination):
+<div class="language-text highlight"><pre><span></span><code>class LargeResultsSetPagination(PageNumberPagination):
     page_size = 1000
-    page_size_query_param = 'page_size'
+    page_size_query_param = &#39;page_size&#39;
     max_page_size = 10000
 
 class StandardResultsSetPagination(PageNumberPagination):
     page_size = 100
-    page_size_query_param = 'page_size'
+    page_size_query_param = &#39;page_size&#39;
     max_page_size = 1000
-</code></pre>
+</code></pre></div>
 <p>You can then apply your new style to a view using the <code>pagination_class</code> attribute:</p>
-<pre><code>class BillingRecordsView(generics.ListAPIView):
+<div class="language-text highlight"><pre><span></span><code>class BillingRecordsView(generics.ListAPIView):
     queryset = Billing.objects.all()
     serializer_class = BillingRecordsSerializer
     pagination_class = LargeResultsSetPagination
-</code></pre>
+</code></pre></div>
 <p>Or apply the style globally, using the <code>DEFAULT_PAGINATION_CLASS</code> settings key. For example:</p>
-<pre><code>REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 'apps.core.pagination.StandardResultsSetPagination'
+<div class="language-text highlight"><pre><span></span><code>REST_FRAMEWORK = {
+    &#39;DEFAULT_PAGINATION_CLASS&#39;: &#39;apps.core.pagination.StandardResultsSetPagination&#39;
 }
-</code></pre>
+</code></pre></div>
 <hr />
-<h1 id="api-reference"><a class="toclink" href="#api-reference">API Reference</a></h1>
-<h2 id="pagenumberpagination"><a class="toclink" href="#pagenumberpagination">PageNumberPagination</a></h2>
+<h1 id="api-reference">API Reference<a class="headerlink" href="#api-reference" title="Permanent link">&para;</a></h1>
+<h2 id="pagenumberpagination">PageNumberPagination<a class="headerlink" href="#pagenumberpagination" title="Permanent link">&para;</a></h2>
 <p>This pagination style accepts a single number page number in the request query parameters.</p>
 <p><strong>Request</strong>:</p>
-<pre><code>GET https://api.example.org/accounts/?page=4
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code>GET https://api.example.org/accounts/?page=4
+</code></pre></div>
 <p><strong>Response</strong>:</p>
-<pre><code>HTTP 200 OK
+<div class="language-text highlight"><pre><span></span><code>HTTP 200 OK
 {
-    "count": 1023,
-    "next": "https://api.example.org/accounts/?page=5",
-    "previous": "https://api.example.org/accounts/?page=3",
-    "results": [
+    &quot;count&quot;: 1023,
+    &quot;next&quot;: &quot;https://api.example.org/accounts/?page=5&quot;,
+    &quot;previous&quot;: &quot;https://api.example.org/accounts/?page=3&quot;,
+    &quot;results&quot;: [
        …
     ]
 }
-</code></pre>
-<h4 id="setup"><a class="toclink" href="#setup">Setup</a></h4>
+</code></pre></div>
+<h4 id="setup">Setup<a class="headerlink" href="#setup" title="Permanent link">&para;</a></h4>
 <p>To enable the <code>PageNumberPagination</code> style globally, use the following configuration, and set the <code>PAGE_SIZE</code> as desired:</p>
-<pre><code>REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 100
+<div class="language-text highlight"><pre><span></span><code>REST_FRAMEWORK = {
+    &#39;DEFAULT_PAGINATION_CLASS&#39;: &#39;rest_framework.pagination.PageNumberPagination&#39;,
+    &#39;PAGE_SIZE&#39;: 100
 }
-</code></pre>
+</code></pre></div>
 <p>On <code>GenericAPIView</code> subclasses you may also set the <code>pagination_class</code> attribute to select <code>PageNumberPagination</code> on a per-view basis.</p>
-<h4 id="configuration"><a class="toclink" href="#configuration">Configuration</a></h4>
+<h4 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h4>
 <p>The <code>PageNumberPagination</code> class includes a number of attributes that may be overridden to modify the pagination style.</p>
 <p>To set these attributes you should override the <code>PageNumberPagination</code> class, and then enable your custom pagination class as above.</p>
 <ul>
@@ -594,32 +2747,32 @@ class StandardResultsSetPagination(PageNumberPagination):
 <li><code>template</code> - The name of a template to use when rendering pagination controls in the browsable API. May be overridden to modify the rendering style, or set to <code>None</code> to disable HTML pagination controls completely. Defaults to <code>"rest_framework/pagination/numbers.html"</code>.</li>
 </ul>
 <hr />
-<h2 id="limitoffsetpagination"><a class="toclink" href="#limitoffsetpagination">LimitOffsetPagination</a></h2>
+<h2 id="limitoffsetpagination">LimitOffsetPagination<a class="headerlink" href="#limitoffsetpagination" title="Permanent link">&para;</a></h2>
 <p>This pagination style mirrors the syntax used when looking up multiple database records. The client includes both a "limit" and an
 "offset" query parameter. The limit indicates the maximum number of items to return, and is equivalent to the <code>page_size</code> in other styles. The offset indicates the starting position of the query in relation to the complete set of unpaginated items.</p>
 <p><strong>Request</strong>:</p>
-<pre><code>GET https://api.example.org/accounts/?limit=100&amp;offset=400
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code>GET https://api.example.org/accounts/?limit=100&amp;offset=400
+</code></pre></div>
 <p><strong>Response</strong>:</p>
-<pre><code>HTTP 200 OK
+<div class="language-text highlight"><pre><span></span><code>HTTP 200 OK
 {
-    "count": 1023,
-    "next": "https://api.example.org/accounts/?limit=100&amp;offset=500",
-    "previous": "https://api.example.org/accounts/?limit=100&amp;offset=300",
-    "results": [
+    &quot;count&quot;: 1023,
+    &quot;next&quot;: &quot;https://api.example.org/accounts/?limit=100&amp;offset=500&quot;,
+    &quot;previous&quot;: &quot;https://api.example.org/accounts/?limit=100&amp;offset=300&quot;,
+    &quot;results&quot;: [
        …
     ]
 }
-</code></pre>
-<h4 id="setup_1"><a class="toclink" href="#setup_1">Setup</a></h4>
+</code></pre></div>
+<h4 id="setup_1">Setup<a class="headerlink" href="#setup_1" title="Permanent link">&para;</a></h4>
 <p>To enable the <code>LimitOffsetPagination</code> style globally, use the following configuration:</p>
-<pre><code>REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination'
+<div class="language-text highlight"><pre><span></span><code>REST_FRAMEWORK = {
+    &#39;DEFAULT_PAGINATION_CLASS&#39;: &#39;rest_framework.pagination.LimitOffsetPagination&#39;
 }
-</code></pre>
+</code></pre></div>
 <p>Optionally, you may also set a <code>PAGE_SIZE</code> key. If the <code>PAGE_SIZE</code> parameter is also used then the <code>limit</code> query parameter will be optional, and may be omitted by the client.</p>
 <p>On <code>GenericAPIView</code> subclasses you may also set the <code>pagination_class</code> attribute to select <code>LimitOffsetPagination</code> on a per-view basis.</p>
-<h4 id="configuration_1"><a class="toclink" href="#configuration_1">Configuration</a></h4>
+<h4 id="configuration_1">Configuration<a class="headerlink" href="#configuration_1" title="Permanent link">&para;</a></h4>
 <p>The <code>LimitOffsetPagination</code> class includes a number of attributes that may be overridden to modify the pagination style.</p>
 <p>To set these attributes you should override the <code>LimitOffsetPagination</code> class, and then enable your custom pagination class as above.</p>
 <ul>
@@ -630,7 +2783,7 @@ class StandardResultsSetPagination(PageNumberPagination):
 <li><code>template</code> - The name of a template to use when rendering pagination controls in the browsable API. May be overridden to modify the rendering style, or set to <code>None</code> to disable HTML pagination controls completely. Defaults to <code>"rest_framework/pagination/numbers.html"</code>.</li>
 </ul>
 <hr />
-<h2 id="cursorpagination"><a class="toclink" href="#cursorpagination">CursorPagination</a></h2>
+<h2 id="cursorpagination">CursorPagination<a class="headerlink" href="#cursorpagination" title="Permanent link">&para;</a></h2>
 <p>The cursor-based pagination presents an opaque "cursor" indicator that the client may use to page through the result set. This pagination style only presents forward and reverse controls, and does not allow the client to navigate to arbitrary positions.</p>
 <p>Cursor based pagination requires that there is a unique, unchanging ordering of items in the result set. This ordering might typically be a creation timestamp on the records, as this presents a consistent ordering to paginate against.</p>
 <p>Cursor based pagination is more complex than other schemes. It also requires that the result set presents a fixed ordering, and does not allow the client to arbitrarily index into the result set. However it does provide the following benefits:</p>
@@ -638,7 +2791,7 @@ class StandardResultsSetPagination(PageNumberPagination):
 <li>Provides a consistent pagination view. When used properly <code>CursorPagination</code> ensures that the client will never see the same item twice when paging through records, even when new items are being inserted by other clients during the pagination process.</li>
 <li>Supports usage with very large datasets. With extremely large datasets pagination using offset-based pagination styles may become inefficient or unusable. Cursor based pagination schemes instead have fixed-time properties, and do not slow down as the dataset size increases.</li>
 </ul>
-<h4 id="details-and-limitations"><a class="toclink" href="#details-and-limitations">Details and limitations</a></h4>
+<h4 id="details-and-limitations">Details and limitations<a class="headerlink" href="#details-and-limitations" title="Permanent link">&para;</a></h4>
 <p>Proper use of cursor based pagination requires a little attention to detail. You'll need to think about what ordering you want the scheme to be applied against. The default is to order by <code>"-created"</code>. This assumes that <strong>there must be a 'created' timestamp field</strong> on the model instances, and will present a "timeline" style paginated view, with the most recently added items first.</p>
 <p>You can modify the ordering by overriding the <code>'ordering'</code> attribute on the pagination class, or by using the <code>OrderingFilter</code> filter class together with <code>CursorPagination</code>. When used with <code>OrderingFilter</code> you should strongly consider restricting the fields that the user may order by.</p>
 <p>Proper usage of cursor pagination should have an ordering field that satisfies the following:</p>
@@ -654,15 +2807,15 @@ class StandardResultsSetPagination(PageNumberPagination):
 </ul>
 <p>Using an ordering field that does not satisfy these constraints will generally still work, but you'll be losing some of the benefits of cursor pagination.</p>
 <p>For more technical details on the implementation we use for cursor pagination, the <a href="https://cra.mr/2011/03/08/building-cursors-for-the-disqus-api">"Building cursors for the Disqus API"</a> blog post gives a good overview of the basic approach.</p>
-<h4 id="setup_2"><a class="toclink" href="#setup_2">Setup</a></h4>
+<h4 id="setup_2">Setup<a class="headerlink" href="#setup_2" title="Permanent link">&para;</a></h4>
 <p>To enable the <code>CursorPagination</code> style globally, use the following configuration, modifying the <code>PAGE_SIZE</code> as desired:</p>
-<pre><code>REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.CursorPagination',
-    'PAGE_SIZE': 100
+<div class="language-text highlight"><pre><span></span><code>REST_FRAMEWORK = {
+    &#39;DEFAULT_PAGINATION_CLASS&#39;: &#39;rest_framework.pagination.CursorPagination&#39;,
+    &#39;PAGE_SIZE&#39;: 100
 }
-</code></pre>
+</code></pre></div>
 <p>On <code>GenericAPIView</code> subclasses you may also set the <code>pagination_class</code> attribute to select <code>CursorPagination</code> on a per-view basis.</p>
-<h4 id="configuration_2"><a class="toclink" href="#configuration_2">Configuration</a></h4>
+<h4 id="configuration_2">Configuration<a class="headerlink" href="#configuration_2" title="Permanent link">&para;</a></h4>
 <p>The <code>CursorPagination</code> class includes a number of attributes that may be overridden to modify the pagination style.</p>
 <p>To set these attributes you should override the <code>CursorPagination</code> class, and then enable your custom pagination class as above.</p>
 <ul>
@@ -672,47 +2825,47 @@ class StandardResultsSetPagination(PageNumberPagination):
 <li><code>template</code> = The name of a template to use when rendering pagination controls in the browsable API. May be overridden to modify the rendering style, or set to <code>None</code> to disable HTML pagination controls completely. Defaults to <code>"rest_framework/pagination/previous_and_next.html"</code>.</li>
 </ul>
 <hr />
-<h1 id="custom-pagination-styles"><a class="toclink" href="#custom-pagination-styles">Custom pagination styles</a></h1>
+<h1 id="custom-pagination-styles">Custom pagination styles<a class="headerlink" href="#custom-pagination-styles" title="Permanent link">&para;</a></h1>
 <p>To create a custom pagination serializer class, you should inherit the subclass <code>pagination.BasePagination</code>, override the <code>paginate_queryset(self, queryset, request, view=None)</code>, and <code>get_paginated_response(self, data)</code> methods:</p>
 <ul>
 <li>The <code>paginate_queryset</code> method is passed to the initial queryset and should return an iterable object. That object contains only the data in the requested page.</li>
 <li>The <code>get_paginated_response</code> method is passed to the serialized page data and should return a <code>Response</code> instance.</li>
 </ul>
 <p>Note that the <code>paginate_queryset</code> method may set state on the pagination instance, that may later be used by the <code>get_paginated_response</code> method.</p>
-<h2 id="example"><a class="toclink" href="#example">Example</a></h2>
+<h2 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h2>
 <p>Suppose we want to replace the default pagination output style with a modified format that includes the next and previous links under in a nested 'links' key. We could specify a custom pagination class like so:</p>
-<pre><code>class CustomPagination(pagination.PageNumberPagination):
+<div class="language-text highlight"><pre><span></span><code>class CustomPagination(pagination.PageNumberPagination):
     def get_paginated_response(self, data):
         return Response({
-            'links': {
-                'next': self.get_next_link(),
-                'previous': self.get_previous_link()
+            &#39;links&#39;: {
+                &#39;next&#39;: self.get_next_link(),
+                &#39;previous&#39;: self.get_previous_link()
             },
-            'count': self.page.paginator.count,
-            'results': data
+            &#39;count&#39;: self.page.paginator.count,
+            &#39;results&#39;: data
         })
-</code></pre>
+</code></pre></div>
 <p>We'd then need to set up the custom class in our configuration:</p>
-<pre><code>REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 'my_project.apps.core.pagination.CustomPagination',
-    'PAGE_SIZE': 100
+<div class="language-text highlight"><pre><span></span><code>REST_FRAMEWORK = {
+    &#39;DEFAULT_PAGINATION_CLASS&#39;: &#39;my_project.apps.core.pagination.CustomPagination&#39;,
+    &#39;PAGE_SIZE&#39;: 100
 }
-</code></pre>
+</code></pre></div>
 <p>Note that if you care about how the ordering of keys is displayed in responses in the browsable API you might choose to use an <code>OrderedDict</code> when constructing the body of paginated responses, but this is optional.</p>
-<h2 id="using-your-custom-pagination-class"><a class="toclink" href="#using-your-custom-pagination-class">Using your custom pagination class</a></h2>
+<h2 id="using-your-custom-pagination-class">Using your custom pagination class<a class="headerlink" href="#using-your-custom-pagination-class" title="Permanent link">&para;</a></h2>
 <p>To have your custom pagination class be used by default, use the <code>DEFAULT_PAGINATION_CLASS</code> setting:</p>
-<pre><code>REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 'my_project.apps.core.pagination.LinkHeaderPagination',
-    'PAGE_SIZE': 100
+<div class="language-text highlight"><pre><span></span><code>REST_FRAMEWORK = {
+    &#39;DEFAULT_PAGINATION_CLASS&#39;: &#39;my_project.apps.core.pagination.LinkHeaderPagination&#39;,
+    &#39;PAGE_SIZE&#39;: 100
 }
-</code></pre>
+</code></pre></div>
 <p>API responses for list endpoints will now include a <code>Link</code> header, instead of including the pagination links as part of the body of the response, for example:</p>
 <p><img alt="Link Header" src="../../img/link-header-pagination.png" /></p>
 <p><em>A custom pagination style, using the 'Link' header</em></p>
 <hr />
-<h1 id="html-pagination-controls"><a class="toclink" href="#html-pagination-controls">HTML pagination controls</a></h1>
+<h1 id="html-pagination-controls">HTML pagination controls<a class="headerlink" href="#html-pagination-controls" title="Permanent link">&para;</a></h1>
 <p>By default using the pagination classes will cause HTML pagination controls to be displayed in the browsable API. There are two built-in display styles. The <code>PageNumberPagination</code> and <code>LimitOffsetPagination</code> classes display a list of page numbers with previous and next controls. The <code>CursorPagination</code> class displays a simpler style that only displays a previous and next control.</p>
-<h2 id="customizing-the-controls"><a class="toclink" href="#customizing-the-controls">Customizing the controls</a></h2>
+<h2 id="customizing-the-controls">Customizing the controls<a class="headerlink" href="#customizing-the-controls" title="Permanent link">&para;</a></h2>
 <p>You can override the templates that render the HTML pagination controls. The two built-in styles are:</p>
 <ul>
 <li><code>rest_framework/pagination/numbers.html</code></li>
@@ -720,69 +2873,97 @@ class StandardResultsSetPagination(PageNumberPagination):
 </ul>
 <p>Providing a template with either of these paths in a global template directory will override the default rendering for the relevant pagination classes.</p>
 <p>Alternatively you can disable HTML pagination controls completely by subclassing on of the existing classes, setting <code>template = None</code> as an attribute on the class. You'll then need to configure your <code>DEFAULT_PAGINATION_CLASS</code> settings key to use your custom class as the default pagination style.</p>
-<h4 id="low-level-api"><a class="toclink" href="#low-level-api">Low-level API</a></h4>
+<h4 id="low-level-api">Low-level API<a class="headerlink" href="#low-level-api" title="Permanent link">&para;</a></h4>
 <p>The low-level API for determining if a pagination class should display the controls or not is exposed as a <code>display_page_controls</code> attribute on the pagination instance. Custom pagination classes should be set to <code>True</code> in the <code>paginate_queryset</code> method if they require the HTML pagination controls to be displayed.</p>
 <p>The <code>.to_html()</code> and <code>.get_html_context()</code> methods may also be overridden in a custom pagination class in order to further customize how the controls are rendered.</p>
 <hr />
-<h1 id="third-party-packages"><a class="toclink" href="#third-party-packages">Third party packages</a></h1>
+<h1 id="third-party-packages">Third party packages<a class="headerlink" href="#third-party-packages" title="Permanent link">&para;</a></h1>
 <p>The following third party packages are also available.</p>
-<h2 id="drf-extensions"><a class="toclink" href="#drf-extensions">DRF-extensions</a></h2>
+<h2 id="drf-extensions">DRF-extensions<a class="headerlink" href="#drf-extensions" title="Permanent link">&para;</a></h2>
 <p>The <a href="https://chibisov.github.io/drf-extensions/docs/"><code>DRF-extensions</code> package</a> includes a <a href="https://chibisov.github.io/drf-extensions/docs/#paginatebymaxmixin"><code>PaginateByMaxMixin</code> mixin class</a> that allows your API clients to specify <code>?page_size=max</code> to obtain the maximum allowed page size.</p>
-<h2 id="drf-proxy-pagination"><a class="toclink" href="#drf-proxy-pagination">drf-proxy-pagination</a></h2>
+<h2 id="drf-proxy-pagination">drf-proxy-pagination<a class="headerlink" href="#drf-proxy-pagination" title="Permanent link">&para;</a></h2>
 <p>The <a href="https://github.com/tuffnatty/drf-proxy-pagination"><code>drf-proxy-pagination</code> package</a> includes a <code>ProxyPagination</code> class which allows to choose pagination class with a query parameter.</p>
-<h2 id="link-header-pagination"><a class="toclink" href="#link-header-pagination">link-header-pagination</a></h2>
+<h2 id="link-header-pagination">link-header-pagination<a class="headerlink" href="#link-header-pagination" title="Permanent link">&para;</a></h2>
 <p>The <a href="https://github.com/tbeadle/django-rest-framework-link-header-pagination"><code>django-rest-framework-link-header-pagination</code> package</a> includes a <code>LinkHeaderPagination</code> class which provides pagination via an HTTP <code>Link</code> header as described in <a href="https://docs.github.com/en/rest/guides/traversing-with-pagination">GitHub REST API documentation</a>.</p>
-            
 
-          </div> <!--/span-->
-        </div> <!--/row-->
-      </div> <!--/.fluid-container-->
-    </div> <!--/.body content-->
-    <div id="push"></div>
-  </div> <!--/.wrapper -->
 
-  <footer class="span12">
-    <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.
-    </p>
-  </footer>
 
-  <!-- Le javascript
-  ================================================== -->
-  <!-- Placed at the end of the document so the pages load faster -->
-  <script async src="https://fund.django-rest-framework.org/sidebar_include.js"></script>
-  <script src="../../js/jquery-1.8.1-min.js"></script>
-  <script src="../../js/prettify-1.0.js"></script>
-  <script src="../../js/bootstrap-2.1.1-min.js"></script>
-  <script src="../../js/theme.js"></script>
 
-  <script>var base_url = '../..';</script>
+
+
+
   
-  <script src="../../js/copy-button.js" defer></script>
-  
-  <script src="../../search/main.js" defer></script>
   
 
-  <script>
-    var shiftWindow = function() {
-      scrollBy(0, -50)
-    };
 
-    if (location.hash) shiftWindow();
-    window.addEventListener("hashchange", shiftWindow);
 
-    $('.dropdown-menu').on('click touchstart', function(event) {
-      event.stopPropagation();
-    });
 
-    // Dynamically force sidenav/dropdown to no higher than browser window
-    $('.side-nav, .dropdown-menu').css('max-height', window.innerHeight - 130);
 
-    $(function() {
-      $(window).resize(function() {
-        $('.side-nav, .dropdown-menu').css('max-height', window.innerHeight - 130);
-      });
-    });
-  </script>
-</body>
 
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+      <div class="md-progress" data-md-component="progress" role="progressbar"></div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["content.tabs.link", "content.code.annotate", "content.code.copy", "navigation.tabs", "navigation.tabs.sticky", "navigation.instant", "navigation.instant.prefetch", "navigation.instant.progress", "navigation.path", "navigation.sections", "navigation.top", "navigation.tracking", "search.suggest", "toc.follow", "toc.integrate"], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+    
+      <script src="../../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+        <script src="../../theme/js/prettify-1.0.js"></script>
+      
+    
+    <script>
+        document$.subscribe(function() {
+            document.querySelectorAll('pre code').forEach(code => {
+                code.parentElement.classList.add('prettyprint', 'well');
+            });
+            prettyPrint();
+        });
+    </script>
+
+  </body>
 </html>

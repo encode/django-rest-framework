@@ -1,531 +1,2679 @@
-<!DOCTYPE html>
-<html lang="en">
 
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <meta charset="utf-8">
-  <title>Filtering - Django REST framework</title>
-  <link href="../../img/favicon.ico" rel="icon" type="image/x-icon">
-  <link rel="canonical" href="https://www.django-rest-framework.org/api-guide/filtering/" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Django, API, REST, Filtering">
-  <meta name="author" content="Tom Christie">
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Django REST framework - Web APIs for Django">
+      
+      
+      
+        <link rel="canonical" href="https://www.django-rest-framework.org/api-guide/filtering/">
+      
+      
+        <link rel="prev" href="../throttling/">
+      
+      
+        <link rel="next" href="../pagination/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../theme/img/favicon.ico">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+    
+    
+      
+        <title>Filtering - Django REST framework</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.618322db.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
 
-  <!-- Le styles -->
-  <link href="../../css/prettify.css" rel="stylesheet">
-  <link href="../../css/bootstrap.css" rel="stylesheet">
-  <link href="../../css/bootstrap-responsive.css" rel="stylesheet">
-  <link href="../../css/default.css" rel="stylesheet">
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../theme/stylesheets/extra.css">
+    
+      <link rel="stylesheet" href="../../theme/stylesheets/prettify.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
   
-    <link href="../../css/copy-button.css" rel="stylesheet">
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#filtering" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
   
 
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Django REST framework" class="md-header__button md-logo" aria-label="Django REST framework" data-md-component="logo">
+      
+  <img src="../../theme/img/logo.png" alt="logo">
 
-  <script type="text/javascript">
-    var _gaq = _gaq || [];
-    _gaq.push(['_setAccount', 'UA-18852272-2']);
-    _gaq.push(['_trackPageview']);
-
-    (function() {
-      var ga = document.createElement('script');
-      ga.type = 'text/javascript';
-      ga.async = true;
-      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-      var s = document.getElementsByTagName('script')[0];
-      s.parentNode.insertBefore(ga, s);
-    })();
-  </script>
-
-  <style>
-  #sidebarInclude img {
-      margin-bottom: 10px;
-  }
-  #sidebarInclude a.promo {
-      color: black;
-  }
-    @media (max-width: 767px) {
-      div.promo {
-        display: none;
-      }
-    }
-  </style>
-</head>
-<body onload="prettyPrint()" class="-page">
-
-  <div class="wrapper">
-        <div class="navbar navbar-inverse navbar-fixed-top">
-      <div class="navbar-inner">
-        <div class="container-fluid">
-          <a class="repo-link btn btn-primary btn-small" href="https://github.com/encode/django-rest-framework">GitHub</a>
-          <a class="repo-link btn btn-inverse btn-small " rel="next" href="../pagination/">
-            Next <i class="icon-arrow-right icon-white"></i>
-          </a>
-          <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../throttling/">
-            <i class="icon-arrow-left icon-white"></i> Previous
-          </a>
-          <a id="search_modal_show" class="repo-link btn btn-inverse btn-small" href="#mkdocs_search_modal" data-toggle="modal" data-target="#mkdocs_search_modal"><i class="icon-search icon-white"></i> Search</a>
-          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </a>
-          <a class="brand" href="https://www.django-rest-framework.org/">Django REST framework</a>
-          <div class="nav-collapse collapse">
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Django REST framework
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
             
-            <!-- Main navigation -->
-            <ul class="nav navbar-nav">
-               
-              <li >
-                <a href="../..">Home</a>
-              </li>
-                
-              <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tutorial <b class="caret"></b></a>
-                <ul class="dropdown-menu">
-                  
-                  <li >
-                    <a href="../../tutorial/quickstart/">Quickstart</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../tutorial/1-serialization/">1 - Serialization</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../tutorial/2-requests-and-responses/">2 - Requests and responses</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../tutorial/3-class-based-views/">3 - Class based views</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../tutorial/4-authentication-and-permissions/">4 - Authentication and permissions</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../tutorial/5-relationships-and-hyperlinked-apis/">5 - Relationships and hyperlinked APIs</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../tutorial/6-viewsets-and-routers/">6 - Viewsets and routers</a>
-                  </li>
-                  
-                </ul>
-              </li>
-                
-              <li class="dropdown active">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">API Guide <b class="caret"></b></a>
-                <ul class="dropdown-menu">
-                  
-                  <li >
-                    <a href="../requests/">Requests</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../responses/">Responses</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../views/">Views</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../generic-views/">Generic views</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../viewsets/">Viewsets</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../routers/">Routers</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../parsers/">Parsers</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../renderers/">Renderers</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../serializers/">Serializers</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../fields/">Serializer fields</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../relations/">Serializer relations</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../validators/">Validators</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../authentication/">Authentication</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../permissions/">Permissions</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../caching/">Caching</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../throttling/">Throttling</a>
-                  </li>
-                  
-                  <li class="active" >
-                    <a href="./">Filtering</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../pagination/">Pagination</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../versioning/">Versioning</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../content-negotiation/">Content negotiation</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../metadata/">Metadata</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../schemas/">Schemas</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../format-suffixes/">Format suffixes</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../reverse/">Returning URLs</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../exceptions/">Exceptions</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../status-codes/">Status codes</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../testing/">Testing</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../settings/">Settings</a>
-                  </li>
-                  
-                </ul>
-              </li>
-                
-              <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Topics <b class="caret"></b></a>
-                <ul class="dropdown-menu">
-                  
-                  <li >
-                    <a href="../../topics/documenting-your-api/">Documenting your API</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/internationalization/">Internationalization</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/ajax-csrf-cors/">AJAX, CSRF & CORS</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/html-and-forms/">HTML & Forms</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/browser-enhancements/">Browser Enhancements</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/browsable-api/">The Browsable API</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/rest-hypermedia-hateoas/">REST, Hypermedia & HATEOAS</a>
-                  </li>
-                  
-                </ul>
-              </li>
-                
-              <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Community <b class="caret"></b></a>
-                <ul class="dropdown-menu">
-                  
-                  <li >
-                    <a href="../../community/tutorials-and-resources/">Tutorials and Resources</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/third-party-packages/">Third Party Packages</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/contributing/">Contributing to REST framework</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/project-management/">Project management</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/release-notes/">Release Notes</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.16-announcement/">3.16 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.15-announcement/">3.15 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.14-announcement/">3.14 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.13-announcement/">3.13 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.12-announcement/">3.12 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.11-announcement/">3.11 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.10-announcement/">3.10 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.9-announcement/">3.9 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.8-announcement/">3.8 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.7-announcement/">3.7 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.6-announcement/">3.6 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.5-announcement/">3.5 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.4-announcement/">3.4 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.3-announcement/">3.3 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.2-announcement/">3.2 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.1-announcement/">3.1 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.0-announcement/">3.0 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/kickstarter-announcement/">Kickstarter Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/mozilla-grant/">Mozilla Grant</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/jobs/">Jobs</a>
-                  </li>
-                  
-                </ul>
-              </li>
-               
-
-            </ul>
+              Filtering
             
-          </div>
-          <!--/.nav-collapse -->
-
+          </span>
         </div>
       </div>
     </div>
-
-    <div class="body-content">
-      <div class="container-fluid">
-        <!-- Search Modal -->
-        <div id="mkdocs_search_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            <h3 id="myModalLabel">Documentation search</h3>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m14.3 16-.7-2h-3.2l-.7 2H7.8L11 7h2l3.2 9zM20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12zm-9.15 3.96h2.3L12 9z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
           </div>
-
-          <div class="modal-body">
-            <form role="form" autocomplete="off">
-              <div class="form-group">
-                <input type="text" name="q" class="form-control" placeholder="Search..." id="mkdocs-search-query">
-              </div>
-            </form>
-            <div id="mkdocs-search-results"></div>
-          </div>
-
-          <div class="modal-footer">
-            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/encode/django-rest-framework" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
 
-        <div class="row-fluid">
-          <div class="span3">
-            <div id="table-of-contents">
-              <ul class="nav nav-list side-nav well sidebar-nav-fixed">
-                
+      </a>
+    </li>
+  
 
-                
-                  <li class="main">
-                    <a href="#filtering">Filtering</a>
-                  </li>
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../tutorial/quickstart/" class="md-tabs__link">
+          
+  
+  
+  Tutorial
 
-                  
-                    <li>
-                      <a href="#filtering-against-the-current-user">Filtering against the current user</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#filtering-against-the-url">Filtering against the URL</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#filtering-against-query-parameters">Filtering against query parameters</a>
-                    </li>
-                  
-                
-                  <li class="main">
-                    <a href="#generic-filtering">Generic Filtering</a>
-                  </li>
+        </a>
+      </li>
+    
+  
 
-                  
-                    <li>
-                      <a href="#setting-filter-backends">Setting filter backends</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#filtering-and-object-lookups">Filtering and object lookups</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#overriding-the-initial-queryset">Overriding the initial queryset</a>
-                    </li>
-                  
-                
-                  <li class="main">
-                    <a href="#api-guide">API Guide</a>
-                  </li>
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../requests/" class="md-tabs__link">
+          
+  
+  
+  API Guide
 
-                  
-                    <li>
-                      <a href="#djangofilterbackend">DjangoFilterBackend</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#searchfilter">SearchFilter</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#orderingfilter">OrderingFilter</a>
-                    </li>
-                  
-                
-                  <li class="main">
-                    <a href="#custom-generic-filtering">Custom generic filtering</a>
-                  </li>
+        </a>
+      </li>
+    
+  
 
-                  
-                    <li>
-                      <a href="#example">Example</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#customizing-the-interface">Customizing the interface</a>
-                    </li>
-                  
-                
-                  <li class="main">
-                    <a href="#third-party-packages">Third party packages</a>
-                  </li>
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../topics/documenting-your-api/" class="md-tabs__link">
+          
+  
+  
+  Topics
 
-                  
-                    <li>
-                      <a href="#django-rest-framework-filters-package">Django REST framework filters package</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#django-rest-framework-full-word-search-filter">Django REST framework full word search filter</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#django-url-filter">Django URL Filter</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#drf-url-filters">drf-url-filters</a>
-                    </li>
-                  
-                
+        </a>
+      </li>
+    
+  
 
-                  <div class="promo">
-                    <hr/>
-                    <div id="sidebarInclude">
-                  </div>
-              </ul>
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../community/tutorials-and-resources/" class="md-tabs__link">
+          
+  
+  
+  Community
 
-            </div>
-          </div>
+        </a>
+      </li>
+    
+  
 
-          <div id="main-content" class="span9">
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Django REST framework" class="md-nav__button md-logo" aria-label="Django REST framework" data-md-component="logo">
+      
+  <img src="../../theme/img/logo.png" alt="logo">
+
+    </a>
+    Django REST framework
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/encode/django-rest-framework" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorial
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tutorial
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
             
               
                 
-                  <a class="github" href="https://github.com/encode/django-rest-framework/tree/main/rest_framework/filters.py">
-                    <span class="label label-info">filters.py</span>
-                  </a>
-                
-              
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quickstart
+  
 
-              <h1 id="filtering"><a class="toclink" href="#filtering">Filtering</a></h1>
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/1-serialization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1 - Serialization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/2-requests-and-responses/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2 - Requests and responses
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/3-class-based-views/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3 - Class based views
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/4-authentication-and-permissions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4 - Authentication and permissions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/5-relationships-and-hyperlinked-apis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5 - Relationships and hyperlinked APIs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/6-viewsets-and-routers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6 - Viewsets and routers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../requests/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Requests
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../responses/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Responses
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../views/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Views
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../generic-views/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Generic views
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../viewsets/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Viewsets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../routers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Routers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parsers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Parsers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../renderers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Renderers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../serializers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Serializers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../fields/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Serializer fields
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../relations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Serializer relations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../validators/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validators
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../authentication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Authentication
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../permissions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Permissions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../caching/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Caching
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../throttling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Throttling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Filtering
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Filtering
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#filtering-against-the-current-user" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Filtering against the current user
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#filtering-against-the-url" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Filtering against the URL
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#filtering-against-query-parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Filtering against query parameters
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pagination/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pagination
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../versioning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Versioning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../content-negotiation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Content negotiation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../metadata/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Metadata
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../schemas/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Schemas
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../format-suffixes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Format suffixes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reverse/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Returning URLs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../exceptions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Exceptions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../status-codes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Status codes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../settings/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Settings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Topics
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Topics
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../topics/documenting-your-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Documenting your API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../topics/internationalization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Internationalization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../topics/ajax-csrf-cors/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AJAX, CSRF & CORS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../topics/html-and-forms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HTML & Forms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../topics/browser-enhancements/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Browser Enhancements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../topics/browsable-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Browsable API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../topics/rest-hypermedia-hateoas/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    REST, Hypermedia & HATEOAS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Community
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Community
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/tutorials-and-resources/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials and Resources
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/third-party-packages/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Third Party Packages
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing to REST framework
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/project-management/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project management
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/release-notes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release Notes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.16-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.16 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.15-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.15 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.14-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.14 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.13-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.13 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.12-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.12 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.11-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.11 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.10-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.10 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.9-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.9 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.8-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.8 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.7-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.7 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.6-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.6 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.5-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.5 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.4-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.4 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.3-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.3 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.2-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.2 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.1-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.1 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.0-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.0 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/kickstarter-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kickstarter Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/mozilla-grant/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mozilla Grant
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/jobs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Jobs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+                
+
+
+
+  
+
+
+  <nav class="md-path" aria-label="Navigation" >
+    <ol class="md-path__list">
+      
+        
+  
+  
+    <li class="md-path__item">
+      <a href="../.." class="md-path__link">
+        
+  <span class="md-ellipsis">
+    Home
+  </span>
+
+      </a>
+    </li>
+  
+
+      
+      
+        
+  
+  
+    
+    
+      <li class="md-path__item">
+        <a href="../requests/" class="md-path__link">
+          
+  <span class="md-ellipsis">
+    API Guide
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ol>
+  </nav>
+
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="filtering">Filtering<a class="headerlink" href="#filtering" title="Permanent link">&para;</a></h1>
 <blockquote>
 <p>The root QuerySet provided by the Manager describes all objects in the database table.  Usually, though, you'll need to select only a subset of the complete set of objects.</p>
 <p>&mdash; <a href="https://docs.djangoproject.com/en/stable/topics/db/queries/#retrieving-specific-objects-with-filters">Django documentation</a></p>
@@ -533,11 +2681,11 @@
 <p>The default behavior of REST framework's generic list views is to return the entire queryset for a model manager.  Often you will want your API to restrict the items that are returned by the queryset.</p>
 <p>The simplest way to filter the queryset of any view that subclasses <code>GenericAPIView</code> is to override the <code>.get_queryset()</code> method.</p>
 <p>Overriding this method allows you to customize the queryset returned by the view in a number of different ways.</p>
-<h2 id="filtering-against-the-current-user"><a class="toclink" href="#filtering-against-the-current-user">Filtering against the current user</a></h2>
+<h2 id="filtering-against-the-current-user">Filtering against the current user<a class="headerlink" href="#filtering-against-the-current-user" title="Permanent link">&para;</a></h2>
 <p>You might want to filter the queryset to ensure that only results relevant to the currently authenticated user making the request are returned.</p>
 <p>You can do so by filtering based on the value of <code>request.user</code>.</p>
 <p>For example:</p>
-<pre><code>from myapp.models import Purchase
+<div class="language-text highlight"><pre><span></span><code>from myapp.models import Purchase
 from myapp.serializers import PurchaseSerializer
 from rest_framework import generics
 
@@ -545,61 +2693,61 @@ class PurchaseList(generics.ListAPIView):
     serializer_class = PurchaseSerializer
 
     def get_queryset(self):
-        """
+        &quot;&quot;&quot;
         This view should return a list of all the purchases
         for the currently authenticated user.
-        """
+        &quot;&quot;&quot;
         user = self.request.user
         return Purchase.objects.filter(purchaser=user)
-</code></pre>
-<h2 id="filtering-against-the-url"><a class="toclink" href="#filtering-against-the-url">Filtering against the URL</a></h2>
+</code></pre></div>
+<h2 id="filtering-against-the-url">Filtering against the URL<a class="headerlink" href="#filtering-against-the-url" title="Permanent link">&para;</a></h2>
 <p>Another style of filtering might involve restricting the queryset based on some part of the URL.</p>
 <p>For example if your URL config contained an entry like this:</p>
-<pre><code>re_path('^purchases/(?P&lt;username&gt;.+)/$', PurchaseList.as_view()),
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code>re_path(&#39;^purchases/(?P&lt;username&gt;.+)/$&#39;, PurchaseList.as_view()),
+</code></pre></div>
 <p>You could then write a view that returned a purchase queryset filtered by the username portion of the URL:</p>
-<pre><code>class PurchaseList(generics.ListAPIView):
+<div class="language-text highlight"><pre><span></span><code>class PurchaseList(generics.ListAPIView):
     serializer_class = PurchaseSerializer
 
     def get_queryset(self):
-        """
+        &quot;&quot;&quot;
         This view should return a list of all the purchases for
         the user as determined by the username portion of the URL.
-        """
-        username = self.kwargs['username']
+        &quot;&quot;&quot;
+        username = self.kwargs[&#39;username&#39;]
         return Purchase.objects.filter(purchaser__username=username)
-</code></pre>
-<h2 id="filtering-against-query-parameters"><a class="toclink" href="#filtering-against-query-parameters">Filtering against query parameters</a></h2>
+</code></pre></div>
+<h2 id="filtering-against-query-parameters">Filtering against query parameters<a class="headerlink" href="#filtering-against-query-parameters" title="Permanent link">&para;</a></h2>
 <p>A final example of filtering the initial queryset would be to determine the initial queryset based on query parameters in the url.</p>
 <p>We can override <code>.get_queryset()</code> to deal with URLs such as <code>http://example.com/api/purchases?username=denvercoder9</code>, and filter the queryset only if the <code>username</code> parameter is included in the URL:</p>
-<pre><code>class PurchaseList(generics.ListAPIView):
+<div class="language-text highlight"><pre><span></span><code>class PurchaseList(generics.ListAPIView):
     serializer_class = PurchaseSerializer
 
     def get_queryset(self):
-        """
+        &quot;&quot;&quot;
         Optionally restricts the returned purchases to a given user,
         by filtering against a `username` query parameter in the URL.
-        """
+        &quot;&quot;&quot;
         queryset = Purchase.objects.all()
-        username = self.request.query_params.get('username')
+        username = self.request.query_params.get(&#39;username&#39;)
         if username is not None:
             queryset = queryset.filter(purchaser__username=username)
         return queryset
-</code></pre>
+</code></pre></div>
 <hr />
-<h1 id="generic-filtering"><a class="toclink" href="#generic-filtering">Generic Filtering</a></h1>
+<h1 id="generic-filtering">Generic Filtering<a class="headerlink" href="#generic-filtering" title="Permanent link">&para;</a></h1>
 <p>As well as being able to override the default queryset, REST framework also includes support for generic filtering backends that allow you to easily construct complex searches and filters.</p>
 <p>Generic filters can also present themselves as HTML controls in the browsable API and admin API.</p>
 <p><img alt="Filter Example" src="../../img/filter-controls.png" /></p>
-<h2 id="setting-filter-backends"><a class="toclink" href="#setting-filter-backends">Setting filter backends</a></h2>
+<h2 id="setting-filter-backends">Setting filter backends<a class="headerlink" href="#setting-filter-backends" title="Permanent link">&para;</a></h2>
 <p>The default filter backends may be set globally, using the <code>DEFAULT_FILTER_BACKENDS</code> setting. For example.</p>
-<pre><code>REST_FRAMEWORK = {
-    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
+<div class="language-text highlight"><pre><span></span><code>REST_FRAMEWORK = {
+    &#39;DEFAULT_FILTER_BACKENDS&#39;: [&#39;django_filters.rest_framework.DjangoFilterBackend&#39;]
 }
-</code></pre>
+</code></pre></div>
 <p>You can also set the filter backends on a per-view, or per-viewset basis,
 using the <code>GenericAPIView</code> class-based views.</p>
-<pre><code>import django_filters.rest_framework
+<div class="language-text highlight"><pre><span></span><code>import django_filters.rest_framework
 from django.contrib.auth.models import User
 from myapp.serializers import UserSerializer
 from rest_framework import generics
@@ -608,19 +2756,19 @@ class UserListView(generics.ListAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     filter_backends = [django_filters.rest_framework.DjangoFilterBackend]
-</code></pre>
-<h2 id="filtering-and-object-lookups"><a class="toclink" href="#filtering-and-object-lookups">Filtering and object lookups</a></h2>
+</code></pre></div>
+<h2 id="filtering-and-object-lookups">Filtering and object lookups<a class="headerlink" href="#filtering-and-object-lookups" title="Permanent link">&para;</a></h2>
 <p>Note that if a filter backend is configured for a view, then as well as being used to filter list views, it will also be used to filter the querysets used for returning a single object.</p>
 <p>For instance, given the previous example, and a product with an id of <code>4675</code>, the following URL would either return the corresponding object, or return a 404 response, depending on if the filtering conditions were met by the given product instance:</p>
-<pre><code>http://example.com/api/products/4675/?category=clothing&amp;max_price=10.00
-</code></pre>
-<h2 id="overriding-the-initial-queryset"><a class="toclink" href="#overriding-the-initial-queryset">Overriding the initial queryset</a></h2>
+<div class="language-text highlight"><pre><span></span><code>http://example.com/api/products/4675/?category=clothing&amp;max_price=10.00
+</code></pre></div>
+<h2 id="overriding-the-initial-queryset">Overriding the initial queryset<a class="headerlink" href="#overriding-the-initial-queryset" title="Permanent link">&para;</a></h2>
 <p>Note that you can use both an overridden <code>.get_queryset()</code> and generic filtering together, and everything will work as expected.  For example, if <code>Product</code> had a many-to-many relationship with <code>User</code>, named <code>purchase</code>, you might want to write a view like this:</p>
-<pre><code>class PurchasedProductsList(generics.ListAPIView):
-    """
+<div class="language-text highlight"><pre><span></span><code>class PurchasedProductsList(generics.ListAPIView):
+    &quot;&quot;&quot;
     Return a list of all the products that the authenticated
     user has ever purchased, with optional filtering.
-    """
+    &quot;&quot;&quot;
     model = Product
     serializer_class = ProductSerializer
     filterset_class = ProductFilter
@@ -628,69 +2776,69 @@ class UserListView(generics.ListAPIView):
     def get_queryset(self):
         user = self.request.user
         return user.purchase_set.all()
-</code></pre>
+</code></pre></div>
 <hr />
-<h1 id="api-guide"><a class="toclink" href="#api-guide">API Guide</a></h1>
-<h2 id="djangofilterbackend"><a class="toclink" href="#djangofilterbackend">DjangoFilterBackend</a></h2>
+<h1 id="api-guide">API Guide<a class="headerlink" href="#api-guide" title="Permanent link">&para;</a></h1>
+<h2 id="djangofilterbackend">DjangoFilterBackend<a class="headerlink" href="#djangofilterbackend" title="Permanent link">&para;</a></h2>
 <p>The <a href="https://django-filter.readthedocs.io/en/latest/index.html"><code>django-filter</code></a> library includes a <code>DjangoFilterBackend</code> class which
 supports highly customizable field filtering for REST framework.</p>
 <p>To use <code>DjangoFilterBackend</code>, first install <code>django-filter</code>.</p>
-<pre><code>pip install django-filter
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code>pip install django-filter
+</code></pre></div>
 <p>Then add <code>'django_filters'</code> to Django's <code>INSTALLED_APPS</code>:</p>
-<pre><code>INSTALLED_APPS = [
+<div class="language-text highlight"><pre><span></span><code>INSTALLED_APPS = [
     ...
-    'django_filters',
+    &#39;django_filters&#39;,
     ...
 ]
-</code></pre>
+</code></pre></div>
 <p>You should now either add the filter backend to your settings:</p>
-<pre><code>REST_FRAMEWORK = {
-    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
+<div class="language-text highlight"><pre><span></span><code>REST_FRAMEWORK = {
+    &#39;DEFAULT_FILTER_BACKENDS&#39;: [&#39;django_filters.rest_framework.DjangoFilterBackend&#39;]
 }
-</code></pre>
+</code></pre></div>
 <p>Or add the filter backend to an individual View or ViewSet.</p>
-<pre><code>from django_filters.rest_framework import DjangoFilterBackend
+<div class="language-text highlight"><pre><span></span><code>from django_filters.rest_framework import DjangoFilterBackend
 
 class UserListView(generics.ListAPIView):
     ...
     filter_backends = [DjangoFilterBackend]
-</code></pre>
+</code></pre></div>
 <p>If all you need is simple equality-based filtering, you can set a <code>filterset_fields</code> attribute on the view, or viewset, listing the set of fields you wish to filter against.</p>
-<pre><code>class ProductList(generics.ListAPIView):
+<div class="language-text highlight"><pre><span></span><code>class ProductList(generics.ListAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['category', 'in_stock']
-</code></pre>
+    filterset_fields = [&#39;category&#39;, &#39;in_stock&#39;]
+</code></pre></div>
 <p>This will automatically create a <code>FilterSet</code> class for the given fields, and will allow you to make requests such as:</p>
-<pre><code>http://example.com/api/products?category=clothing&amp;in_stock=True
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code>http://example.com/api/products?category=clothing&amp;in_stock=True
+</code></pre></div>
 <p>For more advanced filtering requirements you can specify a <code>FilterSet</code> class that should be used by the view.
 You can read more about <code>FilterSet</code>s in the <a href="https://django-filter.readthedocs.io/en/latest/index.html">django-filter documentation</a>.
 It's also recommended that you read the section on <a href="https://django-filter.readthedocs.io/en/latest/guide/rest_framework.html">DRF integration</a>.</p>
-<h2 id="searchfilter"><a class="toclink" href="#searchfilter">SearchFilter</a></h2>
+<h2 id="searchfilter">SearchFilter<a class="headerlink" href="#searchfilter" title="Permanent link">&para;</a></h2>
 <p>The <code>SearchFilter</code> class supports simple single query parameter based searching, and is based on the <a href="https://docs.djangoproject.com/en/stable/ref/contrib/admin/#django.contrib.admin.ModelAdmin.search_fields">Django admin's search functionality</a>.</p>
 <p>When in use, the browsable API will include a <code>SearchFilter</code> control:</p>
 <p><img alt="Search Filter" src="../../img/search-filter.png" /></p>
 <p>The <code>SearchFilter</code> class will only be applied if the view has a <code>search_fields</code> attribute set.  The <code>search_fields</code> attribute should be a list of names of text type fields on the model, such as <code>CharField</code> or <code>TextField</code>.</p>
-<pre><code>from rest_framework import filters
+<div class="language-text highlight"><pre><span></span><code>from rest_framework import filters
 
 class UserListView(generics.ListAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     filter_backends = [filters.SearchFilter]
-    search_fields = ['username', 'email']
-</code></pre>
+    search_fields = [&#39;username&#39;, &#39;email&#39;]
+</code></pre></div>
 <p>This will allow the client to filter the items in the list by making queries such as:</p>
-<pre><code>http://example.com/api/users?search=russell
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code>http://example.com/api/users?search=russell
+</code></pre></div>
 <p>You can also perform a related lookup on a ForeignKey or ManyToManyField with the lookup API double-underscore notation:</p>
-<pre><code>search_fields = ['username', 'email', 'profile__profession']
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code>search_fields = [&#39;username&#39;, &#39;email&#39;, &#39;profile__profession&#39;]
+</code></pre></div>
 <p>For <a href="https://docs.djangoproject.com/en/stable/ref/models/fields/#django.db.models.JSONField">JSONField</a> and <a href="https://docs.djangoproject.com/en/stable/ref/contrib/postgres/fields/#hstorefield">HStoreField</a> fields you can filter based on nested values within the data structure using the same double-underscore notation:</p>
-<pre><code>search_fields = ['data__breed', 'data__owner__other_pets__0__name']
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code>search_fields = [&#39;data__breed&#39;, &#39;data__owner__other_pets__0__name&#39;]
+</code></pre></div>
 <p>By default, searches will use case-insensitive partial matches. The search parameter may contain multiple search terms, which should be whitespace and/or comma separated. If multiple search terms are used then objects will be returned in the list only if all the provided terms are matched. Searches may contain <em>quoted phrases</em> with spaces, each phrase is considered as a single search term.</p>
 <p>The search behavior may be specified by prefixing field names in <code>search_fields</code> with one of the following characters (which is equivalent to adding <code>__&lt;lookup&gt;</code> to the field):</p>
 <table>
@@ -730,141 +2878,169 @@ class UserListView(generics.ListAPIView):
 </tbody>
 </table>
 <p>For example:</p>
-<pre><code>search_fields = ['=username', '=email']
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code>search_fields = [&#39;=username&#39;, &#39;=email&#39;]
+</code></pre></div>
 <p>By default, the search parameter is named <code>'search'</code>, but this may be overridden with the <code>SEARCH_PARAM</code> setting in the <code>REST_FRAMEWORK</code> configuration.</p>
 <p>To dynamically change search fields based on request content, it's possible to subclass the <code>SearchFilter</code> and override the <code>get_search_fields()</code> function. For example, the following subclass will only search on <code>title</code> if the query parameter <code>title_only</code> is in the request:</p>
-<pre><code>from rest_framework import filters
+<div class="language-text highlight"><pre><span></span><code>from rest_framework import filters
 
 class CustomSearchFilter(filters.SearchFilter):
     def get_search_fields(self, view, request):
-        if request.query_params.get('title_only'):
-            return ['title']
+        if request.query_params.get(&#39;title_only&#39;):
+            return [&#39;title&#39;]
         return super().get_search_fields(view, request)
-</code></pre>
+</code></pre></div>
 <p>For more details, see the <a href="https://docs.djangoproject.com/en/stable/ref/contrib/admin/#django.contrib.admin.ModelAdmin.search_fields">Django documentation</a>.</p>
 <hr />
-<h2 id="orderingfilter"><a class="toclink" href="#orderingfilter">OrderingFilter</a></h2>
+<h2 id="orderingfilter">OrderingFilter<a class="headerlink" href="#orderingfilter" title="Permanent link">&para;</a></h2>
 <p>The <code>OrderingFilter</code> class supports simple query parameter controlled ordering of results.</p>
 <p><img alt="Ordering Filter" src="../../img/ordering-filter.png" /></p>
 <p>By default, the query parameter is named <code>'ordering'</code>, but this may be overridden with the <code>ORDERING_PARAM</code> setting in the <code>REST_FRAMEWORK</code> configuration.</p>
 <p>For example, to order users by username:</p>
-<pre><code>http://example.com/api/users?ordering=username
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code>http://example.com/api/users?ordering=username
+</code></pre></div>
 <p>The client may also specify reverse orderings by prefixing the field name with '-', like so:</p>
-<pre><code>http://example.com/api/users?ordering=-username
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code>http://example.com/api/users?ordering=-username
+</code></pre></div>
 <p>Multiple orderings may also be specified:</p>
-<pre><code>http://example.com/api/users?ordering=account,username
-</code></pre>
-<h3 id="specifying-which-fields-may-be-ordered-against"><a class="toclink" href="#specifying-which-fields-may-be-ordered-against">Specifying which fields may be ordered against</a></h3>
+<div class="language-text highlight"><pre><span></span><code>http://example.com/api/users?ordering=account,username
+</code></pre></div>
+<h3 id="specifying-which-fields-may-be-ordered-against">Specifying which fields may be ordered against<a class="headerlink" href="#specifying-which-fields-may-be-ordered-against" title="Permanent link">&para;</a></h3>
 <p>It's recommended that you explicitly specify which fields the API should allow in the ordering filter.  You can do this by setting an <code>ordering_fields</code> attribute on the view, like so:</p>
-<pre><code>class UserListView(generics.ListAPIView):
+<div class="language-text highlight"><pre><span></span><code>class UserListView(generics.ListAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     filter_backends = [filters.OrderingFilter]
-    ordering_fields = ['username', 'email']
-</code></pre>
+    ordering_fields = [&#39;username&#39;, &#39;email&#39;]
+</code></pre></div>
 <p>This helps prevent unexpected data leakage, such as allowing users to order against a password hash field or other sensitive data.</p>
 <p>If you <em>don't</em> specify an <code>ordering_fields</code> attribute on the view, the filter class will default to allowing the user to filter on any readable fields on the serializer specified by the <code>serializer_class</code> attribute.</p>
 <p>If you are confident that the queryset being used by the view doesn't contain any sensitive data, you can also explicitly specify that a view should allow ordering on <em>any</em> model field or queryset aggregate, by using the special value <code>'__all__'</code>.</p>
-<pre><code>class BookingsListView(generics.ListAPIView):
+<div class="language-text highlight"><pre><span></span><code>class BookingsListView(generics.ListAPIView):
     queryset = Booking.objects.all()
     serializer_class = BookingSerializer
     filter_backends = [filters.OrderingFilter]
-    ordering_fields = '__all__'
-</code></pre>
-<h3 id="specifying-a-default-ordering"><a class="toclink" href="#specifying-a-default-ordering">Specifying a default ordering</a></h3>
+    ordering_fields = &#39;__all__&#39;
+</code></pre></div>
+<h3 id="specifying-a-default-ordering">Specifying a default ordering<a class="headerlink" href="#specifying-a-default-ordering" title="Permanent link">&para;</a></h3>
 <p>If an <code>ordering</code> attribute is set on the view, this will be used as the default ordering.</p>
 <p>Typically you'd instead control this by setting <code>order_by</code> on the initial queryset, but using the <code>ordering</code> parameter on the view allows you to specify the ordering in a way that it can then be passed automatically as context to a rendered template.  This makes it possible to automatically render column headers differently if they are being used to order the results.</p>
-<pre><code>class UserListView(generics.ListAPIView):
+<div class="language-text highlight"><pre><span></span><code>class UserListView(generics.ListAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     filter_backends = [filters.OrderingFilter]
-    ordering_fields = ['username', 'email']
-    ordering = ['username']
-</code></pre>
+    ordering_fields = [&#39;username&#39;, &#39;email&#39;]
+    ordering = [&#39;username&#39;]
+</code></pre></div>
 <p>The <code>ordering</code> attribute may be either a string or a list/tuple of strings.</p>
 <hr />
-<h1 id="custom-generic-filtering"><a class="toclink" href="#custom-generic-filtering">Custom generic filtering</a></h1>
+<h1 id="custom-generic-filtering">Custom generic filtering<a class="headerlink" href="#custom-generic-filtering" title="Permanent link">&para;</a></h1>
 <p>You can also provide your own generic filtering backend, or write an installable app for other developers to use.</p>
 <p>To do so override <code>BaseFilterBackend</code>, and override the <code>.filter_queryset(self, request, queryset, view)</code> method.  The method should return a new, filtered queryset.</p>
 <p>As well as allowing clients to perform searches and filtering, generic filter backends can be useful for restricting which objects should be visible to any given request or user.</p>
-<h2 id="example"><a class="toclink" href="#example">Example</a></h2>
+<h2 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h2>
 <p>For example, you might need to restrict users to only being able to see objects they created.</p>
-<pre><code>class IsOwnerFilterBackend(filters.BaseFilterBackend):
-    """
+<div class="language-text highlight"><pre><span></span><code>class IsOwnerFilterBackend(filters.BaseFilterBackend):
+    &quot;&quot;&quot;
     Filter that only allows users to see their own objects.
-    """
+    &quot;&quot;&quot;
     def filter_queryset(self, request, queryset, view):
         return queryset.filter(owner=request.user)
-</code></pre>
+</code></pre></div>
 <p>We could achieve the same behavior by overriding <code>get_queryset()</code> on the views, but using a filter backend allows you to more easily add this restriction to multiple views, or to apply it across the entire API.</p>
-<h2 id="customizing-the-interface"><a class="toclink" href="#customizing-the-interface">Customizing the interface</a></h2>
+<h2 id="customizing-the-interface">Customizing the interface<a class="headerlink" href="#customizing-the-interface" title="Permanent link">&para;</a></h2>
 <p>Generic filters may also present an interface in the browsable API. To do so you should implement a <code>to_html()</code> method which returns a rendered HTML representation of the filter. This method should have the following signature:</p>
 <p><code>to_html(self, request, queryset, view)</code></p>
 <p>The method should return a rendered HTML string.</p>
-<h1 id="third-party-packages"><a class="toclink" href="#third-party-packages">Third party packages</a></h1>
+<h1 id="third-party-packages">Third party packages<a class="headerlink" href="#third-party-packages" title="Permanent link">&para;</a></h1>
 <p>The following third party packages provide additional filter implementations.</p>
-<h2 id="django-rest-framework-filters-package"><a class="toclink" href="#django-rest-framework-filters-package">Django REST framework filters package</a></h2>
+<h2 id="django-rest-framework-filters-package">Django REST framework filters package<a class="headerlink" href="#django-rest-framework-filters-package" title="Permanent link">&para;</a></h2>
 <p>The <a href="https://github.com/philipn/django-rest-framework-filters">django-rest-framework-filters package</a> works together with the <code>DjangoFilterBackend</code> class, and allows you to easily create filters across relationships, or create multiple filter lookup types for a given field.</p>
-<h2 id="django-rest-framework-full-word-search-filter"><a class="toclink" href="#django-rest-framework-full-word-search-filter">Django REST framework full word search filter</a></h2>
+<h2 id="django-rest-framework-full-word-search-filter">Django REST framework full word search filter<a class="headerlink" href="#django-rest-framework-full-word-search-filter" title="Permanent link">&para;</a></h2>
 <p>The <a href="https://github.com/trollknurr/django-rest-framework-word-search-filter">djangorestframework-word-filter</a> developed as alternative to <code>filters.SearchFilter</code> which will search full word in text, or exact match.</p>
-<h2 id="django-url-filter"><a class="toclink" href="#django-url-filter">Django URL Filter</a></h2>
+<h2 id="django-url-filter">Django URL Filter<a class="headerlink" href="#django-url-filter" title="Permanent link">&para;</a></h2>
 <p><a href="https://github.com/miki725/django-url-filter">django-url-filter</a> provides a safe way to filter data via human-friendly URLs. It works very similar to DRF serializers and fields in a sense that they can be nested except they are called filtersets and filters. That provides easy way to filter related data. Also this library is generic-purpose so it can be used to filter other sources of data and not only Django <code>QuerySet</code>s.</p>
-<h2 id="drf-url-filters"><a class="toclink" href="#drf-url-filters">drf-url-filters</a></h2>
+<h2 id="drf-url-filters">drf-url-filters<a class="headerlink" href="#drf-url-filters" title="Permanent link">&para;</a></h2>
 <p><a href="https://github.com/manjitkumar/drf-url-filters">drf-url-filter</a> is a simple Django app to apply filters on drf <code>ModelViewSet</code>'s <code>Queryset</code> in a clean, simple and configurable way. It also supports validations on incoming query params and their values. A beautiful python package <code>Voluptuous</code> is being used for validations on the incoming query parameters. The best part about voluptuous is you can define your own validations as per your query params requirements.</p>
-            
 
-          </div> <!--/span-->
-        </div> <!--/row-->
-      </div> <!--/.fluid-container-->
-    </div> <!--/.body content-->
-    <div id="push"></div>
-  </div> <!--/.wrapper -->
 
-  <footer class="span12">
-    <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.
-    </p>
-  </footer>
 
-  <!-- Le javascript
-  ================================================== -->
-  <!-- Placed at the end of the document so the pages load faster -->
-  <script async src="https://fund.django-rest-framework.org/sidebar_include.js"></script>
-  <script src="../../js/jquery-1.8.1-min.js"></script>
-  <script src="../../js/prettify-1.0.js"></script>
-  <script src="../../js/bootstrap-2.1.1-min.js"></script>
-  <script src="../../js/theme.js"></script>
 
-  <script>var base_url = '../..';</script>
+
+
+
   
-  <script src="../../js/copy-button.js" defer></script>
-  
-  <script src="../../search/main.js" defer></script>
   
 
-  <script>
-    var shiftWindow = function() {
-      scrollBy(0, -50)
-    };
 
-    if (location.hash) shiftWindow();
-    window.addEventListener("hashchange", shiftWindow);
 
-    $('.dropdown-menu').on('click touchstart', function(event) {
-      event.stopPropagation();
-    });
 
-    // Dynamically force sidenav/dropdown to no higher than browser window
-    $('.side-nav, .dropdown-menu').css('max-height', window.innerHeight - 130);
 
-    $(function() {
-      $(window).resize(function() {
-        $('.side-nav, .dropdown-menu').css('max-height', window.innerHeight - 130);
-      });
-    });
-  </script>
-</body>
 
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+      <div class="md-progress" data-md-component="progress" role="progressbar"></div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["content.tabs.link", "content.code.annotate", "content.code.copy", "navigation.tabs", "navigation.tabs.sticky", "navigation.instant", "navigation.instant.prefetch", "navigation.instant.progress", "navigation.path", "navigation.sections", "navigation.top", "navigation.tracking", "search.suggest", "toc.follow", "toc.integrate"], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+    
+      <script src="../../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+        <script src="../../theme/js/prettify-1.0.js"></script>
+      
+    
+    <script>
+        document$.subscribe(function() {
+            document.querySelectorAll('pre code').forEach(code => {
+                code.parentElement.classList.add('prettyprint', 'well');
+            });
+            prettyPrint();
+        });
+    </script>
+
+  </body>
 </html>

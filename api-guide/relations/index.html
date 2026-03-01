@@ -1,555 +1,2657 @@
-<!DOCTYPE html>
-<html lang="en">
 
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <meta charset="utf-8">
-  <title>Serializer relations - Django REST framework</title>
-  <link href="../../img/favicon.ico" rel="icon" type="image/x-icon">
-  <link rel="canonical" href="https://www.django-rest-framework.org/api-guide/relations/" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Django, API, REST, Serializer relations">
-  <meta name="author" content="Tom Christie">
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Django REST framework - Web APIs for Django">
+      
+      
+      
+        <link rel="canonical" href="https://www.django-rest-framework.org/api-guide/relations/">
+      
+      
+        <link rel="prev" href="../fields/">
+      
+      
+        <link rel="next" href="../validators/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../theme/img/favicon.ico">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+    
+    
+      
+        <title>Serializer relations - Django REST framework</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.618322db.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
 
-  <!-- Le styles -->
-  <link href="../../css/prettify.css" rel="stylesheet">
-  <link href="../../css/bootstrap.css" rel="stylesheet">
-  <link href="../../css/bootstrap-responsive.css" rel="stylesheet">
-  <link href="../../css/default.css" rel="stylesheet">
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../theme/stylesheets/extra.css">
+    
+      <link rel="stylesheet" href="../../theme/stylesheets/prettify.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
   
-    <link href="../../css/copy-button.css" rel="stylesheet">
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#serializer-relations" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
   
 
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Django REST framework" class="md-header__button md-logo" aria-label="Django REST framework" data-md-component="logo">
+      
+  <img src="../../theme/img/logo.png" alt="logo">
 
-  <script type="text/javascript">
-    var _gaq = _gaq || [];
-    _gaq.push(['_setAccount', 'UA-18852272-2']);
-    _gaq.push(['_trackPageview']);
-
-    (function() {
-      var ga = document.createElement('script');
-      ga.type = 'text/javascript';
-      ga.async = true;
-      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-      var s = document.getElementsByTagName('script')[0];
-      s.parentNode.insertBefore(ga, s);
-    })();
-  </script>
-
-  <style>
-  #sidebarInclude img {
-      margin-bottom: 10px;
-  }
-  #sidebarInclude a.promo {
-      color: black;
-  }
-    @media (max-width: 767px) {
-      div.promo {
-        display: none;
-      }
-    }
-  </style>
-</head>
-<body onload="prettyPrint()" class="-page">
-
-  <div class="wrapper">
-        <div class="navbar navbar-inverse navbar-fixed-top">
-      <div class="navbar-inner">
-        <div class="container-fluid">
-          <a class="repo-link btn btn-primary btn-small" href="https://github.com/encode/django-rest-framework">GitHub</a>
-          <a class="repo-link btn btn-inverse btn-small " rel="next" href="../validators/">
-            Next <i class="icon-arrow-right icon-white"></i>
-          </a>
-          <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../fields/">
-            <i class="icon-arrow-left icon-white"></i> Previous
-          </a>
-          <a id="search_modal_show" class="repo-link btn btn-inverse btn-small" href="#mkdocs_search_modal" data-toggle="modal" data-target="#mkdocs_search_modal"><i class="icon-search icon-white"></i> Search</a>
-          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </a>
-          <a class="brand" href="https://www.django-rest-framework.org/">Django REST framework</a>
-          <div class="nav-collapse collapse">
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Django REST framework
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
             
-            <!-- Main navigation -->
-            <ul class="nav navbar-nav">
-               
-              <li >
-                <a href="../..">Home</a>
-              </li>
-                
-              <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tutorial <b class="caret"></b></a>
-                <ul class="dropdown-menu">
-                  
-                  <li >
-                    <a href="../../tutorial/quickstart/">Quickstart</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../tutorial/1-serialization/">1 - Serialization</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../tutorial/2-requests-and-responses/">2 - Requests and responses</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../tutorial/3-class-based-views/">3 - Class based views</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../tutorial/4-authentication-and-permissions/">4 - Authentication and permissions</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../tutorial/5-relationships-and-hyperlinked-apis/">5 - Relationships and hyperlinked APIs</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../tutorial/6-viewsets-and-routers/">6 - Viewsets and routers</a>
-                  </li>
-                  
-                </ul>
-              </li>
-                
-              <li class="dropdown active">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">API Guide <b class="caret"></b></a>
-                <ul class="dropdown-menu">
-                  
-                  <li >
-                    <a href="../requests/">Requests</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../responses/">Responses</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../views/">Views</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../generic-views/">Generic views</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../viewsets/">Viewsets</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../routers/">Routers</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../parsers/">Parsers</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../renderers/">Renderers</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../serializers/">Serializers</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../fields/">Serializer fields</a>
-                  </li>
-                  
-                  <li class="active" >
-                    <a href="./">Serializer relations</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../validators/">Validators</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../authentication/">Authentication</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../permissions/">Permissions</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../caching/">Caching</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../throttling/">Throttling</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../filtering/">Filtering</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../pagination/">Pagination</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../versioning/">Versioning</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../content-negotiation/">Content negotiation</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../metadata/">Metadata</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../schemas/">Schemas</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../format-suffixes/">Format suffixes</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../reverse/">Returning URLs</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../exceptions/">Exceptions</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../status-codes/">Status codes</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../testing/">Testing</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../settings/">Settings</a>
-                  </li>
-                  
-                </ul>
-              </li>
-                
-              <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Topics <b class="caret"></b></a>
-                <ul class="dropdown-menu">
-                  
-                  <li >
-                    <a href="../../topics/documenting-your-api/">Documenting your API</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/internationalization/">Internationalization</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/ajax-csrf-cors/">AJAX, CSRF & CORS</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/html-and-forms/">HTML & Forms</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/browser-enhancements/">Browser Enhancements</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/browsable-api/">The Browsable API</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/rest-hypermedia-hateoas/">REST, Hypermedia & HATEOAS</a>
-                  </li>
-                  
-                </ul>
-              </li>
-                
-              <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Community <b class="caret"></b></a>
-                <ul class="dropdown-menu">
-                  
-                  <li >
-                    <a href="../../community/tutorials-and-resources/">Tutorials and Resources</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/third-party-packages/">Third Party Packages</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/contributing/">Contributing to REST framework</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/project-management/">Project management</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/release-notes/">Release Notes</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.16-announcement/">3.16 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.15-announcement/">3.15 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.14-announcement/">3.14 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.13-announcement/">3.13 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.12-announcement/">3.12 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.11-announcement/">3.11 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.10-announcement/">3.10 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.9-announcement/">3.9 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.8-announcement/">3.8 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.7-announcement/">3.7 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.6-announcement/">3.6 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.5-announcement/">3.5 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.4-announcement/">3.4 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.3-announcement/">3.3 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.2-announcement/">3.2 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.1-announcement/">3.1 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.0-announcement/">3.0 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/kickstarter-announcement/">Kickstarter Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/mozilla-grant/">Mozilla Grant</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/jobs/">Jobs</a>
-                  </li>
-                  
-                </ul>
-              </li>
-               
-
-            </ul>
+              Serializer relations
             
-          </div>
-          <!--/.nav-collapse -->
-
+          </span>
         </div>
       </div>
     </div>
-
-    <div class="body-content">
-      <div class="container-fluid">
-        <!-- Search Modal -->
-        <div id="mkdocs_search_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            <h3 id="myModalLabel">Documentation search</h3>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m14.3 16-.7-2h-3.2l-.7 2H7.8L11 7h2l3.2 9zM20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12zm-9.15 3.96h2.3L12 9z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
           </div>
-
-          <div class="modal-body">
-            <form role="form" autocomplete="off">
-              <div class="form-group">
-                <input type="text" name="q" class="form-control" placeholder="Search..." id="mkdocs-search-query">
-              </div>
-            </form>
-            <div id="mkdocs-search-results"></div>
-          </div>
-
-          <div class="modal-footer">
-            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/encode/django-rest-framework" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
 
-        <div class="row-fluid">
-          <div class="span3">
-            <div id="table-of-contents">
-              <ul class="nav nav-list side-nav well sidebar-nav-fixed">
-                
+      </a>
+    </li>
+  
 
-                
-                  <li class="main">
-                    <a href="#serializer-relations">Serializer relations</a>
-                  </li>
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../tutorial/quickstart/" class="md-tabs__link">
+          
+  
+  
+  Tutorial
 
-                  
-                    <li>
-                      <a href="#inspecting-relationships">Inspecting relationships.</a>
-                    </li>
-                  
-                
-                  <li class="main">
-                    <a href="#api-reference">API Reference</a>
-                  </li>
+        </a>
+      </li>
+    
+  
 
-                  
-                    <li>
-                      <a href="#stringrelatedfield">StringRelatedField</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#primarykeyrelatedfield">PrimaryKeyRelatedField</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#hyperlinkedrelatedfield">HyperlinkedRelatedField</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#slugrelatedfield">SlugRelatedField</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#hyperlinkedidentityfield">HyperlinkedIdentityField</a>
-                    </li>
-                  
-                
-                  <li class="main">
-                    <a href="#nested-relationships">Nested relationships</a>
-                  </li>
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../requests/" class="md-tabs__link">
+          
+  
+  
+  API Guide
 
-                  
-                    <li>
-                      <a href="#example">Example</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#writable-nested-serializers">Writable nested serializers</a>
-                    </li>
-                  
-                
-                  <li class="main">
-                    <a href="#custom-relational-fields">Custom relational fields</a>
-                  </li>
+        </a>
+      </li>
+    
+  
 
-                  
-                    <li>
-                      <a href="#example_1">Example</a>
-                    </li>
-                  
-                
-                  <li class="main">
-                    <a href="#custom-hyperlinked-fields">Custom hyperlinked fields</a>
-                  </li>
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../topics/documenting-your-api/" class="md-tabs__link">
+          
+  
+  
+  Topics
 
-                  
-                    <li>
-                      <a href="#example_2">Example</a>
-                    </li>
-                  
-                
-                  <li class="main">
-                    <a href="#further-notes">Further notes</a>
-                  </li>
+        </a>
+      </li>
+    
+  
 
-                  
-                    <li>
-                      <a href="#the-queryset-argument">The queryset argument</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#customizing-the-html-display">Customizing the HTML display</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#select-field-cutoffs">Select field cutoffs</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#reverse-relations">Reverse relations</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#generic-relationships">Generic relationships</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#manytomanyfields-with-a-through-model">ManyToManyFields with a Through Model</a>
-                    </li>
-                  
-                
-                  <li class="main">
-                    <a href="#third-party-packages">Third Party Packages</a>
-                  </li>
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../community/tutorials-and-resources/" class="md-tabs__link">
+          
+  
+  
+  Community
 
-                  
-                    <li>
-                      <a href="#drf-nested-routers">DRF Nested Routers</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#rest-framework-generic-relations">Rest Framework Generic Relations</a>
-                    </li>
-                  
-                
+        </a>
+      </li>
+    
+  
 
-                  <div class="promo">
-                    <hr/>
-                    <div id="sidebarInclude">
-                  </div>
-              </ul>
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
 
-            </div>
-          </div>
 
-          <div id="main-content" class="span9">
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Django REST framework" class="md-nav__button md-logo" aria-label="Django REST framework" data-md-component="logo">
+      
+  <img src="../../theme/img/logo.png" alt="logo">
+
+    </a>
+    Django REST framework
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/encode/django-rest-framework" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorial
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tutorial
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
             
               
                 
-                  <a class="github" href="https://github.com/encode/django-rest-framework/tree/main/rest_framework/relations.py">
-                    <span class="label label-info">relations.py</span>
-                  </a>
-                
-              
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quickstart
+  
 
-              <h1 id="serializer-relations"><a class="toclink" href="#serializer-relations">Serializer relations</a></h1>
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/1-serialization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1 - Serialization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/2-requests-and-responses/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2 - Requests and responses
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/3-class-based-views/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3 - Class based views
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/4-authentication-and-permissions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4 - Authentication and permissions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/5-relationships-and-hyperlinked-apis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5 - Relationships and hyperlinked APIs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/6-viewsets-and-routers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6 - Viewsets and routers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../requests/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Requests
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../responses/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Responses
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../views/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Views
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../generic-views/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Generic views
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../viewsets/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Viewsets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../routers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Routers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parsers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Parsers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../renderers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Renderers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../serializers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Serializers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../fields/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Serializer fields
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Serializer relations
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Serializer relations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#inspecting-relationships" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Inspecting relationships.
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../validators/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validators
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../authentication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Authentication
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../permissions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Permissions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../caching/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Caching
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../throttling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Throttling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../filtering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Filtering
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pagination/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pagination
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../versioning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Versioning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../content-negotiation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Content negotiation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../metadata/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Metadata
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../schemas/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Schemas
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../format-suffixes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Format suffixes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reverse/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Returning URLs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../exceptions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Exceptions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../status-codes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Status codes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../settings/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Settings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Topics
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Topics
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../topics/documenting-your-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Documenting your API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../topics/internationalization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Internationalization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../topics/ajax-csrf-cors/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AJAX, CSRF & CORS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../topics/html-and-forms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HTML & Forms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../topics/browser-enhancements/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Browser Enhancements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../topics/browsable-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Browsable API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../topics/rest-hypermedia-hateoas/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    REST, Hypermedia & HATEOAS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Community
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Community
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/tutorials-and-resources/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials and Resources
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/third-party-packages/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Third Party Packages
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing to REST framework
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/project-management/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project management
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/release-notes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release Notes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.16-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.16 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.15-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.15 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.14-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.14 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.13-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.13 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.12-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.12 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.11-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.11 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.10-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.10 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.9-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.9 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.8-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.8 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.7-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.7 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.6-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.6 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.5-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.5 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.4-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.4 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.3-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.3 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.2-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.2 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.1-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.1 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.0-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.0 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/kickstarter-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kickstarter Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/mozilla-grant/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mozilla Grant
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/jobs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Jobs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+                
+
+
+
+  
+
+
+  <nav class="md-path" aria-label="Navigation" >
+    <ol class="md-path__list">
+      
+        
+  
+  
+    <li class="md-path__item">
+      <a href="../.." class="md-path__link">
+        
+  <span class="md-ellipsis">
+    Home
+  </span>
+
+      </a>
+    </li>
+  
+
+      
+      
+        
+  
+  
+    
+    
+      <li class="md-path__item">
+        <a href="../requests/" class="md-path__link">
+          
+  <span class="md-ellipsis">
+    API Guide
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ol>
+  </nav>
+
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="serializer-relations">Serializer relations<a class="headerlink" href="#serializer-relations" title="Permanent link">&para;</a></h1>
 <blockquote>
 <p>Data structures, not algorithms, are central to programming.</p>
 <p>&mdash; <a href="http://users.ece.utexas.edu/~adnan/pike.html">Rob Pike</a></p>
@@ -563,107 +2665,107 @@
 <p class="admonition-title">Note</p>
 <p>REST Framework does not attempt to automatically optimize querysets passed to serializers in terms of <code>select_related</code> and <code>prefetch_related</code> since it would be too much magic. A serializer with a field spanning an ORM relation through its source attribute could require an additional database hit to fetch related objects from the database. It is the programmer's responsibility to optimize queries to avoid additional database hits which could occur while using such a serializer.</p>
 <p>For example, the following serializer would lead to a database hit each time evaluating the tracks field if it is not prefetched:</p>
-<pre><code>class AlbumSerializer(serializers.ModelSerializer):
+<div class="language-text highlight"><pre><span></span><code>class AlbumSerializer(serializers.ModelSerializer):
     tracks = serializers.SlugRelatedField(
         many=True,
         read_only=True,
-        slug_field='title'
+        slug_field=&#39;title&#39;
     )
 
     class Meta:
         model = Album
-        fields = ['album_name', 'artist', 'tracks']
+        fields = [&#39;album_name&#39;, &#39;artist&#39;, &#39;tracks&#39;]
 
 # For each album object, tracks should be fetched from database
 qs = Album.objects.all()
 print(AlbumSerializer(qs, many=True).data)
-</code></pre>
+</code></pre></div>
 <p>If <code>AlbumSerializer</code> is used to serialize a fairly large queryset with <code>many=True</code> then it could be a serious performance problem. Optimizing the queryset passed to <code>AlbumSerializer</code> with:</p>
-<pre><code>qs = Album.objects.prefetch_related('tracks')
+<div class="language-text highlight"><pre><span></span><code>qs = Album.objects.prefetch_related(&#39;tracks&#39;)
 # No additional database hits required
 print(AlbumSerializer(qs, many=True).data)
-</code></pre>
+</code></pre></div>
 <p>would solve the issue.</p>
 </div>
-<h4 id="inspecting-relationships"><a class="toclink" href="#inspecting-relationships">Inspecting relationships.</a></h4>
+<h4 id="inspecting-relationships">Inspecting relationships.<a class="headerlink" href="#inspecting-relationships" title="Permanent link">&para;</a></h4>
 <p>When using the <code>ModelSerializer</code> class, serializer fields and relationships will be automatically generated for you. Inspecting these automatically generated fields can be a useful tool for determining how to customize the relationship style.</p>
 <p>To do so, open the Django shell, using <code>python manage.py shell</code>, then import the serializer class, instantiate it, and print the object representation…</p>
-<pre><code>&gt;&gt;&gt; from myapp.serializers import AccountSerializer
+<div class="language-text highlight"><pre><span></span><code>&gt;&gt;&gt; from myapp.serializers import AccountSerializer
 &gt;&gt;&gt; serializer = AccountSerializer()
 &gt;&gt;&gt; print(repr(serializer))
 AccountSerializer():
-    id = IntegerField(label='ID', read_only=True)
+    id = IntegerField(label=&#39;ID&#39;, read_only=True)
     name = CharField(allow_blank=True, max_length=100, required=False)
     owner = PrimaryKeyRelatedField(queryset=User.objects.all())
-</code></pre>
-<h1 id="api-reference"><a class="toclink" href="#api-reference">API Reference</a></h1>
+</code></pre></div>
+<h1 id="api-reference">API Reference<a class="headerlink" href="#api-reference" title="Permanent link">&para;</a></h1>
 <p>In order to explain the various types of relational fields, we'll use a couple of simple models for our examples.  Our models will be for music albums, and the tracks listed on each album.</p>
-<pre><code>class Album(models.Model):
+<div class="language-text highlight"><pre><span></span><code>class Album(models.Model):
     album_name = models.CharField(max_length=100)
     artist = models.CharField(max_length=100)
 
 class Track(models.Model):
-    album = models.ForeignKey(Album, related_name='tracks', on_delete=models.CASCADE)
+    album = models.ForeignKey(Album, related_name=&#39;tracks&#39;, on_delete=models.CASCADE)
     order = models.IntegerField()
     title = models.CharField(max_length=100)
     duration = models.IntegerField()
 
     class Meta:
-        unique_together = ['album', 'order']
-        ordering = ['order']
+        unique_together = [&#39;album&#39;, &#39;order&#39;]
+        ordering = [&#39;order&#39;]
 
     def __str__(self):
-        return '%d: %s' % (self.order, self.title)
-</code></pre>
-<h2 id="stringrelatedfield"><a class="toclink" href="#stringrelatedfield">StringRelatedField</a></h2>
+        return &#39;%d: %s&#39; % (self.order, self.title)
+</code></pre></div>
+<h2 id="stringrelatedfield">StringRelatedField<a class="headerlink" href="#stringrelatedfield" title="Permanent link">&para;</a></h2>
 <p><code>StringRelatedField</code> may be used to represent the target of the relationship using its <code>__str__</code> method.</p>
 <p>For example, the following serializer:</p>
-<pre><code>class AlbumSerializer(serializers.ModelSerializer):
+<div class="language-text highlight"><pre><span></span><code>class AlbumSerializer(serializers.ModelSerializer):
     tracks = serializers.StringRelatedField(many=True)
 
     class Meta:
         model = Album
-        fields = ['album_name', 'artist', 'tracks']
-</code></pre>
+        fields = [&#39;album_name&#39;, &#39;artist&#39;, &#39;tracks&#39;]
+</code></pre></div>
 <p>Would serialize to the following representation:</p>
-<pre><code>{
-    'album_name': 'Things We Lost In The Fire',
-    'artist': 'Low',
-    'tracks': [
-        '1: Sunflower',
-        '2: Whitetail',
-        '3: Dinosaur Act',
+<div class="language-text highlight"><pre><span></span><code>{
+    &#39;album_name&#39;: &#39;Things We Lost In The Fire&#39;,
+    &#39;artist&#39;: &#39;Low&#39;,
+    &#39;tracks&#39;: [
+        &#39;1: Sunflower&#39;,
+        &#39;2: Whitetail&#39;,
+        &#39;3: Dinosaur Act&#39;,
         ...
     ]
 }
-</code></pre>
+</code></pre></div>
 <p>This field is read only.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
 <li><code>many</code> - If applied to a to-many relationship, you should set this argument to <code>True</code>.</li>
 </ul>
-<h2 id="primarykeyrelatedfield"><a class="toclink" href="#primarykeyrelatedfield">PrimaryKeyRelatedField</a></h2>
+<h2 id="primarykeyrelatedfield">PrimaryKeyRelatedField<a class="headerlink" href="#primarykeyrelatedfield" title="Permanent link">&para;</a></h2>
 <p><code>PrimaryKeyRelatedField</code> may be used to represent the target of the relationship using its primary key.</p>
 <p>For example, the following serializer:</p>
-<pre><code>class AlbumSerializer(serializers.ModelSerializer):
+<div class="language-text highlight"><pre><span></span><code>class AlbumSerializer(serializers.ModelSerializer):
     tracks = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
 
     class Meta:
         model = Album
-        fields = ['album_name', 'artist', 'tracks']
-</code></pre>
+        fields = [&#39;album_name&#39;, &#39;artist&#39;, &#39;tracks&#39;]
+</code></pre></div>
 <p>Would serialize to a representation like this:</p>
-<pre><code>{
-    'album_name': 'Undun',
-    'artist': 'The Roots',
-    'tracks': [
+<div class="language-text highlight"><pre><span></span><code>{
+    &#39;album_name&#39;: &#39;Undun&#39;,
+    &#39;artist&#39;: &#39;The Roots&#39;,
+    &#39;tracks&#39;: [
         89,
         90,
         91,
         ...
     ]
 }
-</code></pre>
+</code></pre></div>
 <p>By default this field is read-write, although you can change this behavior using the <code>read_only</code> flag.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -672,32 +2774,32 @@ class Track(models.Model):
 <li><code>allow_null</code> - If set to <code>True</code>, the field will accept values of <code>None</code> or the empty string for nullable relationships. Defaults to <code>False</code>.</li>
 <li><code>pk_field</code> - Set to a field to control serialization/deserialization of the primary key's value. For example, <code>pk_field=UUIDField(format='hex')</code> would serialize a UUID primary key into its compact hex representation.</li>
 </ul>
-<h2 id="hyperlinkedrelatedfield"><a class="toclink" href="#hyperlinkedrelatedfield">HyperlinkedRelatedField</a></h2>
+<h2 id="hyperlinkedrelatedfield">HyperlinkedRelatedField<a class="headerlink" href="#hyperlinkedrelatedfield" title="Permanent link">&para;</a></h2>
 <p><code>HyperlinkedRelatedField</code> may be used to represent the target of the relationship using a hyperlink.</p>
 <p>For example, the following serializer:</p>
-<pre><code>class AlbumSerializer(serializers.ModelSerializer):
+<div class="language-text highlight"><pre><span></span><code>class AlbumSerializer(serializers.ModelSerializer):
     tracks = serializers.HyperlinkedRelatedField(
         many=True,
         read_only=True,
-        view_name='track-detail'
+        view_name=&#39;track-detail&#39;
     )
 
     class Meta:
         model = Album
-        fields = ['album_name', 'artist', 'tracks']
-</code></pre>
+        fields = [&#39;album_name&#39;, &#39;artist&#39;, &#39;tracks&#39;]
+</code></pre></div>
 <p>Would serialize to a representation like this:</p>
-<pre><code>{
-    'album_name': 'Graceland',
-    'artist': 'Paul Simon',
-    'tracks': [
-        'http://www.example.com/api/tracks/45/',
-        'http://www.example.com/api/tracks/46/',
-        'http://www.example.com/api/tracks/47/',
+<div class="language-text highlight"><pre><span></span><code>{
+    &#39;album_name&#39;: &#39;Graceland&#39;,
+    &#39;artist&#39;: &#39;Paul Simon&#39;,
+    &#39;tracks&#39;: [
+        &#39;http://www.example.com/api/tracks/45/&#39;,
+        &#39;http://www.example.com/api/tracks/46/&#39;,
+        &#39;http://www.example.com/api/tracks/47/&#39;,
         ...
     ]
 }
-</code></pre>
+</code></pre></div>
 <p>By default this field is read-write, although you can change this behavior using the <code>read_only</code> flag.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -715,32 +2817,32 @@ class Track(models.Model):
 <li><code>lookup_url_kwarg</code> - The name of the keyword argument defined in the URL conf that corresponds to the lookup field. Defaults to using the same value as <code>lookup_field</code>.</li>
 <li><code>format</code> - If using format suffixes, hyperlinked fields will use the same format suffix for the target unless overridden by using the <code>format</code> argument.</li>
 </ul>
-<h2 id="slugrelatedfield"><a class="toclink" href="#slugrelatedfield">SlugRelatedField</a></h2>
+<h2 id="slugrelatedfield">SlugRelatedField<a class="headerlink" href="#slugrelatedfield" title="Permanent link">&para;</a></h2>
 <p><code>SlugRelatedField</code> may be used to represent the target of the relationship using a field on the target.</p>
 <p>For example, the following serializer:</p>
-<pre><code>class AlbumSerializer(serializers.ModelSerializer):
+<div class="language-text highlight"><pre><span></span><code>class AlbumSerializer(serializers.ModelSerializer):
     tracks = serializers.SlugRelatedField(
         many=True,
         read_only=True,
-        slug_field='title'
+        slug_field=&#39;title&#39;
      )
 
     class Meta:
         model = Album
-        fields = ['album_name', 'artist', 'tracks']
-</code></pre>
+        fields = [&#39;album_name&#39;, &#39;artist&#39;, &#39;tracks&#39;]
+</code></pre></div>
 <p>Would serialize to a representation like this:</p>
-<pre><code>{
-    'album_name': 'Dear John',
-    'artist': 'Loney Dear',
-    'tracks': [
-        'Airport Surroundings',
-        'Everything Turns to You',
-        'I Was Only Going Out',
+<div class="language-text highlight"><pre><span></span><code>{
+    &#39;album_name&#39;: &#39;Dear John&#39;,
+    &#39;artist&#39;: &#39;Loney Dear&#39;,
+    &#39;tracks&#39;: [
+        &#39;Airport Surroundings&#39;,
+        &#39;Everything Turns to You&#39;,
+        &#39;I Was Only Going Out&#39;,
         ...
     ]
 }
-</code></pre>
+</code></pre></div>
 <p>By default this field is read-write, although you can change this behavior using the <code>read_only</code> flag.</p>
 <p>When using <code>SlugRelatedField</code> as a read-write field, you will normally want to ensure that the slug field corresponds to a model field with <code>unique=True</code>.</p>
 <p><strong>Arguments</strong>:</p>
@@ -750,22 +2852,22 @@ class Track(models.Model):
 <li><code>many</code> - If applied to a to-many relationship, you should set this argument to <code>True</code>.</li>
 <li><code>allow_null</code> - If set to <code>True</code>, the field will accept values of <code>None</code> or the empty string for nullable relationships. Defaults to <code>False</code>.</li>
 </ul>
-<h2 id="hyperlinkedidentityfield"><a class="toclink" href="#hyperlinkedidentityfield">HyperlinkedIdentityField</a></h2>
+<h2 id="hyperlinkedidentityfield">HyperlinkedIdentityField<a class="headerlink" href="#hyperlinkedidentityfield" title="Permanent link">&para;</a></h2>
 <p>This field can be applied as an identity relationship, such as the <code>'url'</code> field on a HyperlinkedModelSerializer.  It can also be used for an attribute on the object.  For example, the following serializer:</p>
-<pre><code>class AlbumSerializer(serializers.HyperlinkedModelSerializer):
-    track_listing = serializers.HyperlinkedIdentityField(view_name='track-list')
+<div class="language-text highlight"><pre><span></span><code>class AlbumSerializer(serializers.HyperlinkedModelSerializer):
+    track_listing = serializers.HyperlinkedIdentityField(view_name=&#39;track-list&#39;)
 
     class Meta:
         model = Album
-        fields = ['album_name', 'artist', 'track_listing']
-</code></pre>
+        fields = [&#39;album_name&#39;, &#39;artist&#39;, &#39;track_listing&#39;]
+</code></pre></div>
 <p>Would serialize to a representation like this:</p>
-<pre><code>{
-    'album_name': 'The Eraser',
-    'artist': 'Thom Yorke',
-    'track_listing': 'http://www.example.com/api/track_list/12/',
+<div class="language-text highlight"><pre><span></span><code>{
+    &#39;album_name&#39;: &#39;The Eraser&#39;,
+    &#39;artist&#39;: &#39;Thom Yorke&#39;,
+    &#39;track_listing&#39;: &#39;http://www.example.com/api/track_list/12/&#39;,
 }
-</code></pre>
+</code></pre></div>
 <p>This field is always read-only.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -775,74 +2877,74 @@ class Track(models.Model):
 <li><code>format</code> - If using format suffixes, hyperlinked fields will use the same format suffix for the target unless overridden by using the <code>format</code> argument.</li>
 </ul>
 <hr />
-<h1 id="nested-relationships"><a class="toclink" href="#nested-relationships">Nested relationships</a></h1>
+<h1 id="nested-relationships">Nested relationships<a class="headerlink" href="#nested-relationships" title="Permanent link">&para;</a></h1>
 <p>As opposed to previously discussed <em>references</em> to another entity, the referred entity can instead also be embedded or <em>nested</em>
 in the representation of the object that refers to it.
 Such nested relationships can be expressed by using serializers as fields.</p>
 <p>If the field is used to represent a to-many relationship, you should add the <code>many=True</code> flag to the serializer field.</p>
-<h2 id="example"><a class="toclink" href="#example">Example</a></h2>
+<h2 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h2>
 <p>For example, the following serializer:</p>
-<pre><code>class TrackSerializer(serializers.ModelSerializer):
+<div class="language-text highlight"><pre><span></span><code>class TrackSerializer(serializers.ModelSerializer):
     class Meta:
         model = Track
-        fields = ['order', 'title', 'duration']
+        fields = [&#39;order&#39;, &#39;title&#39;, &#39;duration&#39;]
 
 class AlbumSerializer(serializers.ModelSerializer):
     tracks = TrackSerializer(many=True, read_only=True)
 
     class Meta:
         model = Album
-        fields = ['album_name', 'artist', 'tracks']
-</code></pre>
+        fields = [&#39;album_name&#39;, &#39;artist&#39;, &#39;tracks&#39;]
+</code></pre></div>
 <p>Would serialize to a nested representation like this:</p>
-<pre><code>&gt;&gt;&gt; album = Album.objects.create(album_name="The Gray Album", artist='Danger Mouse')
-&gt;&gt;&gt; Track.objects.create(album=album, order=1, title='Public Service Announcement', duration=245)
+<div class="language-text highlight"><pre><span></span><code>&gt;&gt;&gt; album = Album.objects.create(album_name=&quot;The Gray Album&quot;, artist=&#39;Danger Mouse&#39;)
+&gt;&gt;&gt; Track.objects.create(album=album, order=1, title=&#39;Public Service Announcement&#39;, duration=245)
 &lt;Track: Track object&gt;
-&gt;&gt;&gt; Track.objects.create(album=album, order=2, title='What More Can I Say', duration=264)
+&gt;&gt;&gt; Track.objects.create(album=album, order=2, title=&#39;What More Can I Say&#39;, duration=264)
 &lt;Track: Track object&gt;
-&gt;&gt;&gt; Track.objects.create(album=album, order=3, title='Encore', duration=159)
+&gt;&gt;&gt; Track.objects.create(album=album, order=3, title=&#39;Encore&#39;, duration=159)
 &lt;Track: Track object&gt;
 &gt;&gt;&gt; serializer = AlbumSerializer(instance=album)
 &gt;&gt;&gt; serializer.data
 {
-    'album_name': 'The Gray Album',
-    'artist': 'Danger Mouse',
-    'tracks': [
-        {'order': 1, 'title': 'Public Service Announcement', 'duration': 245},
-        {'order': 2, 'title': 'What More Can I Say', 'duration': 264},
-        {'order': 3, 'title': 'Encore', 'duration': 159},
+    &#39;album_name&#39;: &#39;The Gray Album&#39;,
+    &#39;artist&#39;: &#39;Danger Mouse&#39;,
+    &#39;tracks&#39;: [
+        {&#39;order&#39;: 1, &#39;title&#39;: &#39;Public Service Announcement&#39;, &#39;duration&#39;: 245},
+        {&#39;order&#39;: 2, &#39;title&#39;: &#39;What More Can I Say&#39;, &#39;duration&#39;: 264},
+        {&#39;order&#39;: 3, &#39;title&#39;: &#39;Encore&#39;, &#39;duration&#39;: 159},
         ...
     ],
 }
-</code></pre>
-<h2 id="writable-nested-serializers"><a class="toclink" href="#writable-nested-serializers">Writable nested serializers</a></h2>
+</code></pre></div>
+<h2 id="writable-nested-serializers">Writable nested serializers<a class="headerlink" href="#writable-nested-serializers" title="Permanent link">&para;</a></h2>
 <p>By default nested serializers are read-only. If you want to support write-operations to a nested serializer field you'll need to create <code>create()</code> and/or <code>update()</code> methods in order to explicitly specify how the child relationships should be saved:</p>
-<pre><code>class TrackSerializer(serializers.ModelSerializer):
+<div class="language-text highlight"><pre><span></span><code>class TrackSerializer(serializers.ModelSerializer):
     class Meta:
         model = Track
-        fields = ['order', 'title', 'duration']
+        fields = [&#39;order&#39;, &#39;title&#39;, &#39;duration&#39;]
 
 class AlbumSerializer(serializers.ModelSerializer):
     tracks = TrackSerializer(many=True)
 
     class Meta:
         model = Album
-        fields = ['album_name', 'artist', 'tracks']
+        fields = [&#39;album_name&#39;, &#39;artist&#39;, &#39;tracks&#39;]
 
     def create(self, validated_data):
-        tracks_data = validated_data.pop('tracks')
+        tracks_data = validated_data.pop(&#39;tracks&#39;)
         album = Album.objects.create(**validated_data)
         for track_data in tracks_data:
             Track.objects.create(album=album, **track_data)
         return album
 
 &gt;&gt;&gt; data = {
-    'album_name': 'The Gray Album',
-    'artist': 'Danger Mouse',
-    'tracks': [
-        {'order': 1, 'title': 'Public Service Announcement', 'duration': 245},
-        {'order': 2, 'title': 'What More Can I Say', 'duration': 264},
-        {'order': 3, 'title': 'Encore', 'duration': 159},
+    &#39;album_name&#39;: &#39;The Gray Album&#39;,
+    &#39;artist&#39;: &#39;Danger Mouse&#39;,
+    &#39;tracks&#39;: [
+        {&#39;order&#39;: 1, &#39;title&#39;: &#39;Public Service Announcement&#39;, &#39;duration&#39;: 245},
+        {&#39;order&#39;: 2, &#39;title&#39;: &#39;What More Can I Say&#39;, &#39;duration&#39;: 264},
+        {&#39;order&#39;: 3, &#39;title&#39;: &#39;Encore&#39;, &#39;duration&#39;: 159},
     ],
 }
 &gt;&gt;&gt; serializer = AlbumSerializer(data=data)
@@ -850,45 +2952,45 @@ class AlbumSerializer(serializers.ModelSerializer):
 True
 &gt;&gt;&gt; serializer.save()
 &lt;Album: Album object&gt;
-</code></pre>
+</code></pre></div>
 <hr />
-<h1 id="custom-relational-fields"><a class="toclink" href="#custom-relational-fields">Custom relational fields</a></h1>
+<h1 id="custom-relational-fields">Custom relational fields<a class="headerlink" href="#custom-relational-fields" title="Permanent link">&para;</a></h1>
 <p>In rare cases where none of the existing relational styles fit the representation you need,
 you can implement a completely custom relational field, that describes exactly how the
 output representation should be generated from the model instance.</p>
 <p>To implement a custom relational field, you should override <code>RelatedField</code>, and implement the <code>.to_representation(self, value)</code> method. This method takes the target of the field as the <code>value</code> argument, and should return the representation that should be used to serialize the target. The <code>value</code> argument will typically be a model instance.</p>
 <p>If you want to implement a read-write relational field, you must also implement the <a href="https://www.django-rest-framework.org/api-guide/serializers/#to_internal_valueself-data"><code>.to_internal_value(self, data)</code> method</a>.</p>
 <p>To provide a dynamic queryset based on the <code>context</code>, you can also override <code>.get_queryset(self)</code> instead of specifying <code>.queryset</code> on the class or when initializing the field.</p>
-<h2 id="example_1"><a class="toclink" href="#example_1">Example</a></h2>
+<h2 id="example_1">Example<a class="headerlink" href="#example_1" title="Permanent link">&para;</a></h2>
 <p>For example, we could define a relational field to serialize a track to a custom string representation, using its ordering, title, and duration:</p>
-<pre><code>import time
+<div class="language-text highlight"><pre><span></span><code>import time
 
 class TrackListingField(serializers.RelatedField):
     def to_representation(self, value):
-        duration = time.strftime('%M:%S', time.gmtime(value.duration))
-        return 'Track %d: %s (%s)' % (value.order, value.name, duration)
+        duration = time.strftime(&#39;%M:%S&#39;, time.gmtime(value.duration))
+        return &#39;Track %d: %s (%s)&#39; % (value.order, value.name, duration)
 
 class AlbumSerializer(serializers.ModelSerializer):
     tracks = TrackListingField(many=True)
 
     class Meta:
         model = Album
-        fields = ['album_name', 'artist', 'tracks']
-</code></pre>
+        fields = [&#39;album_name&#39;, &#39;artist&#39;, &#39;tracks&#39;]
+</code></pre></div>
 <p>This custom field would then serialize to the following representation:</p>
-<pre><code>{
-    'album_name': 'Sometimes I Wish We Were an Eagle',
-    'artist': 'Bill Callahan',
-    'tracks': [
-        'Track 1: Jim Cain (04:39)',
-        'Track 2: Eid Ma Clack Shaw (04:19)',
-        'Track 3: The Wind and the Dove (04:34)',
+<div class="language-text highlight"><pre><span></span><code>{
+    &#39;album_name&#39;: &#39;Sometimes I Wish We Were an Eagle&#39;,
+    &#39;artist&#39;: &#39;Bill Callahan&#39;,
+    &#39;tracks&#39;: [
+        &#39;Track 1: Jim Cain (04:39)&#39;,
+        &#39;Track 2: Eid Ma Clack Shaw (04:19)&#39;,
+        &#39;Track 3: The Wind and the Dove (04:34)&#39;,
         ...
     ]
 }
-</code></pre>
+</code></pre></div>
 <hr />
-<h1 id="custom-hyperlinked-fields"><a class="toclink" href="#custom-hyperlinked-fields">Custom hyperlinked fields</a></h1>
+<h1 id="custom-hyperlinked-fields">Custom hyperlinked fields<a class="headerlink" href="#custom-hyperlinked-fields" title="Permanent link">&para;</a></h1>
 <p>In some cases you may need to customize the behavior of a hyperlinked field, in order to represent URLs that require more than a single lookup field.</p>
 <p>You can achieve this by overriding <code>HyperlinkedRelatedField</code>. There are two methods that may be overridden:</p>
 <p><strong>get_url(self, obj, view_name, request, format)</strong></p>
@@ -899,51 +3001,51 @@ attributes are not configured to correctly match the URL conf.</p>
 <p>If you want to support a writable hyperlinked field then you'll also want to override <code>get_object</code>, in order to map incoming URLs back to the object they represent. For read-only hyperlinked fields there is no need to override this method.</p>
 <p>The return value of this method should the object that corresponds to the matched URL conf arguments.</p>
 <p>May raise an <code>ObjectDoesNotExist</code> exception.</p>
-<h2 id="example_2"><a class="toclink" href="#example_2">Example</a></h2>
+<h2 id="example_2">Example<a class="headerlink" href="#example_2" title="Permanent link">&para;</a></h2>
 <p>Say we have a URL for a customer object that takes two keyword arguments, like so:</p>
-<pre><code>/api/&lt;organization_slug&gt;/customers/&lt;customer_pk&gt;/
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code>/api/&lt;organization_slug&gt;/customers/&lt;customer_pk&gt;/
+</code></pre></div>
 <p>This cannot be represented with the default implementation, which accepts only a single lookup field.</p>
 <p>In this case we'd need to override <code>HyperlinkedRelatedField</code> to get the behavior we want:</p>
-<pre><code>from rest_framework import serializers
+<div class="language-text highlight"><pre><span></span><code>from rest_framework import serializers
 from rest_framework.reverse import reverse
 
 class CustomerHyperlink(serializers.HyperlinkedRelatedField):
-    # We define these as class attributes, so we don't need to pass them as arguments.
-    view_name = 'customer-detail'
+    # We define these as class attributes, so we don&#39;t need to pass them as arguments.
+    view_name = &#39;customer-detail&#39;
     queryset = Customer.objects.all()
 
     def get_url(self, obj, view_name, request, format):
         url_kwargs = {
-            'organization_slug': obj.organization.slug,
-            'customer_pk': obj.pk
+            &#39;organization_slug&#39;: obj.organization.slug,
+            &#39;customer_pk&#39;: obj.pk
         }
         return reverse(view_name, kwargs=url_kwargs, request=request, format=format)
 
     def get_object(self, view_name, view_args, view_kwargs):
         lookup_kwargs = {
-           'organization__slug': view_kwargs['organization_slug'],
-           'pk': view_kwargs['customer_pk']
+           &#39;organization__slug&#39;: view_kwargs[&#39;organization_slug&#39;],
+           &#39;pk&#39;: view_kwargs[&#39;customer_pk&#39;]
         }
         return self.get_queryset().get(**lookup_kwargs)
-</code></pre>
+</code></pre></div>
 <p>Note that if you wanted to use this style together with the generic views then you'd also need to override <code>.get_object</code> on the view in order to get the correct lookup behavior.</p>
 <p>Generally we recommend a flat style for API representations where possible, but the nested URL style can also be reasonable when used in moderation.</p>
 <hr />
-<h1 id="further-notes"><a class="toclink" href="#further-notes">Further notes</a></h1>
-<h2 id="the-queryset-argument"><a class="toclink" href="#the-queryset-argument">The <code>queryset</code> argument</a></h2>
+<h1 id="further-notes">Further notes<a class="headerlink" href="#further-notes" title="Permanent link">&para;</a></h1>
+<h2 id="the-queryset-argument">The <code>queryset</code> argument<a class="headerlink" href="#the-queryset-argument" title="Permanent link">&para;</a></h2>
 <p>The <code>queryset</code> argument is only ever required for <em>writable</em> relationship field, in which case it is used for performing the model instance lookup, that maps from the primitive user input, into a model instance.</p>
 <p>In version 2.x a serializer class could <em>sometimes</em> automatically determine the <code>queryset</code> argument <em>if</em> a <code>ModelSerializer</code> class was being used.</p>
 <p>This behavior is now replaced with <em>always</em> using an explicit <code>queryset</code> argument for writable relational fields.</p>
 <p>Doing so reduces the amount of hidden 'magic' that <code>ModelSerializer</code> provides, makes the behavior of the field more clear, and ensures that it is trivial to move between using the <code>ModelSerializer</code> shortcut, or using fully explicit <code>Serializer</code> classes.</p>
-<h2 id="customizing-the-html-display"><a class="toclink" href="#customizing-the-html-display">Customizing the HTML display</a></h2>
+<h2 id="customizing-the-html-display">Customizing the HTML display<a class="headerlink" href="#customizing-the-html-display" title="Permanent link">&para;</a></h2>
 <p>The built-in <code>__str__</code> method of the model will be used to generate string representations of the objects used to populate the <code>choices</code> property. These choices are used to populate select HTML inputs in the browsable API.</p>
 <p>To provide customized representations for such inputs, override <code>display_value()</code> of a <code>RelatedField</code> subclass. This method will receive a model object, and should return a string suitable for representing it. For example:</p>
-<pre><code>class TrackPrimaryKeyRelatedField(serializers.PrimaryKeyRelatedField):
+<div class="language-text highlight"><pre><span></span><code>class TrackPrimaryKeyRelatedField(serializers.PrimaryKeyRelatedField):
     def display_value(self, instance):
-        return 'Track: %s' % (instance.title)
-</code></pre>
-<h2 id="select-field-cutoffs"><a class="toclink" href="#select-field-cutoffs">Select field cutoffs</a></h2>
+        return &#39;Track: %s&#39; % (instance.title)
+</code></pre></div>
+<h2 id="select-field-cutoffs">Select field cutoffs<a class="headerlink" href="#select-field-cutoffs" title="Permanent link">&para;</a></h2>
 <p>When rendered in the browsable API relational fields will default to only displaying a maximum of 1000 selectable items. If more items are present then a disabled option with "More than 1000 items…" will be displayed.</p>
 <p>This behavior is intended to prevent a template from being unable to render in an acceptable timespan due to a very large number of relationships being displayed.</p>
 <p>There are two keyword arguments you can use to control this behavior:</p>
@@ -953,96 +3055,96 @@ class CustomerHyperlink(serializers.HyperlinkedRelatedField):
 </ul>
 <p>You can also control these globally using the settings <code>HTML_SELECT_CUTOFF</code> and <code>HTML_SELECT_CUTOFF_TEXT</code>.</p>
 <p>In cases where the cutoff is being enforced you may want to instead use a plain input field in the HTML form. You can do so using the <code>style</code> keyword argument. For example:</p>
-<pre><code>assigned_to = serializers.SlugRelatedField(
+<div class="language-text highlight"><pre><span></span><code>assigned_to = serializers.SlugRelatedField(
    queryset=User.objects.all(),
-   slug_field='username',
-   style={'base_template': 'input.html'}
+   slug_field=&#39;username&#39;,
+   style={&#39;base_template&#39;: &#39;input.html&#39;}
 )
-</code></pre>
-<h2 id="reverse-relations"><a class="toclink" href="#reverse-relations">Reverse relations</a></h2>
+</code></pre></div>
+<h2 id="reverse-relations">Reverse relations<a class="headerlink" href="#reverse-relations" title="Permanent link">&para;</a></h2>
 <p>Note that reverse relationships are not automatically included by the <code>ModelSerializer</code> and <code>HyperlinkedModelSerializer</code> classes.  To include a reverse relationship, you must explicitly add it to the fields list.  For example:</p>
-<pre><code>class AlbumSerializer(serializers.ModelSerializer):
+<div class="language-text highlight"><pre><span></span><code>class AlbumSerializer(serializers.ModelSerializer):
     class Meta:
-        fields = ['tracks', ...]
-</code></pre>
+        fields = [&#39;tracks&#39;, ...]
+</code></pre></div>
 <p>You'll normally want to ensure that you've set an appropriate <code>related_name</code> argument on the relationship, that you can use as the field name.  For example:</p>
-<pre><code>class Track(models.Model):
-    album = models.ForeignKey(Album, related_name='tracks', on_delete=models.CASCADE)
+<div class="language-text highlight"><pre><span></span><code>class Track(models.Model):
+    album = models.ForeignKey(Album, related_name=&#39;tracks&#39;, on_delete=models.CASCADE)
     ...
-</code></pre>
+</code></pre></div>
 <p>If you have not set a related name for the reverse relationship, you'll need to use the automatically generated related name in the <code>fields</code> argument.  For example:</p>
-<pre><code>class AlbumSerializer(serializers.ModelSerializer):
+<div class="language-text highlight"><pre><span></span><code>class AlbumSerializer(serializers.ModelSerializer):
     class Meta:
-        fields = ['track_set', ...]
-</code></pre>
+        fields = [&#39;track_set&#39;, ...]
+</code></pre></div>
 <p>See the Django documentation on <a href="https://docs.djangoproject.com/en/stable/topics/db/queries/#following-relationships-backward">reverse relationships</a> for more details.</p>
-<h2 id="generic-relationships"><a class="toclink" href="#generic-relationships">Generic relationships</a></h2>
+<h2 id="generic-relationships">Generic relationships<a class="headerlink" href="#generic-relationships" title="Permanent link">&para;</a></h2>
 <p>If you want to serialize a generic foreign key, you need to define a custom field, to determine explicitly how you want to serialize the targets of the relationship.</p>
 <p>For example, given the following model for a tag, which has a generic relationship with other arbitrary models:</p>
-<pre><code>class TaggedItem(models.Model):
-    """
+<div class="language-text highlight"><pre><span></span><code>class TaggedItem(models.Model):
+    &quot;&quot;&quot;
     Tags arbitrary model instances using a generic relation.
 
     See: https://docs.djangoproject.com/en/stable/ref/contrib/contenttypes/
-    """
+    &quot;&quot;&quot;
     tag_name = models.SlugField()
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
-    tagged_object = GenericForeignKey('content_type', 'object_id')
+    tagged_object = GenericForeignKey(&#39;content_type&#39;, &#39;object_id&#39;)
 
     def __str__(self):
         return self.tag_name
-</code></pre>
+</code></pre></div>
 <p>And the following two models, which may have associated tags:</p>
-<pre><code>class Bookmark(models.Model):
-    """
+<div class="language-text highlight"><pre><span></span><code>class Bookmark(models.Model):
+    &quot;&quot;&quot;
     A bookmark consists of a URL, and 0 or more descriptive tags.
-    """
+    &quot;&quot;&quot;
     url = models.URLField()
     tags = GenericRelation(TaggedItem)
 
 
 class Note(models.Model):
-    """
+    &quot;&quot;&quot;
     A note consists of some text, and 0 or more descriptive tags.
-    """
+    &quot;&quot;&quot;
     text = models.CharField(max_length=1000)
     tags = GenericRelation(TaggedItem)
-</code></pre>
+</code></pre></div>
 <p>We could define a custom field that could be used to serialize tagged instances, using the type of each instance to determine how it should be serialized:</p>
-<pre><code>class TaggedObjectRelatedField(serializers.RelatedField):
-    """
+<div class="language-text highlight"><pre><span></span><code>class TaggedObjectRelatedField(serializers.RelatedField):
+    &quot;&quot;&quot;
     A custom field to use for the `tagged_object` generic relationship.
-    """
+    &quot;&quot;&quot;
 
     def to_representation(self, value):
-        """
+        &quot;&quot;&quot;
         Serialize tagged objects to a simple textual representation.
-        """
+        &quot;&quot;&quot;
         if isinstance(value, Bookmark):
-            return 'Bookmark: ' + value.url
+            return &#39;Bookmark: &#39; + value.url
         elif isinstance(value, Note):
-            return 'Note: ' + value.text
-        raise Exception('Unexpected type of tagged object')
-</code></pre>
+            return &#39;Note: &#39; + value.text
+        raise Exception(&#39;Unexpected type of tagged object&#39;)
+</code></pre></div>
 <p>If you need the target of the relationship to have a nested representation, you can use the required serializers inside the <code>.to_representation()</code> method:</p>
-<pre><code>    def to_representation(self, value):
-        """
+<div class="language-text highlight"><pre><span></span><code>    def to_representation(self, value):
+        &quot;&quot;&quot;
         Serialize bookmark instances using a bookmark serializer,
         and note instances using a note serializer.
-        """
+        &quot;&quot;&quot;
         if isinstance(value, Bookmark):
             serializer = BookmarkSerializer(value)
         elif isinstance(value, Note):
             serializer = NoteSerializer(value)
         else:
-            raise Exception('Unexpected type of tagged object')
+            raise Exception(&#39;Unexpected type of tagged object&#39;)
 
         return serializer.data
-</code></pre>
+</code></pre></div>
 <p>Note that reverse generic keys, expressed using the <code>GenericRelation</code> field, can be serialized using the regular relational field types, since the type of the target in the relationship is always known.</p>
 <p>For more information see <a href="https://docs.djangoproject.com/en/stable/ref/contrib/contenttypes/#id1">the Django documentation on generic relations</a>.</p>
-<h2 id="manytomanyfields-with-a-through-model"><a class="toclink" href="#manytomanyfields-with-a-through-model">ManyToManyFields with a Through Model</a></h2>
+<h2 id="manytomanyfields-with-a-through-model">ManyToManyFields with a Through Model<a class="headerlink" href="#manytomanyfields-with-a-through-model" title="Permanent link">&para;</a></h2>
 <p>By default, relational fields that target a <code>ManyToManyField</code> with a
 <code>through</code> model specified are set to read-only.</p>
 <p>If you explicitly specify a relational field pointing to a
@@ -1050,64 +3152,92 @@ class Note(models.Model):
 to <code>True</code>.</p>
 <p>If you wish to represent <a href="https://docs.djangoproject.com/en/stable/topics/db/models/#intermediary-manytomany">extra fields on a through model</a> then you may serialize the through model as <a href="https://www.django-rest-framework.org/api-guide/serializers/#dealing-with-nested-objects">a nested object</a>.</p>
 <hr />
-<h1 id="third-party-packages"><a class="toclink" href="#third-party-packages">Third Party Packages</a></h1>
+<h1 id="third-party-packages">Third Party Packages<a class="headerlink" href="#third-party-packages" title="Permanent link">&para;</a></h1>
 <p>The following third party packages are also available.</p>
-<h2 id="drf-nested-routers"><a class="toclink" href="#drf-nested-routers">DRF Nested Routers</a></h2>
+<h2 id="drf-nested-routers">DRF Nested Routers<a class="headerlink" href="#drf-nested-routers" title="Permanent link">&para;</a></h2>
 <p>The <a href="https://github.com/alanjds/drf-nested-routers">drf-nested-routers package</a> provides routers and relationship fields for working with nested resources.</p>
-<h2 id="rest-framework-generic-relations"><a class="toclink" href="#rest-framework-generic-relations">Rest Framework Generic Relations</a></h2>
+<h2 id="rest-framework-generic-relations">Rest Framework Generic Relations<a class="headerlink" href="#rest-framework-generic-relations" title="Permanent link">&para;</a></h2>
 <p>The <a href="https://github.com/Ian-Foote/rest-framework-generic-relations">rest-framework-generic-relations</a> library provides read/write serialization for generic foreign keys.</p>
 <p>The <a href="https://github.com/mojtabaakbari221b/rest-framework-gm2m-relations">rest-framework-gm2m-relations</a> library provides read/write serialization for <a href="https://github.com/tkhyn/django-gm2m">django-gm2m</a>.</p>
-            
 
-          </div> <!--/span-->
-        </div> <!--/row-->
-      </div> <!--/.fluid-container-->
-    </div> <!--/.body content-->
-    <div id="push"></div>
-  </div> <!--/.wrapper -->
 
-  <footer class="span12">
-    <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.
-    </p>
-  </footer>
 
-  <!-- Le javascript
-  ================================================== -->
-  <!-- Placed at the end of the document so the pages load faster -->
-  <script async src="https://fund.django-rest-framework.org/sidebar_include.js"></script>
-  <script src="../../js/jquery-1.8.1-min.js"></script>
-  <script src="../../js/prettify-1.0.js"></script>
-  <script src="../../js/bootstrap-2.1.1-min.js"></script>
-  <script src="../../js/theme.js"></script>
 
-  <script>var base_url = '../..';</script>
+
+
+
   
-  <script src="../../js/copy-button.js" defer></script>
-  
-  <script src="../../search/main.js" defer></script>
   
 
-  <script>
-    var shiftWindow = function() {
-      scrollBy(0, -50)
-    };
 
-    if (location.hash) shiftWindow();
-    window.addEventListener("hashchange", shiftWindow);
 
-    $('.dropdown-menu').on('click touchstart', function(event) {
-      event.stopPropagation();
-    });
 
-    // Dynamically force sidenav/dropdown to no higher than browser window
-    $('.side-nav, .dropdown-menu').css('max-height', window.innerHeight - 130);
 
-    $(function() {
-      $(window).resize(function() {
-        $('.side-nav, .dropdown-menu').css('max-height', window.innerHeight - 130);
-      });
-    });
-  </script>
-</body>
 
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+      <div class="md-progress" data-md-component="progress" role="progressbar"></div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["content.tabs.link", "content.code.annotate", "content.code.copy", "navigation.tabs", "navigation.tabs.sticky", "navigation.instant", "navigation.instant.prefetch", "navigation.instant.progress", "navigation.path", "navigation.sections", "navigation.top", "navigation.tracking", "search.suggest", "toc.follow", "toc.integrate"], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+    
+      <script src="../../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+        <script src="../../theme/js/prettify-1.0.js"></script>
+      
+    
+    <script>
+        document$.subscribe(function() {
+            document.querySelectorAll('pre code').forEach(code => {
+                code.parentElement.classList.add('prettyprint', 'well');
+            });
+            prettyPrint();
+        });
+    </script>
+
+  </body>
 </html>

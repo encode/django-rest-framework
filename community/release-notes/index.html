@@ -1,522 +1,3927 @@
-<!DOCTYPE html>
-<html lang="en">
 
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <meta charset="utf-8">
-  <title>Release Notes - Django REST framework</title>
-  <link href="../../img/favicon.ico" rel="icon" type="image/x-icon">
-  <link rel="canonical" href="https://www.django-rest-framework.org/community/release-notes/" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Django, API, REST, Release Notes">
-  <meta name="author" content="Tom Christie">
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Django REST framework - Web APIs for Django">
+      
+      
+      
+        <link rel="canonical" href="https://www.django-rest-framework.org/community/release-notes/">
+      
+      
+        <link rel="prev" href="../project-management/">
+      
+      
+        <link rel="next" href="../3.16-announcement/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../theme/img/favicon.ico">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+    
+    
+      
+        <title>Release Notes - Django REST framework</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.618322db.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
 
-  <!-- Le styles -->
-  <link href="../../css/prettify.css" rel="stylesheet">
-  <link href="../../css/bootstrap.css" rel="stylesheet">
-  <link href="../../css/bootstrap-responsive.css" rel="stylesheet">
-  <link href="../../css/default.css" rel="stylesheet">
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../theme/stylesheets/extra.css">
+    
+      <link rel="stylesheet" href="../../theme/stylesheets/prettify.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
   
-    <link href="../../css/copy-button.css" rel="stylesheet">
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#release-notes" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
   
 
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Django REST framework" class="md-header__button md-logo" aria-label="Django REST framework" data-md-component="logo">
+      
+  <img src="../../theme/img/logo.png" alt="logo">
 
-  <script type="text/javascript">
-    var _gaq = _gaq || [];
-    _gaq.push(['_setAccount', 'UA-18852272-2']);
-    _gaq.push(['_trackPageview']);
-
-    (function() {
-      var ga = document.createElement('script');
-      ga.type = 'text/javascript';
-      ga.async = true;
-      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-      var s = document.getElementsByTagName('script')[0];
-      s.parentNode.insertBefore(ga, s);
-    })();
-  </script>
-
-  <style>
-  #sidebarInclude img {
-      margin-bottom: 10px;
-  }
-  #sidebarInclude a.promo {
-      color: black;
-  }
-    @media (max-width: 767px) {
-      div.promo {
-        display: none;
-      }
-    }
-  </style>
-</head>
-<body onload="prettyPrint()" class="-page">
-
-  <div class="wrapper">
-        <div class="navbar navbar-inverse navbar-fixed-top">
-      <div class="navbar-inner">
-        <div class="container-fluid">
-          <a class="repo-link btn btn-primary btn-small" href="https://github.com/encode/django-rest-framework">GitHub</a>
-          <a class="repo-link btn btn-inverse btn-small " rel="next" href="../3.16-announcement/">
-            Next <i class="icon-arrow-right icon-white"></i>
-          </a>
-          <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../project-management/">
-            <i class="icon-arrow-left icon-white"></i> Previous
-          </a>
-          <a id="search_modal_show" class="repo-link btn btn-inverse btn-small" href="#mkdocs_search_modal" data-toggle="modal" data-target="#mkdocs_search_modal"><i class="icon-search icon-white"></i> Search</a>
-          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </a>
-          <a class="brand" href="https://www.django-rest-framework.org/">Django REST framework</a>
-          <div class="nav-collapse collapse">
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Django REST framework
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
             
-            <!-- Main navigation -->
-            <ul class="nav navbar-nav">
-               
-              <li >
-                <a href="../..">Home</a>
-              </li>
-                
-              <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tutorial <b class="caret"></b></a>
-                <ul class="dropdown-menu">
-                  
-                  <li >
-                    <a href="../../tutorial/quickstart/">Quickstart</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../tutorial/1-serialization/">1 - Serialization</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../tutorial/2-requests-and-responses/">2 - Requests and responses</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../tutorial/3-class-based-views/">3 - Class based views</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../tutorial/4-authentication-and-permissions/">4 - Authentication and permissions</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../tutorial/5-relationships-and-hyperlinked-apis/">5 - Relationships and hyperlinked APIs</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../tutorial/6-viewsets-and-routers/">6 - Viewsets and routers</a>
-                  </li>
-                  
-                </ul>
-              </li>
-                
-              <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">API Guide <b class="caret"></b></a>
-                <ul class="dropdown-menu">
-                  
-                  <li >
-                    <a href="../../api-guide/requests/">Requests</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../api-guide/responses/">Responses</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../api-guide/views/">Views</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../api-guide/generic-views/">Generic views</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../api-guide/viewsets/">Viewsets</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../api-guide/routers/">Routers</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../api-guide/parsers/">Parsers</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../api-guide/renderers/">Renderers</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../api-guide/serializers/">Serializers</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../api-guide/fields/">Serializer fields</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../api-guide/relations/">Serializer relations</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../api-guide/validators/">Validators</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../api-guide/authentication/">Authentication</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../api-guide/permissions/">Permissions</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../api-guide/caching/">Caching</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../api-guide/throttling/">Throttling</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../api-guide/filtering/">Filtering</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../api-guide/pagination/">Pagination</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../api-guide/versioning/">Versioning</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../api-guide/content-negotiation/">Content negotiation</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../api-guide/metadata/">Metadata</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../api-guide/schemas/">Schemas</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../api-guide/format-suffixes/">Format suffixes</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../api-guide/reverse/">Returning URLs</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../api-guide/exceptions/">Exceptions</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../api-guide/status-codes/">Status codes</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../api-guide/testing/">Testing</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../api-guide/settings/">Settings</a>
-                  </li>
-                  
-                </ul>
-              </li>
-                
-              <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Topics <b class="caret"></b></a>
-                <ul class="dropdown-menu">
-                  
-                  <li >
-                    <a href="../../topics/documenting-your-api/">Documenting your API</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/internationalization/">Internationalization</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/ajax-csrf-cors/">AJAX, CSRF & CORS</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/html-and-forms/">HTML & Forms</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/browser-enhancements/">Browser Enhancements</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/browsable-api/">The Browsable API</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/rest-hypermedia-hateoas/">REST, Hypermedia & HATEOAS</a>
-                  </li>
-                  
-                </ul>
-              </li>
-                
-              <li class="dropdown active">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Community <b class="caret"></b></a>
-                <ul class="dropdown-menu">
-                  
-                  <li >
-                    <a href="../tutorials-and-resources/">Tutorials and Resources</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../third-party-packages/">Third Party Packages</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../contributing/">Contributing to REST framework</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../project-management/">Project management</a>
-                  </li>
-                  
-                  <li class="active" >
-                    <a href="./">Release Notes</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../3.16-announcement/">3.16 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../3.15-announcement/">3.15 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../3.14-announcement/">3.14 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../3.13-announcement/">3.13 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../3.12-announcement/">3.12 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../3.11-announcement/">3.11 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../3.10-announcement/">3.10 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../3.9-announcement/">3.9 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../3.8-announcement/">3.8 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../3.7-announcement/">3.7 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../3.6-announcement/">3.6 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../3.5-announcement/">3.5 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../3.4-announcement/">3.4 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../3.3-announcement/">3.3 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../3.2-announcement/">3.2 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../3.1-announcement/">3.1 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../3.0-announcement/">3.0 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../kickstarter-announcement/">Kickstarter Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../mozilla-grant/">Mozilla Grant</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../jobs/">Jobs</a>
-                  </li>
-                  
-                </ul>
-              </li>
-               
-
-            </ul>
+              Release Notes
             
-          </div>
-          <!--/.nav-collapse -->
-
+          </span>
         </div>
       </div>
     </div>
-
-    <div class="body-content">
-      <div class="container-fluid">
-        <!-- Search Modal -->
-        <div id="mkdocs_search_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            <h3 id="myModalLabel">Documentation search</h3>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m14.3 16-.7-2h-3.2l-.7 2H7.8L11 7h2l3.2 9zM20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12zm-9.15 3.96h2.3L12 9z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
           </div>
-
-          <div class="modal-body">
-            <form role="form" autocomplete="off">
-              <div class="form-group">
-                <input type="text" name="q" class="form-control" placeholder="Search..." id="mkdocs-search-query">
-              </div>
-            </form>
-            <div id="mkdocs-search-results"></div>
-          </div>
-
-          <div class="modal-footer">
-            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/encode/django-rest-framework" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
 
-        <div class="row-fluid">
-          <div class="span3">
-            <div id="table-of-contents">
-              <ul class="nav nav-list side-nav well sidebar-nav-fixed">
-                
+      </a>
+    </li>
+  
 
-                
-                  <li class="main">
-                    <a href="#release-notes">Release Notes</a>
-                  </li>
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../tutorial/quickstart/" class="md-tabs__link">
+          
+  
+  
+  Tutorial
 
-                  
-                    <li>
-                      <a href="#versioning">Versioning</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#deprecation-policy">Deprecation policy</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#upgrading">Upgrading</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#316x-series">3.16.x series</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#315x-series">3.15.x series</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#314x-series">3.14.x series</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#313x-series">3.13.x series</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#312x-series">3.12.x series</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#311x-series">3.11.x series</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#310x-series">3.10.x series</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#39x-series">3.9.x series</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#38x-series">3.8.x series</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#37x-series">3.7.x series</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#36x-series">3.6.x series</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#35x-series">3.5.x series</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#34x-series">3.4.x series</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#33x-series">3.3.x series</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#32x-series">3.2.x series</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#31x-series">3.1.x series</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#30x-series">3.0.x series</a>
-                    </li>
-                  
-                
+        </a>
+      </li>
+    
+  
 
-                  <div class="promo">
-                    <hr/>
-                    <div id="sidebarInclude">
-                  </div>
-              </ul>
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../api-guide/requests/" class="md-tabs__link">
+          
+  
+  
+  API Guide
 
-            </div>
-          </div>
+        </a>
+      </li>
+    
+  
 
-          <div id="main-content" class="span9">
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../topics/documenting-your-api/" class="md-tabs__link">
+          
+  
+  
+  Topics
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../tutorials-and-resources/" class="md-tabs__link">
+          
+  
+  
+  Community
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
             
               
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
 
-              <h1 id="release-notes"><a class="toclink" href="#release-notes">Release Notes</a></h1>
-<h2 id="versioning"><a class="toclink" href="#versioning">Versioning</a></h2>
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Django REST framework" class="md-nav__button md-logo" aria-label="Django REST framework" data-md-component="logo">
+      
+  <img src="../../theme/img/logo.png" alt="logo">
+
+    </a>
+    Django REST framework
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/encode/django-rest-framework" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorial
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tutorial
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quickstart
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/1-serialization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1 - Serialization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/2-requests-and-responses/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2 - Requests and responses
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/3-class-based-views/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3 - Class based views
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/4-authentication-and-permissions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4 - Authentication and permissions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/5-relationships-and-hyperlinked-apis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5 - Relationships and hyperlinked APIs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/6-viewsets-and-routers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6 - Viewsets and routers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-guide/requests/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Requests
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-guide/responses/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Responses
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-guide/views/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Views
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-guide/generic-views/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Generic views
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-guide/viewsets/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Viewsets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-guide/routers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Routers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-guide/parsers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Parsers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-guide/renderers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Renderers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-guide/serializers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Serializers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-guide/fields/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Serializer fields
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-guide/relations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Serializer relations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-guide/validators/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validators
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-guide/authentication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Authentication
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-guide/permissions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Permissions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-guide/caching/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Caching
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-guide/throttling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Throttling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-guide/filtering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Filtering
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-guide/pagination/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pagination
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-guide/versioning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Versioning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-guide/content-negotiation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Content negotiation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-guide/metadata/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Metadata
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-guide/schemas/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Schemas
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-guide/format-suffixes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Format suffixes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-guide/reverse/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Returning URLs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-guide/exceptions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Exceptions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-guide/status-codes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Status codes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-guide/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-guide/settings/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Settings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Topics
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Topics
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../topics/documenting-your-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Documenting your API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../topics/internationalization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Internationalization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../topics/ajax-csrf-cors/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AJAX, CSRF & CORS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../topics/html-and-forms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HTML & Forms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../topics/browser-enhancements/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Browser Enhancements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../topics/browsable-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Browsable API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../topics/rest-hypermedia-hateoas/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    REST, Hypermedia & HATEOAS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Community
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Community
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials-and-resources/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials and Resources
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../third-party-packages/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Third Party Packages
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing to REST framework
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../project-management/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project management
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release Notes
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release Notes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#versioning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Versioning
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deprecation-policy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deprecation policy
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#upgrading" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Upgrading
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#316x-series" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.16.x series
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.16.x series">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#3161" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.16.1
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.16.1">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#minor-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Minor changes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug fixes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#translations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Translations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#internal-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Internal changes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#new-contributors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New Contributors
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3160" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.16.0
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.16.0">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Features
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug fixes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#translations_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Translations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#removals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Removals
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentation-and-internal-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documentation and internal changes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#new-contributors_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New Contributors
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#315x-series" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.15.x series
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.15.x series">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#3152" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.15.2
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3151" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.15.1
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3150" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.15.0
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#314x-series" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.14.x series
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.14.x series">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#3140" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.14.0
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#313x-series" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.13.x series
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.13.x series">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#3131" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.13.1
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3130" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.13.0
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#312x-series" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.12.x series
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.12.x series">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#3124" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.12.4
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3123" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.12.3
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3122" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.12.2
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3121" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.12.1
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3120" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.12.0
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#311x-series" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.11.x series
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.11.x series">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#3112" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.11.2
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3111" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.11.1
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3110" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.11.0
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#310x-series" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.10.x series
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.10.x series">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#3103" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.10.3
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3102" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.10.2
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3101" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.10.1
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3100" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.10.0
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#39x-series" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.9.x series
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.9.x series">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#394" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.9.4
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#393" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.9.3
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#392" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.9.2
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#391" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.9.1
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#390" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.9.0
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#38x-series" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.8.x series
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.8.x series">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#382" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.8.2
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#381" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.8.1
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#380" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.8.0
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#37x-series" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.7.x series
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.7.x series">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#377" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.7.7
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#376" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.7.6
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#375" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.7.5
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#374" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.7.4
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#373" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.7.3
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#372" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.7.2
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#371" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.7.1
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#370" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.7.0
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#36x-series" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.6.x series
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.6.x series">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#364" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.6.4
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#363" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.6.3
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#362" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.6.2
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#361" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.6.1
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#360" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.6.0
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#35x-series" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5.x series
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.5.x series">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#354" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5.4
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#353" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5.3
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#352" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5.2
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#351" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5.1
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#350" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5.0
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#34x-series" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4.x series
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.4.x series">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#347" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4.7
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#346" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4.6
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#345" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4.5
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#344" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4.4
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#343" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4.3
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#342" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4.2
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#341" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4.1
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#340" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4.0
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#33x-series" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3.x series
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.3.x series">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#333" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3.3
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#332" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3.2
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#331" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3.1
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#330" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3.0
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#32x-series" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2.x series
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.2.x series">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#325" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2.5
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#324" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2.4
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#323" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2.3
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#322" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2.2
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#321" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2.1
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#320" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2.0
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#31x-series" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1.x series
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.1.x series">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#313" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1.3
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#312" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1.2
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#311" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1.1
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#310" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1.0
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#30x-series" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.0.x series
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.0.x series">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#305" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.0.5
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#304" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.0.4
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#303" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.0.3
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#302" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.0.2
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#301" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.0.1
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#300" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.0.0
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.16-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.16 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.15-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.15 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.14-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.14 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.13-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.13 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.12-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.12 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.11-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.11 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.10-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.10 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.9-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.9 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.8-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.8 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.7-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.7 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.6-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.6 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.5-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.5 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.4-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.4 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.3-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.3 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.2-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.2 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.1-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.1 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.0-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.0 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../kickstarter-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kickstarter Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mozilla-grant/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mozilla Grant
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../jobs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Jobs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+                
+
+
+
+  
+
+
+  <nav class="md-path" aria-label="Navigation" >
+    <ol class="md-path__list">
+      
+        
+  
+  
+    <li class="md-path__item">
+      <a href="../.." class="md-path__link">
+        
+  <span class="md-ellipsis">
+    Home
+  </span>
+
+      </a>
+    </li>
+  
+
+      
+      
+        
+  
+  
+    
+    
+      <li class="md-path__item">
+        <a href="../tutorials-and-resources/" class="md-path__link">
+          
+  <span class="md-ellipsis">
+    Community
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ol>
+  </nav>
+
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="release-notes">Release Notes<a class="headerlink" href="#release-notes" title="Permanent link">&para;</a></h1>
+<h2 id="versioning">Versioning<a class="headerlink" href="#versioning" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
 <p><strong>Minor</strong> version numbers (0.0.x) are used for changes that are API compatible.  You should be able to upgrade between minor point releases without any other code changes.</p>
@@ -529,7 +3934,7 @@
 </li>
 </ul>
 <p>As REST Framework is considered feature-complete, most releases are expected to be minor releases.</p>
-<h2 id="deprecation-policy"><a class="toclink" href="#deprecation-policy">Deprecation policy</a></h2>
+<h2 id="deprecation-policy">Deprecation policy<a class="headerlink" href="#deprecation-policy" title="Permanent link">&para;</a></h2>
 <p>REST framework releases follow a formal deprecation policy, which is in line with <a href="https://docs.djangoproject.com/en/stable/internals/release-process/#internal-release-deprecation-policy">Django's deprecation policy</a>.</p>
 <p>The timeline for deprecation of a feature present in version 1.0 would work as follows:</p>
 <ul>
@@ -544,29 +3949,29 @@
 </li>
 </ul>
 <p>Note that in line with Django's policy, any parts of the framework not mentioned in the documentation should generally be considered private API, and may be subject to change.</p>
-<h2 id="upgrading"><a class="toclink" href="#upgrading">Upgrading</a></h2>
+<h2 id="upgrading">Upgrading<a class="headerlink" href="#upgrading" title="Permanent link">&para;</a></h2>
 <p>To upgrade Django REST framework to the latest version, use pip:</p>
-<pre><code>pip install -U djangorestframework
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code>pip install -U djangorestframework
+</code></pre></div>
 <p>You can determine your currently installed version using <code>pip show</code>:</p>
-<pre><code>pip show djangorestframework
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code>pip show djangorestframework
+</code></pre></div>
 <hr />
-<h2 id="316x-series"><a class="toclink" href="#316x-series">3.16.x series</a></h2>
-<h3 id="3161"><a class="toclink" href="#3161">3.16.1</a></h3>
+<h2 id="316x-series">3.16.x series<a class="headerlink" href="#316x-series" title="Permanent link">&para;</a></h2>
+<h3 id="3161">3.16.1<a class="headerlink" href="#3161" title="Permanent link">&para;</a></h3>
 <p><strong>Date</strong>: 6th August 2025</p>
 <p>This release fixes a few bugs, clean-up some old code paths for unsupported Python versions and improve translations.</p>
-<h4 id="minor-changes"><a class="toclink" href="#minor-changes">Minor changes</a></h4>
+<h4 id="minor-changes">Minor changes<a class="headerlink" href="#minor-changes" title="Permanent link">&para;</a></h4>
 <ul>
 <li>Cleanup optional <code>backports.zoneinfo</code> dependency and conditions on unsupported Python 3.8 and lower in <a href="https://github.com/encode/django-rest-framework/pull/9681">#9681</a>. Python versions prior to 3.9 were already unsupported so this shouldn't be a breaking change.</li>
 </ul>
-<h4 id="bug-fixes"><a class="toclink" href="#bug-fixes">Bug fixes</a></h4>
+<h4 id="bug-fixes">Bug fixes<a class="headerlink" href="#bug-fixes" title="Permanent link">&para;</a></h4>
 <ul>
 <li>Fix regression in <code>unique_together</code> validation with <code>SerializerMethodField</code> in <a href="https://github.com/encode/django-rest-framework/pull/9712">#9712</a></li>
 <li>Fix <code>UniqueTogetherValidator</code> to handle fields with <code>source</code> attribute in <a href="https://github.com/encode/django-rest-framework/pull/9688">#9688</a></li>
 <li>Drop HTML line breaks on long headers in browsable API in <a href="https://github.com/encode/django-rest-framework/pull/9438">#9438</a></li>
 </ul>
-<h4 id="translations"><a class="toclink" href="#translations">Translations</a></h4>
+<h4 id="translations">Translations<a class="headerlink" href="#translations" title="Permanent link">&para;</a></h4>
 <ul>
 <li>Add Kazakh locale support in <a href="https://github.com/encode/django-rest-framework/pull/9713">#9713</a></li>
 <li>Update translations for Korean translations in <a href="https://github.com/encode/django-rest-framework/pull/9571">#9571</a></li>
@@ -578,7 +3983,7 @@
 <li>Update Turkish Translations in <a href="https://github.com/encode/django-rest-framework/pull/9749">#9749</a></li>
 <li>Fix some typos in Brazilian Portuguese translations in <a href="https://github.com/encode/django-rest-framework/pull/9673">#9673</a></li>
 </ul>
-<h4 id="documentation"><a class="toclink" href="#documentation">Documentation</a></h4>
+<h4 id="documentation">Documentation<a class="headerlink" href="#documentation" title="Permanent link">&para;</a></h4>
 <ul>
 <li>Removed reference to GitHub Issues and Discussions in <a href="https://github.com/encode/django-rest-framework/pull/9660">#9660</a></li>
 <li>Add <code>drf-restwind</code> and update outdated images in <code>browsable-api.md</code> in <a href="https://github.com/encode/django-rest-framework/pull/9680">#9680</a></li>
@@ -589,14 +3994,14 @@
 <li>Revert extension back from <code>djangorestframework-guardian2</code> to <code>djangorestframework-guardian</code> in <a href="https://github.com/encode/django-rest-framework/pull/9734">#9734</a></li>
 <li>Add note to tutorial about required <code>request</code> in serializer context when using <code>HyperlinkedModelSerializer</code> in <a href="https://github.com/encode/django-rest-framework/pull/9732">#9732</a></li>
 </ul>
-<h4 id="internal-changes"><a class="toclink" href="#internal-changes">Internal changes</a></h4>
+<h4 id="internal-changes">Internal changes<a class="headerlink" href="#internal-changes" title="Permanent link">&para;</a></h4>
 <ul>
 <li>Update GitHub Actions to use Ubuntu 24.04 for testing in <a href="https://github.com/encode/django-rest-framework/pull/9677">#9677</a></li>
 <li>Update test matrix to use Django 5.2 stable version in <a href="https://github.com/encode/django-rest-framework/pull/9679">#9679</a></li>
 <li>Add <code>pyupgrade</code> to <code>pre-commit</code> hooks in <a href="https://github.com/encode/django-rest-framework/pull/9682">#9682</a></li>
 <li>Fix test with Django 5 when <code>pytz</code> is available in <a href="https://github.com/encode/django-rest-framework/pull/9715">#9715</a></li>
 </ul>
-<h4 id="new-contributors"><a class="toclink" href="#new-contributors">New Contributors</a></h4>
+<h4 id="new-contributors">New Contributors<a class="headerlink" href="#new-contributors" title="Permanent link">&para;</a></h4>
 <ul>
 <li><a href="https://github.com/araggohnxd"><code>@araggohnxd</code></a> made their first contribution in <a href="https://github.com/encode/django-rest-framework/pull/9673">#9673</a></li>
 <li><a href="https://github.com/mbeijen"><code>@mbeijen</code></a> made their first contribution in <a href="https://github.com/encode/django-rest-framework/pull/9660">#9660</a></li>
@@ -612,17 +4017,17 @@
 <li><a href="https://github.com/Natgho"><code>@Natgho</code></a> made their first contribution in <a href="https://github.com/encode/django-rest-framework/pull/9749">#9749</a></li>
 </ul>
 <p><strong>Full Changelog</strong>: https://github.com/encode/django-rest-framework/compare/3.16.0...3.16.1</p>
-<h3 id="3160"><a class="toclink" href="#3160">3.16.0</a></h3>
+<h3 id="3160">3.16.0<a class="headerlink" href="#3160" title="Permanent link">&para;</a></h3>
 <p><strong>Date</strong>: 28th March 2025</p>
 <p>This release is considered a significant release to improve upstream support with Django and Python. Some of these may change the behavior of existing features and pre-existing behavior. Specifically, some fixes were added to around the support of <code>UniqueConstraint</code> with nullable fields which will improve built-in serializer validation.</p>
-<h4 id="features"><a class="toclink" href="#features">Features</a></h4>
+<h4 id="features">Features<a class="headerlink" href="#features" title="Permanent link">&para;</a></h4>
 <ul>
 <li>Add official support for Django 5.1 and its new <code>LoginRequiredMiddleware</code> in <a href="https://github.com/encode/django-rest-framework/pull/9514">#9514</a> and <a href="https://github.com/encode/django-rest-framework/pull/9657">#9657</a></li>
 <li>Add official Django 5.2a1 support in <a href="https://github.com/encode/django-rest-framework/pull/9634">#9634</a></li>
 <li>Add support for Python 3.13 in <a href="https://github.com/encode/django-rest-framework/pull/9527">#9527</a> and <a href="https://github.com/encode/django-rest-framework/pull/9556">#9556</a></li>
 <li>Support Django 2.1+ test client JSON data automatically serialized in <a href="https://github.com/encode/django-rest-framework/pull/6511">#6511</a> and fix a regression in <a href="https://github.com/encode/django-rest-framework/pull/9615">#9615</a></li>
 </ul>
-<h4 id="bug-fixes_1"><a class="toclink" href="#bug-fixes_1">Bug fixes</a></h4>
+<h4 id="bug-fixes_1">Bug fixes<a class="headerlink" href="#bug-fixes_1" title="Permanent link">&para;</a></h4>
 <ul>
 <li>Fix unique together validator to respect condition's fields from <code>UniqueConstraint</code> in <a href="https://github.com/encode/django-rest-framework/pull/9360">#9360</a></li>
 <li>Fix raising on nullable fields part of <code>UniqueConstraint</code> in <a href="https://github.com/encode/django-rest-framework/pull/9531">#9531</a></li>
@@ -633,19 +4038,19 @@
 <li>Fix noisy warning and accept integers as min/max values of <code>DecimalField</code> in <a href="https://github.com/encode/django-rest-framework/pull/9515">#9515</a></li>
 <li>Fix usages of <code>open()</code> in <code>setup.py</code> in <a href="https://github.com/encode/django-rest-framework/pull/9661">#9661</a></li>
 </ul>
-<h4 id="translations_1"><a class="toclink" href="#translations_1">Translations</a></h4>
+<h4 id="translations_1">Translations<a class="headerlink" href="#translations_1" title="Permanent link">&para;</a></h4>
 <ul>
 <li>Add some missing Chinese translations in <a href="https://github.com/encode/django-rest-framework/pull/9505">#9505</a></li>
 <li>Fix spelling mistakes in Farsi language were corrected in <a href="https://github.com/encode/django-rest-framework/pull/9521">#9521</a></li>
 <li>Fixing and adding missing Brazilian Portuguese translations in <a href="https://github.com/encode/django-rest-framework/pull/9535">#9535</a></li>
 </ul>
-<h4 id="removals"><a class="toclink" href="#removals">Removals</a></h4>
+<h4 id="removals">Removals<a class="headerlink" href="#removals" title="Permanent link">&para;</a></h4>
 <ul>
 <li>Remove support for Python 3.8 in <a href="https://github.com/encode/django-rest-framework/pull/9670">#9670</a></li>
 <li>Remove long deprecated code from request wrapper in <a href="https://github.com/encode/django-rest-framework/pull/9441">#9441</a></li>
 <li>Remove deprecated <code>AutoSchema._get_reference</code> method in <a href="https://github.com/encode/django-rest-framework/pull/9525">#9525</a></li>
 </ul>
-<h4 id="documentation-and-internal-changes"><a class="toclink" href="#documentation-and-internal-changes">Documentation and internal changes</a></h4>
+<h4 id="documentation-and-internal-changes">Documentation and internal changes<a class="headerlink" href="#documentation-and-internal-changes" title="Permanent link">&para;</a></h4>
 <ul>
 <li>Provide tests for hashing of <code>OperandHolder</code> in <a href="https://github.com/encode/django-rest-framework/pull/9437">#9437</a></li>
 <li>Update documentation: Add <code>adrf</code> third party package in <a href="https://github.com/encode/django-rest-framework/pull/9198">#9198</a></li>
@@ -665,7 +4070,7 @@
 <li>Fix a number of typos in the test suite in the docs in <a href="https://github.com/encode/django-rest-framework/pull/9662">#9662</a></li>
 <li>Add <code>django-pyoidc</code> as a third party authentication library in <a href="https://github.com/encode/django-rest-framework/pull/9667">#9667</a></li>
 </ul>
-<h4 id="new-contributors_1"><a class="toclink" href="#new-contributors_1">New Contributors</a></h4>
+<h4 id="new-contributors_1">New Contributors<a class="headerlink" href="#new-contributors_1" title="Permanent link">&para;</a></h4>
 <ul>
 <li><a href="https://github.com/maerteijn"><code>@maerteijn</code></a> made their first contribution in <a href="https://github.com/encode/django-rest-framework/pull/9198">#9198</a></li>
 <li><a href="https://github.com/FraCata00"><code>@FraCata00</code></a> made their first contribution in <a href="https://github.com/encode/django-rest-framework/pull/9444">#9444</a></li>
@@ -690,8 +4095,8 @@
 <li><a href="https://github.com/gbip"><code>@gbip</code></a> made their first contribution in <a href="https://github.com/encode/django-rest-framework/pull/9667">#9667</a></li>
 </ul>
 <p><strong>Full Changelog</strong>: https://github.com/encode/django-rest-framework/compare/3.15.2...3.16.0</p>
-<h2 id="315x-series"><a class="toclink" href="#315x-series">3.15.x series</a></h2>
-<h3 id="3152"><a class="toclink" href="#3152">3.15.2</a></h3>
+<h2 id="315x-series">3.15.x series<a class="headerlink" href="#315x-series" title="Permanent link">&para;</a></h2>
+<h3 id="3152">3.15.2<a class="headerlink" href="#3152" title="Permanent link">&para;</a></h3>
 <p><strong>Date</strong>: 14th June 2024</p>
 <ul>
 <li>Fix potential XSS vulnerability in browsable API. <a href="https://github.com/encode/django-rest-framework/pull/9435">#9435</a></li>
@@ -700,13 +4105,13 @@
 <li>Remove unused code. <a href="https://github.com/encode/django-rest-framework/pull/9393">#9393</a></li>
 <li>Django &lt; 4.2 and Python &lt; 3.8 no longer supported. <a href="https://github.com/encode/django-rest-framework/pull/9393">#9393</a></li>
 </ul>
-<h3 id="3151"><a class="toclink" href="#3151">3.15.1</a></h3>
+<h3 id="3151">3.15.1<a class="headerlink" href="#3151" title="Permanent link">&para;</a></h3>
 <p>Date: 22nd March 2024</p>
 <ul>
 <li>Fix <code>SearchFilter</code> handling of quoted and comma separated strings, when <code>.get_search_terms</code> is being called into by a custom class. See [<a href="https://github.com/encode/django-rest-framework/issues/9338">#9338</a>]</li>
 <li>Revert number of 3.15.0 issues which included unintended side-effects. See [<a href="https://github.com/encode/django-rest-framework/issues/9331">#9331</a>]</li>
 </ul>
-<h3 id="3150"><a class="toclink" href="#3150">3.15.0</a></h3>
+<h3 id="3150">3.15.0<a class="headerlink" href="#3150" title="Permanent link">&para;</a></h3>
 <p>Date: 15th March 2024</p>
 <ul>
 <li>Django 5.0 and Python 3.12 support [<a href="https://github.com/encode/django-rest-framework/pull/9157">#9157</a>]</li>
@@ -787,8 +4192,8 @@
 <li>Unnecessary list comprehension [<a href="https://github.com/encode/django-rest-framework/pull/8670">#8670</a>]</li>
 <li>Use correct class to indicate present deprecation [<a href="https://github.com/encode/django-rest-framework/pull/8665">#8665</a>]</li>
 </ul>
-<h2 id="314x-series"><a class="toclink" href="#314x-series">3.14.x series</a></h2>
-<h3 id="3140"><a class="toclink" href="#3140">3.14.0</a></h3>
+<h2 id="314x-series">3.14.x series<a class="headerlink" href="#314x-series" title="Permanent link">&para;</a></h2>
+<h3 id="3140">3.14.0<a class="headerlink" href="#3140" title="Permanent link">&para;</a></h3>
 <p>Date: 22nd September 2022</p>
 <ul>
 <li>Django 2.2 is no longer supported. [<a href="https://github.com/encode/django-rest-framework/pull/8662">#8662</a>]</li>
@@ -804,13 +4209,13 @@
 <li>Make <code>ReturnDict</code> support <code>dict</code> union operators on Python 3.9 and later. [<a href="https://github.com/encode/django-rest-framework/pull/8302">#8302</a>]</li>
 <li>Update throttling to check if <code>request.user</code> is set before checking if the user is authenticated. [<a href="https://github.com/encode/django-rest-framework/pull/8370">#8370</a>]</li>
 </ul>
-<h2 id="313x-series"><a class="toclink" href="#313x-series">3.13.x series</a></h2>
-<h3 id="3131"><a class="toclink" href="#3131">3.13.1</a></h3>
+<h2 id="313x-series">3.13.x series<a class="headerlink" href="#313x-series" title="Permanent link">&para;</a></h2>
+<h3 id="3131">3.13.1<a class="headerlink" href="#3131" title="Permanent link">&para;</a></h3>
 <p>Date: 15th December 2021</p>
 <ul>
 <li>Revert schema naming changes with function based <code>@api_view</code>. [#8297]</li>
 </ul>
-<h3 id="3130"><a class="toclink" href="#3130">3.13.0</a></h3>
+<h3 id="3130">3.13.0<a class="headerlink" href="#3130" title="Permanent link">&para;</a></h3>
 <p>Date: 13th December 2021</p>
 <ul>
 <li>Django 4.0 compatibility. [#8178]</li>
@@ -822,13 +4227,13 @@
 <li>Make Field constructors keyword-only. [#7632]</li>
 </ul>
 <hr />
-<h2 id="312x-series"><a class="toclink" href="#312x-series">3.12.x series</a></h2>
-<h3 id="3124"><a class="toclink" href="#3124">3.12.4</a></h3>
+<h2 id="312x-series">3.12.x series<a class="headerlink" href="#312x-series" title="Permanent link">&para;</a></h2>
+<h3 id="3124">3.12.4<a class="headerlink" href="#3124" title="Permanent link">&para;</a></h3>
 <p>Date: 26th March 2021</p>
 <ul>
 <li>Revert use of <code>deque</code> instead of <code>list</code> for tracking throttling <code>.history</code>. (Due to incompatibility with DjangoRedis cache backend. See #7870) [#7872]</li>
 </ul>
-<h3 id="3123"><a class="toclink" href="#3123">3.12.3</a></h3>
+<h3 id="3123">3.12.3<a class="headerlink" href="#3123" title="Permanent link">&para;</a></h3>
 <p>Date: 25th March 2021</p>
 <ul>
 <li>Properly handle ATOMIC_REQUESTS when multiple database configurations are used. [#7739]</li>
@@ -843,19 +4248,19 @@
 <li>Don't include model properties as automatically generated ordering fields with <code>OrderingFilter</code>. [#7609]</li>
 <li>Use <code>deque</code> instead of <code>list</code> for tracking throttling <code>.history</code>. [#7849]</li>
 </ul>
-<h3 id="3122"><a class="toclink" href="#3122">3.12.2</a></h3>
+<h3 id="3122">3.12.2<a class="headerlink" href="#3122" title="Permanent link">&para;</a></h3>
 <p>Date: 13th October 2020</p>
 <ul>
 <li>Fix issue if <code>rest_framework.authtoken.models</code> is imported, but <code>rest_framework.authtoken</code> is not in INSTALLED_APPS. [#7571]</li>
 <li>Ignore subclasses of BrowsableAPIRenderer in OpenAPI schema. [#7497]</li>
 <li>Narrower exception catching in serilizer fields, to ensure that any errors in broken <code>get_queryset()</code> methods are not masked. [#7480]</li>
 </ul>
-<h3 id="3121"><a class="toclink" href="#3121">3.12.1</a></h3>
+<h3 id="3121">3.12.1<a class="headerlink" href="#3121" title="Permanent link">&para;</a></h3>
 <p>Date: 28th September 2020</p>
 <ul>
 <li>Add <code>TokenProxy</code> migration. [#7557]</li>
 </ul>
-<h3 id="3120"><a class="toclink" href="#3120">3.12.0</a></h3>
+<h3 id="3120">3.12.0<a class="headerlink" href="#3120" title="Permanent link">&para;</a></h3>
 <p>Date: 28th September 2020</p>
 <ul>
 <li>Add <code>--file</code> option to <code>generateschema</code> command. [#7130]</li>
@@ -901,18 +4306,18 @@
 <li>Deprecate <code>serializers.NullBooleanField</code> in favor of <code>serializers.BooleanField</code> with <code>allow_null=True</code> [#7122]</li>
 </ul>
 <hr />
-<h2 id="311x-series"><a class="toclink" href="#311x-series">3.11.x series</a></h2>
-<h3 id="3112"><a class="toclink" href="#3112">3.11.2</a></h3>
+<h2 id="311x-series">3.11.x series<a class="headerlink" href="#311x-series" title="Permanent link">&para;</a></h2>
+<h3 id="3112">3.11.2<a class="headerlink" href="#3112" title="Permanent link">&para;</a></h3>
 <p><strong>Date</strong>: 30th September 2020</p>
 <ul>
 <li><strong>Security</strong>: Drop <code>urlize_quoted_links</code> template tag in favor of Django's built-in <code>urlize</code>. Removes a XSS vulnerability for some kinds of content in the browsable API.</li>
 </ul>
-<h3 id="3111"><a class="toclink" href="#3111">3.11.1</a></h3>
+<h3 id="3111">3.11.1<a class="headerlink" href="#3111" title="Permanent link">&para;</a></h3>
 <p><strong>Date</strong>: 5th August 2020</p>
 <ul>
 <li>Fix compat with Django 3.1</li>
 </ul>
-<h3 id="3110"><a class="toclink" href="#3110">3.11.0</a></h3>
+<h3 id="3110">3.11.0<a class="headerlink" href="#3110" title="Permanent link">&para;</a></h3>
 <p><strong>Date</strong>: 12th December 2019</p>
 <ul>
 <li>Drop <code>.set_context</code> API <a href="../3.11-announcement/#validator-default-context">in favor of a <code>requires_context</code> marker</a>.</li>
@@ -929,8 +4334,8 @@
 <li>Fix for reversing Hyperlinked URL fields with percent encoded components in the path. <a href="https://github.com/encode/django-rest-framework/issues/7059">#7059</a></li>
 <li>Update bootstrap to 3.4.1. <a href="https://github.com/encode/django-rest-framework/issues/6923">#6923</a></li>
 </ul>
-<h2 id="310x-series"><a class="toclink" href="#310x-series">3.10.x series</a></h2>
-<h3 id="3103"><a class="toclink" href="#3103">3.10.3</a></h3>
+<h2 id="310x-series">3.10.x series<a class="headerlink" href="#310x-series" title="Permanent link">&para;</a></h2>
+<h3 id="3103">3.10.3<a class="headerlink" href="#3103" title="Permanent link">&para;</a></h3>
 <p><strong>Date</strong>: 4th September 2019</p>
 <ul>
 <li>Include API version in OpenAPI schema generation, defaulting to empty string.</li>
@@ -944,19 +4349,19 @@
 <li>Only call <code>FileField.url</code> once in serialization, for improved performance.</li>
 <li>Fix an edge case where throttling calculations could error after a configuration change.</li>
 </ul>
-<h3 id="3102"><a class="toclink" href="#3102">3.10.2</a></h3>
+<h3 id="3102">3.10.2<a class="headerlink" href="#3102" title="Permanent link">&para;</a></h3>
 <p><strong>Date</strong>: 29th July 2019</p>
 <ul>
 <li>Various <code>OpenAPI</code> schema fixes.</li>
 <li>Ability to specify urlconf in include_docs_urls.</li>
 </ul>
-<h3 id="3101"><a class="toclink" href="#3101">3.10.1</a></h3>
+<h3 id="3101">3.10.1<a class="headerlink" href="#3101" title="Permanent link">&para;</a></h3>
 <p><strong>Date</strong>: 17th July 2019</p>
 <ul>
 <li>Don't include autocomplete fields on TokenAuth admin, since it forces constraints on custom user models &amp; admin.</li>
 <li>Require <code>uritemplate</code> for OpenAPI schema generation, but not <code>coreapi</code>.</li>
 </ul>
-<h3 id="3100"><a class="toclink" href="#3100">3.10.0</a></h3>
+<h3 id="3100">3.10.0<a class="headerlink" href="#3100" title="Permanent link">&para;</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/encode/django-rest-framework/milestone/69?closed=1">15th July 2019</a></p>
 <ul>
 <li>Switch to OpenAPI schema generation.</li>
@@ -975,11 +4380,11 @@
 <li>Deprecate the <code>detail_route</code> decorator in favor of <code>action</code>, which accepts a <code>detail</code> bool. Use <code>@action(detail=True)</code> instead. <a href="https://github.com/encode/django-rest-framework/issues/6687">gh6687</a></li>
 <li>Deprecate the <code>list_route</code> decorator in favor of <code>action</code>, which accepts a <code>detail</code> bool. Use <code>@action(detail=False)</code> instead. <a href="https://github.com/encode/django-rest-framework/issues/6687">gh6687</a></li>
 </ul>
-<h2 id="39x-series"><a class="toclink" href="#39x-series">3.9.x series</a></h2>
-<h3 id="394"><a class="toclink" href="#394">3.9.4</a></h3>
+<h2 id="39x-series">3.9.x series<a class="headerlink" href="#39x-series" title="Permanent link">&para;</a></h2>
+<h3 id="394">3.9.4<a class="headerlink" href="#394" title="Permanent link">&para;</a></h3>
 <p><strong>Date</strong>: 10th May 2019</p>
 <p>This is a maintenance release that fixes an error handling bug under Python 2.</p>
-<h3 id="393"><a class="toclink" href="#393">3.9.3</a></h3>
+<h3 id="393">3.9.3<a class="headerlink" href="#393" title="Permanent link">&para;</a></h3>
 <p><strong>Date</strong>: 29th April 2019</p>
 <p>This is the last Django REST Framework release that will support Python 2.
 Be sure to upgrade to Python 3 before upgrading to Django REST Framework 3.10.</p>
@@ -987,7 +4392,7 @@ Be sure to upgrade to Python 3 before upgrading to Django REST Framework 3.10.</
 <li>Adjusted the compat check for django-guardian to allow the last guardian
   version (v1.4.9) compatible with Python 2. <a href="https://github.com/encode/django-rest-framework/issues/6613">#6613</a></li>
 </ul>
-<h3 id="392"><a class="toclink" href="#392">3.9.2</a></h3>
+<h3 id="392">3.9.2<a class="headerlink" href="#392" title="Permanent link">&para;</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/encode/django-rest-framework/milestone/71?closed=1">3rd March 2019</a></p>
 <ul>
 <li>Routers: invalidate <code>_urls</code> cache on <code>register()</code> <a href="https://github.com/encode/django-rest-framework/issues/6407">#6407</a></li>
@@ -1006,7 +4411,7 @@ Be sure to upgrade to Python 3 before upgrading to Django REST Framework 3.10.</
 <li>Avoided calling distinct on annotated fields in SearchFilter. <a href="https://github.com/encode/django-rest-framework/issues/6240">#6240</a></li>
 <li>Introduced <code>RemovedInDRF…Warning</code> classes to simplify deprecations. <a href="https://github.com/encode/django-rest-framework/issues/6480">#6480</a></li>
 </ul>
-<h3 id="391"><a class="toclink" href="#391">3.9.1</a></h3>
+<h3 id="391">3.9.1<a class="headerlink" href="#391" title="Permanent link">&para;</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/encode/django-rest-framework/milestone/70?closed=1">16th January 2019</a></p>
 <ul>
 <li>Resolve XSS issue in browsable API. <a href="https://github.com/encode/django-rest-framework/issues/6330">#6330</a></li>
@@ -1014,7 +4419,7 @@ Be sure to upgrade to Python 3 before upgrading to Django REST Framework 3.10.</
 <li>Resolve issues with composable permissions. <a href="https://github.com/encode/django-rest-framework/issues/6299">#6299</a></li>
 <li>Respect <code>limit_choices_to</code> on foreign keys. <a href="https://github.com/encode/django-rest-framework/issues/6371">#6371</a></li>
 </ul>
-<h3 id="390"><a class="toclink" href="#390">3.9.0</a></h3>
+<h3 id="390">3.9.0<a class="headerlink" href="#390" title="Permanent link">&para;</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/encode/django-rest-framework/milestone/66?closed=1">18th October 2018</a></p>
 <ul>
 <li>Improvements to ViewSet extra actions <a href="https://github.com/encode/django-rest-framework/issues/5605">#5605</a></li>
@@ -1024,15 +4429,15 @@ Be sure to upgrade to Python 3 before upgrading to Django REST Framework 3.10.</
 <li>Deprecate the <code>Router.get_default_base_name</code> method in favor of <code>Router.get_default_basename</code>. <a href="https://github.com/encode/django-rest-framework/issues/5990">#5990</a></li>
 <li>Change <code>CharField</code> to disallow null bytes. <a href="https://github.com/encode/django-rest-framework/issues/6073">#6073</a>
   To revert to the old behavior, subclass <code>CharField</code> and remove <code>ProhibitNullCharactersValidator</code> from the validators.
-  <code>python
-  class NullableCharField(serializers.CharField):
-      def __init__(self, *args, **kwargs):
-          super().__init__(*args, **kwargs)
-          self.validators = [
-              v
-              for v in self.validators
-              if not isinstance(v, ProhibitNullCharactersValidator)
-          ]</code></li>
+  <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">NullableCharField</span><span class="p">(</span><span class="n">serializers</span><span class="o">.</span><span class="n">CharField</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">validators</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">v</span>
+            <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">validators</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">ProhibitNullCharactersValidator</span><span class="p">)</span>
+        <span class="p">]</span>
+</code></pre></div></li>
 <li>Add <code>OpenAPIRenderer</code> and <code>generate_schema</code> management command. <a href="https://github.com/encode/django-rest-framework/issues/6229">#6229</a></li>
 <li>Add OpenAPIRenderer by default, and add schema docs. <a href="https://github.com/encode/django-rest-framework/issues/6233">#6233</a></li>
 <li>Allow permissions to be composed <a href="https://github.com/encode/django-rest-framework/issues/5753">#5753</a></li>
@@ -1065,15 +4470,15 @@ Be sure to upgrade to Python 3 before upgrading to Django REST Framework 3.10.</
 <li>Updated JWT docs. <a href="https://github.com/encode/django-rest-framework/issues/6138">#6138</a></li>
 <li>Fix autoescape not getting passed to urlize_quoted_links filter <a href="https://github.com/encode/django-rest-framework/issues/6191">#6191</a></li>
 </ul>
-<h2 id="38x-series"><a class="toclink" href="#38x-series">3.8.x series</a></h2>
-<h3 id="382"><a class="toclink" href="#382">3.8.2</a></h3>
+<h2 id="38x-series">3.8.x series<a class="headerlink" href="#38x-series" title="Permanent link">&para;</a></h2>
+<h3 id="382">3.8.2<a class="headerlink" href="#382" title="Permanent link">&para;</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/encode/django-rest-framework/milestone/68?closed=1">6th April 2018</a></p>
 <ul>
 <li>Fix <code>read_only</code> + <code>default</code> <code>unique_together</code> validation. <a href="https://github.com/encode/django-rest-framework/issues/5922">#5922</a></li>
 <li>authtoken.views import coreapi from rest_framework.compat, not directly. <a href="https://github.com/encode/django-rest-framework/issues/5921">#5921</a></li>
 <li>Docs: Add missing argument 'detail' to Route <a href="https://github.com/encode/django-rest-framework/issues/5920">#5920</a></li>
 </ul>
-<h3 id="381"><a class="toclink" href="#381">3.8.1</a></h3>
+<h3 id="381">3.8.1<a class="headerlink" href="#381" title="Permanent link">&para;</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/encode/django-rest-framework/milestone/67?closed=1">4th April 2018</a></p>
 <ul>
 <li>
@@ -1082,7 +4487,7 @@ Be sure to upgrade to Python 3 before upgrading to Django REST Framework 3.10.</
 basing it on the <code>url_path</code> instead of the function name.</p>
 </li>
 </ul>
-<h3 id="380"><a class="toclink" href="#380">3.8.0</a></h3>
+<h3 id="380">3.8.0<a class="headerlink" href="#380" title="Permanent link">&para;</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/encode/django-rest-framework/milestone/61?closed=1">3rd April 2018</a></p>
 <ul>
 <li>
@@ -1091,9 +4496,9 @@ basing it on the <code>url_path</code> instead of the function name.</p>
 <p>Previously <code>read_only</code> fields with a <code>default</code> value would use the <code>default</code> for create and update operations.</p>
 <p>In order to maintain the old behavior you may need to pass the value of <code>read_only</code> fields when calling <code>save()</code> in
 the view:</p>
-<pre><code>def perform_create(self, serializer):
+<div class="language-text highlight"><pre><span></span><code>def perform_create(self, serializer):
     serializer.save(owner=self.request.user)
-</code></pre>
+</code></pre></div>
 <p>Alternatively you may override <code>save()</code> or <code>create()</code> or <code>update()</code> on the serializer as appropriate.</p>
 </li>
 <li>
@@ -1103,16 +4508,16 @@ fields were being skipped when read-only or otherwise not required.</p>
 <p><strong>Possible backwards compatibility break</strong> if you were relying on such fields being excluded from the outgoing
 representation. In order to restore the old behavior you can override <code>data</code> to exclude the field when <code>None</code>.</p>
 <p>For example:</p>
-<pre><code>@property
+<div class="language-text highlight"><pre><span></span><code>@property
 def data(self):
-    """
+    &quot;&quot;&quot;
     Drop `maybe_none` field if None.
-    """
+    &quot;&quot;&quot;
     data = super().data
-    if 'maybe_none' in data and data['maybe_none'] is None:
-        del data['maybe_none']
+    if &#39;maybe_none&#39; in data and data[&#39;maybe_none&#39;] is None:
+        del data[&#39;maybe_none&#39;]
     return data
-</code></pre>
+</code></pre></div>
 </li>
 <li>
 <p>Refactor dynamic route generation and improve viewset action introspectibility. <a href="https://github.com/encode/django-rest-framework/issues/5705">#5705</a></p>
@@ -1195,24 +4600,24 @@ it to introspect its set of actions and the details of the current action.</p>
 <li>Enable OrderingFilter to handle an empty tuple (or list) for the 'ordering' field. <a href="https://github.com/encode/django-rest-framework/issues/5899">#5899</a></li>
 <li>Added generic 500 and 400 JSON error handlers. <a href="https://github.com/encode/django-rest-framework/issues/5904">#5904</a></li>
 </ul>
-<h2 id="37x-series"><a class="toclink" href="#37x-series">3.7.x series</a></h2>
-<h3 id="377"><a class="toclink" href="#377">3.7.7</a></h3>
+<h2 id="37x-series">3.7.x series<a class="headerlink" href="#37x-series" title="Permanent link">&para;</a></h2>
+<h3 id="377">3.7.7<a class="headerlink" href="#377" title="Permanent link">&para;</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/encode/django-rest-framework/milestone/65?closed=1">21st December 2017</a></p>
 <ul>
 <li>Fix typo to include *.mo locale files to packaging. <a href="https://github.com/encode/django-rest-framework/issues/5697">#5697</a>, <a href="https://github.com/encode/django-rest-framework/issues/5695">#5695</a></li>
 </ul>
-<h3 id="376"><a class="toclink" href="#376">3.7.6</a></h3>
+<h3 id="376">3.7.6<a class="headerlink" href="#376" title="Permanent link">&para;</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/encode/django-rest-framework/milestone/64?closed=1">21st December 2017</a></p>
 <ul>
 <li>Add missing *.ico icon files to packaging.</li>
 </ul>
-<h3 id="375"><a class="toclink" href="#375">3.7.5</a></h3>
+<h3 id="375">3.7.5<a class="headerlink" href="#375" title="Permanent link">&para;</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/encode/django-rest-framework/milestone/63?closed=1">21st December 2017</a></p>
 <ul>
 <li>Add missing *.woff2 font files to packaging. <a href="https://github.com/encode/django-rest-framework/issues/5692">#5692</a></li>
 <li>Add missing *.mo locale files to packaging. <a href="https://github.com/encode/django-rest-framework/issues/5695">#5695</a>, <a href="https://github.com/encode/django-rest-framework/issues/5696">#5696</a></li>
 </ul>
-<h3 id="374"><a class="toclink" href="#374">3.7.4</a></h3>
+<h3 id="374">3.7.4<a class="headerlink" href="#374" title="Permanent link">&para;</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/encode/django-rest-framework/milestone/62?closed=1">20th December 2017</a></p>
 <ul>
 <li>
@@ -1273,12 +4678,12 @@ Previously may have been stored internally as <code>None</code>.</p>
 <li>Add example using <code>source=‘*’</code> to custom field docs. <a href="https://github.com/encode/django-rest-framework/issues/5688">#5688</a></li>
 <li>Fix format_suffix_patterns behavior with Django 2 path() routes <a href="https://github.com/encode/django-rest-framework/issues/5691">#5691</a></li>
 </ul>
-<h3 id="373"><a class="toclink" href="#373">3.7.3</a></h3>
+<h3 id="373">3.7.3<a class="headerlink" href="#373" title="Permanent link">&para;</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/encode/django-rest-framework/milestone/60?closed=1">6th November 2017</a></p>
 <ul>
 <li>Fix <code>AppRegistryNotReady</code> error from contrib.auth view imports <a href="https://github.com/encode/django-rest-framework/issues/5567">#5567</a></li>
 </ul>
-<h3 id="372"><a class="toclink" href="#372">3.7.2</a></h3>
+<h3 id="372">3.7.2<a class="headerlink" href="#372" title="Permanent link">&para;</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/encode/django-rest-framework/milestone/59?closed=1">6th November 2017</a></p>
 <ul>
 <li>Fixed Django 2.1 compatibility due to removal of django.contrib.auth.login()/logout() views. <a href="https://github.com/encode/django-rest-framework/issues/5510">#5510</a></li>
@@ -1309,7 +4714,7 @@ Previously may have been stored internally as <code>None</code>.</p>
 <li>Change ImageField validation pattern, use validators from DjangoImageField <a href="https://github.com/encode/django-rest-framework/issues/5539">#5539</a></li>
 <li>Fix processing unicode symbols in query_string by Python 2 <a href="https://github.com/encode/django-rest-framework/issues/5552">#5552</a></li>
 </ul>
-<h3 id="371"><a class="toclink" href="#371">3.7.1</a></h3>
+<h3 id="371">3.7.1<a class="headerlink" href="#371" title="Permanent link">&para;</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/encode/django-rest-framework/milestone/58?closed=1">16th October 2017</a></p>
 <ul>
 <li>Fix Interactive documentation always uses false for boolean fields in requests <a href="https://github.com/encode/django-rest-framework/issues/5492">#5492</a></li>
@@ -1317,7 +4722,7 @@ Previously may have been stored internally as <code>None</code>.</p>
 <li>Improved handling of schema naming collisions <a href="https://github.com/encode/django-rest-framework/issues/5486">#5486</a></li>
 <li>Added additional docs and tests around providing a default value for dotted <code>source</code> fields <a href="https://github.com/encode/django-rest-framework/issues/5489">#5489</a></li>
 </ul>
-<h3 id="370"><a class="toclink" href="#370">3.7.0</a></h3>
+<h3 id="370">3.7.0<a class="headerlink" href="#370" title="Permanent link">&para;</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/encode/django-rest-framework/issues?q=milestone%3A%223.7.0+Release%22">6th October 2017</a></p>
 <ul>
 <li>Fix <code>DjangoModelPermissions</code> to ensure user authentication before calling the view's <code>get_queryset()</code> method. As a side effect, this changes the order of the HTTP method permissions and authentication checks, and 405 responses will only be returned when authenticated. If you want to replicate the old behavior, see the PR for details. <a href="https://github.com/encode/django-rest-framework/issues/5376">#5376</a></li>
@@ -1377,8 +4782,8 @@ Previously may have been stored internally as <code>None</code>.</p>
 <li>Refactor schema generation to allow per-view customization.
     <strong>BC Change</strong>: <code>SchemaGenerator.get_serializer_fields</code> has been refactored as <code>AutoSchema.get_serializer_fields</code> and drops the <code>view</code> argument [#5354][gh5354]</li>
 </ul>
-<h2 id="36x-series"><a class="toclink" href="#36x-series">3.6.x series</a></h2>
-<h3 id="364"><a class="toclink" href="#364">3.6.4</a></h3>
+<h2 id="36x-series">3.6.x series<a class="headerlink" href="#36x-series" title="Permanent link">&para;</a></h2>
+<h3 id="364">3.6.4<a class="headerlink" href="#364" title="Permanent link">&para;</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/encode/django-rest-framework/issues?q=milestone%3A%223.6.4+Release%22">21st August 2017</a></p>
 <ul>
 <li>Ignore any invalidly formed query parameters for OrderingFilter. <a href="https://github.com/encode/django-rest-framework/issues/5131">#5131</a></li>
@@ -1406,7 +4811,7 @@ Previously may have been stored internally as <code>None</code>.</p>
 <li>Fix interactive docs for multiple nested and extra methods. <a href="https://github.com/encode/django-rest-framework/issues/5334">#5334</a></li>
 <li>Fix/remove undefined template var "schema" <a href="https://github.com/encode/django-rest-framework/issues/5346">#5346</a></li>
 </ul>
-<h3 id="363"><a class="toclink" href="#363">3.6.3</a></h3>
+<h3 id="363">3.6.3<a class="headerlink" href="#363" title="Permanent link">&para;</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/encode/django-rest-framework/issues?q=milestone%3A%223.6.3+Release%22">12th May 2017</a></p>
 <ul>
 <li>Raise 404 if a URL lookup results in ValidationError. (<a href="https://github.com/encode/django-rest-framework/issues/5126">#5126</a>)</li>
@@ -1432,7 +4837,7 @@ Previously may have been stored internally as <code>None</code>.</p>
 <li>Fix invalid content type for schema.js (<a href="https://github.com/encode/django-rest-framework/issues/4968">#4968</a>)</li>
 <li>Fix DjangoFilterBackend inheritance issues. (<a href="https://github.com/encode/django-rest-framework/issues/5089">#5089</a>, <a href="https://github.com/encode/django-rest-framework/issues/5117">#5117</a>)</li>
 </ul>
-<h3 id="362"><a class="toclink" href="#362">3.6.2</a></h3>
+<h3 id="362">3.6.2<a class="headerlink" href="#362" title="Permanent link">&para;</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/encode/django-rest-framework/issues?q=milestone%3A%223.6.2+Release%22">10th March 2017</a></p>
 <ul>
 <li>Support for Safari &amp; IE in API docs. (<a href="https://github.com/encode/django-rest-framework/issues/4959">#4959</a>, <a href="https://github.com/encode/django-rest-framework/issues/4961">#4961</a>)</li>
@@ -1441,17 +4846,17 @@ Previously may have been stored internally as <code>None</code>.</p>
 <li>Fix One-to-one fields in API docs. (<a href="https://github.com/encode/django-rest-framework/issues/4955">#4955</a>, <a href="https://github.com/encode/django-rest-framework/issues/4956">#4956</a>)</li>
 <li>Test clean ups. (<a href="https://github.com/encode/django-rest-framework/issues/4949">#4949</a>)</li>
 </ul>
-<h3 id="361"><a class="toclink" href="#361">3.6.1</a></h3>
+<h3 id="361">3.6.1<a class="headerlink" href="#361" title="Permanent link">&para;</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/encode/django-rest-framework/issues?q=milestone%3A%223.6.1+Release%22">9th March 2017</a></p>
 <ul>
 <li>Ensure <code>markdown</code> dependency is optional. (<a href="https://github.com/encode/django-rest-framework/issues/4947">#4947</a>)</li>
 </ul>
-<h3 id="360"><a class="toclink" href="#360">3.6.0</a></h3>
+<h3 id="360">3.6.0<a class="headerlink" href="#360" title="Permanent link">&para;</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/encode/django-rest-framework/issues?q=milestone%3A%223.6.0+Release%22">9th March 2017</a></p>
 <p>See the <a href="../3.6-announcement/">release announcement</a>.</p>
 <hr />
-<h2 id="35x-series"><a class="toclink" href="#35x-series">3.5.x series</a></h2>
-<h3 id="354"><a class="toclink" href="#354">3.5.4</a></h3>
+<h2 id="35x-series">3.5.x series<a class="headerlink" href="#35x-series" title="Permanent link">&para;</a></h2>
+<h3 id="354">3.5.4<a class="headerlink" href="#354" title="Permanent link">&para;</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/encode/django-rest-framework/issues?q=milestone%3A%223.5.4+Release%22">10th February 2017</a></p>
 <ul>
 <li>Add max_length and min_length arguments for ListField. (<a href="https://github.com/encode/django-rest-framework/issues/4877">#4877</a>)</li>
@@ -1468,14 +4873,14 @@ Previously may have been stored internally as <code>None</code>.</p>
 <li>Resolve Django deprecation warnings. (<a href="https://github.com/encode/django-rest-framework/issues/4712">#4712</a>)</li>
 <li>Various cleanup of test cases.</li>
 </ul>
-<h3 id="353"><a class="toclink" href="#353">3.5.3</a></h3>
+<h3 id="353">3.5.3<a class="headerlink" href="#353" title="Permanent link">&para;</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/encode/django-rest-framework/issues?q=milestone%3A%223.5.3+Release%22">7th November 2016</a></p>
 <ul>
 <li>Don't raise incorrect FilterSet deprecation warnings. (<a href="https://github.com/encode/django-rest-framework/issues/4660">#4660</a>, <a href="https://github.com/encode/django-rest-framework/issues/4643">#4643</a>, <a href="https://github.com/encode/django-rest-framework/issues/4644">#4644</a>)</li>
 <li>Schema generation should not raise 404 when a view permission class does. (<a href="https://github.com/encode/django-rest-framework/issues/4645">#4645</a>, <a href="https://github.com/encode/django-rest-framework/issues/4646">#4646</a>)</li>
 <li>Add <code>autofocus</code> support for input controls. (<a href="https://github.com/encode/django-rest-framework/issues/4650">#4650</a>)</li>
 </ul>
-<h3 id="352"><a class="toclink" href="#352">3.5.2</a></h3>
+<h3 id="352">3.5.2<a class="headerlink" href="#352" title="Permanent link">&para;</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/encode/django-rest-framework/issues?q=milestone%3A%223.5.2+Release%22">1st November 2016</a></p>
 <ul>
 <li>Restore exception tracebacks in Python 2.7. (<a href="https://github.com/encode/django-rest-framework/issues/4631">#4631</a>, <a href="https://github.com/encode/django-rest-framework/issues/4638">#4638</a>)</li>
@@ -1488,7 +4893,7 @@ Previously may have been stored internally as <code>None</code>.</p>
 <li>Make serializer fields import explicit. (<a href="https://github.com/encode/django-rest-framework/issues/4628">#4628</a>)</li>
 <li>Drop redundant requests adapter. (<a href="https://github.com/encode/django-rest-framework/issues/4639">#4639</a>)</li>
 </ul>
-<h3 id="351"><a class="toclink" href="#351">3.5.1</a></h3>
+<h3 id="351">3.5.1<a class="headerlink" href="#351" title="Permanent link">&para;</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/encode/django-rest-framework/issues?q=milestone%3A%223.5.1+Release%22">21st October 2016</a></p>
 <ul>
 <li>Make <code>rest_framework/compat.py</code> imports. (<a href="https://github.com/encode/django-rest-framework/issues/4612">#4612</a>, <a href="https://github.com/encode/django-rest-framework/issues/4608">#4608</a>, <a href="https://github.com/encode/django-rest-framework/issues/4601">#4601</a>)</li>
@@ -1496,11 +4901,11 @@ Previously may have been stored internally as <code>None</code>.</p>
 <li>Fix broken case of ListSerializer with single item. (<a href="https://github.com/encode/django-rest-framework/issues/4609">#4609</a>, <a href="https://github.com/encode/django-rest-framework/issues/4606">#4606</a>)</li>
 <li>Remove bare <code>raise</code> for Python 3.5 compat. (<a href="https://github.com/encode/django-rest-framework/issues/4600">#4600</a>)</li>
 </ul>
-<h3 id="350"><a class="toclink" href="#350">3.5.0</a></h3>
+<h3 id="350">3.5.0<a class="headerlink" href="#350" title="Permanent link">&para;</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/encode/django-rest-framework/issues?q=milestone%3A%223.5.0+Release%22">20th October 2016</a></p>
 <hr />
-<h2 id="34x-series"><a class="toclink" href="#34x-series">3.4.x series</a></h2>
-<h3 id="347"><a class="toclink" href="#347">3.4.7</a></h3>
+<h2 id="34x-series">3.4.x series<a class="headerlink" href="#34x-series" title="Permanent link">&para;</a></h2>
+<h3 id="347">3.4.7<a class="headerlink" href="#347" title="Permanent link">&para;</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/encode/django-rest-framework/issues?q=milestone%3A%223.4.7+Release%22">21st September 2016</a></p>
 <ul>
 <li>Fallback behavior for request parsing when request.POST already accessed. (<a href="https://github.com/encode/django-rest-framework/issues/3951">#3951</a>, <a href="https://github.com/encode/django-rest-framework/issues/4500">#4500</a>)</li>
@@ -1511,7 +4916,7 @@ Previously may have been stored internally as <code>None</code>.</p>
 <li>Fixed an issue where the incorrect value is set to <code>ResolverMatch.func_name</code> of api_view decorated view. (<a href="https://github.com/encode/django-rest-framework/issues/4465">#4465</a>, <a href="https://github.com/encode/django-rest-framework/issues/4462">#4462</a>)</li>
 <li>Fix <code>APIClient.get()</code> when path contains unicode arguments (<a href="https://github.com/encode/django-rest-framework/issues/4458">#4458</a>)</li>
 </ul>
-<h3 id="346"><a class="toclink" href="#346">3.4.6</a></h3>
+<h3 id="346">3.4.6<a class="headerlink" href="#346" title="Permanent link">&para;</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/encode/django-rest-framework/issues?q=milestone%3A%223.4.6+Release%22">23rd August 2016</a></p>
 <ul>
 <li>Fix malformed Javascript in browsable API. (<a href="https://github.com/encode/django-rest-framework/issues/4435">#4435</a>)</li>
@@ -1519,7 +4924,7 @@ Previously may have been stored internally as <code>None</code>.</p>
 <li>Improve Create to show the original exception traceback. (<a href="https://github.com/encode/django-rest-framework/issues/3508">#3508</a>)</li>
 <li>Fix <code>AdminRenderer</code> display of PK only related fields. (<a href="https://github.com/encode/django-rest-framework/issues/4419">#4419</a>, <a href="https://github.com/encode/django-rest-framework/issues/4423">#4423</a>)</li>
 </ul>
-<h3 id="345"><a class="toclink" href="#345">3.4.5</a></h3>
+<h3 id="345">3.4.5<a class="headerlink" href="#345" title="Permanent link">&para;</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/encode/django-rest-framework/issues?q=milestone%3A%223.4.5+Release%22">19th August 2016</a></p>
 <ul>
 <li>Improve debug error handling. (<a href="https://github.com/encode/django-rest-framework/issues/4416">#4416</a>, <a href="https://github.com/encode/django-rest-framework/issues/4409">#4409</a>)</li>
@@ -1530,7 +4935,7 @@ Previously may have been stored internally as <code>None</code>.</p>
 <li>Fix docstring of Field.get_default. (<a href="https://github.com/encode/django-rest-framework/issues/4404">#4404</a>)</li>
 <li>Replace utf8 character with its ascii counterpart in README. (<a href="https://github.com/encode/django-rest-framework/issues/4412">#4412</a>)</li>
 </ul>
-<h3 id="344"><a class="toclink" href="#344">3.4.4</a></h3>
+<h3 id="344">3.4.4<a class="headerlink" href="#344" title="Permanent link">&para;</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/encode/django-rest-framework/issues?q=milestone%3A%223.4.4+Release%22">12th August 2016</a></p>
 <ul>
 <li>Ensure views are fully initialized when generating schemas. (<a href="https://github.com/encode/django-rest-framework/issues/4373">#4373</a>, <a href="https://github.com/encode/django-rest-framework/issues/4382">#4382</a>, <a href="https://github.com/encode/django-rest-framework/issues/4383">#4383</a>, <a href="https://github.com/encode/django-rest-framework/issues/4279">#4279</a>, <a href="https://github.com/encode/django-rest-framework/issues/4278">#4278</a>)</li>
@@ -1548,12 +4953,12 @@ Previously may have been stored internally as <code>None</code>.</p>
 <li>Resolve form display with ChoiceField, MultipleChoiceField and non-string choices. (<a href="https://github.com/encode/django-rest-framework/issues/4374">#4374</a>, <a href="https://github.com/encode/django-rest-framework/issues/4119">#4119</a>, <a href="https://github.com/encode/django-rest-framework/issues/4121">#4121</a>, <a href="https://github.com/encode/django-rest-framework/issues/4137">#4137</a>, <a href="https://github.com/encode/django-rest-framework/issues/4120">#4120</a>)</li>
 <li>Fix call to TemplateHTMLRenderer.resolve_context() fallback method. (<a href="https://github.com/encode/django-rest-framework/issues/4371">#4371</a>)</li>
 </ul>
-<h3 id="343"><a class="toclink" href="#343">3.4.3</a></h3>
+<h3 id="343">3.4.3<a class="headerlink" href="#343" title="Permanent link">&para;</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/encode/django-rest-framework/issues?q=milestone%3A%223.4.3+Release%22">5th August 2016</a></p>
 <ul>
 <li>Include fallback for users of older TemplateHTMLRenderer internal API. (<a href="https://github.com/encode/django-rest-framework/issues/4361">#4361</a>)</li>
 </ul>
-<h3 id="342"><a class="toclink" href="#342">3.4.2</a></h3>
+<h3 id="342">3.4.2<a class="headerlink" href="#342" title="Permanent link">&para;</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/encode/django-rest-framework/issues?q=milestone%3A%223.4.2+Release%22">5th August 2016</a></p>
 <ul>
 <li>Include kwargs passed to 'as_view' when generating schemas. (<a href="https://github.com/encode/django-rest-framework/issues/4359">#4359</a>, <a href="https://github.com/encode/django-rest-framework/issues/4330">#4330</a>, <a href="https://github.com/encode/django-rest-framework/issues/4331">#4331</a>)</li>
@@ -1570,7 +4975,7 @@ Previously may have been stored internally as <code>None</code>.</p>
 <li>Test cases for DictField with allow_null options. (<a href="https://github.com/encode/django-rest-framework/issues/4348">#4348</a>)</li>
 <li>Update tests from Django 1.10 beta to Django 1.10. (<a href="https://github.com/encode/django-rest-framework/issues/4344">#4344</a>)</li>
 </ul>
-<h3 id="341"><a class="toclink" href="#341">3.4.1</a></h3>
+<h3 id="341">3.4.1<a class="headerlink" href="#341" title="Permanent link">&para;</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/encode/django-rest-framework/issues?q=milestone%3A%223.4.1+Release%22">28th July 2016</a></p>
 <ul>
 <li>Added <code>root_renderers</code> argument to <code>DefaultRouter</code>. (<a href="https://github.com/encode/django-rest-framework/issues/4323">#4323</a>, <a href="https://github.com/encode/django-rest-framework/issues/4268">#4268</a>)</li>
@@ -1587,7 +4992,7 @@ Previously may have been stored internally as <code>None</code>.</p>
 <li>Add LICENSE.md to the built wheel. (<a href="https://github.com/encode/django-rest-framework/issues/4270">#4270</a>)</li>
 <li>Serializing "complex" field returns None instead of the value since 3.4 (<a href="https://github.com/encode/django-rest-framework/issues/4272">#4272</a>, <a href="https://github.com/encode/django-rest-framework/issues/4273">#4273</a>, <a href="https://github.com/encode/django-rest-framework/issues/4288">#4288</a>)</li>
 </ul>
-<h3 id="340"><a class="toclink" href="#340">3.4.0</a></h3>
+<h3 id="340">3.4.0<a class="headerlink" href="#340" title="Permanent link">&para;</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/encode/django-rest-framework/issues?q=milestone%3A%223.4.0+Release%22">14th July 2016</a></p>
 <ul>
 <li>Don't strip microseconds in JSON output. (<a href="https://github.com/encode/django-rest-framework/issues/4256">#4256</a>)</li>
@@ -1675,8 +5080,8 @@ Previously may have been stored internally as <code>None</code>.</p>
 <li><code>lookup_type</code> is deprecated in favor of <code>lookup_expr</code>. (<a href="https://github.com/encode/django-rest-framework/issues/4259">#4259</a>)</li>
 </ul>
 <hr />
-<h2 id="33x-series"><a class="toclink" href="#33x-series">3.3.x series</a></h2>
-<h3 id="333"><a class="toclink" href="#333">3.3.3</a></h3>
+<h2 id="33x-series">3.3.x series<a class="headerlink" href="#33x-series" title="Permanent link">&para;</a></h2>
+<h3 id="333">3.3.3<a class="headerlink" href="#333" title="Permanent link">&para;</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/encode/django-rest-framework/issues?q=milestone%3A%223.3.3+Release%22">14th March 2016</a>.</p>
 <ul>
 <li>Remove version string from templates. Thanks to @blag for the report and fixes. (<a href="https://github.com/encode/django-rest-framework/issues/3878">#3878</a>, <a href="https://github.com/encode/django-rest-framework/issues/3913">#3913</a>, <a href="https://github.com/encode/django-rest-framework/issues/3912">#3912</a>)</li>
@@ -1705,7 +5110,7 @@ Previously may have been stored internally as <code>None</code>.</p>
 <li>Document the use of <code>get_queryset</code> for <code>RelatedField</code>. Thanks to Ryan Hiebert for the fix. (<a href="https://github.com/encode/django-rest-framework/issues/3605">#3605</a>)</li>
 <li>Fix empty pk detection in HyperlinkRelatedField.get_url. Thanks to @jslang for the fix (<a href="https://github.com/encode/django-rest-framework/issues/3962">#3962</a>)</li>
 </ul>
-<h3 id="332"><a class="toclink" href="#332">3.3.2</a></h3>
+<h3 id="332">3.3.2<a class="headerlink" href="#332" title="Permanent link">&para;</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/encode/django-rest-framework/issues?q=milestone%3A%223.3.2+Release%22">14th December 2015</a>.</p>
 <ul>
 <li><code>ListField</code> enforces input is a list. (<a href="https://github.com/encode/django-rest-framework/issues/3513">#3513</a>)</li>
@@ -1726,7 +5131,7 @@ Previously may have been stored internally as <code>None</code>.</p>
 <li>Add app_name to rest_framework.urls. (<a href="https://github.com/encode/django-rest-framework/issues/3714">#3714</a>)</li>
 <li>Improve authtoken's views to support url versioning. (<a href="https://github.com/encode/django-rest-framework/issues/3718">#3718</a>, <a href="https://github.com/encode/django-rest-framework/issues/3723">#3723</a>)</li>
 </ul>
-<h3 id="331"><a class="toclink" href="#331">3.3.1</a></h3>
+<h3 id="331">3.3.1<a class="headerlink" href="#331" title="Permanent link">&para;</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/encode/django-rest-framework/issues?q=milestone%3A%223.3.1+Release%22">4th November 2015</a>.</p>
 <ul>
 <li>Resolve parsing bug when accessing <code>request.POST</code> (<a href="https://github.com/encode/django-rest-framework/issues/3592">#3592</a>)</li>
@@ -1735,7 +5140,7 @@ Previously may have been stored internally as <code>None</code>.</p>
 <li>Fix admin rendering issues. (<a href="https://github.com/encode/django-rest-framework/issues/3564">#3564</a>, <a href="https://github.com/encode/django-rest-framework/issues/3556">#3556</a>)</li>
 <li>Fix issue with DecimalValidator. (<a href="https://github.com/encode/django-rest-framework/issues/3568">#3568</a>)</li>
 </ul>
-<h3 id="330"><a class="toclink" href="#330">3.3.0</a></h3>
+<h3 id="330">3.3.0<a class="headerlink" href="#330" title="Permanent link">&para;</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/encode/django-rest-framework/issues?q=milestone%3A%223.3.0+Release%22">28th October 2015</a>.</p>
 <ul>
 <li>HTML controls for filters. (<a href="https://github.com/encode/django-rest-framework/issues/3315">#3315</a>)</li>
@@ -1751,13 +5156,13 @@ Previously may have been stored internally as <code>None</code>.</p>
 <li>Removed 'south' migrations. (<a href="https://github.com/encode/django-rest-framework/issues/3495">#3495</a>)</li>
 </ul>
 <hr />
-<h2 id="32x-series"><a class="toclink" href="#32x-series">3.2.x series</a></h2>
-<h3 id="325"><a class="toclink" href="#325">3.2.5</a></h3>
+<h2 id="32x-series">3.2.x series<a class="headerlink" href="#32x-series" title="Permanent link">&para;</a></h2>
+<h3 id="325">3.2.5<a class="headerlink" href="#325" title="Permanent link">&para;</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/encode/django-rest-framework/issues?q=milestone%3A%223.2.5+Release%22">27th October 2015</a>.</p>
 <ul>
 <li>Escape <code>username</code> in optional logout tag. (<a href="https://github.com/encode/django-rest-framework/issues/3550">#3550</a>)</li>
 </ul>
-<h3 id="324"><a class="toclink" href="#324">3.2.4</a></h3>
+<h3 id="324">3.2.4<a class="headerlink" href="#324" title="Permanent link">&para;</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/encode/django-rest-framework/issues?q=milestone%3A%223.2.4+Release%22">21th September 2015</a>.</p>
 <ul>
 <li>Don't error on missing <code>ViewSet.search_fields</code> attribute. (<a href="https://github.com/encode/django-rest-framework/issues/3324">#3324</a>, <a href="https://github.com/encode/django-rest-framework/issues/3323">#3323</a>)</li>
@@ -1766,7 +5171,7 @@ Previously may have been stored internally as <code>None</code>.</p>
 <li>Multi-level dictionaries not supported in multipart requests. (<a href="https://github.com/encode/django-rest-framework/issues/3314">#3314</a>)</li>
 <li>Fix <code>ListField</code> truncation on HTTP PATCH (<a href="https://github.com/encode/django-rest-framework/issues/3415">#3415</a>, <a href="https://github.com/encode/django-rest-framework/issues/2761">#2761</a>)</li>
 </ul>
-<h3 id="323"><a class="toclink" href="#323">3.2.3</a></h3>
+<h3 id="323">3.2.3<a class="headerlink" href="#323" title="Permanent link">&para;</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/encode/django-rest-framework/issues?q=milestone%3A%223.2.3+Release%22">24th August 2015</a>.</p>
 <ul>
 <li>Added <code>html_cutoff</code> and <code>html_cutoff_text</code> for limiting select dropdowns. (<a href="https://github.com/encode/django-rest-framework/issues/3313">#3313</a>)</li>
@@ -1777,7 +5182,7 @@ Previously may have been stored internally as <code>None</code>.</p>
 <li>Fix to ensure admin renderer continues to work when pagination is disabled. (<a href="https://github.com/encode/django-rest-framework/issues/3275">#3275</a>)</li>
 <li>Resolve error with <code>LimitOffsetPagination</code> when count=0, offset=0. (<a href="https://github.com/encode/django-rest-framework/issues/3303">#3303</a>)</li>
 </ul>
-<h3 id="322"><a class="toclink" href="#322">3.2.2</a></h3>
+<h3 id="322">3.2.2<a class="headerlink" href="#322" title="Permanent link">&para;</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/encode/django-rest-framework/issues?q=milestone%3A%223.2.2+Release%22">13th August 2015</a>.</p>
 <ul>
 <li>Add <code>display_value()</code> method for use when displaying relational field select inputs. (<a href="https://github.com/encode/django-rest-framework/issues/3254">#3254</a>)</li>
@@ -1787,7 +5192,7 @@ Previously may have been stored internally as <code>None</code>.</p>
 <li>Resolve issue with rendering nested serializers in forms. (<a href="https://github.com/encode/django-rest-framework/issues/3260">#3260</a>)</li>
 <li>Raise an error if user accidentally pass a serializer instance to a response, rather than data. (<a href="https://github.com/encode/django-rest-framework/issues/3241">#3241</a>)</li>
 </ul>
-<h3 id="321"><a class="toclink" href="#321">3.2.1</a></h3>
+<h3 id="321">3.2.1<a class="headerlink" href="#321" title="Permanent link">&para;</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/encode/django-rest-framework/issues?q=milestone%3A%223.2.1+Release%22">7th August 2015</a>.</p>
 <ul>
 <li>Fix for relational select widgets rendering without any choices. (<a href="https://github.com/encode/django-rest-framework/issues/3237">#3237</a>)</li>
@@ -1795,7 +5200,7 @@ Previously may have been stored internally as <code>None</code>.</p>
 <li>Fix for ListFields with single value in HTML form input. (<a href="https://github.com/encode/django-rest-framework/issues/3238">#3238</a>)</li>
 <li>Allow <code>request.FILES</code> for compat with Django's <code>HTTPRequest</code> class. (<a href="https://github.com/encode/django-rest-framework/issues/3239">#3239</a>)</li>
 </ul>
-<h3 id="320"><a class="toclink" href="#320">3.2.0</a></h3>
+<h3 id="320">3.2.0<a class="headerlink" href="#320" title="Permanent link">&para;</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/encode/django-rest-framework/issues?q=milestone%3A%223.2.0+Release%22">6th August 2015</a>.</p>
 <ul>
 <li>Add <code>AdminRenderer</code>. (<a href="https://github.com/encode/django-rest-framework/issues/2926">#2926</a>)</li>
@@ -1829,8 +5234,8 @@ Previously may have been stored internally as <code>None</code>.</p>
 <li>Numerous other cleanups, improvements to error messaging, private API &amp; minor fixes.</li>
 </ul>
 <hr />
-<h2 id="31x-series"><a class="toclink" href="#31x-series">3.1.x series</a></h2>
-<h3 id="313"><a class="toclink" href="#313">3.1.3</a></h3>
+<h2 id="31x-series">3.1.x series<a class="headerlink" href="#31x-series" title="Permanent link">&para;</a></h2>
+<h3 id="313">3.1.3<a class="headerlink" href="#313" title="Permanent link">&para;</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/encode/django-rest-framework/issues?q=milestone%3A%223.1.3+Release%22">4th June 2015</a>.</p>
 <ul>
 <li>Add <code>DurationField</code>. (<a href="https://github.com/encode/django-rest-framework/issues/2481">#2481</a>, <a href="https://github.com/encode/django-rest-framework/issues/2989">#2989</a>)</li>
@@ -1846,7 +5251,7 @@ Previously may have been stored internally as <code>None</code>.</p>
 <li><code>IPAddressField</code> improvements. (<a href="https://github.com/encode/django-rest-framework/issues/2747">#2747</a>, <a href="https://github.com/encode/django-rest-framework/issues/2618">#2618</a>, <a href="https://github.com/encode/django-rest-framework/issues/3008">#3008</a>)</li>
 <li>Improve <code>DecimalField</code> for easier subclassing. (<a href="https://github.com/encode/django-rest-framework/issues/2695">#2695</a>)</li>
 </ul>
-<h3 id="312"><a class="toclink" href="#312">3.1.2</a></h3>
+<h3 id="312">3.1.2<a class="headerlink" href="#312" title="Permanent link">&para;</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/encode/django-rest-framework/issues?q=milestone%3A%223.1.2+Release%22">13rd May 2015</a>.</p>
 <ul>
 <li><code>DateField.to_representation</code> can handle str and empty values. (<a href="https://github.com/encode/django-rest-framework/issues/2656">#2656</a>, <a href="https://github.com/encode/django-rest-framework/issues/2687">#2687</a>, <a href="https://github.com/encode/django-rest-framework/issues/2869">#2869</a>)</li>
@@ -1865,7 +5270,7 @@ Previously may have been stored internally as <code>None</code>.</p>
 <li>Check <code>AcceptHeaderVersioning</code> with content negotiation in place. (<a href="https://github.com/encode/django-rest-framework/issues/2868">#2868</a>)</li>
 <li>Allow <code>DjangoObjectPermissions</code> to use views that define <code>get_queryset</code>. (<a href="https://github.com/encode/django-rest-framework/issues/2905">#2905</a>)</li>
 </ul>
-<h3 id="311"><a class="toclink" href="#311">3.1.1</a></h3>
+<h3 id="311">3.1.1<a class="headerlink" href="#311" title="Permanent link">&para;</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/encode/django-rest-framework/issues?q=milestone%3A%223.1.1+Release%22">23rd March 2015</a>.</p>
 <ul>
 <li><strong>Security fix</strong>: Escape tab switching cookie name in browsable API.</li>
@@ -1880,12 +5285,12 @@ Previously may have been stored internally as <code>None</code>.</p>
 <li>Support serializing unsaved models with related fields. (<a href="https://github.com/encode/django-rest-framework/issues/2637">#2637</a>, <a href="https://github.com/encode/django-rest-framework/issues/2641">#2641</a>)</li>
 <li>Allow blank/null on radio.html choices. (<a href="https://github.com/encode/django-rest-framework/issues/2631">#2631</a>)</li>
 </ul>
-<h3 id="310"><a class="toclink" href="#310">3.1.0</a></h3>
+<h3 id="310">3.1.0<a class="headerlink" href="#310" title="Permanent link">&para;</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/encode/django-rest-framework/issues?q=milestone%3A%223.1.0+Release%22">5th March 2015</a>.</p>
 <p>For full details see the <a href="../3.1-announcement/">3.1 release announcement</a>.</p>
 <hr />
-<h2 id="30x-series"><a class="toclink" href="#30x-series">3.0.x series</a></h2>
-<h3 id="305"><a class="toclink" href="#305">3.0.5</a></h3>
+<h2 id="30x-series">3.0.x series<a class="headerlink" href="#30x-series" title="Permanent link">&para;</a></h2>
+<h3 id="305">3.0.5<a class="headerlink" href="#305" title="Permanent link">&para;</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/encode/django-rest-framework/issues?q=milestone%3A%223.0.5+Release%22">10th February 2015</a>.</p>
 <ul>
 <li>Fix a bug where <code>_closable_objects</code> breaks pickling. (<a href="https://github.com/encode/django-rest-framework/issues/1850">#1850</a>, <a href="https://github.com/encode/django-rest-framework/issues/2492">#2492</a>)</li>
@@ -1897,7 +5302,7 @@ Previously may have been stored internally as <code>None</code>.</p>
 <li>Fix <code>detail_route</code> and <code>list_route</code> mutable argument. (<a href="https://github.com/encode/django-rest-framework/issues/2518">#2518</a>)</li>
 <li>Prefetching the user object when getting the token in <code>TokenAuthentication</code>. (<a href="https://github.com/encode/django-rest-framework/issues/2519">#2519</a>)</li>
 </ul>
-<h3 id="304"><a class="toclink" href="#304">3.0.4</a></h3>
+<h3 id="304">3.0.4<a class="headerlink" href="#304" title="Permanent link">&para;</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/encode/django-rest-framework/issues?q=milestone%3A%223.0.4+Release%22">28th January 2015</a>.</p>
 <ul>
 <li>Django 1.8a1 support. (<a href="https://github.com/encode/django-rest-framework/issues/2425">#2425</a>, <a href="https://github.com/encode/django-rest-framework/issues/2446">#2446</a>, <a href="https://github.com/encode/django-rest-framework/issues/2441">#2441</a>)</li>
@@ -1914,7 +5319,7 @@ Previously may have been stored internally as <code>None</code>.</p>
 <li>Fix the serializer inheritance. (<a href="https://github.com/encode/django-rest-framework/issues/2388">#2388</a>)</li>
 <li>Fix caching issues with <code>ReturnDict</code>. (<a href="https://github.com/encode/django-rest-framework/issues/2360">#2360</a>)</li>
 </ul>
-<h3 id="303"><a class="toclink" href="#303">3.0.3</a></h3>
+<h3 id="303">3.0.3<a class="headerlink" href="#303" title="Permanent link">&para;</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/encode/django-rest-framework/issues?q=milestone%3A%223.0.3+Release%22">8th January 2015</a>.</p>
 <ul>
 <li>Fix <code>MinValueValidator</code> on <code>models.DateField</code>. (<a href="https://github.com/encode/django-rest-framework/issues/2369">#2369</a>)</li>
@@ -1933,7 +5338,7 @@ Previously may have been stored internally as <code>None</code>.</p>
 <li>Ability to customize router URLs for custom actions, using <code>url_path</code>. (<a href="https://github.com/encode/django-rest-framework/issues/2010">#2010</a>)</li>
 <li>Don't install Django REST Framework as egg. (<a href="https://github.com/encode/django-rest-framework/issues/2386">#2386</a>)</li>
 </ul>
-<h3 id="302"><a class="toclink" href="#302">3.0.2</a></h3>
+<h3 id="302">3.0.2<a class="headerlink" href="#302" title="Permanent link">&para;</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/encode/django-rest-framework/issues?q=milestone%3A%223.0.2+Release%22">17th December 2014</a>.</p>
 <ul>
 <li>Ensure <code>request.user</code> is made available to response middleware. (<a href="https://github.com/encode/django-rest-framework/issues/2155">#2155</a>)</li>
@@ -1944,7 +5349,7 @@ Previously may have been stored internally as <code>None</code>.</p>
 <li>Fix empty HTML values when a default is provided. (<a href="https://github.com/encode/django-rest-framework/issues/2280">#2280</a>, <a href="https://github.com/encode/django-rest-framework/issues/2294">#2294</a>)</li>
 <li>Fix <code>SlugRelatedField</code> raising <code>UnicodeEncodeError</code> when used as a multiple choice input. (<a href="https://github.com/encode/django-rest-framework/issues/2290">#2290</a>)</li>
 </ul>
-<h3 id="301"><a class="toclink" href="#301">3.0.1</a></h3>
+<h3 id="301">3.0.1<a class="headerlink" href="#301" title="Permanent link">&para;</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/encode/django-rest-framework/issues?q=milestone%3A%223.0.1+Release%22">11th December 2014</a>.</p>
 <ul>
 <li>More helpful error message when the default Serializer <code>create()</code> fails. (<a href="https://github.com/encode/django-rest-framework/issues/2013">#2013</a>)</li>
@@ -1968,7 +5373,7 @@ Previously may have been stored internally as <code>None</code>.</p>
 <li>Improve field lookup behavior for dicts/mappings. (<a href="https://github.com/encode/django-rest-framework/issues/2244">#2244</a>, <a href="https://github.com/encode/django-rest-framework/issues/2243">#2243</a>)</li>
 <li>Optimized hyperlinked PK. (<a href="https://github.com/encode/django-rest-framework/issues/2242">#2242</a>)</li>
 </ul>
-<h3 id="300"><a class="toclink" href="#300">3.0.0</a></h3>
+<h3 id="300">3.0.0<a class="headerlink" href="#300" title="Permanent link">&para;</a></h3>
 <p><strong>Date</strong>: 1st December 2014</p>
 <p>For full details see the <a href="../3.0-announcement/">3.0 release announcement</a>.</p>
 <hr />
@@ -2029,57 +5434,82 @@ Previously may have been stored internally as <code>None</code>.</p>
 <!-- 3.9.3 -->
 <!-- 3.10.0 -->
 <!-- 3.11.0 -->
-            
 
-          </div> <!--/span-->
-        </div> <!--/row-->
-      </div> <!--/.fluid-container-->
-    </div> <!--/.body content-->
-    <div id="push"></div>
-  </div> <!--/.wrapper -->
 
-  <footer class="span12">
-    <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.
-    </p>
-  </footer>
 
-  <!-- Le javascript
-  ================================================== -->
-  <!-- Placed at the end of the document so the pages load faster -->
-  <script async src="https://fund.django-rest-framework.org/sidebar_include.js"></script>
-  <script src="../../js/jquery-1.8.1-min.js"></script>
-  <script src="../../js/prettify-1.0.js"></script>
-  <script src="../../js/bootstrap-2.1.1-min.js"></script>
-  <script src="../../js/theme.js"></script>
 
-  <script>var base_url = '../..';</script>
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
   
-  <script src="../../js/copy-button.js" defer></script>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
   
-  <script src="../../search/main.js" defer></script>
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
   
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+      <div class="md-progress" data-md-component="progress" role="progressbar"></div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["content.tabs.link", "content.code.annotate", "content.code.copy", "navigation.tabs", "navigation.tabs.sticky", "navigation.instant", "navigation.instant.prefetch", "navigation.instant.progress", "navigation.path", "navigation.sections", "navigation.top", "navigation.tracking", "search.suggest", "toc.follow", "toc.integrate"], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+    
+      <script src="../../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+        <script src="../../theme/js/prettify-1.0.js"></script>
+      
+    
+    <script>
+        document$.subscribe(function() {
+            document.querySelectorAll('pre code').forEach(code => {
+                code.parentElement.classList.add('prettyprint', 'well');
+            });
+            prettyPrint();
+        });
+    </script>
 
-  <script>
-    var shiftWindow = function() {
-      scrollBy(0, -50)
-    };
-
-    if (location.hash) shiftWindow();
-    window.addEventListener("hashchange", shiftWindow);
-
-    $('.dropdown-menu').on('click touchstart', function(event) {
-      event.stopPropagation();
-    });
-
-    // Dynamically force sidenav/dropdown to no higher than browser window
-    $('.side-nav, .dropdown-menu').css('max-height', window.innerHeight - 130);
-
-    $(function() {
-      $(window).resize(function() {
-        $('.side-nav, .dropdown-menu').css('max-height', window.innerHeight - 130);
-      });
-    });
-  </script>
-</body>
-
+  </body>
 </html>

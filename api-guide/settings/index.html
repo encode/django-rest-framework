@@ -1,731 +1,2883 @@
-<!DOCTYPE html>
-<html lang="en">
 
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <meta charset="utf-8">
-  <title>Settings - Django REST framework</title>
-  <link href="../../img/favicon.ico" rel="icon" type="image/x-icon">
-  <link rel="canonical" href="https://www.django-rest-framework.org/api-guide/settings/" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Django, API, REST, Settings">
-  <meta name="author" content="Tom Christie">
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Django REST framework - Web APIs for Django">
+      
+      
+      
+        <link rel="canonical" href="https://www.django-rest-framework.org/api-guide/settings/">
+      
+      
+        <link rel="prev" href="../testing/">
+      
+      
+        <link rel="next" href="../../topics/documenting-your-api/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../theme/img/favicon.ico">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+    
+    
+      
+        <title>Settings - Django REST framework</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.618322db.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
 
-  <!-- Le styles -->
-  <link href="../../css/prettify.css" rel="stylesheet">
-  <link href="../../css/bootstrap.css" rel="stylesheet">
-  <link href="../../css/bootstrap-responsive.css" rel="stylesheet">
-  <link href="../../css/default.css" rel="stylesheet">
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../theme/stylesheets/extra.css">
+    
+      <link rel="stylesheet" href="../../theme/stylesheets/prettify.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
   
-    <link href="../../css/copy-button.css" rel="stylesheet">
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#settings" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
   
 
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Django REST framework" class="md-header__button md-logo" aria-label="Django REST framework" data-md-component="logo">
+      
+  <img src="../../theme/img/logo.png" alt="logo">
 
-  <script type="text/javascript">
-    var _gaq = _gaq || [];
-    _gaq.push(['_setAccount', 'UA-18852272-2']);
-    _gaq.push(['_trackPageview']);
-
-    (function() {
-      var ga = document.createElement('script');
-      ga.type = 'text/javascript';
-      ga.async = true;
-      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-      var s = document.getElementsByTagName('script')[0];
-      s.parentNode.insertBefore(ga, s);
-    })();
-  </script>
-
-  <style>
-  #sidebarInclude img {
-      margin-bottom: 10px;
-  }
-  #sidebarInclude a.promo {
-      color: black;
-  }
-    @media (max-width: 767px) {
-      div.promo {
-        display: none;
-      }
-    }
-  </style>
-</head>
-<body onload="prettyPrint()" class="-page">
-
-  <div class="wrapper">
-        <div class="navbar navbar-inverse navbar-fixed-top">
-      <div class="navbar-inner">
-        <div class="container-fluid">
-          <a class="repo-link btn btn-primary btn-small" href="https://github.com/encode/django-rest-framework">GitHub</a>
-          <a class="repo-link btn btn-inverse btn-small " rel="next" href="../../topics/documenting-your-api/">
-            Next <i class="icon-arrow-right icon-white"></i>
-          </a>
-          <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../testing/">
-            <i class="icon-arrow-left icon-white"></i> Previous
-          </a>
-          <a id="search_modal_show" class="repo-link btn btn-inverse btn-small" href="#mkdocs_search_modal" data-toggle="modal" data-target="#mkdocs_search_modal"><i class="icon-search icon-white"></i> Search</a>
-          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </a>
-          <a class="brand" href="https://www.django-rest-framework.org/">Django REST framework</a>
-          <div class="nav-collapse collapse">
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Django REST framework
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
             
-            <!-- Main navigation -->
-            <ul class="nav navbar-nav">
-               
-              <li >
-                <a href="../..">Home</a>
-              </li>
-                
-              <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tutorial <b class="caret"></b></a>
-                <ul class="dropdown-menu">
-                  
-                  <li >
-                    <a href="../../tutorial/quickstart/">Quickstart</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../tutorial/1-serialization/">1 - Serialization</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../tutorial/2-requests-and-responses/">2 - Requests and responses</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../tutorial/3-class-based-views/">3 - Class based views</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../tutorial/4-authentication-and-permissions/">4 - Authentication and permissions</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../tutorial/5-relationships-and-hyperlinked-apis/">5 - Relationships and hyperlinked APIs</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../tutorial/6-viewsets-and-routers/">6 - Viewsets and routers</a>
-                  </li>
-                  
-                </ul>
-              </li>
-                
-              <li class="dropdown active">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">API Guide <b class="caret"></b></a>
-                <ul class="dropdown-menu">
-                  
-                  <li >
-                    <a href="../requests/">Requests</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../responses/">Responses</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../views/">Views</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../generic-views/">Generic views</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../viewsets/">Viewsets</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../routers/">Routers</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../parsers/">Parsers</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../renderers/">Renderers</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../serializers/">Serializers</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../fields/">Serializer fields</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../relations/">Serializer relations</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../validators/">Validators</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../authentication/">Authentication</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../permissions/">Permissions</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../caching/">Caching</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../throttling/">Throttling</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../filtering/">Filtering</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../pagination/">Pagination</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../versioning/">Versioning</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../content-negotiation/">Content negotiation</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../metadata/">Metadata</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../schemas/">Schemas</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../format-suffixes/">Format suffixes</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../reverse/">Returning URLs</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../exceptions/">Exceptions</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../status-codes/">Status codes</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../testing/">Testing</a>
-                  </li>
-                  
-                  <li class="active" >
-                    <a href="./">Settings</a>
-                  </li>
-                  
-                </ul>
-              </li>
-                
-              <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Topics <b class="caret"></b></a>
-                <ul class="dropdown-menu">
-                  
-                  <li >
-                    <a href="../../topics/documenting-your-api/">Documenting your API</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/internationalization/">Internationalization</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/ajax-csrf-cors/">AJAX, CSRF & CORS</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/html-and-forms/">HTML & Forms</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/browser-enhancements/">Browser Enhancements</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/browsable-api/">The Browsable API</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/rest-hypermedia-hateoas/">REST, Hypermedia & HATEOAS</a>
-                  </li>
-                  
-                </ul>
-              </li>
-                
-              <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Community <b class="caret"></b></a>
-                <ul class="dropdown-menu">
-                  
-                  <li >
-                    <a href="../../community/tutorials-and-resources/">Tutorials and Resources</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/third-party-packages/">Third Party Packages</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/contributing/">Contributing to REST framework</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/project-management/">Project management</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/release-notes/">Release Notes</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.16-announcement/">3.16 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.15-announcement/">3.15 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.14-announcement/">3.14 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.13-announcement/">3.13 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.12-announcement/">3.12 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.11-announcement/">3.11 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.10-announcement/">3.10 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.9-announcement/">3.9 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.8-announcement/">3.8 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.7-announcement/">3.7 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.6-announcement/">3.6 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.5-announcement/">3.5 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.4-announcement/">3.4 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.3-announcement/">3.3 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.2-announcement/">3.2 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.1-announcement/">3.1 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.0-announcement/">3.0 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/kickstarter-announcement/">Kickstarter Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/mozilla-grant/">Mozilla Grant</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/jobs/">Jobs</a>
-                  </li>
-                  
-                </ul>
-              </li>
-               
-
-            </ul>
+              Settings
             
-          </div>
-          <!--/.nav-collapse -->
-
+          </span>
         </div>
       </div>
     </div>
-
-    <div class="body-content">
-      <div class="container-fluid">
-        <!-- Search Modal -->
-        <div id="mkdocs_search_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            <h3 id="myModalLabel">Documentation search</h3>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m14.3 16-.7-2h-3.2l-.7 2H7.8L11 7h2l3.2 9zM20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12zm-9.15 3.96h2.3L12 9z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
           </div>
-
-          <div class="modal-body">
-            <form role="form" autocomplete="off">
-              <div class="form-group">
-                <input type="text" name="q" class="form-control" placeholder="Search..." id="mkdocs-search-query">
-              </div>
-            </form>
-            <div id="mkdocs-search-results"></div>
-          </div>
-
-          <div class="modal-footer">
-            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/encode/django-rest-framework" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
 
-        <div class="row-fluid">
-          <div class="span3">
-            <div id="table-of-contents">
-              <ul class="nav nav-list side-nav well sidebar-nav-fixed">
-                
+      </a>
+    </li>
+  
 
-                
-                  <li class="main">
-                    <a href="#settings">Settings</a>
-                  </li>
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../tutorial/quickstart/" class="md-tabs__link">
+          
+  
+  
+  Tutorial
 
-                  
-                    <li>
-                      <a href="#accessing-settings">Accessing settings</a>
-                    </li>
-                  
-                
-                  <li class="main">
-                    <a href="#api-reference">API Reference</a>
-                  </li>
+        </a>
+      </li>
+    
+  
 
-                  
-                    <li>
-                      <a href="#api-policy-settings">API policy settings</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#generic-view-settings">Generic view settings</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#versioning-settings">Versioning settings</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#authentication-settings">Authentication settings</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#test-settings">Test settings</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#schema-generation-controls">Schema generation controls</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#content-type-controls">Content type controls</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#date-and-time-formatting">Date and time formatting</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#encodings">Encodings</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#view-names-and-descriptions">View names and descriptions</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#html-select-field-cutoffs">HTML Select Field cutoffs</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#miscellaneous-settings">Miscellaneous settings</a>
-                    </li>
-                  
-                
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../requests/" class="md-tabs__link">
+          
+  
+  
+  API Guide
 
-                  <div class="promo">
-                    <hr/>
-                    <div id="sidebarInclude">
-                  </div>
-              </ul>
+        </a>
+      </li>
+    
+  
 
-            </div>
-          </div>
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../topics/documenting-your-api/" class="md-tabs__link">
+          
+  
+  
+  Topics
 
-          <div id="main-content" class="span9">
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../community/tutorials-and-resources/" class="md-tabs__link">
+          
+  
+  
+  Community
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Django REST framework" class="md-nav__button md-logo" aria-label="Django REST framework" data-md-component="logo">
+      
+  <img src="../../theme/img/logo.png" alt="logo">
+
+    </a>
+    Django REST framework
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/encode/django-rest-framework" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorial
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tutorial
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
             
               
                 
-                  <a class="github" href="https://github.com/encode/django-rest-framework/tree/main/rest_framework/settings.py">
-                    <span class="label label-info">settings.py</span>
-                  </a>
-                
-              
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quickstart
+  
 
-              <h1 id="settings"><a class="toclink" href="#settings">Settings</a></h1>
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/1-serialization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1 - Serialization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/2-requests-and-responses/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2 - Requests and responses
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/3-class-based-views/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3 - Class based views
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/4-authentication-and-permissions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4 - Authentication and permissions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/5-relationships-and-hyperlinked-apis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5 - Relationships and hyperlinked APIs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/6-viewsets-and-routers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6 - Viewsets and routers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../requests/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Requests
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../responses/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Responses
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../views/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Views
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../generic-views/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Generic views
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../viewsets/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Viewsets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../routers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Routers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parsers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Parsers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../renderers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Renderers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../serializers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Serializers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../fields/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Serializer fields
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../relations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Serializer relations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../validators/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validators
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../authentication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Authentication
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../permissions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Permissions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../caching/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Caching
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../throttling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Throttling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../filtering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Filtering
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pagination/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pagination
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../versioning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Versioning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../content-negotiation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Content negotiation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../metadata/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Metadata
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../schemas/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Schemas
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../format-suffixes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Format suffixes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reverse/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Returning URLs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../exceptions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Exceptions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../status-codes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Status codes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Settings
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Settings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#accessing-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Accessing settings
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Topics
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Topics
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../topics/documenting-your-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Documenting your API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../topics/internationalization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Internationalization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../topics/ajax-csrf-cors/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AJAX, CSRF & CORS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../topics/html-and-forms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HTML & Forms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../topics/browser-enhancements/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Browser Enhancements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../topics/browsable-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Browsable API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../topics/rest-hypermedia-hateoas/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    REST, Hypermedia & HATEOAS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Community
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Community
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/tutorials-and-resources/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials and Resources
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/third-party-packages/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Third Party Packages
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing to REST framework
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/project-management/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project management
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/release-notes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release Notes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.16-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.16 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.15-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.15 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.14-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.14 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.13-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.13 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.12-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.12 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.11-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.11 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.10-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.10 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.9-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.9 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.8-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.8 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.7-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.7 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.6-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.6 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.5-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.5 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.4-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.4 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.3-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.3 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.2-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.2 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.1-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.1 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.0-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.0 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/kickstarter-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kickstarter Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/mozilla-grant/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mozilla Grant
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/jobs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Jobs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+                
+
+
+
+  
+
+
+  <nav class="md-path" aria-label="Navigation" >
+    <ol class="md-path__list">
+      
+        
+  
+  
+    <li class="md-path__item">
+      <a href="../.." class="md-path__link">
+        
+  <span class="md-ellipsis">
+    Home
+  </span>
+
+      </a>
+    </li>
+  
+
+      
+      
+        
+  
+  
+    
+    
+      <li class="md-path__item">
+        <a href="../requests/" class="md-path__link">
+          
+  <span class="md-ellipsis">
+    API Guide
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ol>
+  </nav>
+
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="settings">Settings<a class="headerlink" href="#settings" title="Permanent link">&para;</a></h1>
 <blockquote>
 <p>Namespaces are one honking great idea - let's do more of those!</p>
 <p>&mdash; <a href="https://www.python.org/dev/peps/pep-0020/">The Zen of Python</a></p>
 </blockquote>
 <p>Configuration for REST framework is all namespaced inside a single Django setting, named <code>REST_FRAMEWORK</code>.</p>
 <p>For example your project's <code>settings.py</code> file might include something like this:</p>
-<pre><code>REST_FRAMEWORK = {
-    'DEFAULT_RENDERER_CLASSES': [
-        'rest_framework.renderers.JSONRenderer',
+<div class="language-text highlight"><pre><span></span><code>REST_FRAMEWORK = {
+    &#39;DEFAULT_RENDERER_CLASSES&#39;: [
+        &#39;rest_framework.renderers.JSONRenderer&#39;,
     ],
-    'DEFAULT_PARSER_CLASSES': [
-        'rest_framework.parsers.JSONParser',
+    &#39;DEFAULT_PARSER_CLASSES&#39;: [
+        &#39;rest_framework.parsers.JSONParser&#39;,
     ]
 }
-</code></pre>
-<h2 id="accessing-settings"><a class="toclink" href="#accessing-settings">Accessing settings</a></h2>
+</code></pre></div>
+<h2 id="accessing-settings">Accessing settings<a class="headerlink" href="#accessing-settings" title="Permanent link">&para;</a></h2>
 <p>If you need to access the values of REST framework's API settings in your project,
 you should use the <code>api_settings</code> object.  For example.</p>
-<pre><code>from rest_framework.settings import api_settings
+<div class="language-text highlight"><pre><span></span><code>from rest_framework.settings import api_settings
 
 print(api_settings.DEFAULT_AUTHENTICATION_CLASSES)
-</code></pre>
+</code></pre></div>
 <p>The <code>api_settings</code> object will check for any user-defined settings, and otherwise fall back to the default values.  Any setting that uses string import paths to refer to a class will automatically import and return the referenced class, instead of the string literal.</p>
 <hr />
-<h1 id="api-reference"><a class="toclink" href="#api-reference">API Reference</a></h1>
-<h2 id="api-policy-settings"><a class="toclink" href="#api-policy-settings">API policy settings</a></h2>
+<h1 id="api-reference">API Reference<a class="headerlink" href="#api-reference" title="Permanent link">&para;</a></h1>
+<h2 id="api-policy-settings">API policy settings<a class="headerlink" href="#api-policy-settings" title="Permanent link">&para;</a></h2>
 <p><em>The following settings control the basic API policies, and are applied to every <code>APIView</code> class-based view, or <code>@api_view</code> function based view.</em></p>
-<h4 id="default_renderer_classes"><a class="toclink" href="#default_renderer_classes">DEFAULT_RENDERER_CLASSES</a></h4>
+<h4 id="default_renderer_classes">DEFAULT_RENDERER_CLASSES<a class="headerlink" href="#default_renderer_classes" title="Permanent link">&para;</a></h4>
 <p>A list or tuple of renderer classes, that determines the default set of renderers that may be used when returning a <code>Response</code> object.</p>
 <p>Default:</p>
-<pre><code>[
-    'rest_framework.renderers.JSONRenderer',
-    'rest_framework.renderers.BrowsableAPIRenderer',
+<div class="language-text highlight"><pre><span></span><code>[
+    &#39;rest_framework.renderers.JSONRenderer&#39;,
+    &#39;rest_framework.renderers.BrowsableAPIRenderer&#39;,
 ]
-</code></pre>
-<h4 id="default_parser_classes"><a class="toclink" href="#default_parser_classes">DEFAULT_PARSER_CLASSES</a></h4>
+</code></pre></div>
+<h4 id="default_parser_classes">DEFAULT_PARSER_CLASSES<a class="headerlink" href="#default_parser_classes" title="Permanent link">&para;</a></h4>
 <p>A list or tuple of parser classes, that determines the default set of parsers used when accessing the <code>request.data</code> property.</p>
 <p>Default:</p>
-<pre><code>[
-    'rest_framework.parsers.JSONParser',
-    'rest_framework.parsers.FormParser',
-    'rest_framework.parsers.MultiPartParser'
+<div class="language-text highlight"><pre><span></span><code>[
+    &#39;rest_framework.parsers.JSONParser&#39;,
+    &#39;rest_framework.parsers.FormParser&#39;,
+    &#39;rest_framework.parsers.MultiPartParser&#39;
 ]
-</code></pre>
-<h4 id="default_authentication_classes"><a class="toclink" href="#default_authentication_classes">DEFAULT_AUTHENTICATION_CLASSES</a></h4>
+</code></pre></div>
+<h4 id="default_authentication_classes">DEFAULT_AUTHENTICATION_CLASSES<a class="headerlink" href="#default_authentication_classes" title="Permanent link">&para;</a></h4>
 <p>A list or tuple of authentication classes, that determines the default set of authenticators used when accessing the <code>request.user</code> or <code>request.auth</code> properties.</p>
 <p>Default:</p>
-<pre><code>[
-    'rest_framework.authentication.SessionAuthentication',
-    'rest_framework.authentication.BasicAuthentication'
+<div class="language-text highlight"><pre><span></span><code>[
+    &#39;rest_framework.authentication.SessionAuthentication&#39;,
+    &#39;rest_framework.authentication.BasicAuthentication&#39;
 ]
-</code></pre>
-<h4 id="default_permission_classes"><a class="toclink" href="#default_permission_classes">DEFAULT_PERMISSION_CLASSES</a></h4>
+</code></pre></div>
+<h4 id="default_permission_classes">DEFAULT_PERMISSION_CLASSES<a class="headerlink" href="#default_permission_classes" title="Permanent link">&para;</a></h4>
 <p>A list or tuple of permission classes, that determines the default set of permissions checked at the start of a view. Permission must be granted by every class in the list.</p>
 <p>Default:</p>
-<pre><code>[
-    'rest_framework.permissions.AllowAny',
+<div class="language-text highlight"><pre><span></span><code>[
+    &#39;rest_framework.permissions.AllowAny&#39;,
 ]
-</code></pre>
-<h4 id="default_throttle_classes"><a class="toclink" href="#default_throttle_classes">DEFAULT_THROTTLE_CLASSES</a></h4>
+</code></pre></div>
+<h4 id="default_throttle_classes">DEFAULT_THROTTLE_CLASSES<a class="headerlink" href="#default_throttle_classes" title="Permanent link">&para;</a></h4>
 <p>A list or tuple of throttle classes, that determines the default set of throttles checked at the start of a view.</p>
 <p>Default: <code>[]</code></p>
-<h4 id="default_content_negotiation_class"><a class="toclink" href="#default_content_negotiation_class">DEFAULT_CONTENT_NEGOTIATION_CLASS</a></h4>
+<h4 id="default_content_negotiation_class">DEFAULT_CONTENT_NEGOTIATION_CLASS<a class="headerlink" href="#default_content_negotiation_class" title="Permanent link">&para;</a></h4>
 <p>A content negotiation class, that determines how a renderer is selected for the response, given an incoming request.</p>
 <p>Default: <code>'rest_framework.negotiation.DefaultContentNegotiation'</code></p>
-<h4 id="default_schema_class"><a class="toclink" href="#default_schema_class">DEFAULT_SCHEMA_CLASS</a></h4>
+<h4 id="default_schema_class">DEFAULT_SCHEMA_CLASS<a class="headerlink" href="#default_schema_class" title="Permanent link">&para;</a></h4>
 <p>A view inspector class that will be used for schema generation.</p>
 <p>Default: <code>'rest_framework.schemas.openapi.AutoSchema'</code></p>
 <hr />
-<h2 id="generic-view-settings"><a class="toclink" href="#generic-view-settings">Generic view settings</a></h2>
+<h2 id="generic-view-settings">Generic view settings<a class="headerlink" href="#generic-view-settings" title="Permanent link">&para;</a></h2>
 <p><em>The following settings control the behavior of the generic class-based views.</em></p>
-<h4 id="default_filter_backends"><a class="toclink" href="#default_filter_backends">DEFAULT_FILTER_BACKENDS</a></h4>
+<h4 id="default_filter_backends">DEFAULT_FILTER_BACKENDS<a class="headerlink" href="#default_filter_backends" title="Permanent link">&para;</a></h4>
 <p>A list of filter backend classes that should be used for generic filtering.
 If set to <code>None</code> then generic filtering is disabled.</p>
-<h4 id="default_pagination_class"><a class="toclink" href="#default_pagination_class">DEFAULT_PAGINATION_CLASS</a></h4>
+<h4 id="default_pagination_class">DEFAULT_PAGINATION_CLASS<a class="headerlink" href="#default_pagination_class" title="Permanent link">&para;</a></h4>
 <p>The default class to use for queryset pagination. If set to <code>None</code>, pagination
 is disabled by default. See the pagination documentation for further guidance on
 <a href="../pagination/#setting-the-pagination-style">setting</a> and
 <a href="../pagination/#modifying-the-pagination-style">modifying</a> the pagination style.</p>
 <p>Default: <code>None</code></p>
-<h4 id="page_size"><a class="toclink" href="#page_size">PAGE_SIZE</a></h4>
+<h4 id="page_size">PAGE_SIZE<a class="headerlink" href="#page_size" title="Permanent link">&para;</a></h4>
 <p>The default page size to use for pagination.  If set to <code>None</code>, pagination is disabled by default.</p>
 <p>Default: <code>None</code></p>
-<h3 id="search_param"><a class="toclink" href="#search_param">SEARCH_PARAM</a></h3>
+<h3 id="search_param">SEARCH_PARAM<a class="headerlink" href="#search_param" title="Permanent link">&para;</a></h3>
 <p>The name of a query parameter, which can be used to specify the search term used by <code>SearchFilter</code>.</p>
 <p>Default: <code>search</code></p>
-<h4 id="ordering_param"><a class="toclink" href="#ordering_param">ORDERING_PARAM</a></h4>
+<h4 id="ordering_param">ORDERING_PARAM<a class="headerlink" href="#ordering_param" title="Permanent link">&para;</a></h4>
 <p>The name of a query parameter, which can be used to specify the ordering of results returned by <code>OrderingFilter</code>.</p>
 <p>Default: <code>ordering</code></p>
 <hr />
-<h2 id="versioning-settings"><a class="toclink" href="#versioning-settings">Versioning settings</a></h2>
-<h4 id="default_version"><a class="toclink" href="#default_version">DEFAULT_VERSION</a></h4>
+<h2 id="versioning-settings">Versioning settings<a class="headerlink" href="#versioning-settings" title="Permanent link">&para;</a></h2>
+<h4 id="default_version">DEFAULT_VERSION<a class="headerlink" href="#default_version" title="Permanent link">&para;</a></h4>
 <p>The value that should be used for <code>request.version</code> when no versioning information is present.</p>
 <p>Default: <code>None</code></p>
-<h4 id="allowed_versions"><a class="toclink" href="#allowed_versions">ALLOWED_VERSIONS</a></h4>
+<h4 id="allowed_versions">ALLOWED_VERSIONS<a class="headerlink" href="#allowed_versions" title="Permanent link">&para;</a></h4>
 <p>If set, this value will restrict the set of versions that may be returned by the versioning scheme, and will raise an error if the provided version if not in this set.</p>
 <p>Default: <code>None</code></p>
-<h4 id="version_param"><a class="toclink" href="#version_param">VERSION_PARAM</a></h4>
+<h4 id="version_param">VERSION_PARAM<a class="headerlink" href="#version_param" title="Permanent link">&para;</a></h4>
 <p>The string that should used for any versioning parameters, such as in the media type or URL query parameters.</p>
 <p>Default: <code>'version'</code></p>
-<h4 id="default_versioning_class"><a class="toclink" href="#default_versioning_class">DEFAULT_VERSIONING_CLASS</a></h4>
+<h4 id="default_versioning_class">DEFAULT_VERSIONING_CLASS<a class="headerlink" href="#default_versioning_class" title="Permanent link">&para;</a></h4>
 <p>The default versioning scheme to use.</p>
 <p>Default: <code>None</code></p>
 <hr />
-<h2 id="authentication-settings"><a class="toclink" href="#authentication-settings">Authentication settings</a></h2>
+<h2 id="authentication-settings">Authentication settings<a class="headerlink" href="#authentication-settings" title="Permanent link">&para;</a></h2>
 <p><em>The following settings control the behavior of unauthenticated requests.</em></p>
-<h4 id="unauthenticated_user"><a class="toclink" href="#unauthenticated_user">UNAUTHENTICATED_USER</a></h4>
+<h4 id="unauthenticated_user">UNAUTHENTICATED_USER<a class="headerlink" href="#unauthenticated_user" title="Permanent link">&para;</a></h4>
 <p>The class that should be used to initialize <code>request.user</code> for unauthenticated requests.
 (If removing authentication entirely, e.g. by removing <code>django.contrib.auth</code> from
 <code>INSTALLED_APPS</code>, set <code>UNAUTHENTICATED_USER</code> to <code>None</code>.)</p>
 <p>Default: <code>django.contrib.auth.models.AnonymousUser</code></p>
-<h4 id="unauthenticated_token"><a class="toclink" href="#unauthenticated_token">UNAUTHENTICATED_TOKEN</a></h4>
+<h4 id="unauthenticated_token">UNAUTHENTICATED_TOKEN<a class="headerlink" href="#unauthenticated_token" title="Permanent link">&para;</a></h4>
 <p>The class that should be used to initialize <code>request.auth</code> for unauthenticated requests.</p>
 <p>Default: <code>None</code></p>
 <hr />
-<h2 id="test-settings"><a class="toclink" href="#test-settings">Test settings</a></h2>
+<h2 id="test-settings">Test settings<a class="headerlink" href="#test-settings" title="Permanent link">&para;</a></h2>
 <p><em>The following settings control the behavior of APIRequestFactory and APIClient</em></p>
-<h4 id="test_request_default_format"><a class="toclink" href="#test_request_default_format">TEST_REQUEST_DEFAULT_FORMAT</a></h4>
+<h4 id="test_request_default_format">TEST_REQUEST_DEFAULT_FORMAT<a class="headerlink" href="#test_request_default_format" title="Permanent link">&para;</a></h4>
 <p>The default format that should be used when making test requests.</p>
 <p>This should match up with the format of one of the renderer classes in the <code>TEST_REQUEST_RENDERER_CLASSES</code> setting.</p>
 <p>Default: <code>'multipart'</code></p>
-<h4 id="test_request_renderer_classes"><a class="toclink" href="#test_request_renderer_classes">TEST_REQUEST_RENDERER_CLASSES</a></h4>
+<h4 id="test_request_renderer_classes">TEST_REQUEST_RENDERER_CLASSES<a class="headerlink" href="#test_request_renderer_classes" title="Permanent link">&para;</a></h4>
 <p>The renderer classes that are supported when building test requests.</p>
 <p>The format of any of these renderer classes may be used when constructing a test request, for example: <code>client.post('/users', {'username': 'jamie'}, format='json')</code></p>
 <p>Default:</p>
-<pre><code>[
-    'rest_framework.renderers.MultiPartRenderer',
-    'rest_framework.renderers.JSONRenderer'
+<div class="language-text highlight"><pre><span></span><code>[
+    &#39;rest_framework.renderers.MultiPartRenderer&#39;,
+    &#39;rest_framework.renderers.JSONRenderer&#39;
 ]
-</code></pre>
+</code></pre></div>
 <hr />
-<h2 id="schema-generation-controls"><a class="toclink" href="#schema-generation-controls">Schema generation controls</a></h2>
-<h4 id="schema_coerce_path_pk"><a class="toclink" href="#schema_coerce_path_pk">SCHEMA_COERCE_PATH_PK</a></h4>
+<h2 id="schema-generation-controls">Schema generation controls<a class="headerlink" href="#schema-generation-controls" title="Permanent link">&para;</a></h2>
+<h4 id="schema_coerce_path_pk">SCHEMA_COERCE_PATH_PK<a class="headerlink" href="#schema_coerce_path_pk" title="Permanent link">&para;</a></h4>
 <p>If set, this maps the <code>'pk'</code> identifier in the URL conf onto the actual field
 name when generating a schema path parameter. Typically this will be <code>'id'</code>.
 This gives a more suitable representation as "primary key" is an implementation
 detail, whereas "identifier" is a more general concept.</p>
 <p>Default: <code>True</code></p>
-<h4 id="schema_coerce_method_names"><a class="toclink" href="#schema_coerce_method_names">SCHEMA_COERCE_METHOD_NAMES</a></h4>
+<h4 id="schema_coerce_method_names">SCHEMA_COERCE_METHOD_NAMES<a class="headerlink" href="#schema_coerce_method_names" title="Permanent link">&para;</a></h4>
 <p>If set, this is used to map internal viewset method names onto external action
 names used in the schema generation. This allows us to generate names that
 are more suitable for an external representation than those that are used
 internally in the codebase.</p>
 <p>Default: <code>{'retrieve': 'read', 'destroy': 'delete'}</code></p>
 <hr />
-<h2 id="content-type-controls"><a class="toclink" href="#content-type-controls">Content type controls</a></h2>
-<h4 id="url_format_override"><a class="toclink" href="#url_format_override">URL_FORMAT_OVERRIDE</a></h4>
+<h2 id="content-type-controls">Content type controls<a class="headerlink" href="#content-type-controls" title="Permanent link">&para;</a></h2>
+<h4 id="url_format_override">URL_FORMAT_OVERRIDE<a class="headerlink" href="#url_format_override" title="Permanent link">&para;</a></h4>
 <p>The name of a URL parameter that may be used to override the default content negotiation <code>Accept</code> header behavior, by using a <code>format=…</code> query parameter in the request URL.</p>
 <p>For example: <code>http://example.com/organizations/?format=csv</code></p>
 <p>If the value of this setting is <code>None</code> then URL format overrides will be disabled.</p>
 <p>Default: <code>'format'</code></p>
-<h4 id="format_suffix_kwarg"><a class="toclink" href="#format_suffix_kwarg">FORMAT_SUFFIX_KWARG</a></h4>
+<h4 id="format_suffix_kwarg">FORMAT_SUFFIX_KWARG<a class="headerlink" href="#format_suffix_kwarg" title="Permanent link">&para;</a></h4>
 <p>The name of a parameter in the URL conf that may be used to provide a format suffix. This setting is applied when using <code>format_suffix_patterns</code> to include suffixed URL patterns.</p>
 <p>For example: <code>http://example.com/organizations.csv/</code></p>
 <p>Default: <code>'format'</code></p>
 <hr />
-<h2 id="date-and-time-formatting"><a class="toclink" href="#date-and-time-formatting">Date and time formatting</a></h2>
+<h2 id="date-and-time-formatting">Date and time formatting<a class="headerlink" href="#date-and-time-formatting" title="Permanent link">&para;</a></h2>
 <p><em>The following settings are used to control how date and time representations may be parsed and rendered.</em></p>
-<h4 id="datetime_format"><a class="toclink" href="#datetime_format">DATETIME_FORMAT</a></h4>
+<h4 id="datetime_format">DATETIME_FORMAT<a class="headerlink" href="#datetime_format" title="Permanent link">&para;</a></h4>
 <p>A format string that should be used by default for rendering the output of <code>DateTimeField</code> serializer fields.  If <code>None</code>, then <code>DateTimeField</code> serializer fields will return Python <code>datetime</code> objects, and the datetime encoding will be determined by the renderer.</p>
 <p>May be any of <code>None</code>, <code>'iso-8601'</code> or a Python <a href="https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes">strftime format</a> string.</p>
 <p>Default: <code>'iso-8601'</code></p>
-<h4 id="datetime_input_formats"><a class="toclink" href="#datetime_input_formats">DATETIME_INPUT_FORMATS</a></h4>
+<h4 id="datetime_input_formats">DATETIME_INPUT_FORMATS<a class="headerlink" href="#datetime_input_formats" title="Permanent link">&para;</a></h4>
 <p>A list of format strings that should be used by default for parsing inputs to <code>DateTimeField</code> serializer fields.</p>
 <p>May be a list including the string <code>'iso-8601'</code> or Python <a href="https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes">strftime format</a> strings.</p>
 <p>Default: <code>['iso-8601']</code></p>
-<h4 id="date_format"><a class="toclink" href="#date_format">DATE_FORMAT</a></h4>
+<h4 id="date_format">DATE_FORMAT<a class="headerlink" href="#date_format" title="Permanent link">&para;</a></h4>
 <p>A format string that should be used by default for rendering the output of <code>DateField</code> serializer fields.  If <code>None</code>, then <code>DateField</code> serializer fields will return Python <code>date</code> objects, and the date encoding will be determined by the renderer.</p>
 <p>May be any of <code>None</code>, <code>'iso-8601'</code> or a Python <a href="https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes">strftime format</a> string.</p>
 <p>Default: <code>'iso-8601'</code></p>
-<h4 id="date_input_formats"><a class="toclink" href="#date_input_formats">DATE_INPUT_FORMATS</a></h4>
+<h4 id="date_input_formats">DATE_INPUT_FORMATS<a class="headerlink" href="#date_input_formats" title="Permanent link">&para;</a></h4>
 <p>A list of format strings that should be used by default for parsing inputs to <code>DateField</code> serializer fields.</p>
 <p>May be a list including the string <code>'iso-8601'</code> or Python <a href="https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes">strftime format</a> strings.</p>
 <p>Default: <code>['iso-8601']</code></p>
-<h4 id="time_format"><a class="toclink" href="#time_format">TIME_FORMAT</a></h4>
+<h4 id="time_format">TIME_FORMAT<a class="headerlink" href="#time_format" title="Permanent link">&para;</a></h4>
 <p>A format string that should be used by default for rendering the output of <code>TimeField</code> serializer fields.  If <code>None</code>, then <code>TimeField</code> serializer fields will return Python <code>time</code> objects, and the time encoding will be determined by the renderer.</p>
 <p>May be any of <code>None</code>, <code>'iso-8601'</code> or a Python <a href="https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes">strftime format</a> string.</p>
 <p>Default: <code>'iso-8601'</code></p>
-<h4 id="time_input_formats"><a class="toclink" href="#time_input_formats">TIME_INPUT_FORMATS</a></h4>
+<h4 id="time_input_formats">TIME_INPUT_FORMATS<a class="headerlink" href="#time_input_formats" title="Permanent link">&para;</a></h4>
 <p>A list of format strings that should be used by default for parsing inputs to <code>TimeField</code> serializer fields.</p>
 <p>May be a list including the string <code>'iso-8601'</code> or Python <a href="https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes">strftime format</a> strings.</p>
 <p>Default: <code>['iso-8601']</code></p>
-<h4 id="duration_format"><a class="toclink" href="#duration_format">DURATION_FORMAT</a></h4>
+<h4 id="duration_format">DURATION_FORMAT<a class="headerlink" href="#duration_format" title="Permanent link">&para;</a></h4>
 <p>Indicates the default format that should be used for rendering the output of <code>DurationField</code> serializer fields.  If <code>None</code>, then <code>DurationField</code> serializer fields will return Python <code>timedelta</code> objects, and the duration encoding will be determined by the renderer.</p>
 <p>May be any of <code>None</code>, <code>'iso-8601'</code> or <code>'django'</code> (the format accepted by <code>django.utils.dateparse.parse_duration</code>).</p>
 <p>Default: <code>'django'</code></p>
 <hr />
-<h2 id="encodings"><a class="toclink" href="#encodings">Encodings</a></h2>
-<h4 id="unicode_json"><a class="toclink" href="#unicode_json">UNICODE_JSON</a></h4>
+<h2 id="encodings">Encodings<a class="headerlink" href="#encodings" title="Permanent link">&para;</a></h2>
+<h4 id="unicode_json">UNICODE_JSON<a class="headerlink" href="#unicode_json" title="Permanent link">&para;</a></h4>
 <p>When set to <code>True</code>, JSON responses will allow unicode characters in responses. For example:</p>
-<pre><code>{"unicode black star":"★"}
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code>{&quot;unicode black star&quot;:&quot;★&quot;}
+</code></pre></div>
 <p>When set to <code>False</code>, JSON responses will escape non-ascii characters, like so:</p>
-<pre><code>{"unicode black star":"\u2605"}
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code>{&quot;unicode black star&quot;:&quot;\u2605&quot;}
+</code></pre></div>
 <p>Both styles conform to <a href="https://www.ietf.org/rfc/rfc4627.txt">RFC 4627</a>, and are syntactically valid JSON. The unicode style is preferred as being more user-friendly when inspecting API responses.</p>
 <p>Default: <code>True</code></p>
-<h4 id="compact_json"><a class="toclink" href="#compact_json">COMPACT_JSON</a></h4>
+<h4 id="compact_json">COMPACT_JSON<a class="headerlink" href="#compact_json" title="Permanent link">&para;</a></h4>
 <p>When set to <code>True</code>, JSON responses will return compact representations, with no spacing after <code>':'</code> and <code>','</code> characters. For example:</p>
-<pre><code>{"is_admin":false,"email":"jane@example"}
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code>{&quot;is_admin&quot;:false,&quot;email&quot;:&quot;jane@example&quot;}
+</code></pre></div>
 <p>When set to <code>False</code>, JSON responses will return slightly more verbose representations, like so:</p>
-<pre><code>{"is_admin": false, "email": "jane@example"}
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code>{&quot;is_admin&quot;: false, &quot;email&quot;: &quot;jane@example&quot;}
+</code></pre></div>
 <p>The default style is to return minified responses, in line with <a href="https://github.com/interagent/http-api-design#keep-json-minified-in-all-responses">Heroku's API design guidelines</a>.</p>
 <p>Default: <code>True</code></p>
-<h4 id="strict_json"><a class="toclink" href="#strict_json">STRICT_JSON</a></h4>
+<h4 id="strict_json">STRICT_JSON<a class="headerlink" href="#strict_json" title="Permanent link">&para;</a></h4>
 <p>When set to <code>True</code>, JSON rendering and parsing will only observe syntactically valid JSON, raising an exception for the extended float values (<code>nan</code>, <code>inf</code>, <code>-inf</code>) accepted by Python's <code>json</code> module. This is the recommended setting, as these values are not generally supported. e.g., neither Javascript's <code>JSON.Parse</code> nor PostgreSQL's JSON data type accept these values.</p>
 <p>When set to <code>False</code>, JSON rendering and parsing will be permissive. However, these values are still invalid and will need to be specially handled in your code.</p>
 <p>Default: <code>True</code></p>
-<h4 id="coerce_decimal_to_string"><a class="toclink" href="#coerce_decimal_to_string">COERCE_DECIMAL_TO_STRING</a></h4>
+<h4 id="coerce_decimal_to_string">COERCE_DECIMAL_TO_STRING<a class="headerlink" href="#coerce_decimal_to_string" title="Permanent link">&para;</a></h4>
 <p>When returning decimal objects in API representations that do not support a native decimal type, it is normally best to return the value as a string. This avoids the loss of precision that occurs with binary floating point implementations.</p>
 <p>When set to <code>True</code>, the serializer <code>DecimalField</code> class will return strings instead of <code>Decimal</code> objects. When set to <code>False</code>, serializers will return <code>Decimal</code> objects, which the default JSON encoder will return as floats.</p>
 <p>Default: <code>True</code></p>
-<h4 id="coerce_bigint_to_string"><a class="toclink" href="#coerce_bigint_to_string">COERCE_BIGINT_TO_STRING</a></h4>
+<h4 id="coerce_bigint_to_string">COERCE_BIGINT_TO_STRING<a class="headerlink" href="#coerce_bigint_to_string" title="Permanent link">&para;</a></h4>
 <p>When returning biginteger objects in API representations that do not support numbers up to 2^64, it is best to return the value as a string. This avoids the loss of precision that occurs with biginteger implementations.</p>
 <p>When set to <code>True</code>, the serializer <code>BigIntegerField</code> class (by default) will return strings instead of <code>BigInteger</code> objects. When set to <code>False</code>, serializers will return <code>BigInteger</code> objects, which the default JSON encoder will return as numbers.</p>
 <p>Default: <code>False</code></p>
 <hr />
-<h2 id="view-names-and-descriptions"><a class="toclink" href="#view-names-and-descriptions">View names and descriptions</a></h2>
+<h2 id="view-names-and-descriptions">View names and descriptions<a class="headerlink" href="#view-names-and-descriptions" title="Permanent link">&para;</a></h2>
 <p><strong>The following settings are used to generate the view names and descriptions, as used in responses to <code>OPTIONS</code> requests, and as used in the browsable API.</strong></p>
-<h4 id="view_name_function"><a class="toclink" href="#view_name_function">VIEW_NAME_FUNCTION</a></h4>
+<h4 id="view_name_function">VIEW_NAME_FUNCTION<a class="headerlink" href="#view_name_function" title="Permanent link">&para;</a></h4>
 <p>A string representing the function that should be used when generating view names.</p>
 <p>This should be a function with the following signature:</p>
-<pre><code>view_name(self)
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code>view_name(self)
+</code></pre></div>
 <ul>
 <li><code>self</code>: The view instance.  Typically the name function would inspect the name of the class when generating a descriptive name, by accessing <code>self.__class__.__name__</code>.</li>
 </ul>
@@ -736,12 +2888,12 @@ internally in the codebase.</p>
 <li><code>detail</code>: Boolean that differentiates an individual view in a viewset as either being a 'list' or 'detail' view.</li>
 </ul>
 <p>Default: <code>'rest_framework.views.get_view_name'</code></p>
-<h4 id="view_description_function"><a class="toclink" href="#view_description_function">VIEW_DESCRIPTION_FUNCTION</a></h4>
+<h4 id="view_description_function">VIEW_DESCRIPTION_FUNCTION<a class="headerlink" href="#view_description_function" title="Permanent link">&para;</a></h4>
 <p>A string representing the function that should be used when generating view descriptions.</p>
 <p>This setting can be changed to support markup styles other than the default markdown.  For example, you can use it to support <code>rst</code> markup in your view docstrings being output in the browsable API.</p>
 <p>This should be a function with the following signature:</p>
-<pre><code>view_description(self, html=False)
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code>view_description(self, html=False)
+</code></pre></div>
 <ul>
 <li><code>self</code>: The view instance.  Typically the description function would inspect the docstring of the class when generating a description, by accessing <code>self.__class__.__doc__</code></li>
 <li><code>html</code>: A boolean indicating if HTML output is required.  <code>True</code> when used in the browsable API, and <code>False</code> when used in generating <code>OPTIONS</code> responses.</li>
@@ -751,86 +2903,114 @@ internally in the codebase.</p>
 <li><code>description</code>: A description explicitly provided to the view in the viewset. Typically, this is set by extra viewset <code>action</code>s, and should be used as-is.</li>
 </ul>
 <p>Default: <code>'rest_framework.views.get_view_description'</code></p>
-<h2 id="html-select-field-cutoffs"><a class="toclink" href="#html-select-field-cutoffs">HTML Select Field cutoffs</a></h2>
+<h2 id="html-select-field-cutoffs">HTML Select Field cutoffs<a class="headerlink" href="#html-select-field-cutoffs" title="Permanent link">&para;</a></h2>
 <p>Global settings for <a href="../relations/#select-field-cutoffs">select field cutoffs for rendering relational fields</a> in the browsable API.</p>
-<h4 id="html_select_cutoff"><a class="toclink" href="#html_select_cutoff">HTML_SELECT_CUTOFF</a></h4>
+<h4 id="html_select_cutoff">HTML_SELECT_CUTOFF<a class="headerlink" href="#html_select_cutoff" title="Permanent link">&para;</a></h4>
 <p>Global setting for the <code>html_cutoff</code> value.  Must be an integer.</p>
 <p>Default: 1000</p>
-<h4 id="html_select_cutoff_text"><a class="toclink" href="#html_select_cutoff_text">HTML_SELECT_CUTOFF_TEXT</a></h4>
+<h4 id="html_select_cutoff_text">HTML_SELECT_CUTOFF_TEXT<a class="headerlink" href="#html_select_cutoff_text" title="Permanent link">&para;</a></h4>
 <p>A string representing a global setting for <code>html_cutoff_text</code>.</p>
 <p>Default: <code>"More than {count} items..."</code></p>
 <hr />
-<h2 id="miscellaneous-settings"><a class="toclink" href="#miscellaneous-settings">Miscellaneous settings</a></h2>
-<h4 id="exception_handler"><a class="toclink" href="#exception_handler">EXCEPTION_HANDLER</a></h4>
+<h2 id="miscellaneous-settings">Miscellaneous settings<a class="headerlink" href="#miscellaneous-settings" title="Permanent link">&para;</a></h2>
+<h4 id="exception_handler">EXCEPTION_HANDLER<a class="headerlink" href="#exception_handler" title="Permanent link">&para;</a></h4>
 <p>A string representing the function that should be used when returning a response for any given exception.  If the function returns <code>None</code>, a 500 error will be raised.</p>
 <p>This setting can be changed to support error responses other than the default <code>{"detail": "Failure..."}</code> responses.  For example, you can use it to provide API responses like <code>{"errors": [{"message": "Failure...", "code": ""} ...]}</code>.</p>
 <p>This should be a function with the following signature:</p>
-<pre><code>exception_handler(exc, context)
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code>exception_handler(exc, context)
+</code></pre></div>
 <ul>
 <li><code>exc</code>: The exception.</li>
 </ul>
 <p>Default: <code>'rest_framework.views.exception_handler'</code></p>
-<h4 id="non_field_errors_key"><a class="toclink" href="#non_field_errors_key">NON_FIELD_ERRORS_KEY</a></h4>
+<h4 id="non_field_errors_key">NON_FIELD_ERRORS_KEY<a class="headerlink" href="#non_field_errors_key" title="Permanent link">&para;</a></h4>
 <p>A string representing the key that should be used for serializer errors that do not refer to a specific field, but are instead general errors.</p>
 <p>Default: <code>'non_field_errors'</code></p>
-<h4 id="url_field_name"><a class="toclink" href="#url_field_name">URL_FIELD_NAME</a></h4>
+<h4 id="url_field_name">URL_FIELD_NAME<a class="headerlink" href="#url_field_name" title="Permanent link">&para;</a></h4>
 <p>A string representing the key that should be used for the URL fields generated by <code>HyperlinkedModelSerializer</code>.</p>
 <p>Default: <code>'url'</code></p>
-<h4 id="num_proxies"><a class="toclink" href="#num_proxies">NUM_PROXIES</a></h4>
+<h4 id="num_proxies">NUM_PROXIES<a class="headerlink" href="#num_proxies" title="Permanent link">&para;</a></h4>
 <p>An integer of 0 or more, that may be used to specify the number of application proxies that the API runs behind.  This allows throttling to more accurately identify client IP addresses.  If set to <code>None</code> then less strict IP matching will be used by the throttle classes.</p>
 <p>Default: <code>None</code></p>
-            
 
-          </div> <!--/span-->
-        </div> <!--/row-->
-      </div> <!--/.fluid-container-->
-    </div> <!--/.body content-->
-    <div id="push"></div>
-  </div> <!--/.wrapper -->
 
-  <footer class="span12">
-    <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.
-    </p>
-  </footer>
 
-  <!-- Le javascript
-  ================================================== -->
-  <!-- Placed at the end of the document so the pages load faster -->
-  <script async src="https://fund.django-rest-framework.org/sidebar_include.js"></script>
-  <script src="../../js/jquery-1.8.1-min.js"></script>
-  <script src="../../js/prettify-1.0.js"></script>
-  <script src="../../js/bootstrap-2.1.1-min.js"></script>
-  <script src="../../js/theme.js"></script>
 
-  <script>var base_url = '../..';</script>
+
+
+
   
-  <script src="../../js/copy-button.js" defer></script>
-  
-  <script src="../../search/main.js" defer></script>
   
 
-  <script>
-    var shiftWindow = function() {
-      scrollBy(0, -50)
-    };
 
-    if (location.hash) shiftWindow();
-    window.addEventListener("hashchange", shiftWindow);
 
-    $('.dropdown-menu').on('click touchstart', function(event) {
-      event.stopPropagation();
-    });
 
-    // Dynamically force sidenav/dropdown to no higher than browser window
-    $('.side-nav, .dropdown-menu').css('max-height', window.innerHeight - 130);
 
-    $(function() {
-      $(window).resize(function() {
-        $('.side-nav, .dropdown-menu').css('max-height', window.innerHeight - 130);
-      });
-    });
-  </script>
-</body>
 
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+      <div class="md-progress" data-md-component="progress" role="progressbar"></div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["content.tabs.link", "content.code.annotate", "content.code.copy", "navigation.tabs", "navigation.tabs.sticky", "navigation.instant", "navigation.instant.prefetch", "navigation.instant.progress", "navigation.path", "navigation.sections", "navigation.top", "navigation.tracking", "search.suggest", "toc.follow", "toc.integrate"], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+    
+      <script src="../../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+        <script src="../../theme/js/prettify-1.0.js"></script>
+      
+    
+    <script>
+        document$.subscribe(function() {
+            document.querySelectorAll('pre code').forEach(code => {
+                code.parentElement.classList.add('prettyprint', 'well');
+            });
+            prettyPrint();
+        });
+    </script>
+
+  </body>
 </html>

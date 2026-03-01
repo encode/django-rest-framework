@@ -1,628 +1,2674 @@
-<!DOCTYPE html>
-<html lang="en">
 
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <meta charset="utf-8">
-  <title>Testing - Django REST framework</title>
-  <link href="../../img/favicon.ico" rel="icon" type="image/x-icon">
-  <link rel="canonical" href="https://www.django-rest-framework.org/api-guide/testing/" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Django, API, REST, Testing">
-  <meta name="author" content="Tom Christie">
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Django REST framework - Web APIs for Django">
+      
+      
+      
+        <link rel="canonical" href="https://www.django-rest-framework.org/api-guide/testing/">
+      
+      
+        <link rel="prev" href="../status-codes/">
+      
+      
+        <link rel="next" href="../settings/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../theme/img/favicon.ico">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+    
+    
+      
+        <title>Testing - Django REST framework</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.618322db.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
 
-  <!-- Le styles -->
-  <link href="../../css/prettify.css" rel="stylesheet">
-  <link href="../../css/bootstrap.css" rel="stylesheet">
-  <link href="../../css/bootstrap-responsive.css" rel="stylesheet">
-  <link href="../../css/default.css" rel="stylesheet">
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../theme/stylesheets/extra.css">
+    
+      <link rel="stylesheet" href="../../theme/stylesheets/prettify.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
   
-    <link href="../../css/copy-button.css" rel="stylesheet">
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#testing" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
   
 
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Django REST framework" class="md-header__button md-logo" aria-label="Django REST framework" data-md-component="logo">
+      
+  <img src="../../theme/img/logo.png" alt="logo">
 
-  <script type="text/javascript">
-    var _gaq = _gaq || [];
-    _gaq.push(['_setAccount', 'UA-18852272-2']);
-    _gaq.push(['_trackPageview']);
-
-    (function() {
-      var ga = document.createElement('script');
-      ga.type = 'text/javascript';
-      ga.async = true;
-      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-      var s = document.getElementsByTagName('script')[0];
-      s.parentNode.insertBefore(ga, s);
-    })();
-  </script>
-
-  <style>
-  #sidebarInclude img {
-      margin-bottom: 10px;
-  }
-  #sidebarInclude a.promo {
-      color: black;
-  }
-    @media (max-width: 767px) {
-      div.promo {
-        display: none;
-      }
-    }
-  </style>
-</head>
-<body onload="prettyPrint()" class="-page">
-
-  <div class="wrapper">
-        <div class="navbar navbar-inverse navbar-fixed-top">
-      <div class="navbar-inner">
-        <div class="container-fluid">
-          <a class="repo-link btn btn-primary btn-small" href="https://github.com/encode/django-rest-framework">GitHub</a>
-          <a class="repo-link btn btn-inverse btn-small " rel="next" href="../settings/">
-            Next <i class="icon-arrow-right icon-white"></i>
-          </a>
-          <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../status-codes/">
-            <i class="icon-arrow-left icon-white"></i> Previous
-          </a>
-          <a id="search_modal_show" class="repo-link btn btn-inverse btn-small" href="#mkdocs_search_modal" data-toggle="modal" data-target="#mkdocs_search_modal"><i class="icon-search icon-white"></i> Search</a>
-          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </a>
-          <a class="brand" href="https://www.django-rest-framework.org/">Django REST framework</a>
-          <div class="nav-collapse collapse">
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Django REST framework
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
             
-            <!-- Main navigation -->
-            <ul class="nav navbar-nav">
-               
-              <li >
-                <a href="../..">Home</a>
-              </li>
-                
-              <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tutorial <b class="caret"></b></a>
-                <ul class="dropdown-menu">
-                  
-                  <li >
-                    <a href="../../tutorial/quickstart/">Quickstart</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../tutorial/1-serialization/">1 - Serialization</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../tutorial/2-requests-and-responses/">2 - Requests and responses</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../tutorial/3-class-based-views/">3 - Class based views</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../tutorial/4-authentication-and-permissions/">4 - Authentication and permissions</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../tutorial/5-relationships-and-hyperlinked-apis/">5 - Relationships and hyperlinked APIs</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../tutorial/6-viewsets-and-routers/">6 - Viewsets and routers</a>
-                  </li>
-                  
-                </ul>
-              </li>
-                
-              <li class="dropdown active">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">API Guide <b class="caret"></b></a>
-                <ul class="dropdown-menu">
-                  
-                  <li >
-                    <a href="../requests/">Requests</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../responses/">Responses</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../views/">Views</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../generic-views/">Generic views</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../viewsets/">Viewsets</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../routers/">Routers</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../parsers/">Parsers</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../renderers/">Renderers</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../serializers/">Serializers</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../fields/">Serializer fields</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../relations/">Serializer relations</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../validators/">Validators</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../authentication/">Authentication</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../permissions/">Permissions</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../caching/">Caching</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../throttling/">Throttling</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../filtering/">Filtering</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../pagination/">Pagination</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../versioning/">Versioning</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../content-negotiation/">Content negotiation</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../metadata/">Metadata</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../schemas/">Schemas</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../format-suffixes/">Format suffixes</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../reverse/">Returning URLs</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../exceptions/">Exceptions</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../status-codes/">Status codes</a>
-                  </li>
-                  
-                  <li class="active" >
-                    <a href="./">Testing</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../settings/">Settings</a>
-                  </li>
-                  
-                </ul>
-              </li>
-                
-              <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Topics <b class="caret"></b></a>
-                <ul class="dropdown-menu">
-                  
-                  <li >
-                    <a href="../../topics/documenting-your-api/">Documenting your API</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/internationalization/">Internationalization</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/ajax-csrf-cors/">AJAX, CSRF & CORS</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/html-and-forms/">HTML & Forms</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/browser-enhancements/">Browser Enhancements</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/browsable-api/">The Browsable API</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/rest-hypermedia-hateoas/">REST, Hypermedia & HATEOAS</a>
-                  </li>
-                  
-                </ul>
-              </li>
-                
-              <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Community <b class="caret"></b></a>
-                <ul class="dropdown-menu">
-                  
-                  <li >
-                    <a href="../../community/tutorials-and-resources/">Tutorials and Resources</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/third-party-packages/">Third Party Packages</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/contributing/">Contributing to REST framework</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/project-management/">Project management</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/release-notes/">Release Notes</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.16-announcement/">3.16 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.15-announcement/">3.15 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.14-announcement/">3.14 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.13-announcement/">3.13 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.12-announcement/">3.12 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.11-announcement/">3.11 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.10-announcement/">3.10 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.9-announcement/">3.9 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.8-announcement/">3.8 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.7-announcement/">3.7 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.6-announcement/">3.6 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.5-announcement/">3.5 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.4-announcement/">3.4 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.3-announcement/">3.3 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.2-announcement/">3.2 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.1-announcement/">3.1 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/3.0-announcement/">3.0 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/kickstarter-announcement/">Kickstarter Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/mozilla-grant/">Mozilla Grant</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../community/jobs/">Jobs</a>
-                  </li>
-                  
-                </ul>
-              </li>
-               
-
-            </ul>
+              Testing
             
-          </div>
-          <!--/.nav-collapse -->
-
+          </span>
         </div>
       </div>
     </div>
-
-    <div class="body-content">
-      <div class="container-fluid">
-        <!-- Search Modal -->
-        <div id="mkdocs_search_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            <h3 id="myModalLabel">Documentation search</h3>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m14.3 16-.7-2h-3.2l-.7 2H7.8L11 7h2l3.2 9zM20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12zm-9.15 3.96h2.3L12 9z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
           </div>
-
-          <div class="modal-body">
-            <form role="form" autocomplete="off">
-              <div class="form-group">
-                <input type="text" name="q" class="form-control" placeholder="Search..." id="mkdocs-search-query">
-              </div>
-            </form>
-            <div id="mkdocs-search-results"></div>
-          </div>
-
-          <div class="modal-footer">
-            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/encode/django-rest-framework" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
 
-        <div class="row-fluid">
-          <div class="span3">
-            <div id="table-of-contents">
-              <ul class="nav nav-list side-nav well sidebar-nav-fixed">
-                
+      </a>
+    </li>
+  
 
-                
-                  <li class="main">
-                    <a href="#testing">Testing</a>
-                  </li>
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../tutorial/quickstart/" class="md-tabs__link">
+          
+  
+  
+  Tutorial
 
-                  
-                
-                  <li class="main">
-                    <a href="#apirequestfactory">APIRequestFactory</a>
-                  </li>
+        </a>
+      </li>
+    
+  
 
-                  
-                    <li>
-                      <a href="#creating-test-requests">Creating test requests</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#forcing-authentication">Forcing authentication</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#forcing-csrf-validation">Forcing CSRF validation</a>
-                    </li>
-                  
-                
-                  <li class="main">
-                    <a href="#apiclient">APIClient</a>
-                  </li>
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../requests/" class="md-tabs__link">
+          
+  
+  
+  API Guide
 
-                  
-                    <li>
-                      <a href="#making-requests">Making requests</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#authenticating">Authenticating</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#csrf-validation">CSRF validation</a>
-                    </li>
-                  
-                
-                  <li class="main">
-                    <a href="#requestsclient">RequestsClient</a>
-                  </li>
+        </a>
+      </li>
+    
+  
 
-                  
-                    <li>
-                      <a href="#requestsclient-and-working-with-the-database">RequestsClient and working with the database</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#headers-authentication">Headers &amp; Authentication</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#csrf">CSRF</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#live-tests">Live tests</a>
-                    </li>
-                  
-                
-                  <li class="main">
-                    <a href="#coreapiclient">CoreAPIClient</a>
-                  </li>
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../topics/documenting-your-api/" class="md-tabs__link">
+          
+  
+  
+  Topics
 
-                  
-                    <li>
-                      <a href="#headers-authentication_1">Headers &amp; Authentication</a>
-                    </li>
-                  
-                
-                  <li class="main">
-                    <a href="#api-test-cases">API Test cases</a>
-                  </li>
+        </a>
+      </li>
+    
+  
 
-                  
-                    <li>
-                      <a href="#example">Example</a>
-                    </li>
-                  
-                
-                  <li class="main">
-                    <a href="#urlpatternstestcase">URLPatternsTestCase</a>
-                  </li>
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../community/tutorials-and-resources/" class="md-tabs__link">
+          
+  
+  
+  Community
 
-                  
-                    <li>
-                      <a href="#example_1">Example</a>
-                    </li>
-                  
-                
-                  <li class="main">
-                    <a href="#testing-responses">Testing responses</a>
-                  </li>
+        </a>
+      </li>
+    
+  
 
-                  
-                    <li>
-                      <a href="#checking-the-response-data">Checking the response data</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#rendering-responses">Rendering responses</a>
-                    </li>
-                  
-                
-                  <li class="main">
-                    <a href="#configuration">Configuration</a>
-                  </li>
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
 
-                  
-                    <li>
-                      <a href="#setting-the-default-format">Setting the default format</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#setting-the-available-formats">Setting the available formats</a>
-                    </li>
-                  
-                
 
-                  <div class="promo">
-                    <hr/>
-                    <div id="sidebarInclude">
-                  </div>
-              </ul>
+  
 
-            </div>
-          </div>
 
-          <div id="main-content" class="span9">
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Django REST framework" class="md-nav__button md-logo" aria-label="Django REST framework" data-md-component="logo">
+      
+  <img src="../../theme/img/logo.png" alt="logo">
+
+    </a>
+    Django REST framework
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/encode/django-rest-framework" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorial
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tutorial
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
             
               
                 
-                  <a class="github" href="https://github.com/encode/django-rest-framework/tree/main/rest_framework/test.py">
-                    <span class="label label-info">test.py</span>
-                  </a>
-                
-              
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quickstart
+  
 
-              <h1 id="testing"><a class="toclink" href="#testing">Testing</a></h1>
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/1-serialization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1 - Serialization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/2-requests-and-responses/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2 - Requests and responses
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/3-class-based-views/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3 - Class based views
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/4-authentication-and-permissions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4 - Authentication and permissions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/5-relationships-and-hyperlinked-apis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5 - Relationships and hyperlinked APIs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/6-viewsets-and-routers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6 - Viewsets and routers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../requests/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Requests
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../responses/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Responses
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../views/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Views
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../generic-views/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Generic views
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../viewsets/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Viewsets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../routers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Routers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parsers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Parsers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../renderers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Renderers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../serializers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Serializers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../fields/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Serializer fields
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../relations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Serializer relations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../validators/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validators
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../authentication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Authentication
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../permissions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Permissions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../caching/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Caching
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../throttling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Throttling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../filtering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Filtering
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pagination/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pagination
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../versioning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Versioning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../content-negotiation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Content negotiation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../metadata/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Metadata
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../schemas/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Schemas
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../format-suffixes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Format suffixes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reverse/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Returning URLs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../exceptions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Exceptions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../status-codes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Status codes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../settings/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Settings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Topics
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Topics
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../topics/documenting-your-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Documenting your API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../topics/internationalization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Internationalization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../topics/ajax-csrf-cors/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AJAX, CSRF & CORS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../topics/html-and-forms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HTML & Forms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../topics/browser-enhancements/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Browser Enhancements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../topics/browsable-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Browsable API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../topics/rest-hypermedia-hateoas/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    REST, Hypermedia & HATEOAS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Community
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Community
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/tutorials-and-resources/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials and Resources
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/third-party-packages/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Third Party Packages
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing to REST framework
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/project-management/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project management
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/release-notes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release Notes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.16-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.16 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.15-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.15 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.14-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.14 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.13-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.13 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.12-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.12 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.11-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.11 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.10-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.10 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.9-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.9 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.8-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.8 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.7-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.7 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.6-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.6 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.5-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.5 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.4-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.4 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.3-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.3 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.2-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.2 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.1-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.1 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/3.0-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.0 Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/kickstarter-announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kickstarter Announcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/mozilla-grant/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mozilla Grant
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/jobs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Jobs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+                
+
+
+
+  
+
+
+  <nav class="md-path" aria-label="Navigation" >
+    <ol class="md-path__list">
+      
+        
+  
+  
+    <li class="md-path__item">
+      <a href="../.." class="md-path__link">
+        
+  <span class="md-ellipsis">
+    Home
+  </span>
+
+      </a>
+    </li>
+  
+
+      
+      
+        
+  
+  
+    
+    
+      <li class="md-path__item">
+        <a href="../requests/" class="md-path__link">
+          
+  <span class="md-ellipsis">
+    API Guide
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ol>
+  </nav>
+
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="testing">Testing<a class="headerlink" href="#testing" title="Permanent link">&para;</a></h1>
 <blockquote>
 <p>Code without tests is broken as designed.</p>
 <p>&mdash; <a href="https://jacobian.org/writing/django-apps-with-buildout/#s-create-a-test-wrapper">Jacob Kaplan-Moss</a></p>
 </blockquote>
 <p>REST framework includes a few helper classes that extend Django's existing test framework, and improve support for making API requests.</p>
-<h1 id="apirequestfactory"><a class="toclink" href="#apirequestfactory">APIRequestFactory</a></h1>
+<h1 id="apirequestfactory">APIRequestFactory<a class="headerlink" href="#apirequestfactory" title="Permanent link">&para;</a></h1>
 <p>Extends <a href="https://docs.djangoproject.com/en/stable/topics/testing/advanced/#django.test.client.RequestFactory">Django's existing <code>RequestFactory</code> class</a>.</p>
-<h2 id="creating-test-requests"><a class="toclink" href="#creating-test-requests">Creating test requests</a></h2>
+<h2 id="creating-test-requests">Creating test requests<a class="headerlink" href="#creating-test-requests" title="Permanent link">&para;</a></h2>
 <p>The <code>APIRequestFactory</code> class supports an almost identical API to Django's standard <code>RequestFactory</code> class.  This means that the standard <code>.get()</code>, <code>.post()</code>, <code>.put()</code>, <code>.patch()</code>, <code>.delete()</code>, <code>.head()</code> and <code>.options()</code> methods are all available.</p>
-<pre><code>from rest_framework.test import APIRequestFactory
+<div class="language-text highlight"><pre><span></span><code>from rest_framework.test import APIRequestFactory
 
 # Using the standard RequestFactory API to create a form POST request
 factory = APIRequestFactory()
-request = factory.post('/notes/', {'title': 'new idea'})
+request = factory.post(&#39;/notes/&#39;, {&#39;title&#39;: &#39;new idea&#39;})
 
 # Using the standard RequestFactory API to encode JSON data
-request = factory.post('/notes/', {'title': 'new idea'}, content_type='application/json')
-</code></pre>
-<h4 id="using-the-format-argument"><a class="toclink" href="#using-the-format-argument">Using the <code>format</code> argument</a></h4>
+request = factory.post(&#39;/notes/&#39;, {&#39;title&#39;: &#39;new idea&#39;}, content_type=&#39;application/json&#39;)
+</code></pre></div>
+<h4 id="using-the-format-argument">Using the <code>format</code> argument<a class="headerlink" href="#using-the-format-argument" title="Permanent link">&para;</a></h4>
 <p>Methods which create a request body, such as <code>post</code>, <code>put</code> and <code>patch</code>, include a <code>format</code> argument, which make it easy to generate requests using a wide set of request formats.  When using this argument, the factory will select an appropriate renderer and its configured <code>content_type</code>.  For example:</p>
-<pre><code># Create a JSON POST request
+<div class="language-text highlight"><pre><span></span><code># Create a JSON POST request
 factory = APIRequestFactory()
-request = factory.post('/notes/', {'title': 'new idea'}, format='json')
-</code></pre>
+request = factory.post(&#39;/notes/&#39;, {&#39;title&#39;: &#39;new idea&#39;}, format=&#39;json&#39;)
+</code></pre></div>
 <p>By default the available formats are <code>'multipart'</code> and <code>'json'</code>.  For compatibility with Django's existing <code>RequestFactory</code> the default format is <code>'multipart'</code>.</p>
 <p>To support a wider set of request formats, or change the default format, <a href="#configuration">see the configuration section</a>.</p>
-<h4 id="explicitly-encoding-the-request-body"><a class="toclink" href="#explicitly-encoding-the-request-body">Explicitly encoding the request body</a></h4>
+<h4 id="explicitly-encoding-the-request-body">Explicitly encoding the request body<a class="headerlink" href="#explicitly-encoding-the-request-body" title="Permanent link">&para;</a></h4>
 <p>If you need to explicitly encode the request body, you can do so by setting the <code>content_type</code> flag.  For example:</p>
-<pre><code>request = factory.post('/notes/', yaml.dump({'title': 'new idea'}), content_type='application/yaml')
-</code></pre>
-<h4 id="put-and-patch-with-form-data"><a class="toclink" href="#put-and-patch-with-form-data">PUT and PATCH with form data</a></h4>
+<div class="language-text highlight"><pre><span></span><code>request = factory.post(&#39;/notes/&#39;, yaml.dump({&#39;title&#39;: &#39;new idea&#39;}), content_type=&#39;application/yaml&#39;)
+</code></pre></div>
+<h4 id="put-and-patch-with-form-data">PUT and PATCH with form data<a class="headerlink" href="#put-and-patch-with-form-data" title="Permanent link">&para;</a></h4>
 <p>One difference worth noting between Django's <code>RequestFactory</code> and REST framework's <code>APIRequestFactory</code> is that multipart form data will be encoded for methods other than just <code>.post()</code>.</p>
 <p>For example, using <code>APIRequestFactory</code>, you can make a form PUT request like so:</p>
-<pre><code>factory = APIRequestFactory()
-request = factory.put('/notes/547/', {'title': 'remember to email dave'})
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code>factory = APIRequestFactory()
+request = factory.put(&#39;/notes/547/&#39;, {&#39;title&#39;: &#39;remember to email dave&#39;})
+</code></pre></div>
 <p>Using Django's <code>RequestFactory</code>, you'd need to explicitly encode the data yourself:</p>
-<pre><code>from django.test.client import encode_multipart, RequestFactory
+<div class="language-text highlight"><pre><span></span><code>from django.test.client import encode_multipart, RequestFactory
 
 factory = RequestFactory()
-data = {'title': 'remember to email dave'}
-content = encode_multipart('BoUnDaRyStRiNg', data)
-content_type = 'multipart/form-data; boundary=BoUnDaRyStRiNg'
-request = factory.put('/notes/547/', content, content_type=content_type)
-</code></pre>
-<h2 id="forcing-authentication"><a class="toclink" href="#forcing-authentication">Forcing authentication</a></h2>
+data = {&#39;title&#39;: &#39;remember to email dave&#39;}
+content = encode_multipart(&#39;BoUnDaRyStRiNg&#39;, data)
+content_type = &#39;multipart/form-data; boundary=BoUnDaRyStRiNg&#39;
+request = factory.put(&#39;/notes/547/&#39;, content, content_type=content_type)
+</code></pre></div>
+<h2 id="forcing-authentication">Forcing authentication<a class="headerlink" href="#forcing-authentication" title="Permanent link">&para;</a></h2>
 <p>When testing views directly using a request factory, it's often convenient to be able to directly authenticate the request, rather than having to construct the correct authentication credentials.</p>
 <p>To forcibly authenticate a request, use the <code>force_authenticate()</code> method.</p>
-<pre><code>from rest_framework.test import force_authenticate
+<div class="language-text highlight"><pre><span></span><code>from rest_framework.test import force_authenticate
 
 factory = APIRequestFactory()
-user = User.objects.get(username='olivia')
+user = User.objects.get(username=&#39;olivia&#39;)
 view = AccountDetail.as_view()
 
 # Make an authenticated request to the view...
-request = factory.get('/accounts/django-superstars/')
+request = factory.get(&#39;/accounts/django-superstars/&#39;)
 force_authenticate(request, user=user)
 response = view(request)
-</code></pre>
+</code></pre></div>
 <p>The signature for the method is <code>force_authenticate(request, user=None, token=None)</code>.  When making the call, either or both of the user and token may be set.</p>
 <p>For example, when forcibly authenticating using a token, you might do something like the following:</p>
-<pre><code>user = User.objects.get(username='olivia')
-request = factory.get('/accounts/django-superstars/')
+<div class="language-text highlight"><pre><span></span><code>user = User.objects.get(username=&#39;olivia&#39;)
+request = factory.get(&#39;/accounts/django-superstars/&#39;)
 force_authenticate(request, user=user, token=user.auth_token)
-</code></pre>
+</code></pre></div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p><code>force_authenticate</code> directly sets <code>request.user</code> to the in-memory <code>user</code> instance. If you are reusing the same <code>user</code> instance across multiple tests that update the saved <code>user</code> state, you may need to call <a href="https://docs.djangoproject.com/en/stable/ref/models/instances/#django.db.models.Model.refresh_from_db"><code>refresh_from_db()</code></a> between tests.</p>
@@ -631,87 +2677,87 @@ force_authenticate(request, user=user, token=user.auth_token)
 <p class="admonition-title">Note</p>
 <p>When using <code>APIRequestFactory</code>, the object that is returned is Django's standard <code>HttpRequest</code>, and not REST framework's <code>Request</code> object, which is only generated once the view is called.</p>
 <p>This means that setting attributes directly on the request object may not always have the effect you expect.  For example, setting <code>.token</code> directly will have no effect, and setting <code>.user</code> directly will only work if session authentication is being used.</p>
-<pre><code># Request will only authenticate if `SessionAuthentication` is in use.
-request = factory.get('/accounts/django-superstars/')
+<div class="language-text highlight"><pre><span></span><code># Request will only authenticate if `SessionAuthentication` is in use.
+request = factory.get(&#39;/accounts/django-superstars/&#39;)
 request.user = user
 response = view(request)
-</code></pre>
+</code></pre></div>
 <p>If you want to test a request involving the REST framework’s 'Request' object, you’ll need to manually transform it first:</p>
-<pre><code>class DummyView(APIView):
+<div class="language-text highlight"><pre><span></span><code>class DummyView(APIView):
     ...
 
 factory = APIRequestFactory()
-request = factory.get('/', {'demo': 'test'})
+request = factory.get(&#39;/&#39;, {&#39;demo&#39;: &#39;test&#39;})
 drf_request = DummyView().initialize_request(request)
-assert drf_request.query_params == {'demo': ['test']}
+assert drf_request.query_params == {&#39;demo&#39;: [&#39;test&#39;]}
 
-request = factory.post('/', {'example': 'test'})
+request = factory.post(&#39;/&#39;, {&#39;example&#39;: &#39;test&#39;})
 drf_request = DummyView().initialize_request(request)
-assert drf_request.data.get('example') == 'test'
-</code></pre>
+assert drf_request.data.get(&#39;example&#39;) == &#39;test&#39;
+</code></pre></div>
 </div>
-<h2 id="forcing-csrf-validation"><a class="toclink" href="#forcing-csrf-validation">Forcing CSRF validation</a></h2>
+<h2 id="forcing-csrf-validation">Forcing CSRF validation<a class="headerlink" href="#forcing-csrf-validation" title="Permanent link">&para;</a></h2>
 <p>By default, requests created with <code>APIRequestFactory</code> will not have CSRF validation applied when passed to a REST framework view.  If you need to explicitly turn CSRF validation on, you can do so by setting the <code>enforce_csrf_checks</code> flag when instantiating the factory.</p>
-<pre><code>factory = APIRequestFactory(enforce_csrf_checks=True)
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code>factory = APIRequestFactory(enforce_csrf_checks=True)
+</code></pre></div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>It's worth noting that Django's standard <code>RequestFactory</code> doesn't need to include this option, because when using regular Django the CSRF validation takes place in middleware, which is not run when testing views directly.  When using REST framework, CSRF validation takes place inside the view, so the request factory needs to disable view-level CSRF checks.</p>
 </div>
-<h1 id="apiclient"><a class="toclink" href="#apiclient">APIClient</a></h1>
+<h1 id="apiclient">APIClient<a class="headerlink" href="#apiclient" title="Permanent link">&para;</a></h1>
 <p>Extends <a href="https://docs.djangoproject.com/en/stable/topics/testing/tools/#the-test-client">Django's existing <code>Client</code> class</a>.</p>
-<h2 id="making-requests"><a class="toclink" href="#making-requests">Making requests</a></h2>
+<h2 id="making-requests">Making requests<a class="headerlink" href="#making-requests" title="Permanent link">&para;</a></h2>
 <p>The <code>APIClient</code> class supports the same request interface as Django's standard <code>Client</code> class.  This means that the standard <code>.get()</code>, <code>.post()</code>, <code>.put()</code>, <code>.patch()</code>, <code>.delete()</code>, <code>.head()</code> and <code>.options()</code> methods are all available.  For example:</p>
-<pre><code>from rest_framework.test import APIClient
+<div class="language-text highlight"><pre><span></span><code>from rest_framework.test import APIClient
 
 client = APIClient()
-client.post('/notes/', {'title': 'new idea'}, format='json')
-</code></pre>
+client.post(&#39;/notes/&#39;, {&#39;title&#39;: &#39;new idea&#39;}, format=&#39;json&#39;)
+</code></pre></div>
 <p>To support a wider set of request formats, or change the default format, <a href="#configuration">see the configuration section</a>.</p>
-<h2 id="authenticating"><a class="toclink" href="#authenticating">Authenticating</a></h2>
-<h4 id="loginkwargs"><a class="toclink" href="#loginkwargs">.login(**kwargs)</a></h4>
+<h2 id="authenticating">Authenticating<a class="headerlink" href="#authenticating" title="Permanent link">&para;</a></h2>
+<h4 id="loginkwargs">.login(**kwargs)<a class="headerlink" href="#loginkwargs" title="Permanent link">&para;</a></h4>
 <p>The <code>login</code> method functions exactly as it does with Django's regular <code>Client</code> class.  This allows you to authenticate requests against any views which include <code>SessionAuthentication</code>.</p>
-<pre><code># Make all requests in the context of a logged in session.
+<div class="language-text highlight"><pre><span></span><code># Make all requests in the context of a logged in session.
 client = APIClient()
-client.login(username='lauren', password='secret')
-</code></pre>
+client.login(username=&#39;lauren&#39;, password=&#39;secret&#39;)
+</code></pre></div>
 <p>To logout, call the <code>logout</code> method as usual.</p>
-<pre><code># Log out
+<div class="language-text highlight"><pre><span></span><code># Log out
 client.logout()
-</code></pre>
+</code></pre></div>
 <p>The <code>login</code> method is appropriate for testing APIs that use session authentication, for example web sites which include AJAX interaction with the API.</p>
-<h4 id="credentialskwargs"><a class="toclink" href="#credentialskwargs">.credentials(**kwargs)</a></h4>
+<h4 id="credentialskwargs">.credentials(**kwargs)<a class="headerlink" href="#credentialskwargs" title="Permanent link">&para;</a></h4>
 <p>The <code>credentials</code> method can be used to set headers that will then be included on all subsequent requests by the test client.</p>
-<pre><code>from rest_framework.authtoken.models import Token
+<div class="language-text highlight"><pre><span></span><code>from rest_framework.authtoken.models import Token
 from rest_framework.test import APIClient
 
 # Include an appropriate `Authorization:` header on all requests.
-token = Token.objects.get(user__username='lauren')
+token = Token.objects.get(user__username=&#39;lauren&#39;)
 client = APIClient()
-client.credentials(HTTP_AUTHORIZATION='Token ' + token.key)
-</code></pre>
+client.credentials(HTTP_AUTHORIZATION=&#39;Token &#39; + token.key)
+</code></pre></div>
 <p>Note that calling <code>credentials</code> a second time overwrites any existing credentials.  You can unset any existing credentials by calling the method with no arguments.</p>
-<pre><code># Stop including any credentials
+<div class="language-text highlight"><pre><span></span><code># Stop including any credentials
 client.credentials()
-</code></pre>
+</code></pre></div>
 <p>The <code>credentials</code> method is appropriate for testing APIs that require authentication headers, such as basic authentication, OAuth1a and OAuth2 authentication, and simple token authentication schemes.</p>
-<h4 id="force_authenticateusernone-tokennone"><a class="toclink" href="#force_authenticateusernone-tokennone">.force_authenticate(user=None, token=None)</a></h4>
+<h4 id="force_authenticateusernone-tokennone">.force_authenticate(user=None, token=None)<a class="headerlink" href="#force_authenticateusernone-tokennone" title="Permanent link">&para;</a></h4>
 <p>Sometimes you may want to bypass authentication entirely and force all requests by the test client to be automatically treated as authenticated.</p>
 <p>This can be a useful shortcut if you're testing the API but don't want to have to construct valid authentication credentials in order to make test requests.</p>
-<pre><code>user = User.objects.get(username='lauren')
+<div class="language-text highlight"><pre><span></span><code>user = User.objects.get(username=&#39;lauren&#39;)
 client = APIClient()
 client.force_authenticate(user=user)
-</code></pre>
+</code></pre></div>
 <p>To unauthenticate subsequent requests, call <code>force_authenticate</code> setting the user and/or token to <code>None</code>.</p>
-<pre><code>client.force_authenticate(user=None)
-</code></pre>
-<h2 id="csrf-validation"><a class="toclink" href="#csrf-validation">CSRF validation</a></h2>
+<div class="language-text highlight"><pre><span></span><code>client.force_authenticate(user=None)
+</code></pre></div>
+<h2 id="csrf-validation">CSRF validation<a class="headerlink" href="#csrf-validation" title="Permanent link">&para;</a></h2>
 <p>By default CSRF validation is not applied when using <code>APIClient</code>.  If you need to explicitly enable CSRF validation, you can do so by setting the <code>enforce_csrf_checks</code> flag when instantiating the client.</p>
-<pre><code>client = APIClient(enforce_csrf_checks=True)
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code>client = APIClient(enforce_csrf_checks=True)
+</code></pre></div>
 <p>As usual CSRF validation will only apply to any session authenticated views.  This means CSRF validation will only occur if the client has been logged in by calling <code>login()</code>.</p>
 <hr />
-<h1 id="requestsclient"><a class="toclink" href="#requestsclient">RequestsClient</a></h1>
+<h1 id="requestsclient">RequestsClient<a class="headerlink" href="#requestsclient" title="Permanent link">&para;</a></h1>
 <p>REST framework also includes a client for interacting with your application
 using the popular Python library, <code>requests</code>. This may be useful if:</p>
 <ul>
@@ -722,46 +2768,46 @@ live environment. (See "Live tests" below.)</li>
 </ul>
 <p>This exposes exactly the same interface as if you were using a requests session
 directly.</p>
-<pre><code>from rest_framework.test import RequestsClient
+<div class="language-text highlight"><pre><span></span><code>from rest_framework.test import RequestsClient
 
 client = RequestsClient()
-response = client.get('http://testserver/users/')
+response = client.get(&#39;http://testserver/users/&#39;)
 assert response.status_code == 200
-</code></pre>
+</code></pre></div>
 <p>Note that the requests client requires you to pass fully qualified URLs.</p>
-<h2 id="requestsclient-and-working-with-the-database"><a class="toclink" href="#requestsclient-and-working-with-the-database">RequestsClient and working with the database</a></h2>
+<h2 id="requestsclient-and-working-with-the-database">RequestsClient and working with the database<a class="headerlink" href="#requestsclient-and-working-with-the-database" title="Permanent link">&para;</a></h2>
 <p>The <code>RequestsClient</code> class is useful if you want to write tests that solely interact with the service interface. This is a little stricter than using the standard Django test client, as it means that all interactions should be via the API.</p>
 <p>If you're using <code>RequestsClient</code> you'll want to ensure that test setup, and results assertions are performed as regular API calls, rather than interacting with the database models directly. For example, rather than checking that <code>Customer.objects.count() == 3</code> you would list the customers endpoint, and ensure that it contains three records.</p>
-<h2 id="headers-authentication"><a class="toclink" href="#headers-authentication">Headers &amp; Authentication</a></h2>
+<h2 id="headers-authentication">Headers &amp; Authentication<a class="headerlink" href="#headers-authentication" title="Permanent link">&para;</a></h2>
 <p>Custom headers and authentication credentials can be provided in the same way
 as <a href="https://requests.readthedocs.io/en/latest/user/advanced/#session-objects">when using a standard <code>requests.Session</code> instance</a>.</p>
-<pre><code>from requests.auth import HTTPBasicAuth
+<div class="language-text highlight"><pre><span></span><code>from requests.auth import HTTPBasicAuth
 
-client.auth = HTTPBasicAuth('user', 'pass')
-client.headers.update({'x-test': 'true'})
-</code></pre>
-<h2 id="csrf"><a class="toclink" href="#csrf">CSRF</a></h2>
+client.auth = HTTPBasicAuth(&#39;user&#39;, &#39;pass&#39;)
+client.headers.update({&#39;x-test&#39;: &#39;true&#39;})
+</code></pre></div>
+<h2 id="csrf">CSRF<a class="headerlink" href="#csrf" title="Permanent link">&para;</a></h2>
 <p>If you're using <code>SessionAuthentication</code> then you'll need to include a CSRF token
 for any <code>POST</code>, <code>PUT</code>, <code>PATCH</code> or <code>DELETE</code> requests.</p>
 <p>You can do so by following the same flow that a JavaScript based client would use.
 First, make a <code>GET</code> request in order to obtain a CSRF token, then present that
 token in the following request.</p>
 <p>For example...</p>
-<pre><code>client = RequestsClient()
+<div class="language-text highlight"><pre><span></span><code>client = RequestsClient()
 
 # Obtain a CSRF token.
-response = client.get('http://testserver/homepage/')
+response = client.get(&#39;http://testserver/homepage/&#39;)
 assert response.status_code == 200
-csrftoken = response.cookies['csrftoken']
+csrftoken = response.cookies[&#39;csrftoken&#39;]
 
 # Interact with the API.
-response = client.post('http://testserver/organizations/', json={
-    'name': 'MegaCorp',
-    'status': 'active'
-}, headers={'X-CSRFToken': csrftoken})
+response = client.post(&#39;http://testserver/organizations/&#39;, json={
+    &#39;name&#39;: &#39;MegaCorp&#39;,
+    &#39;status&#39;: &#39;active&#39;
+}, headers={&#39;X-CSRFToken&#39;: csrftoken})
 assert response.status_code == 200
-</code></pre>
-<h2 id="live-tests"><a class="toclink" href="#live-tests">Live tests</a></h2>
+</code></pre></div>
+<h2 id="live-tests">Live tests<a class="headerlink" href="#live-tests" title="Permanent link">&para;</a></h2>
 <p>With careful usage both the <code>RequestsClient</code> and the <code>CoreAPIClient</code> provide
 the ability to write test cases that can run either in development, or be run
 directly against your staging server or production environment.</p>
@@ -770,33 +2816,33 @@ a powerful way to validate your live service. Doing so may require some careful
 attention to setup and teardown to ensure that the tests run in a way that they
 do not directly affect customer data.</p>
 <hr />
-<h1 id="coreapiclient"><a class="toclink" href="#coreapiclient">CoreAPIClient</a></h1>
+<h1 id="coreapiclient">CoreAPIClient<a class="headerlink" href="#coreapiclient" title="Permanent link">&para;</a></h1>
 <p>The CoreAPIClient allows you to interact with your API using the Python
 <code>coreapi</code> client library.</p>
-<pre><code># Fetch the API schema
+<div class="language-text highlight"><pre><span></span><code># Fetch the API schema
 client = CoreAPIClient()
-schema = client.get('http://testserver/schema/')
+schema = client.get(&#39;http://testserver/schema/&#39;)
 
 # Create a new organization
-params = {'name': 'MegaCorp', 'status': 'active'}
-client.action(schema, ['organizations', 'create'], params)
+params = {&#39;name&#39;: &#39;MegaCorp&#39;, &#39;status&#39;: &#39;active&#39;}
+client.action(schema, [&#39;organizations&#39;, &#39;create&#39;], params)
 
 # Ensure that the organization exists in the listing
-data = client.action(schema, ['organizations', 'list'])
+data = client.action(schema, [&#39;organizations&#39;, &#39;list&#39;])
 assert(len(data) == 1)
-assert(data == [{'name': 'MegaCorp', 'status': 'active'}])
-</code></pre>
-<h2 id="headers-authentication_1"><a class="toclink" href="#headers-authentication_1">Headers &amp; Authentication</a></h2>
+assert(data == [{&#39;name&#39;: &#39;MegaCorp&#39;, &#39;status&#39;: &#39;active&#39;}])
+</code></pre></div>
+<h2 id="headers-authentication_1">Headers &amp; Authentication<a class="headerlink" href="#headers-authentication_1" title="Permanent link">&para;</a></h2>
 <p>Custom headers and authentication may be used with <code>CoreAPIClient</code> in a
 similar way as with <code>RequestsClient</code>.</p>
-<pre><code>from requests.auth import HTTPBasicAuth
+<div class="language-text highlight"><pre><span></span><code>from requests.auth import HTTPBasicAuth
 
 client = CoreAPIClient()
-client.session.auth = HTTPBasicAuth('user', 'pass')
-client.session.headers.update({'x-test': 'true'})
-</code></pre>
+client.session.auth = HTTPBasicAuth(&#39;user&#39;, &#39;pass&#39;)
+client.session.headers.update({&#39;x-test&#39;: &#39;true&#39;})
+</code></pre></div>
 <hr />
-<h1 id="api-test-cases"><a class="toclink" href="#api-test-cases">API Test cases</a></h1>
+<h1 id="api-test-cases">API Test cases<a class="headerlink" href="#api-test-cases" title="Permanent link">&para;</a></h1>
 <p>REST framework includes the following test case classes, that mirror the existing <a href="https://docs.djangoproject.com/en/stable/topics/testing/tools/#provided-test-case-classes">Django's test case classes</a>, but use <code>APIClient</code> instead of Django's default <code>Client</code>.</p>
 <ul>
 <li><code>APISimpleTestCase</code></li>
@@ -804,140 +2850,168 @@ client.session.headers.update({'x-test': 'true'})
 <li><code>APITestCase</code></li>
 <li><code>APILiveServerTestCase</code></li>
 </ul>
-<h2 id="example"><a class="toclink" href="#example">Example</a></h2>
+<h2 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h2>
 <p>You can use any of REST framework's test case classes as you would for the regular Django test case classes.  The <code>self.client</code> attribute will be an <code>APIClient</code> instance.</p>
-<pre><code>from django.urls import reverse
+<div class="language-text highlight"><pre><span></span><code>from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 from myproject.apps.core.models import Account
 
 class AccountTests(APITestCase):
     def test_create_account(self):
-        """
+        &quot;&quot;&quot;
         Ensure we can create a new account object.
-        """
-        url = reverse('account-list')
-        data = {'name': 'DabApps'}
-        response = self.client.post(url, data, format='json')
+        &quot;&quot;&quot;
+        url = reverse(&#39;account-list&#39;)
+        data = {&#39;name&#39;: &#39;DabApps&#39;}
+        response = self.client.post(url, data, format=&#39;json&#39;)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Account.objects.count(), 1)
-        self.assertEqual(Account.objects.get().name, 'DabApps')
-</code></pre>
+        self.assertEqual(Account.objects.get().name, &#39;DabApps&#39;)
+</code></pre></div>
 <hr />
-<h1 id="urlpatternstestcase"><a class="toclink" href="#urlpatternstestcase">URLPatternsTestCase</a></h1>
+<h1 id="urlpatternstestcase">URLPatternsTestCase<a class="headerlink" href="#urlpatternstestcase" title="Permanent link">&para;</a></h1>
 <p>REST framework also provides a test case class for isolating <code>urlpatterns</code> on a per-class basis. Note that this inherits from Django's <code>SimpleTestCase</code>, and will most likely need to be mixed with another test case class.</p>
-<h2 id="example_1"><a class="toclink" href="#example_1">Example</a></h2>
-<pre><code>from django.urls import include, path, reverse
+<h2 id="example_1">Example<a class="headerlink" href="#example_1" title="Permanent link">&para;</a></h2>
+<div class="language-text highlight"><pre><span></span><code>from django.urls import include, path, reverse
 from rest_framework import status
 from rest_framework.test import APITestCase, URLPatternsTestCase
 
 
 class AccountTests(APITestCase, URLPatternsTestCase):
     urlpatterns = [
-        path('api/', include('api.urls')),
+        path(&#39;api/&#39;, include(&#39;api.urls&#39;)),
     ]
 
     def test_create_account(self):
-        """
+        &quot;&quot;&quot;
         Ensure we can create a new account object.
-        """
-        url = reverse('account-list')
-        response = self.client.get(url, format='json')
+        &quot;&quot;&quot;
+        url = reverse(&#39;account-list&#39;)
+        response = self.client.get(url, format=&#39;json&#39;)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
-</code></pre>
+</code></pre></div>
 <hr />
-<h1 id="testing-responses"><a class="toclink" href="#testing-responses">Testing responses</a></h1>
-<h2 id="checking-the-response-data"><a class="toclink" href="#checking-the-response-data">Checking the response data</a></h2>
+<h1 id="testing-responses">Testing responses<a class="headerlink" href="#testing-responses" title="Permanent link">&para;</a></h1>
+<h2 id="checking-the-response-data">Checking the response data<a class="headerlink" href="#checking-the-response-data" title="Permanent link">&para;</a></h2>
 <p>When checking the validity of test responses it's often more convenient to inspect the data that the response was created with, rather than inspecting the fully rendered response.</p>
 <p>For example, it's easier to inspect <code>response.data</code>:</p>
-<pre><code>response = self.client.get('/users/4/')
-self.assertEqual(response.data, {'id': 4, 'username': 'lauren'})
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code>response = self.client.get(&#39;/users/4/&#39;)
+self.assertEqual(response.data, {&#39;id&#39;: 4, &#39;username&#39;: &#39;lauren&#39;})
+</code></pre></div>
 <p>Instead of inspecting the result of parsing <code>response.content</code>:</p>
-<pre><code>response = self.client.get('/users/4/')
-self.assertEqual(json.loads(response.content), {'id': 4, 'username': 'lauren'})
-</code></pre>
-<h2 id="rendering-responses"><a class="toclink" href="#rendering-responses">Rendering responses</a></h2>
+<div class="language-text highlight"><pre><span></span><code>response = self.client.get(&#39;/users/4/&#39;)
+self.assertEqual(json.loads(response.content), {&#39;id&#39;: 4, &#39;username&#39;: &#39;lauren&#39;})
+</code></pre></div>
+<h2 id="rendering-responses">Rendering responses<a class="headerlink" href="#rendering-responses" title="Permanent link">&para;</a></h2>
 <p>If you're testing views directly using <code>APIRequestFactory</code>, the responses that are returned will not yet be rendered, as rendering of template responses is performed by Django's internal request-response cycle.  In order to access <code>response.content</code>, you'll first need to render the response.</p>
-<pre><code>view = UserDetail.as_view()
-request = factory.get('/users/4')
-response = view(request, pk='4')
+<div class="language-text highlight"><pre><span></span><code>view = UserDetail.as_view()
+request = factory.get(&#39;/users/4&#39;)
+response = view(request, pk=&#39;4&#39;)
 response.render()  # Cannot access `response.content` without this.
-self.assertEqual(response.content, '{"username": "lauren", "id": 4}')
-</code></pre>
+self.assertEqual(response.content, &#39;{&quot;username&quot;: &quot;lauren&quot;, &quot;id&quot;: 4}&#39;)
+</code></pre></div>
 <hr />
-<h1 id="configuration"><a class="toclink" href="#configuration">Configuration</a></h1>
-<h2 id="setting-the-default-format"><a class="toclink" href="#setting-the-default-format">Setting the default format</a></h2>
+<h1 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h1>
+<h2 id="setting-the-default-format">Setting the default format<a class="headerlink" href="#setting-the-default-format" title="Permanent link">&para;</a></h2>
 <p>The default format used to make test requests may be set using the <code>TEST_REQUEST_DEFAULT_FORMAT</code> setting key.  For example, to always use JSON for test requests by default instead of standard multipart form requests, set the following in your <code>settings.py</code> file:</p>
-<pre><code>REST_FRAMEWORK = {
+<div class="language-text highlight"><pre><span></span><code>REST_FRAMEWORK = {
     ...
-    'TEST_REQUEST_DEFAULT_FORMAT': 'json'
+    &#39;TEST_REQUEST_DEFAULT_FORMAT&#39;: &#39;json&#39;
 }
-</code></pre>
-<h2 id="setting-the-available-formats"><a class="toclink" href="#setting-the-available-formats">Setting the available formats</a></h2>
+</code></pre></div>
+<h2 id="setting-the-available-formats">Setting the available formats<a class="headerlink" href="#setting-the-available-formats" title="Permanent link">&para;</a></h2>
 <p>If you need to test requests using something other than multipart or json requests, you can do so by setting the <code>TEST_REQUEST_RENDERER_CLASSES</code> setting.</p>
 <p>For example, to add support for using <code>format='html'</code> in test requests, you might have something like this in your <code>settings.py</code> file.</p>
-<pre><code>REST_FRAMEWORK = {
+<div class="language-text highlight"><pre><span></span><code>REST_FRAMEWORK = {
     ...
-    'TEST_REQUEST_RENDERER_CLASSES': [
-        'rest_framework.renderers.MultiPartRenderer',
-        'rest_framework.renderers.JSONRenderer',
-        'rest_framework.renderers.TemplateHTMLRenderer'
+    &#39;TEST_REQUEST_RENDERER_CLASSES&#39;: [
+        &#39;rest_framework.renderers.MultiPartRenderer&#39;,
+        &#39;rest_framework.renderers.JSONRenderer&#39;,
+        &#39;rest_framework.renderers.TemplateHTMLRenderer&#39;
     ]
 }
-</code></pre>
-            
+</code></pre></div>
 
-          </div> <!--/span-->
-        </div> <!--/row-->
-      </div> <!--/.fluid-container-->
-    </div> <!--/.body content-->
-    <div id="push"></div>
-  </div> <!--/.wrapper -->
 
-  <footer class="span12">
-    <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.
-    </p>
-  </footer>
 
-  <!-- Le javascript
-  ================================================== -->
-  <!-- Placed at the end of the document so the pages load faster -->
-  <script async src="https://fund.django-rest-framework.org/sidebar_include.js"></script>
-  <script src="../../js/jquery-1.8.1-min.js"></script>
-  <script src="../../js/prettify-1.0.js"></script>
-  <script src="../../js/bootstrap-2.1.1-min.js"></script>
-  <script src="../../js/theme.js"></script>
 
-  <script>var base_url = '../..';</script>
+
+
+
   
-  <script src="../../js/copy-button.js" defer></script>
-  
-  <script src="../../search/main.js" defer></script>
   
 
-  <script>
-    var shiftWindow = function() {
-      scrollBy(0, -50)
-    };
 
-    if (location.hash) shiftWindow();
-    window.addEventListener("hashchange", shiftWindow);
 
-    $('.dropdown-menu').on('click touchstart', function(event) {
-      event.stopPropagation();
-    });
 
-    // Dynamically force sidenav/dropdown to no higher than browser window
-    $('.side-nav, .dropdown-menu').css('max-height', window.innerHeight - 130);
 
-    $(function() {
-      $(window).resize(function() {
-        $('.side-nav, .dropdown-menu').css('max-height', window.innerHeight - 130);
-      });
-    });
-  </script>
-</body>
 
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+      <div class="md-progress" data-md-component="progress" role="progressbar"></div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["content.tabs.link", "content.code.annotate", "content.code.copy", "navigation.tabs", "navigation.tabs.sticky", "navigation.instant", "navigation.instant.prefetch", "navigation.instant.progress", "navigation.path", "navigation.sections", "navigation.top", "navigation.tracking", "search.suggest", "toc.follow", "toc.integrate"], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+    
+      <script src="../../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+        <script src="../../theme/js/prettify-1.0.js"></script>
+      
+    
+    <script>
+        document$.subscribe(function() {
+            document.querySelectorAll('pre code').forEach(code => {
+                code.parentElement.classList.add('prettyprint', 'well');
+            });
+            prettyPrint();
+        });
+    </script>
+
+  </body>
 </html>
