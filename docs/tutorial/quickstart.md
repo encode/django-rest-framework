@@ -6,24 +6,47 @@ We're going to create a simple API to allow admin users to view and edit the use
 
 Create a new Django project named `tutorial`, then start a new app called `quickstart`.
 
-```bash
-# Create the project directory
-mkdir tutorial
-cd tutorial
+=== ":fontawesome-brands-linux: Linux, :fontawesome-brands-apple: macOS"
 
-# Create a virtual environment to isolate our package dependencies locally
-python3 -m venv env
-source env/bin/activate  # On Windows use `env\Scripts\activate`
+    ```bash
+    # Create the project directory
+    mkdir tutorial
+    cd tutorial
+    
+    # Create a virtual environment to isolate our package dependencies locally
+    python3 -m venv .venv
+    source .venv/bin/activate
+    
+    # Install Django and Django REST framework into the virtual environment
+    pip install djangorestframework
+    
+    # Set up a new project with a single application
+    django-admin startproject tutorial .  # Note the trailing '.' character
+    cd tutorial
+    django-admin startapp quickstart
+    cd ..
+    ```
 
-# Install Django and Django REST framework into the virtual environment
-pip install djangorestframework
+=== ":fontawesome-brands-windows: Windows"
 
-# Set up a new project with a single application
-django-admin startproject tutorial .  # Note the trailing '.' character
-cd tutorial
-django-admin startapp quickstart
-cd ..
-```
+    ```bash
+    # Create the project directory
+    mkdir tutorial
+    cd tutorial
+    
+    # Create a virtual environment to isolate our package dependencies locally
+    python3 -m venv .venv
+    source .venv\Scripts\activate
+    
+    # Install Django and Django REST framework into the virtual environment
+    pip install djangorestframework
+    
+    # Set up a new project with a single application
+    django-admin startproject tutorial .  # Note the trailing '.' character
+    cd tutorial
+    django-admin startapp quickstart
+    cd ..
+    ```
 
 The project layout should look like:
 

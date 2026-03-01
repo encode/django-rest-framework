@@ -11,20 +11,20 @@ The tutorial is fairly in-depth, so you should probably get a cookie and a cup o
 
 ## Setting up a new environment
 
-Before we do anything else we'll create a new virtual environment, using [venv]. This will make sure our package configuration is kept nicely isolated from any other projects we're working on.
+Before we do anything else we'll create a new virtual environment called `.venv`, using [venv]. This will make sure our package configuration is kept nicely isolated from any other projects we're working on.
 
 === ":fontawesome-brands-linux: Linux, :fontawesome-brands-apple: macOS"
 
     ```bash
-    python3 -m venv env
-    source env/bin/activate
+    python3 -m venv .venv
+    source .venv/bin/activate
     ```
 
 === ":fontawesome-brands-windows: Windows"
 
     ```bash
-    python3 -m venv env
-    source env\Scripts\activate
+    python3 -m venv .venv
+    source .venv\Scripts\activate
     ```
 
 Now that we're inside a virtual environment, we can install our package requirements.
