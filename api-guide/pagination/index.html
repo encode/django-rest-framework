@@ -2734,6 +2734,15 @@ class StandardResultsSetPagination(PageNumberPagination):
 }
 </code></pre></div>
 <p>On <code>GenericAPIView</code> subclasses you may also set the <code>pagination_class</code> attribute to select <code>PageNumberPagination</code> on a per-view basis.</p>
+<p>By default, the query parameter name used for pagination is <code>page</code>.
+This can be customized by subclassing <code>PageNumberPagination</code> and overriding the <code>page_query_param</code> attribute.</p>
+<p>For example:</p>
+<div class="language-text highlight"><pre><span></span><code>from rest_framework.pagination import PageNumberPagination
+
+class CustomPagination(PageNumberPagination):
+    page_query_param = &#39;p&#39;
+</code></pre></div>
+<p>With this configuration, clients would request pages using <code>?p=2</code> instead of <code>?page=2</code>.</p>
 <h4 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h4>
 <p>The <code>PageNumberPagination</code> class includes a number of attributes that may be overridden to modify the pagination style.</p>
 <p>To set these attributes you should override the <code>PageNumberPagination</code> class, and then enable your custom pagination class as above.</p>
