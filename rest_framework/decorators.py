@@ -7,13 +7,18 @@ based views, as well as the `@action` decorator, which is used to annotate
 methods on viewsets that should be included by routers.
 """
 import types
+import typing
 
 from django.forms.utils import pretty_name
+from django import http
 
 from rest_framework.views import APIView
 
+HTTPMethod = typing.Literal["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"]
 
-def api_view(http_method_names=None):
+def api_view(
+        http_method_names: list[HTTPMethod] | None = None,
+    ) -> typing.Callable[[typing.Callable[..., http.HttpResponse]], typing.Callable[..., http.HttpResponse]]:
     """
     Decorator that converts a function-based view into an APIView subclass.
     Takes a list of allowed methods for the view as an argument.
