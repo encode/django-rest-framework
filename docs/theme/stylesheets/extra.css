@@ -1,0 +1,82 @@
+:root  > * {
+  /* primary */
+  --md-primary-fg-color: #2c2c2c;
+  --md-primary-fg-color--light: #a8a8a8;
+  --md-primary-fg-color--dark: #181818;
+  /* accent */
+  --md-accent-fg-color: #c50d0d;
+  --md-accent-fg-color--light: #ff8f8f;
+  --md-accent-fg-color--dark: #A30000;
+
+  /* Style links */
+  --md-typeset-a-color: var(--md-typeset-color);
+}
+
+/* Dark theme customisation */
+[data-md-color-scheme="slate"]
+{
+  --md-accent-fg-color--dark: #F25757;
+}
+
+.md-header {
+  border-top: 5px solid #A30000;
+}
+
+body hr {
+  border-top: 1px dotted var(--md-accent-fg-color--dark);
+}
+
+.badges {
+  display: flex;
+  justify-content: end;
+  gap: 8px;
+}
+
+/* Cutesy quote styling */
+[dir="ltr"] .md-typeset blockquote {
+  font-family: Georgia, serif;
+  font-size: 18px;
+  font-style: italic;
+  margin: 0.25em 0;
+  padding: 0.25em 40px;
+  line-height: 1.45;
+  position: relative;
+  color: var(--md-typeset-color);
+  border-left: none;
+}
+
+[dir="ltr"] .md-typeset blockquote:before {
+  display: block;
+  content: "\201C";
+  font-size: 80px;
+  position: absolute;
+  left: -10px;
+  top: -20px;
+  color: #7a7a7a;
+}
+
+[dir="ltr"] .md-typeset blockquote p:last-child {
+  color: #999999;
+  font-size: 14px;
+  display: block;
+  margin-top: 5px;
+}
+
+.md-typeset a {
+  color: var(--md-accent-fg-color--dark);
+}
+
+/* Replacement for `body { background-attachment: fixed; }`, which
+   has performance issues when scrolling on large displays. */
+body::before {
+    content: ' ';
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background-color: #f8f8f8;
+    background: url(../img/grid.png) repeat-x;
+    will-change: transform;
+    z-index: -1;
+}

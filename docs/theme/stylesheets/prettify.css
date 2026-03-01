@@ -7,11 +7,16 @@
 .typ, .atn, .dec, .var { color: teal; }
 .pln { color: #48484c; }
 
-.prettyprint {
-  padding: 8px;
-  background-color: #f7f7f9;
-  border: 1px solid #e1e1e8;
+[data-md-color-scheme="slate"]
+{
+  .com { color: #687272; }
+  .lit { color: #2481c7; }
+  .str, .atv { color: #e37e8e;; }
+  .kwd, .prettyprint .tag { color: #6e8ee1; }
+  .typ, .atn, .dec, .var { color: #05abab; }
+  .pln { color: #d3d3dc; }
 }
+
 .prettyprint.linenums {
   -webkit-box-shadow: inset 40px 0 0 #fbfbfc, inset 41px 0 0 #ececf0;
      -moz-box-shadow: inset 40px 0 0 #fbfbfc, inset 41px 0 0 #ececf0;
