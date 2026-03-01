@@ -28,8 +28,7 @@ body hr {
 
 .badges {
   display: flex;
-  flex-direction: row-reverse;
-  align-content: end;
+  justify-content: end;
   gap: 8px;
 }
 
