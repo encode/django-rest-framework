@@ -13,10 +13,19 @@ The tutorial is fairly in-depth, so you should probably get a cookie and a cup o
 
 Before we do anything else we'll create a new virtual environment, using [venv]. This will make sure our package configuration is kept nicely isolated from any other projects we're working on.
 
-```bash
-python3 -m venv env
-source env/bin/activate   # On Windows use `env\Scripts\activate`
-```
+=== "Linux, macOS"
+
+    ```bash
+    python3 -m venv env
+    source env/bin/activate
+    ```
+
+=== "Windows"
+
+    ```bash
+    python3 -m venv env
+    source env\Scripts\activate
+    ```
 
 Now that we're inside a virtual environment, we can install our package requirements.
 
