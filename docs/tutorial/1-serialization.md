@@ -13,14 +13,14 @@ The tutorial is fairly in-depth, so you should probably get a cookie and a cup o
 
 Before we do anything else we'll create a new virtual environment, using [venv]. This will make sure our package configuration is kept nicely isolated from any other projects we're working on.
 
-=== "Linux, macOS"
+=== ":fontawesome-brands-linux: Linux, :fontawesome-brands-apple: macOS"
 
     ```bash
     python3 -m venv env
     source env/bin/activate
     ```
 
-=== "Windows"
+=== ":fontawesome-brands-windows: Windows"
 
     ```bash
     python3 -m venv env

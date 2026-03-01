@@ -5,47 +5,47 @@ site_description: Django REST framework - Web APIs for Django
 repo_url: https://github.com/encode/django-rest-framework
 
 theme:
-    name: material
-    custom_dir: docs/theme
-    favicon: theme/img/favicon.ico
-    logo: theme/img/logo.png
-    palette:
-      - media: "(prefers-color-scheme)"
-        primary: custom
-        accent: custom
-        toggle:
-          icon: material/brightness-auto
-          name: "Switch to light mode"
-      - media: "(prefers-color-scheme: light)"
-        scheme: default
-        primary: custom
-        accent: custom
-        toggle:
-          icon: material/brightness-7
-          name: "Switch to dark mode"
-      - media: "(prefers-color-scheme: dark)"
-        scheme: slate
-        primary: custom
-        accent: custom
-        toggle:
-          icon: material/brightness-4
-          name: "Switch to system preference"
-    features:
-      - content.tabs.link
-      - content.code.annotate
-      - content.code.copy
-      - navigation.tabs
-      - navigation.tabs.sticky
-      - navigation.instant
-      - navigation.instant.prefetch
-      - navigation.instant.progress
-      - navigation.path
-      - navigation.sections
-      - navigation.top
-      - navigation.tracking
-      - search.suggest
-      - toc.follow
-      - toc.integrate
+  name: material
+  custom_dir: docs/theme
+  favicon: theme/img/favicon.ico
+  logo: theme/img/logo.png
+  palette:
+    - media: "(prefers-color-scheme)"
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/brightness-auto
+        name: "Switch to light mode"
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/brightness-7
+        name: "Switch to dark mode"
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/brightness-4
+        name: "Switch to system preference"
+  features:
+    - content.tabs.link
+    - content.code.annotate
+    - content.code.copy
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.instant
+    - navigation.instant.prefetch
+    - navigation.instant.progress
+    - navigation.path
+    - navigation.sections
+    - navigation.top
+    - navigation.tracking
+    - search.suggest
+    - toc.follow
+    - toc.integrate
 
 extra_css:
   - theme/stylesheets/extra.css
@@ -54,20 +54,24 @@ extra_javascript:
   - theme/js/prettify-1.0.js
 
 markdown_extensions:
- - admonition
- - toc:
-     permalink: true
- - pymdownx.highlight:
-     pygments_lang_class: true
- - pymdownx.inlinehilite
- - pymdownx.snippets
- - pymdownx.superfences
- - pymdownx.tabbed:
-     alternate_style: true
+  - admonition
+  - attr_list
+  - toc:
+      permalink: true
+  - pymdownx.highlight:
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
 
 nav:
- - Home: 'index.md'
- - Tutorial:
+  - Home: 'index.md'
+  - Tutorial:
     - 'Quickstart': 'tutorial/quickstart.md'
     - '1 - Serialization': 'tutorial/1-serialization.md'
     - '2 - Requests and responses': 'tutorial/2-requests-and-responses.md'
@@ -75,7 +79,7 @@ nav:
     - '4 - Authentication and permissions': 'tutorial/4-authentication-and-permissions.md'
     - '5 - Relationships and hyperlinked APIs': 'tutorial/5-relationships-and-hyperlinked-apis.md'
     - '6 - Viewsets and routers': 'tutorial/6-viewsets-and-routers.md'
- - API Guide:
+  - API Guide:
     - 'Requests': 'api-guide/requests.md'
     - 'Responses': 'api-guide/responses.md'
     - 'Views': 'api-guide/views.md'
@@ -104,7 +108,7 @@ nav:
     - 'Status codes': 'api-guide/status-codes.md'
     - 'Testing': 'api-guide/testing.md'
     - 'Settings': 'api-guide/settings.md'
- - Topics:
+  - Topics:
      - 'Documenting your API': 'topics/documenting-your-api.md'
      - 'Internationalization': 'topics/internationalization.md'
      - 'AJAX, CSRF & CORS': 'topics/ajax-csrf-cors.md'
@@ -112,7 +116,7 @@ nav:
      - 'Browser Enhancements': 'topics/browser-enhancements.md'
      - 'The Browsable API': 'topics/browsable-api.md'
      - 'REST, Hypermedia & HATEOAS': 'topics/rest-hypermedia-hateoas.md'
- - Community:
+  - Community:
      - 'Tutorials and Resources': 'community/tutorials-and-resources.md'
      - 'Third Party Packages': 'community/third-party-packages.md'
      - 'Contributing to REST framework': 'community/contributing.md'
