@@ -1683,12 +1683,18 @@ class ListField(Field):
         # We override the default field access in order to support
         # lists in HTML forms.
         if html.is_html_input(dictionary):
-            # First, try to get the value using the plain field name with getlist
+            # First, try to get the value using the plain field name with getlist.
             # This handles standard HTML form list submissions like:
             # <select multiple name="field"><option value="a">...
-            val = dictionary.getlist(self.field_name, [])
-            if len(val) > 0:
-                # Support QueryDict lists in HTML input.
+            try:
+                # Call getlist with a single argument to support duck-typed MultiDicts
+                # that do not accept a default parameter.
+                val = dictionary.getlist(self.field_name)
+            except (TypeError, KeyError, AttributeError):
+                # Fall back to treating the value as not provided.
+                val = []
+            if val:
+                # Support QueryDict lists and other list-like results in HTML input.
                 return val
             # For partial updates, avoid calling parse_html_list unless indexed keys are present.
             # This reduces unnecessary parsing overhead for omitted list fields.
