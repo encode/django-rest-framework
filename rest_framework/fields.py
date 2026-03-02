@@ -1690,23 +1690,20 @@ class ListField(Field):
             if len(val) > 0:
                 # Support QueryDict lists in HTML input.
                 return val
-            # Second, check for indexed keys like field[0], field[1], etc.
+            # For partial updates, avoid the O(n) parse_html_list scan
+            # if neither the plain key nor any indexed keys are present
+            if getattr(self.root, 'partial', False):
+                # Quick check: are there any keys matching field_name[*]?
+                prefix = self.field_name + '['
+                if not any(key.startswith(prefix) for key in dictionary):
+                    return empty
+            # Parse indexed keys (e.g., field[0], field[1])
             # This handles form submissions with explicit indices
-            html_list = html.parse_html_list(dictionary, prefix=self.field_name, default=empty)
-            if html_list is not empty:
-                return html_list
-            # If no data found (neither plain list nor indexed keys)
-            # check if this is a partial update
-            if getattr(self.root, 'partial', False):
-                return empty
-            # For non-partial updates with no data, return empty
-            # This will trigger validation errors if the field is required
-            return empty
-        # Non-HTML input: standard dictionary access
-        if self.field_name not in dictionary:
-            if getattr(self.root, 'partial', False):
-                return empty
+            return html.parse_html_list(dictionary, prefix=self.field_name, default=empty)
 
+        # Non-HTML input: standard dictionary access
+        if self.field_name not in dictionary and getattr(self.root, 'partial', False):
+            return empty
         return dictionary.get(self.field_name, empty)
 
     def to_internal_value(self, data):
