@@ -1690,8 +1690,8 @@ class ListField(Field):
             if len(val) > 0:
                 # Support QueryDict lists in HTML input.
                 return val
-            # For partial updates, avoid the O(n) parse_html_list scan
-            # if neither the plain key nor any indexed keys are present
+            # For partial updates, avoid calling parse_html_list unless indexed keys are present.
+            # This reduces unnecessary parsing overhead for omitted list fields.
             if getattr(self.root, 'partial', False):
                 # Quick check: are there any keys matching field_name[*]?
                 prefix = self.field_name + '['
