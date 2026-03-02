@@ -442,7 +442,7 @@ class TestSerializerPartialUsage:
             'colors': ['#ffffff', '#000000']
         })
         serializer = CommunitySerializer(data=data, partial=True)
-        assert serializer.is_valid(), f"Expected valid but got errors: {serializer.errors}"
+        assert serializer.is_valid()
         assert 'colors' in serializer.validated_data
         assert serializer.validated_data['colors'] == ['#ffffff', '#000000']
 
@@ -462,9 +462,70 @@ class TestSerializerPartialUsage:
             'colors[1]': ['#000000']
         })
         serializer = CommunitySerializer(data=data, partial=False)
-        assert serializer.is_valid(), f"Expected valid but got errors: {serializer.errors}"
+        assert serializer.is_valid()
         assert 'colors' in serializer.validated_data
         assert serializer.validated_data['colors'] == ['#ffffff', '#000000']
+
+    def test_listfield_mixed_plain_and_indexed_keys(self):
+        """
+        Test that when both plain field and indexed keys are present,
+        the plain field takes precedence (standard HTML form behavior).
+        """
+        class CommunitySerializer(serializers.Serializer):
+            colors = serializers.ListField(
+                allow_null=True,
+                child=serializers.CharField(label='Colors', max_length=7),
+                required=False
+            )
+        # When both present, getlist should win (standard HTML form behavior)
+        data = MultiValueDict({
+            'colors': ['#aaaaaa', '#bbbbbb'],  # This should be used
+            'colors[0]': ['#ffffff'],           # These should be ignored
+            'colors[1]': ['#000000']
+        })
+        serializer = CommunitySerializer(data=data, partial=True)
+        assert serializer.is_valid()
+        assert 'colors' in serializer.validated_data
+        # Plain field values should take precedence
+        assert serializer.validated_data['colors'] == ['#aaaaaa', '#bbbbbb']
+
+    def test_partial_listfield_no_data_returns_empty(self):
+        """
+        Test that when a ListField is omitted in partial updates,
+        it does not appear in validated_data (not even as an empty list).
+        """
+        class CommunitySerializer(serializers.Serializer):
+            name = serializers.CharField(max_length=100)
+            colors = serializers.ListField(
+                allow_null=True,
+                child=serializers.CharField(label='Colors', max_length=7),
+                required=False
+            )
+        data = MultiValueDict({
+            'name': ['Community Name']
+        })
+        serializer = CommunitySerializer(data=data, partial=True)
+        assert serializer.is_valid()
+        assert 'name' in serializer.validated_data
+        assert 'colors' not in serializer.validated_data  # Should be skipped
+
+    def test_non_partial_listfield_standard_submission(self):
+        """
+        Test standard HTML form list submission without partial=True.
+        Ensures backward compatibility with existing behavior.
+        """
+        class CommunitySerializer(serializers.Serializer):
+            colors = serializers.ListField(
+                child=serializers.CharField(label='Colors', max_length=7),
+                required=True
+            )
+        # Standard multi-select form submission
+        data = MultiValueDict({
+            'colors': ['#ffffff', '#000000', '#ff0000']
+        })
+        serializer = CommunitySerializer(data=data, partial=False)
+        assert serializer.is_valid()
+        assert serializer.validated_data['colors'] == ['#ffffff', '#000000', '#ff0000']
 
     def test_allow_empty_true(self):
         class ListSerializer(serializers.Serializer):
