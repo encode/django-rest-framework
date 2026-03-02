@@ -286,6 +286,51 @@ class TestNestedListSerializer:
         assert serializer.validated_data == expected_output
 
 
+class TestListFieldHTMLInput:
+    """
+    Tests for ListField with HTML form input, including indexed keys.
+    """
+
+    def test_listfield_with_indexed_keys(self):
+        """
+        Test that indexed keys (e.g., field[0], field[1]) work correctly
+        in HTML form submissions.
+        """
+        class CommunitySerializer(serializers.Serializer):
+            colors = serializers.ListField(
+                allow_null=True,
+                child=serializers.CharField(label='Colors', max_length=7),
+                required=False
+            )
+        # Simulate form data with indexed keys
+        data = MultiValueDict({
+            'colors[0]': ['#ffffff'],
+            'colors[1]': ['#000000']
+        })
+        serializer = CommunitySerializer(data=data)
+        assert serializer.is_valid()
+        assert 'colors' in serializer.validated_data
+        assert serializer.validated_data['colors'] == ['#ffffff', '#000000']
+
+    def test_listfield_standard_form_submission(self):
+        """
+        Test standard HTML form list submission (e.g., multi-select).
+        Ensures backward compatibility with existing behavior.
+        """
+        class CommunitySerializer(serializers.Serializer):
+            colors = serializers.ListField(
+                child=serializers.CharField(label='Colors', max_length=7),
+                required=True
+            )
+        # Standard multi-select form submission
+        data = MultiValueDict({
+            'colors': ['#ffffff', '#000000', '#ff0000']
+        })
+        serializer = CommunitySerializer(data=data)
+        assert serializer.is_valid()
+        assert serializer.validated_data['colors'] == ['#ffffff', '#000000', '#ff0000']
+
+
 class TestNestedListSerializerAllowEmpty:
     """Tests the behavior of allow_empty=False when a ListSerializer is used as a field."""
 
@@ -446,26 +491,6 @@ class TestSerializerPartialUsage:
         assert 'colors' in serializer.validated_data
         assert serializer.validated_data['colors'] == ['#ffffff', '#000000']
 
-    def test_non_partial_listfield_with_indexed_keys(self):
-        """
-        Test that indexed keys work correctly in non-partial updates.
-        """
-        class CommunitySerializer(serializers.Serializer):
-            colors = serializers.ListField(
-                allow_null=True,
-                child=serializers.CharField(label='Colors', max_length=7),
-                required=False
-            )
-        # Simulate form data with indexed keys
-        data = MultiValueDict({
-            'colors[0]': ['#ffffff'],
-            'colors[1]': ['#000000']
-        })
-        serializer = CommunitySerializer(data=data, partial=False)
-        assert serializer.is_valid()
-        assert 'colors' in serializer.validated_data
-        assert serializer.validated_data['colors'] == ['#ffffff', '#000000']
-
     def test_listfield_mixed_plain_and_indexed_keys(self):
         """
         Test that when both plain field and indexed keys are present,
@@ -508,24 +533,6 @@ class TestSerializerPartialUsage:
         assert serializer.is_valid()
         assert 'name' in serializer.validated_data
         assert 'colors' not in serializer.validated_data  # Should be skipped
-
-    def test_non_partial_listfield_standard_submission(self):
-        """
-        Test standard HTML form list submission without partial=True.
-        Ensures backward compatibility with existing behavior.
-        """
-        class CommunitySerializer(serializers.Serializer):
-            colors = serializers.ListField(
-                child=serializers.CharField(label='Colors', max_length=7),
-                required=True
-            )
-        # Standard multi-select form submission
-        data = MultiValueDict({
-            'colors': ['#ffffff', '#000000', '#ff0000']
-        })
-        serializer = CommunitySerializer(data=data, partial=False)
-        assert serializer.is_valid()
-        assert serializer.validated_data['colors'] == ['#ffffff', '#000000', '#ff0000']
 
     def test_allow_empty_true(self):
         class ListSerializer(serializers.Serializer):
