@@ -670,14 +670,14 @@ class ListSerializer(BaseSerializer):
         original_instance = self.child.instance
         try:
             if (
-                hasattr(self, '_instance_map') and
+                hasattr(self, '_list_serializer_instance_map') and
                 isinstance(data, Mapping) and
                 original_instance is self.instance
             ):
                 data_pk = data.get('id')
                 if data_pk is None:
                     data_pk = data.get('pk')
-                self.child.instance = self._instance_map.get(str(data_pk)) if data_pk is not None else None
+                self.child.instance = self._list_serializer_instance_map.get(str(data_pk)) if data_pk is not None else None
 
             return self.child.run_validation(data)
         finally:
@@ -737,7 +737,7 @@ class ListSerializer(BaseSerializer):
                         # matching standard mapping assignment behavior.
                         instance_map[key] = obj
 
-        self._instance_map = instance_map
+        self._list_serializer_instance_map = instance_map
 
         try:
             for item in data:
@@ -754,8 +754,8 @@ class ListSerializer(BaseSerializer):
 
             return ret
         finally:
-            if hasattr(self, '_instance_map'):
-                delattr(self, '_instance_map')
+            if hasattr(self, '_list_serializer_instance_map'):
+                delattr(self, '_list_serializer_instance_map')
 
     def to_representation(self, data):
         """
@@ -811,10 +811,6 @@ class ListSerializer(BaseSerializer):
             "If you need to access data before committing to the database then "
             "inspect 'serializer.validated_data' instead. "
         )
-        assert hasattr(self, '_validated_data'), (
-            'You must call `.is_valid()` before calling `.save()`.'
-        )
-
         validated_data = [
             {**attrs, **kwargs} for attrs in self.validated_data
         ]
