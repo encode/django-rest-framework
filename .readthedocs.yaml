@@ -1,0 +1,19 @@
+# Read the Docs configuration file
+# See https://docs.readthedocs.io/en/stable/config-file/v2.html for details
+
+# Required
+version: 2
+
+# Set the OS, Python version, and other tools you might need
+build:
+  os: ubuntu-24.04
+  tools:
+    python: "3.13"
+  jobs:
+    install:
+      - pip install --upgrade pip
+      - pip install -e . --group docs
+
+# Build documentation with Mkdocs
+mkdocs:
+   configuration: mkdocs.yml

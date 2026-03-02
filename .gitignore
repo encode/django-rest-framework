@@ -1,7 +1,6 @@
 *.pyc
 *.db
 *~
-.*
 *.py.bak
 
 
@@ -15,6 +14,9 @@
 MANIFEST
 coverage.*
 venv/
+.coverage
+.cache/
+
 !.github
 !.gitignore
 !.pre-commit-config.yaml
