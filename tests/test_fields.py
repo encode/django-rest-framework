@@ -600,8 +600,8 @@ class TestHTMLInput:
     def test_partial_update_omitted_list_field(self):
         """
         When a ListField is omitted in a partial update (and there are no
-        indexed keys for it), the field should return empty without triggering
-        an expensive O(n) scan via parse_html_list.
+        indexed keys for it), the field should be skipped and not included in
+        the validated data.
         """
         class TestSerializer(serializers.Serializer):
             colors = serializers.ListField(
