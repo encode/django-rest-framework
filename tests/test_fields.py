@@ -576,6 +576,67 @@ class TestHTMLInput:
         assert serializer.is_valid()
         assert serializer.validated_data == {'scores': ['']}
 
+    def test_partial_update_with_indexed_keys(self):
+        """
+        Regression test for indexed HTML form keys with partial=True.
+        When data is passed as `colors[0]=#ffffff&colors[1]=#000000`
+        with partial=True, the field should parse indexed keys correctly.
+        """
+        class TestSerializer(serializers.Serializer):
+            colors = serializers.ListField(
+                allow_null=True,
+                child=serializers.CharField(max_length=7),
+                required=False
+            )
+            name = serializers.CharField(max_length=100, required=False)
+
+        serializer = TestSerializer(
+            data=QueryDict('colors[0]=#ffffff&colors[1]=#000000'),
+            partial=True
+        )
+        assert serializer.is_valid()
+        assert serializer.validated_data == {'colors': ['#ffffff', '#000000']}
+
+    def test_partial_update_omitted_list_field(self):
+        """
+        When a ListField is omitted in a partial update (and there are no
+        indexed keys for it), the field should return empty without triggering
+        an expensive O(n) scan via parse_html_list.
+        """
+        class TestSerializer(serializers.Serializer):
+            colors = serializers.ListField(
+                child=serializers.CharField(max_length=7),
+                required=False
+            )
+            name = serializers.CharField(max_length=100)
+
+        # colors is omitted, only name is provided
+        serializer = TestSerializer(
+            data=QueryDict('name=Test'),
+            partial=True
+        )
+        assert serializer.is_valid()
+        assert serializer.validated_data == {'name': 'Test'}
+        assert 'colors' not in serializer.validated_data
+
+    def test_partial_update_indexed_keys_ordering(self):
+        """
+        Indexed keys should preserve the correct order even when
+        they appear out of order in the QueryDict.
+        """
+        class TestSerializer(serializers.Serializer):
+            items = serializers.ListField(
+                child=serializers.IntegerField(),
+                required=False
+            )
+
+        serializer = TestSerializer(
+            data=QueryDict('items[2]=3&items[0]=1&items[1]=2'),
+            partial=True
+        )
+        assert serializer.is_valid()
+        assert serializer.validated_data == {'items': [1, 2, 3]}
+
 
 class TestCreateOnlyDefault:
     def setup_method(self):
