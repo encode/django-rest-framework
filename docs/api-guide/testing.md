@@ -265,10 +265,15 @@ For example...
 
 ## Live tests
 
-With careful usage the `RequestsClient` provides the ability to write test
-cases that can run either in development, or be run directly against your
-staging server or production environment.
+With careful usage the `RequestsClient` provides the ability to write tests
+that exercise your API views in a more end-to-end fashion than `APIClient`,
+while still running entirely in-process against your local Django application.
 
+Note that `RequestsClient` mounts a WSGI adapter and does not perform real
+network I/O. It cannot be used to send HTTP requests to remote services such
+as staging or production servers. For live tests against a deployed service,
+you should instead use a plain `requests.Session` (or similar HTTP client)
+configured with the appropriate base URL and authentication.
 Using this style to create basic tests of a few core pieces of functionality is
 a powerful way to validate your live service. Doing so may require some careful
 attention to setup and teardown to ensure that the tests run in a way that they
