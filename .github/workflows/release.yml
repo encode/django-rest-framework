@@ -23,7 +23,7 @@ env:
 jobs:
   build:
     name: Build distribution 📦
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
     - uses: actions/checkout@v6
     - name: Set up Python
@@ -45,7 +45,7 @@ jobs:
     name: Publish Python 🐍 distribution 📦 to TestPyPI
     needs:
     - build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     environment:
       name: testpypi
       url: ${{ env.PYPI_TEST_URL }}
@@ -68,7 +68,7 @@ jobs:
     needs:
     - build
     - publish-to-testpypi
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     environment:
       name: pypi
       url: ${{ env.PYPI_URL }}
@@ -89,7 +89,7 @@ jobs:
       and upload them to GitHub Release
     needs:
     - publish-to-pypi
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: write  # IMPORTANT: mandatory for making GitHub Releases
       id-token: write  # IMPORTANT: mandatory for sigstore
