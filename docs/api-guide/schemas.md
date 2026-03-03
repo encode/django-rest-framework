@@ -10,7 +10,14 @@ API schemas are a useful tool that allow for a range of use cases, including
 generating reference documentation, or driving dynamic client libraries that
 can interact with your API.
 
-## Representing schemas internally
+## Install Core API
+
+You'll need to install the `coreapi` package in order to add schema support
+for REST framework.
+
+    pip install coreapi
+
+## Internal schema representation
 
 REST framework uses [Core API][coreapi] in order to model schema information in
 a format-independent representation. This information can then be rendered
@@ -68,9 +75,32 @@ has to be rendered into the actual bytes that are used in the response.
 REST framework includes a renderer class for handling this media type, which
 is available as `renderers.CoreJSONRenderer`.
 
+### Alternate schema formats
+
 Other schema formats such as [Open API][open-api] ("Swagger"),
-[JSON HyperSchema][json-hyperschema], or [API Blueprint][api-blueprint] can
-also be supported by implementing a custom renderer class.
+[JSON HyperSchema][json-hyperschema], or [API Blueprint][api-blueprint] can also
+be supported by implementing a custom renderer class that handles converting a
+`Document` instance into a bytestring representation.
+
+If there is a Core API codec package that supports encoding into the format you
+want to use then implementing the renderer class can be done by using the codec.
+
+#### Example
+
+For example, the `openapi_codec` package provides support for encoding or decoding
+to the Open API ("Swagger") format:
+
+    from rest_framework import renderers
+    from openapi_codec import OpenAPICodec
+
+    class SwaggerRenderer(renderers.BaseRenderer):
+        media_type = 'application/openapi+json'
+        format = 'swagger'
+
+        def render(self, data, media_type=None, renderer_context=None):
+            codec = OpenAPICodec()
+            return codec.dump(data)
+
 
 ## Schemas vs Hypermedia
 
@@ -91,16 +121,125 @@ is planned for a future version.
 
 ---
 
-# Adding a schema
-
-You'll need to install the `coreapi` package in order to add schema support
-for REST framework.
-
-    pip install coreapi
+# Creating a schema
 
 REST framework includes functionality for auto-generating a schema,
-or allows you to specify one explicitly. There are a few different ways to
-add a schema to your API, depending on exactly what you need.
+or allows you to specify one explicitly.
+
+## Manual Schema Specification
+
+To manually specify a schema you create a Core API `Document`, similar to the
+example above.
+
+    schema = coreapi.Document(
+        title='Flight Search API',
+        content={
+            ...
+        }
+    )
+
+
+## Automatic Schema Generation
+
+Automatic schema generation is provided by the `SchemaGenerator` class.
+
+`SchemaGenerator` processes a list of routed URL patterns and compiles the
+appropriately structured Core API Document.
+
+Basic usage is just to provide the title for your schema and call
+`get_schema()`:
+
+    generator = schemas.SchemaGenerator(title='Flight Search API')
+    schema = generator.get_schema()
+
+### Per-View Schema Customisation
+
+By default, view introspection is performed by an `AutoSchema` instance
+accessible via the `schema` attribute on `APIView`. This provides the
+appropriate Core API `Link` object for the view, request method and path:
+
+    auto_schema = view.schema
+    coreapi_link = auto_schema.get_link(...)
+
+(In compiling the schema, `SchemaGenerator` calls `view.schema.get_link()` for
+each view, allowed method and path.)
+
+To customise the `Link` generation you may:
+
+* Instantiate `AutoSchema` on your view with the `manual_fields` kwarg:
+
+        from rest_framework.views import APIView
+        from rest_framework.schemas import AutoSchema
+
+        class CustomView(APIView):
+            ...
+            schema = AutoSchema(
+                manual_fields=[
+                    coreapi.Field("extra_field", ...),
+                ]
+            )
+
+    This allows extension for the most common case without subclassing.
+
+* Provide an `AutoSchema` subclass with more complex customisation:
+
+        from rest_framework.views import APIView
+        from rest_framework.schemas import AutoSchema
+
+        class CustomSchema(AutoSchema):
+            def get_link(self, path, method, base_url):
+                # Implement custom introspection here (or in other sub-methods)
+                ...
+
+        class CustomView(APIView):
+            ...
+            schema = CustomSchema()
+
+    This provides complete control over view introspection.
+
+* Instantiate `ManualSchema` on your view, providing the Core API `Fields` for
+  the view explicitly:
+
+        from rest_framework.views import APIView
+        from rest_framework.schemas import ManualSchema
+
+        class CustomView(APIView):
+            ...
+            schema = ManualSchema(fields=[
+                coreapi.Field(
+                    "first_field",
+                    required=True,
+                    location="path",
+                    schema=coreschema.String()
+                ),
+                coreapi.Field(
+                    "second_field",
+                    required=True,
+                    location="path",
+                    schema=coreschema.String()
+                ),
+            ])
+
+    This allows manually specifying the schema for some views whilst maintaining
+    automatic generation elsewhere.
+
+* You can exclude a view from the schema entirely by setting `schema` to `None`:
+
+        class CustomView(APIView):
+            ...
+            schema = None  # Will not appear in schema
+
+---
+
+**Note**: For full details on `SchemaGenerator` plus the `AutoSchema` and
+`ManualSchema` descriptors see the [API Reference below](#api-reference).
+
+---
+
+# Adding a schema view
+
+There are a few different ways to add a schema view to your API, depending on
+exactly what you need.
 
 ## The get_schema_view shortcut
 
@@ -304,7 +443,7 @@ An `APIView`, with an explicit method docstring.
             usernames = [user.username for user in User.objects.all()]
             return Response(usernames)
 
-A `ViewSet`, with an explict action docstring.
+A `ViewSet`, with an explicit action docstring.
 
     class ListUsernames(ViewSet):
         def list(self, request):
@@ -342,38 +481,12 @@ A generic viewset with sections in the class docstring, using multi-line style.
 
 ---
 
-# Alternate schema formats
-
-In order to support an alternate schema format, you need to implement a custom renderer
-class that handles converting a `Document` instance into a bytestring representation.
-
-If there is a Core API codec package that supports encoding into the format you
-want to use then implementing the renderer class can be done by using the codec.
-
-## Example
-
-For example, the `openapi_codec` package provides support for encoding or decoding
-to the Open API ("Swagger") format:
-
-    from rest_framework import renderers
-    from openapi_codec import OpenAPICodec
-
-    class SwaggerRenderer(renderers.BaseRenderer):
-        media_type = 'application/openapi+json'
-        format = 'swagger'
-
-        def render(self, data, media_type=None, renderer_context=None):
-            codec = OpenAPICodec()
-            return codec.dump(data)
-
----
-
 # API Reference
 
 ## SchemaGenerator
 
-A class that deals with introspecting your API views, which can be used to
-generate a schema.
+A class that walks a list of routed URL patterns, requests the schema for each view,
+and collates the resulting CoreAPI Document.
 
 Typically you'll instantiate `SchemaGenerator` with a single argument, like so:
 
@@ -406,38 +519,116 @@ Return a nested dictionary containing all the links that should be included in t
 This is a good point to override if you want to modify the resulting structure of the generated schema,
 as you can build a new dictionary with a different layout.
 
-### get_link(self, path, method, view)
+
+## AutoSchema
+
+A class that deals with introspection of individual views for schema generation.
+
+`AutoSchema` is attached to `APIView` via the `schema` attribute.
+
+The `AutoSchema` constructor takes a single keyword argument `manual_fields`.
+
+**`manual_fields`**: a `list` of `coreapi.Field` instances that will be added to
+the generated fields. Generated fields with a matching `name` will be overwritten.
+
+    class CustomView(APIView):
+        schema = AutoSchema(manual_fields=[
+            coreapi.Field(
+                "my_extra_field",
+                required=True,
+                location="path",
+                schema=coreschema.String()
+            ),
+        ])
+
+For more advanced customisation subclass `AutoSchema` to customise schema generation.
+
+    class CustomViewSchema(AutoSchema):
+        """
+        Overrides `get_link()` to provide Custom Behavior X
+        """
+
+        def get_link(self, path, method, base_url):
+            link = super().get_link(path, method, base_url)
+            # Do something to customize link here...
+            return link
+
+    class MyView(APIView):
+        schema = CustomViewSchema()
+
+The following methods are available to override.
+
+### get_link(self, path, method, base_url)
 
 Returns a `coreapi.Link` instance corresponding to the given view.
 
+This is the main entry point.
 You can override this if you need to provide custom behaviors for particular views.
 
-### get_description(self, path, method, view)
+### get_description(self, path, method)
 
 Returns a string to use as the link description. By default this is based on the
 view docstring as described in the "Schemas as Documentation" section above.
 
-### get_encoding(self, path, method, view)
+### get_encoding(self, path, method)
 
 Returns a string to indicate the encoding for any request body, when interacting
 with the given view. Eg. `'application/json'`. May return a blank string for views
 that do not expect a request body.
 
-### get_path_fields(self, path, method, view):
+### get_path_fields(self, path, method)
 
-Return a list of `coreapi.Link()` instances. One for each path parameter in the URL.
+Return a list of `coreapi.Field` instances. One for each path parameter in the URL.
 
-### get_serializer_fields(self, path, method, view)
+### get_serializer_fields(self, path, method)
 
-Return a list of `coreapi.Link()` instances. One for each field in the serializer class used by the view.
+Return a list of `coreapi.Field` instances. One for each field in the serializer class used by the view.
 
-### get_pagination_fields(self, path, method, view
+### get_pagination_fields(self, path, method)
 
-Return a list of `coreapi.Link()` instances, as returned by the `get_schema_fields()` method on any pagination class used by the view.
+Return a list of `coreapi.Field` instances, as returned by the `get_schema_fields()` method on any pagination class used by the view.
 
-### get_filter_fields(self, path, method, view)
+### get_filter_fields(self, path, method)
 
-Return a list of `coreapi.Link()` instances, as returned by the `get_schema_fields()` method of any filter classes used by the view.
+Return a list of `coreapi.Field` instances, as returned by the `get_schema_fields()` method of any filter classes used by the view.
+
+### get_manual_fields(self, path, method)
+
+Returns the list of `coreapi.Field` instances provided as `manual_fields` when
+the `AutoSchema` was instantiated. Override to vary manual fields by path or method.
+
+### update_fields(fields, update_with)
+
+Static method. Merges two lists of `coreapi.Field` instances, overwriting on
+`Field.name`. Used internally to apply `manual_fields` on top of generated fields.
+
+
+## ManualSchema
+
+Allows manually providing a list of `coreapi.Field` instances for the schema,
+plus an optional description.
+
+    class MyView(APIView):
+        schema = ManualSchema(fields=[
+            coreapi.Field(
+                "first_field",
+                required=True,
+                location="path",
+                schema=coreschema.String()
+            ),
+            coreapi.Field(
+                "second_field",
+                required=True,
+                location="path",
+                schema=coreschema.String()
+            ),
+        ])
+
+The `ManualSchema` constructor takes two arguments:
+
+**`fields`**: A list of `coreapi.Field` instances. Required.
+
+**`description`**: A string description. Optional.
 
 ---
 
