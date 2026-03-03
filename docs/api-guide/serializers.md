@@ -745,17 +745,11 @@ When a serializer is instantiated and `many=True` is passed, a `ListSerializer` 
 
 The following argument can also be passed to a `ListSerializer` field or a serializer that is passed `many=True`:
 
-#### `allow_empty`
+- `allow_empty`: this is `True` by default, but can be set to `False` if you want to disallow empty lists as valid input.
 
-This is `True` by default, but can be set to `False` if you want to disallow empty lists as valid input.
+- `max_length`: this is `None` by default, but can be set to a positive integer if you want to validate that the list contains no more than this number of elements.
 
-#### `max_length`
-
-This is `None` by default, but can be set to a positive integer if you want to validate that the list contains no more than this number of elements.
-
-#### `min_length`
-
-This is `None` by default, but can be set to a positive integer if you want to validate that the list contains no fewer than this number of elements.
+- `min_length`: this is `None` by default, but can be set to a positive integer if you want to validate that the list contains no fewer than this number of elements.
 
 ### Customizing `ListSerializer` behavior
 
