@@ -78,12 +78,12 @@ There are a wide range of resources available for learning and using Django REST
 * [OAuth2 Authentication with Django REST Framework and Custom Third-Party OAuth2 Backends][oauth2-authentication-with-drf]
 * [Nested Resources with Django REST Framework][nested-resources-with-drf]
 * [Image Fields with Django REST Framework][image-fields-with-drf]
-* [Chatbot Using Django REST Framework + api.ai + Slack — Part 1/3][chatbot-using-drf-part1]
+* [Chatbot Using Django REST Framework + api.ai + Slack - Part 1/3][chatbot-using-drf-part1]
 * [New Django Admin with DRF and EmberJS... What are the News?][new-django-admin-with-drf-and-emberjs]
 * [Blog posts about Django REST Framework][medium-django-rest-framework]
 * [Implementing Rest APIs With Embedded Privacy][doordash-implementing-rest-apis]
 
-### Documentations
+## Documentations
 * [Classy Django REST Framework][cdrf.co]
 * [DRF-schema-adapter][drf-schema]
 
