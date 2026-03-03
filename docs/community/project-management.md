@@ -66,7 +66,7 @@ The following template should be used for the description of the issue, and serv
         - Click the "Generate release notes button"
         - Don't confirm anything yet! Copy the generated content to a file `input.md`
         - Run `uv tool run linkify-gh-markdown input.md` to make the links absolute
-        - Put the generated content in the appropriate place un the release-notes.md file
+        - Put the generated content in the release-notes.md file
     - [ ] Ensure documentation validates
         - Build and serve docs `mkdocs serve`
         - Validate links `pylinkvalidate.py -P http://127.0.0.1:8000`
