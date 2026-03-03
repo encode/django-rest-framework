@@ -63,7 +63,7 @@ The following template should be used for the description of the issue, and serv
     - [ ] Update the release-notes.md:
         - Start drafting a new release in GitHub: https://github.com/encode/django-rest-framework/releases/new
         - Select the tag that you want to give to the next release and the previous tag
-        - Click the "Generate release notes button"
+        - Click the "Generate release notes" button
         - Don't confirm anything yet! Copy the generated content to a file `input.md`
         - Run `uv tool run linkify-gh-markdown input.md` to make the links absolute
         - Put the generated content in the release-notes.md file
