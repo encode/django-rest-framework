@@ -106,7 +106,7 @@ If it is called without a `filename` URL keyword argument, then the client must 
     * Since this parser's `media_type` matches any content type, `FileUploadParser` should generally be the only parser set on an API view.
     * `FileUploadParser` respects Django's standard `FILE_UPLOAD_HANDLERS` setting, and the `request.upload_handlers` attribute.  See the [Django documentation][upload-handlers] for more details.
 
-##### Basic usage example
+#### Basic usage example
 
     # views.py
     class FileUploadView(views.APIView):
