@@ -143,33 +143,33 @@ Provided they inherit from `rest_framework.permissions.BasePermission`, permissi
     Operators follow the same precedence and associativity rules as standard logical operators (`~` highest, then `&`, then `|`).
 
 
-# API Reference
+## API Reference
 
-## AllowAny
+### AllowAny
 
 The `AllowAny` permission class will allow unrestricted access, **regardless of if the request was authenticated or unauthenticated**.
 
 This permission is not strictly required, since you can achieve the same result by using an empty list or tuple for the permissions setting, but you may find it useful to specify this class because it makes the intention explicit.
 
-## IsAuthenticated
+### IsAuthenticated
 
 The `IsAuthenticated` permission class will deny permission to any unauthenticated user, and allow permission otherwise.
 
 This permission is suitable if you want your API to only be accessible to registered users.
 
-## IsAdminUser
+### IsAdminUser
 
 The `IsAdminUser` permission class will deny permission to any user, unless `user.is_staff` is `True` in which case permission will be allowed.
 
 This permission is suitable if you want your API to only be accessible to a subset of trusted administrators.
 
-## IsAuthenticatedOrReadOnly
+### IsAuthenticatedOrReadOnly
 
 The `IsAuthenticatedOrReadOnly` will allow authenticated users to perform any request.  Requests for unauthenticated users will only be permitted if the request method is one of the "safe" methods; `GET`, `HEAD` or `OPTIONS`.
 
 This permission is suitable if you want to your API to allow read permissions to anonymous users, and only allow write permissions to authenticated users.
 
-## DjangoModelPermissions
+### DjangoModelPermissions
 
 This permission class ties into Django's standard `django.contrib.auth` [model permissions][contribauth].  This permission must only be applied to views that have a `.queryset` property or `get_queryset()` method. Authorization will only be granted if the user *is authenticated* and has the *relevant model permissions* assigned. The appropriate model is determined by checking `get_queryset().model` or `queryset.model`.
 
@@ -181,11 +181,11 @@ The default behavior can also be overridden to support custom model permissions.
 
 To use custom model permissions, override `DjangoModelPermissions` and set the `.perms_map` property.  Refer to the source code for details.
 
-## DjangoModelPermissionsOrAnonReadOnly
+### DjangoModelPermissionsOrAnonReadOnly
 
 Similar to `DjangoModelPermissions`, but also allows unauthenticated users to have read-only access to the API.
 
-## DjangoObjectPermissions
+### DjangoObjectPermissions
 
 This permission class ties into Django's standard [object permissions framework][objectpermissions] that allows per-object permissions on models.  In order to use this permission class, you'll also need to add a permission backend that supports object-level permissions, such as [django-guardian][guardian].
 
@@ -202,7 +202,7 @@ As with `DjangoModelPermissions` you can use custom model permissions by overrid
 !!! note
     If you need object level `view` permissions for `GET`, `HEAD` and `OPTIONS` requests and are using django-guardian for your object-level permissions backend, you'll want to consider using the `DjangoObjectPermissionsFilter` class provided by the [`djangorestframework-guardian` package][django-rest-framework-guardian]. It ensures that list endpoints only return results including objects for which the user has appropriate view permissions.
 
-# Custom permissions
+## Custom permissions
 
 To implement a custom permission, override `BasePermission` and implement either, or both, of the following methods:
 
@@ -231,7 +231,7 @@ Custom permissions will raise a `PermissionDenied` exception if the test fails. 
         def has_permission(self, request, view):
              ...
 
-## Examples
+### Examples
 
 The following is an example of a permission class that checks the incoming request's IP address against a blocklist, and denies the request if the IP has been blocked.
 
@@ -268,7 +268,7 @@ Note that the generic views will check the appropriate object level permissions,
 
 Also note that the generic views will only check the object-level permissions for views that retrieve a single model instance.  If you require object-level filtering of list views, you'll need to filter the queryset separately.  See the [filtering documentation][filtering] for more details.
 
-# Overview of access restriction methods
+## Overview of access restriction methods
 
 REST framework offers three different methods to customize access restrictions on a case-by-case basis. These apply in different scenarios and have different effects and limitations.
 
@@ -294,47 +294,47 @@ The following table lists the access restriction methods and the level of contro
 
 ---
 
-# Third party packages
+## Third party packages
 
 The following third party packages are also available.
 
-## DRF - Access Policy
+### DRF - Access Policy
 
 The [Django REST - Access Policy][drf-access-policy] package provides a way to define complex access rules in declarative policy classes that are attached to view sets or function-based views. The policies are defined in JSON in a format similar to AWS' Identity & Access Management policies. 
 
-## Composed Permissions
+### Composed Permissions
 
 The [Composed Permissions][composed-permissions] package provides a simple way to define complex and multi-depth (with logic operators) permission objects, using small and reusable components.
 
-## REST Condition
+### REST Condition
 
 The [REST Condition][rest-condition] package is another extension for building complex permissions in a simple and convenient way. The extension allows you to combine permissions with logical operators.
 
-## DRY Rest Permissions
+### DRY Rest Permissions
 
 The [DRY Rest Permissions][dry-rest-permissions] package provides the ability to define different permissions for individual default and custom actions. This package is made for apps with permissions that are derived from relationships defined in the app's data model. It also supports permission checks being returned to a client app through the API's serializer. Additionally it supports adding permissions to the default and custom list actions to restrict the data they retrieve per user.
 
-## Django Rest Framework Roles
+### Django Rest Framework Roles
 
 The [Django Rest Framework Roles][django-rest-framework-roles] package makes it easier to parameterize your API over multiple types of users.
 
-## Rest Framework Roles
+### Rest Framework Roles
 
 The [Rest Framework Roles][rest-framework-roles] makes it super easy to protect views based on roles. Most importantly allows you to decouple accessibility logic from models and views in a clean human-readable way.
 
-## Django REST Framework API Key
+### Django REST Framework API Key
 
 The [Django REST Framework API Key][djangorestframework-api-key] package provides permissions classes, models and helpers to add API key authorization to your API. It can be used to authorize internal or third-party backends and services (i.e. _machines_) which do not have a user account. API keys are stored securely using Django's password hashing infrastructure, and they can be viewed, edited and revoked at anytime in the Django admin.
 
-## Django Rest Framework Role Filters
+### Django Rest Framework Role Filters
 
 The [Django Rest Framework Role Filters][django-rest-framework-role-filters] package provides simple filtering over multiple types of roles.
 
-## Django Rest Framework PSQ
+### Django Rest Framework PSQ
 
 The [Django Rest Framework PSQ][drf-psq] package is an extension that gives support for having action-based **permission_classes**, **serializer_class**, and **queryset** dependent on permission-based rules.
 
-## Axioms DRF PY
+### Axioms DRF PY
 
 The [Axioms DRF PY][axioms-drf-py] package is an extension that provides support for authentication and claim-based fine-grained authorization (**scopes**, **roles**, **groups**, **permissions**, etc. including object-level checks) using JWT tokens issued by an OAuth2/OIDC Authorization Server including AWS Cognito, Auth0, Okta, Microsoft Entra, etc.
 
