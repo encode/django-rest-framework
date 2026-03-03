@@ -82,7 +82,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#authentication" class="md-skip">
+        <a href="#how-authentication-is-determined" class="md-skip">
           Skip to content
         </a>
       
@@ -355,9 +355,7 @@
   
 
 
-  
-
-<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
     <a href="../.." title="Django REST framework" class="md-nav__button md-logo" aria-label="Django REST framework" data-md-component="logo">
       
@@ -1069,8 +1067,6 @@
       <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
       
       
-        
-      
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
           
@@ -1112,8 +1108,6 @@
 <nav class="md-nav md-nav--secondary" aria-label="Table of contents">
   
   
-  
-    
   
   
     <label class="md-nav__title" for="__toc">
@@ -1174,6 +1168,367 @@
       
     </span>
   </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#api-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        API Reference
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="API Reference">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basicauthentication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BasicAuthentication
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tokenauthentication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TokenAuthentication
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="TokenAuthentication">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#generating-tokens" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Generating Tokens
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Generating Tokens">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#by-using-signals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        By using signals
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#by-exposing-an-api-endpoint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        By exposing an api endpoint
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#with-django-admin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        With Django admin
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-django-managepy-command" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Using Django manage.py command
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sessionauthentication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SessionAuthentication
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#remoteuserauthentication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RemoteUserAuthentication
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#custom-authentication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom authentication
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Custom authentication">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#third-party-packages" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Third party packages
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Third party packages">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#django-rest-knox" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        django-rest-knox
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#django-oauth-toolkit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Django OAuth Toolkit
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Django OAuth Toolkit">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#installation-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Installation &amp; configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#django-rest-framework-oauth" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Django REST framework OAuth
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Django REST framework OAuth">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#installation-configuration_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Installation &amp; configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#json-web-token-authentication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        JSON Web Token Authentication
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hawk-http-authentication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hawk HTTP Authentication
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#http-signature-authentication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HTTP Signature Authentication
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#djoser" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Djoser
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#drf-auth-kit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DRF Auth Kit
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#django-rest-auth-dj-rest-auth" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        django-rest-auth / dj-rest-auth
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#drf-social-oauth2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        drf-social-oauth2
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#drfpasswordless" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        drfpasswordless
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#django-rest-authemail" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        django-rest-authemail
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#django-rest-durin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Django-Rest-Durin
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#django-pyoidc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        django-pyoidc
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -2634,6 +2989,446 @@
               </div>
             
             
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#how-authentication-is-determined" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How authentication is determined
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#setting-the-authentication-scheme" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Setting the authentication scheme
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#unauthorized-and-forbidden-responses" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Unauthorized and Forbidden responses
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#django-51-loginrequiredmiddleware" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Django 5.1+ LoginRequiredMiddleware
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#apache-mod_wsgi-specific-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Apache mod_wsgi specific configuration
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#api-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        API Reference
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="API Reference">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basicauthentication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BasicAuthentication
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tokenauthentication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TokenAuthentication
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="TokenAuthentication">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#generating-tokens" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Generating Tokens
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Generating Tokens">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#by-using-signals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        By using signals
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#by-exposing-an-api-endpoint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        By exposing an api endpoint
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#with-django-admin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        With Django admin
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-django-managepy-command" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Using Django manage.py command
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sessionauthentication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SessionAuthentication
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#remoteuserauthentication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RemoteUserAuthentication
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#custom-authentication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom authentication
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Custom authentication">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#third-party-packages" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Third party packages
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Third party packages">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#django-rest-knox" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        django-rest-knox
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#django-oauth-toolkit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Django OAuth Toolkit
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Django OAuth Toolkit">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#installation-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Installation &amp; configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#django-rest-framework-oauth" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Django REST framework OAuth
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Django REST framework OAuth">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#installation-configuration_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Installation &amp; configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#json-web-token-authentication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        JSON Web Token Authentication
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hawk-http-authentication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hawk HTTP Authentication
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#http-signature-authentication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HTTP Signature Authentication
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#djoser" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Djoser
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#drf-auth-kit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DRF Auth Kit
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#django-rest-auth-dj-rest-auth" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        django-rest-auth / dj-rest-auth
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#drf-social-oauth2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        drf-social-oauth2
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#drfpasswordless" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        drfpasswordless
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#django-rest-authemail" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        django-rest-authemail
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#django-rest-durin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Django-Rest-Durin
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#django-pyoidc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        django-pyoidc
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
           
           
             <div class="md-content" data-md-component="content">
@@ -2695,7 +3490,8 @@
   
 
 
-<h1 id="authentication">Authentication<a class="headerlink" href="#authentication" title="Permanent link">&para;</a></h1>
+  <h1>Authentication</h1>
+
 <blockquote>
 <p>Auth needs to be pluggable.</p>
 <p>&mdash; Jacob Kaplan-Moss, <a href="https://jacobian.org/writing/rest-worst-practices/">"REST worst practices"</a></p>
@@ -2771,8 +3567,8 @@ def example_view(request, format=None):
 WSGIPassAuthorization On
 </code></pre></div>
 <hr />
-<h1 id="api-reference">API Reference<a class="headerlink" href="#api-reference" title="Permanent link">&para;</a></h1>
-<h2 id="basicauthentication">BasicAuthentication<a class="headerlink" href="#basicauthentication" title="Permanent link">&para;</a></h2>
+<h2 id="api-reference">API Reference<a class="headerlink" href="#api-reference" title="Permanent link">&para;</a></h2>
+<h3 id="basicauthentication">BasicAuthentication<a class="headerlink" href="#basicauthentication" title="Permanent link">&para;</a></h3>
 <p>This authentication scheme uses <a href="https://tools.ietf.org/html/rfc2617">HTTP Basic Authentication</a>, signed against a user's username and password.  Basic authentication is generally only appropriate for testing.</p>
 <p>If successfully authenticated, <code>BasicAuthentication</code> provides the following credentials.</p>
 <ul>
@@ -2786,7 +3582,7 @@ WSGIPassAuthorization On
 <p class="admonition-title">Note</p>
 <p>If you use <code>BasicAuthentication</code> in production you must ensure that your API is only available over <code>https</code>.  You should also ensure that your API clients will always re-request the username and password at login, and will never store those details to persistent storage.</p>
 </div>
-<h2 id="tokenauthentication">TokenAuthentication<a class="headerlink" href="#tokenauthentication" title="Permanent link">&para;</a></h2>
+<h3 id="tokenauthentication">TokenAuthentication<a class="headerlink" href="#tokenauthentication" title="Permanent link">&para;</a></h3>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The token authentication provided by Django REST framework is a fairly simple implementation.</p>
@@ -2826,8 +3622,8 @@ print(token.key)
 <p class="admonition-title">Note</p>
 <p>If you use <code>TokenAuthentication</code> in production you must ensure that your API is only available over <code>https</code>.</p>
 </div>
-<h3 id="generating-tokens">Generating Tokens<a class="headerlink" href="#generating-tokens" title="Permanent link">&para;</a></h3>
-<h4 id="by-using-signals">By using signals<a class="headerlink" href="#by-using-signals" title="Permanent link">&para;</a></h4>
+<h4 id="generating-tokens">Generating Tokens<a class="headerlink" href="#generating-tokens" title="Permanent link">&para;</a></h4>
+<h5 id="by-using-signals">By using signals<a class="headerlink" href="#by-using-signals" title="Permanent link">&para;</a></h5>
 <p>If you want every user to have an automatically generated Token, you can simply catch the User's <code>post_save</code> signal.</p>
 <div class="language-text highlight"><pre><span></span><code>from django.conf import settings
 from django.db.models.signals import post_save
@@ -2847,7 +3643,7 @@ from rest_framework.authtoken.models import Token
 for user in User.objects.all():
     Token.objects.get_or_create(user=user)
 </code></pre></div>
-<h4 id="by-exposing-an-api-endpoint">By exposing an api endpoint<a class="headerlink" href="#by-exposing-an-api-endpoint" title="Permanent link">&para;</a></h4>
+<h5 id="by-exposing-an-api-endpoint">By exposing an api endpoint<a class="headerlink" href="#by-exposing-an-api-endpoint" title="Permanent link">&para;</a></h5>
 <p>When using <code>TokenAuthentication</code>, you may want to provide a mechanism for clients to obtain a token given the username and password.  REST framework provides a built-in view to provide this behavior.  To use it, add the <code>obtain_auth_token</code> view to your URLconf:</p>
 <div class="language-text highlight"><pre><span></span><code>from rest_framework.authtoken import views
 urlpatterns += [
@@ -2886,14 +3682,14 @@ class CustomAuthToken(ObtainAuthToken):
     path(&#39;api-token-auth/&#39;, CustomAuthToken.as_view())
 ]
 </code></pre></div>
-<h4 id="with-django-admin">With Django admin<a class="headerlink" href="#with-django-admin" title="Permanent link">&para;</a></h4>
+<h5 id="with-django-admin">With Django admin<a class="headerlink" href="#with-django-admin" title="Permanent link">&para;</a></h5>
 <p>It is also possible to create Tokens manually through the admin interface. In case you are using a large user base, we recommend that you monkey patch the <code>TokenAdmin</code> class to customize it to your needs, more specifically by declaring the <code>user</code> field as <code>raw_field</code>.</p>
 <p><code>your_app/admin.py</code>:</p>
 <div class="language-text highlight"><pre><span></span><code>from rest_framework.authtoken.admin import TokenAdmin
 
 TokenAdmin.raw_id_fields = [&#39;user&#39;]
 </code></pre></div>
-<h4 id="using-django-managepy-command">Using Django manage.py command<a class="headerlink" href="#using-django-managepy-command" title="Permanent link">&para;</a></h4>
+<h5 id="using-django-managepy-command">Using Django manage.py command<a class="headerlink" href="#using-django-managepy-command" title="Permanent link">&para;</a></h5>
 <p>Since version 3.6.4 it's possible to generate a user token using the following command:</p>
 <div class="language-text highlight"><pre><span></span><code>./manage.py drf_create_token &lt;username&gt;
 </code></pre></div>
@@ -2903,7 +3699,7 @@ TokenAdmin.raw_id_fields = [&#39;user&#39;]
 <p>In case you want to regenerate the token (for example if it has been compromised or leaked) you can pass an additional parameter:</p>
 <div class="language-text highlight"><pre><span></span><code>./manage.py drf_create_token -r &lt;username&gt;
 </code></pre></div>
-<h2 id="sessionauthentication">SessionAuthentication<a class="headerlink" href="#sessionauthentication" title="Permanent link">&para;</a></h2>
+<h3 id="sessionauthentication">SessionAuthentication<a class="headerlink" href="#sessionauthentication" title="Permanent link">&para;</a></h3>
 <p>This authentication scheme uses Django's default session backend for authentication.  Session authentication is appropriate for AJAX clients that are running in the same session context as your website.</p>
 <p>If successfully authenticated, <code>SessionAuthentication</code> provides the following credentials.</p>
 <ul>
@@ -2917,7 +3713,7 @@ TokenAdmin.raw_id_fields = [&#39;user&#39;]
 <p>Always use Django's standard login view when creating login pages. This will ensure your login views are properly protected.</p>
 </div>
 <p>CSRF validation in REST framework works slightly differently from standard Django due to the need to support both session and non-session based authentication to the same views. This means that only authenticated requests require CSRF tokens, and anonymous requests may be sent without CSRF tokens. This behavior is not suitable for login views, which should always have CSRF validation applied.</p>
-<h2 id="remoteuserauthentication">RemoteUserAuthentication<a class="headerlink" href="#remoteuserauthentication" title="Permanent link">&para;</a></h2>
+<h3 id="remoteuserauthentication">RemoteUserAuthentication<a class="headerlink" href="#remoteuserauthentication" title="Permanent link">&para;</a></h3>
 <p>This authentication scheme allows you to delegate authentication to your web server, which sets the <code>REMOTE_USER</code>
 environment variable.</p>
 <p>To use it, you must have <code>django.contrib.auth.backends.RemoteUserBackend</code> (or a subclass) in your
@@ -2934,7 +3730,7 @@ already exist. To change this and other behavior, consult the
 <li><a href="https://httpd.apache.org/docs/2.4/howto/auth.html">Apache Authentication How-To</a></li>
 <li><a href="https://docs.nginx.com/nginx/admin-guide/security-controls/configuring-http-basic-authentication/">NGINX (Restricting Access)</a></li>
 </ul>
-<h1 id="custom-authentication">Custom authentication<a class="headerlink" href="#custom-authentication" title="Permanent link">&para;</a></h1>
+<h2 id="custom-authentication">Custom authentication<a class="headerlink" href="#custom-authentication" title="Permanent link">&para;</a></h2>
 <p>To implement a custom authentication scheme, subclass <code>BaseAuthentication</code> and override the <code>.authenticate(self, request)</code> method.  The method should return a two-tuple of <code>(user, auth)</code> if authentication succeeds, or <code>None</code> otherwise.</p>
 <p>In some circumstances instead of returning <code>None</code>, you may want to raise an <code>AuthenticationFailed</code> exception from the <code>.authenticate()</code> method.</p>
 <p>Typically the approach you should take is:</p>
@@ -2948,7 +3744,7 @@ already exist. To change this and other behavior, consult the
 <p class="admonition-title">Note</p>
 <p>When your custom authenticator is invoked by the request object's <code>.user</code> or <code>.auth</code> properties, you may see an <code>AttributeError</code> re-raised as a <code>WrappedAttributeError</code>. This is necessary to prevent the original exception from being suppressed by the outer property access. Python will not recognize that the <code>AttributeError</code> originates from your custom authenticator and will instead assume that the request object does not have a <code>.user</code> or <code>.auth</code> property. These errors should be fixed or otherwise handled by your authenticator.</p>
 </div>
-<h2 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h2>
+<h3 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h3>
 <p>The following example will authenticate any incoming request as the user given by the username in a custom request header named 'X-USERNAME'.</p>
 <div class="language-text highlight"><pre><span></span><code>from django.contrib.auth.models import User
 from rest_framework import authentication
@@ -2968,13 +3764,13 @@ class ExampleAuthentication(authentication.BaseAuthentication):
         return (user, None)
 </code></pre></div>
 <hr />
-<h1 id="third-party-packages">Third party packages<a class="headerlink" href="#third-party-packages" title="Permanent link">&para;</a></h1>
+<h2 id="third-party-packages">Third party packages<a class="headerlink" href="#third-party-packages" title="Permanent link">&para;</a></h2>
 <p>The following third-party packages are also available.</p>
-<h2 id="django-rest-knox">django-rest-knox<a class="headerlink" href="#django-rest-knox" title="Permanent link">&para;</a></h2>
+<h3 id="django-rest-knox">django-rest-knox<a class="headerlink" href="#django-rest-knox" title="Permanent link">&para;</a></h3>
 <p><a href="https://github.com/James1345/django-rest-knox">Django-rest-knox</a> library provides models and views to handle token-based authentication in a more secure and extensible way than the built-in TokenAuthentication scheme - with Single Page Applications and Mobile clients in mind. It provides per-client tokens, and views to generate them when provided some other authentication (usually basic authentication), to delete the token (providing a server enforced logout) and to delete all tokens (logs out all clients that a user is logged into).</p>
-<h2 id="django-oauth-toolkit">Django OAuth Toolkit<a class="headerlink" href="#django-oauth-toolkit" title="Permanent link">&para;</a></h2>
+<h3 id="django-oauth-toolkit">Django OAuth Toolkit<a class="headerlink" href="#django-oauth-toolkit" title="Permanent link">&para;</a></h3>
 <p>The <a href="https://github.com/evonove/django-oauth-toolkit">Django OAuth Toolkit</a> package provides OAuth 2.0 support and works with Python 3.4+. The package is maintained by <a href="https://github.com/jazzband/">jazzband</a> and uses the excellent <a href="https://github.com/idan/oauthlib">OAuthLib</a>.  The package is well documented, and well supported and is currently our <strong>recommended package for OAuth 2.0 support</strong>.</p>
-<h3 id="installation-configuration">Installation &amp; configuration<a class="headerlink" href="#installation-configuration" title="Permanent link">&para;</a></h3>
+<h4 id="installation-configuration">Installation &amp; configuration<a class="headerlink" href="#installation-configuration" title="Permanent link">&para;</a></h4>
 <p>Install using <code>pip</code>.</p>
 <div class="language-text highlight"><pre><span></span><code>pip install django-oauth-toolkit
 </code></pre></div>
@@ -2991,41 +3787,41 @@ REST_FRAMEWORK = {
 }
 </code></pre></div>
 <p>For more details see the <a href="https://django-oauth-toolkit.readthedocs.io/en/latest/rest-framework/getting_started.html">Django REST framework - Getting started</a> documentation.</p>
-<h2 id="django-rest-framework-oauth">Django REST framework OAuth<a class="headerlink" href="#django-rest-framework-oauth" title="Permanent link">&para;</a></h2>
+<h3 id="django-rest-framework-oauth">Django REST framework OAuth<a class="headerlink" href="#django-rest-framework-oauth" title="Permanent link">&para;</a></h3>
 <p>The <a href="https://jpadilla.github.io/django-rest-framework-oauth/">Django REST framework OAuth</a> package provides both OAuth1 and OAuth2 support for REST framework.</p>
 <p>This package was previously included directly in the REST framework but is now supported and maintained as a third-party package.</p>
-<h3 id="installation-configuration_1">Installation &amp; configuration<a class="headerlink" href="#installation-configuration_1" title="Permanent link">&para;</a></h3>
+<h4 id="installation-configuration_1">Installation &amp; configuration<a class="headerlink" href="#installation-configuration_1" title="Permanent link">&para;</a></h4>
 <p>Install the package using <code>pip</code>.</p>
 <div class="language-text highlight"><pre><span></span><code>pip install djangorestframework-oauth
 </code></pre></div>
 <p>For details on configuration and usage see the Django REST framework OAuth documentation for <a href="https://jpadilla.github.io/django-rest-framework-oauth/authentication/">authentication</a> and <a href="https://jpadilla.github.io/django-rest-framework-oauth/permissions/">permissions</a>.</p>
-<h2 id="json-web-token-authentication">JSON Web Token Authentication<a class="headerlink" href="#json-web-token-authentication" title="Permanent link">&para;</a></h2>
+<h3 id="json-web-token-authentication">JSON Web Token Authentication<a class="headerlink" href="#json-web-token-authentication" title="Permanent link">&para;</a></h3>
 <p>JSON Web Token is a fairly new standard which can be used for token-based authentication. Unlike the built-in TokenAuthentication scheme, JWT Authentication doesn't need to use a database to validate a token. A package for JWT authentication is <a href="https://github.com/davesque/django-rest-framework-simplejwt">djangorestframework-simplejwt</a> which provides some features as well as a pluggable token blacklist app.</p>
-<h2 id="hawk-http-authentication">Hawk HTTP Authentication<a class="headerlink" href="#hawk-http-authentication" title="Permanent link">&para;</a></h2>
+<h3 id="hawk-http-authentication">Hawk HTTP Authentication<a class="headerlink" href="#hawk-http-authentication" title="Permanent link">&para;</a></h3>
 <p>The <a href="https://hawkrest.readthedocs.io/en/latest/">HawkREST</a> library builds on the <a href="https://mohawk.readthedocs.io/en/latest/">Mohawk</a> library to let you work with <a href="https://github.com/hueniverse/hawk">Hawk</a> signed requests and responses in your API. <a href="https://github.com/hueniverse/hawk">Hawk</a> lets two parties securely communicate with each other using messages signed by a shared key. It is based on <a href="https://tools.ietf.org/html/draft-hammer-oauth-v2-mac-token-05">HTTP MAC access authentication</a> (which was based on parts of <a href="https://oauth.net/core/1.0a/">OAuth 1.0</a>).</p>
-<h2 id="http-signature-authentication">HTTP Signature Authentication<a class="headerlink" href="#http-signature-authentication" title="Permanent link">&para;</a></h2>
+<h3 id="http-signature-authentication">HTTP Signature Authentication<a class="headerlink" href="#http-signature-authentication" title="Permanent link">&para;</a></h3>
 <p>HTTP Signature (currently a <a href="https://datatracker.ietf.org/doc/draft-cavage-http-signatures/">IETF draft</a>) provides a way to achieve origin authentication and message integrity for HTTP messages. Similar to <a href="https://docs.aws.amazon.com/general/latest/gr/signature-version-4.html">Amazon's HTTP Signature scheme</a>, used by many of its services, it permits stateless, per-request authentication. <a href="https://github.com/etoccalino/">Elvio Toccalino</a> maintains the <a href="https://github.com/etoccalino/django-rest-framework-httpsignature">djangorestframework-httpsignature</a> (outdated) package which provides an easy-to-use HTTP Signature Authentication mechanism. You can use the updated fork version of <a href="https://github.com/etoccalino/django-rest-framework-httpsignature">djangorestframework-httpsignature</a>, which is <a href="https://github.com/ahknight/drf-httpsig">drf-httpsig</a>.</p>
-<h2 id="djoser">Djoser<a class="headerlink" href="#djoser" title="Permanent link">&para;</a></h2>
+<h3 id="djoser">Djoser<a class="headerlink" href="#djoser" title="Permanent link">&para;</a></h3>
 <p><a href="https://github.com/sunscrapers/djoser">Djoser</a> library provides a set of views to handle basic actions such as registration, login, logout, password reset and account activation. The package works with a custom user model and uses token-based authentication. This is a ready to use REST implementation of the Django authentication system.</p>
-<h2 id="drf-auth-kit">DRF Auth Kit<a class="headerlink" href="#drf-auth-kit" title="Permanent link">&para;</a></h2>
+<h3 id="drf-auth-kit">DRF Auth Kit<a class="headerlink" href="#drf-auth-kit" title="Permanent link">&para;</a></h3>
 <p><a href="https://github.com/huynguyengl99/drf-auth-kit">DRF Auth Kit</a> library provides a modern REST authentication solution with JWT cookies, social login, multi-factor authentication, and comprehensive user management. The package offers full type safety, automatic OpenAPI schema generation with DRF Spectacular. It supports multiple authentication types (JWT, DRF Token, or Custom) and includes built-in internationalization for 50+ languages.</p>
-<h2 id="django-rest-auth-dj-rest-auth">django-rest-auth / dj-rest-auth<a class="headerlink" href="#django-rest-auth-dj-rest-auth" title="Permanent link">&para;</a></h2>
+<h3 id="django-rest-auth-dj-rest-auth">django-rest-auth / dj-rest-auth<a class="headerlink" href="#django-rest-auth-dj-rest-auth" title="Permanent link">&para;</a></h3>
 <p>This library provides a set of REST API endpoints for registration, authentication (including social media authentication), password reset, retrieve and update user details, etc. By having these API endpoints, your client apps such as AngularJS, iOS, Android, and others can communicate to your Django backend site independently via REST APIs for user management.</p>
 <p>There are currently two forks of this project.</p>
 <ul>
 <li><a href="https://github.com/Tivix/django-rest-auth">Django-rest-auth</a> is the original project, <a href="https://github.com/Tivix/django-rest-auth/issues/568">but is not currently receiving updates</a>.</li>
 <li><a href="https://github.com/jazzband/dj-rest-auth">Dj-rest-auth</a> is a newer fork of the project.</li>
 </ul>
-<h2 id="drf-social-oauth2">drf-social-oauth2<a class="headerlink" href="#drf-social-oauth2" title="Permanent link">&para;</a></h2>
+<h3 id="drf-social-oauth2">drf-social-oauth2<a class="headerlink" href="#drf-social-oauth2" title="Permanent link">&para;</a></h3>
 <p><a href="https://github.com/wagnerdelima/drf-social-oauth2">Drf-social-oauth2</a> is a framework that helps you authenticate with major social oauth2 vendors, such as Facebook, Google, Twitter, Orcid, etc. It generates tokens in a JWTed way with an easy setup.</p>
-<h2 id="drfpasswordless">drfpasswordless<a class="headerlink" href="#drfpasswordless" title="Permanent link">&para;</a></h2>
+<h3 id="drfpasswordless">drfpasswordless<a class="headerlink" href="#drfpasswordless" title="Permanent link">&para;</a></h3>
 <p><a href="https://github.com/aaronn/django-rest-framework-passwordless">drfpasswordless</a> adds (Medium, Square Cash inspired) passwordless support to Django REST Framework's TokenAuthentication scheme. Users log in and sign up with a token sent to a contact point like an email address or a mobile number.</p>
-<h2 id="django-rest-authemail">django-rest-authemail<a class="headerlink" href="#django-rest-authemail" title="Permanent link">&para;</a></h2>
+<h3 id="django-rest-authemail">django-rest-authemail<a class="headerlink" href="#django-rest-authemail" title="Permanent link">&para;</a></h3>
 <p><a href="https://github.com/celiao/django-rest-authemail">django-rest-authemail</a> provides a RESTful API interface for user signup and authentication. Email addresses are used for authentication, rather than usernames.  API endpoints are available for signup, signup email verification, login, logout, password reset, password reset verification, email change, email change verification, password change, and user detail.  A fully functional example project and detailed instructions are included.</p>
-<h2 id="django-rest-durin">Django-Rest-Durin<a class="headerlink" href="#django-rest-durin" title="Permanent link">&para;</a></h2>
+<h3 id="django-rest-durin">Django-Rest-Durin<a class="headerlink" href="#django-rest-durin" title="Permanent link">&para;</a></h3>
 <p><a href="https://github.com/eshaan7/django-rest-durin">Django-Rest-Durin</a> is built with the idea to have one library that does token auth for multiple Web/CLI/Mobile API clients via one interface but allows different token configuration for each API Client that consumes the API. It provides support for multiple tokens per user via custom models, views, permissions that work with Django-Rest-Framework. The token expiration time can be different per API client and is customizable via the Django Admin Interface.</p>
 <p>More information can be found in the <a href="https://django-rest-durin.readthedocs.io/en/latest/index.html">Documentation</a>.</p>
-<h2 id="django-pyoidc">django-pyoidc<a class="headerlink" href="#django-pyoidc" title="Permanent link">&para;</a></h2>
+<h3 id="django-pyoidc">django-pyoidc<a class="headerlink" href="#django-pyoidc" title="Permanent link">&para;</a></h3>
 <p><a href="https://github.com/makinacorpus/django_pyoidc">django_pyoidc</a> adds support for OpenID Connect (OIDC) authentication. This allows you to delegate user management to an Identity Provider, which can be used to implement Single-Sign-On (SSO). It provides support for most uses-cases, such as customizing how token info are mapped to user models, using OIDC audiences for access control, etc.</p>
 <p>More information can be found in the <a href="https://django-pyoidc.readthedocs.io/latest/index.html">Documentation</a>.</p>
 
@@ -3090,7 +3886,7 @@ REST_FRAMEWORK = {
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["content.tabs.link", "content.code.annotate", "content.code.copy", "navigation.tabs", "navigation.tabs.sticky", "navigation.instant", "navigation.instant.prefetch", "navigation.instant.progress", "navigation.path", "navigation.sections", "navigation.top", "navigation.tracking", "search.suggest", "toc.follow", "toc.integrate"], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["content.tabs.link", "content.code.annotate", "content.code.copy", "navigation.tabs", "navigation.tabs.sticky", "navigation.instant", "navigation.instant.prefetch", "navigation.instant.progress", "navigation.path", "navigation.sections", "navigation.top", "navigation.tracking", "search.suggest", "toc.follow"], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
     

@@ -355,9 +355,7 @@
   
 
 
-  
-
-<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
     <a href="../.." title="Django REST framework" class="md-nav__button md-logo" aria-label="Django REST framework" data-md-component="logo">
       
@@ -2862,6 +2860,315 @@
               </div>
             
             
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#generating-an-openapi-schema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Generating an OpenAPI Schema
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Generating an OpenAPI Schema">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#install-dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Install dependencies
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#generating-a-static-schema-with-the-generateschema-management-command" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Generating a static schema with the generateschema management command
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#generating-a-dynamic-schema-with-schemaview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Generating a dynamic schema with SchemaView
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Generating a dynamic schema with SchemaView">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#get_schema_view" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        get_schema_view()
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#schemagenerator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SchemaGenerator
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="SchemaGenerator">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#get_schemaself-requestnone-publicfalse" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        get_schema(self, request=None, public=False)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#autoschema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AutoSchema
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="AutoSchema">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#autoschema-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AutoSchema methods
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="AutoSchema methods">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#get_components" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        get_components()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get_component_name" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        get_component_name()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get_reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        get_reference()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#map_serializer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        map_serializer()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#map_field" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        map_field()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get_tags" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        get_tags()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get_operation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        get_operation()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get_operation_id" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        get_operation_id()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get_operation_id_base" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        get_operation_id_base()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get_serializer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        get_serializer()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get_request_serializer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        get_request_serializer()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get_response_serializer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        get_response_serializer()
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#autoschema__init__-kwargs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AutoSchema.__init__() kwargs
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
           
           
             <div class="md-content" data-md-component="content">
@@ -3335,7 +3642,7 @@ create a base <code>AutoSchema</code> subclass for your project that takes addit
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["content.tabs.link", "content.code.annotate", "content.code.copy", "navigation.tabs", "navigation.tabs.sticky", "navigation.instant", "navigation.instant.prefetch", "navigation.instant.progress", "navigation.path", "navigation.sections", "navigation.top", "navigation.tracking", "search.suggest", "toc.follow", "toc.integrate"], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["content.tabs.link", "content.code.annotate", "content.code.copy", "navigation.tabs", "navigation.tabs.sticky", "navigation.instant", "navigation.instant.prefetch", "navigation.instant.progress", "navigation.path", "navigation.sections", "navigation.top", "navigation.tracking", "search.suggest", "toc.follow"], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
     

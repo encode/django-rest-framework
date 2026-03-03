@@ -355,9 +355,7 @@
   
 
 
-  
-
-<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
     <a href="../.." title="Django REST framework" class="md-nav__button md-logo" aria-label="Django REST framework" data-md-component="logo">
       
@@ -1208,6 +1206,168 @@
       
     </span>
   </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#advanced-field-defaults" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Advanced field defaults
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Advanced field defaults">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#currentuserdefault" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CurrentUserDefault
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#createonlydefault" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CreateOnlyDefault
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#limitations-of-validators" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Limitations of validators
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Limitations of validators">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#optional-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Optional fields
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#updating-nested-serializers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Updating nested serializers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#debugging-complex-cases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Debugging complex cases
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#writing-custom-validators" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Writing custom validators
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Writing custom validators">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#function-based" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Function based
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Function based">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#field-level-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Field-level validation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#class-based" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Class-based
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Class-based">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#accessing-the-context" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Accessing the context
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
         
@@ -2701,6 +2861,316 @@
               </div>
             
             
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#validation-in-rest-framework" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Validation in REST framework
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Validation in REST framework">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#uniquevalidator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        UniqueValidator
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#uniquetogethervalidator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        UniqueTogetherValidator
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#uniquefordatevalidator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        UniqueForDateValidator
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#uniqueformonthvalidator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        UniqueForMonthValidator
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#uniqueforyearvalidator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        UniqueForYearValidator
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="UniqueForYearValidator">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#using-with-a-writable-date-field" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Using with a writable date field.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-with-a-read-only-date-field" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Using with a read-only date field.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-with-a-hidden-date-field" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Using with a hidden date field.
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#advanced-field-defaults" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Advanced field defaults
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Advanced field defaults">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#currentuserdefault" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CurrentUserDefault
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#createonlydefault" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CreateOnlyDefault
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#limitations-of-validators" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Limitations of validators
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Limitations of validators">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#optional-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Optional fields
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#updating-nested-serializers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Updating nested serializers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#debugging-complex-cases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Debugging complex cases
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#writing-custom-validators" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Writing custom validators
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Writing custom validators">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#function-based" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Function based
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Function based">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#field-level-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Field-level validation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#class-based" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Class-based
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Class-based">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#accessing-the-context" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Accessing the context
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
           
           
             <div class="md-content" data-md-component="content">
@@ -2778,7 +3248,7 @@
 <li>Printing the <code>repr</code> of a serializer instance will show you exactly what validation rules it applies. There's no extra hidden validation behavior being called on the model instance.</li>
 </ul>
 <p>When you're using <code>ModelSerializer</code> all of this is handled automatically for you. If you want to drop down to using <code>Serializer</code> classes instead, then you need to define the validation rules explicitly.</p>
-<h4 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h4>
+<h3 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h3>
 <p>As an example of how REST framework uses explicit validation, we'll take a simple model class that has a field with a uniqueness constraint.</p>
 <div class="language-text highlight"><pre><span></span><code>class CustomerReportRecord(models.Model):
     time_raised = models.DateTimeField(default=timezone.now, editable=False)
@@ -2874,15 +3344,15 @@ class ExampleSerializer(serializers.Serializer):
 </code></pre></div>
 <p>The date field that is used for the validation is always required to be present on the serializer class. You can't simply rely on a model class <code>default=...</code>, because the value being used for the default wouldn't be generated until after the validation has run.</p>
 <p>There are a couple of styles you may want to use for this depending on how you want your API to behave. If you're using <code>ModelSerializer</code> you'll probably simply rely on the defaults that REST framework generates for you, but if you are using <code>Serializer</code> or simply want more explicit control, use on of the styles demonstrated below.</p>
-<h4 id="using-with-a-writable-date-field">Using with a writable date field.<a class="headerlink" href="#using-with-a-writable-date-field" title="Permanent link">&para;</a></h4>
+<h3 id="using-with-a-writable-date-field">Using with a writable date field.<a class="headerlink" href="#using-with-a-writable-date-field" title="Permanent link">&para;</a></h3>
 <p>If you want the date field to be writable the only thing worth noting is that you should ensure that it is always available in the input data, either by setting a <code>default</code> argument, or by setting <code>required=True</code>.</p>
 <div class="language-text highlight"><pre><span></span><code>published = serializers.DateTimeField(required=True)
 </code></pre></div>
-<h4 id="using-with-a-read-only-date-field">Using with a read-only date field.<a class="headerlink" href="#using-with-a-read-only-date-field" title="Permanent link">&para;</a></h4>
+<h3 id="using-with-a-read-only-date-field">Using with a read-only date field.<a class="headerlink" href="#using-with-a-read-only-date-field" title="Permanent link">&para;</a></h3>
 <p>If you want the date field to be visible, but not editable by the user, then set <code>read_only=True</code> and additionally set a <code>default=...</code> argument.</p>
 <div class="language-text highlight"><pre><span></span><code>published = serializers.DateTimeField(read_only=True, default=timezone.now)
 </code></pre></div>
-<h4 id="using-with-a-hidden-date-field">Using with a hidden date field.<a class="headerlink" href="#using-with-a-hidden-date-field" title="Permanent link">&para;</a></h4>
+<h3 id="using-with-a-hidden-date-field">Using with a hidden date field.<a class="headerlink" href="#using-with-a-hidden-date-field" title="Permanent link">&para;</a></h3>
 <p>If you want the date field to be entirely hidden from the user, then use <code>HiddenField</code>. This field type does not accept user input, but instead always returns its default value to the <code>validated_data</code> in the serializer.</p>
 <div class="language-text highlight"><pre><span></span><code>published = serializers.HiddenField(default=timezone.now)
 </code></pre></div>
@@ -2894,7 +3364,7 @@ class ExampleSerializer(serializers.Serializer):
 <p class="admonition-title">Note</p>
 <p><code>HiddenField()</code> does not appear in <code>partial=True</code> serializer (when making <code>PATCH</code> request). </p>
 </div>
-<h1 id="advanced-field-defaults">Advanced field defaults<a class="headerlink" href="#advanced-field-defaults" title="Permanent link">&para;</a></h1>
+<h2 id="advanced-field-defaults">Advanced field defaults<a class="headerlink" href="#advanced-field-defaults" title="Permanent link">&para;</a></h2>
 <p>Validators that are applied across multiple fields in the serializer can sometimes require a field input that should not be provided by the API client, but that <em>is</em> available as input to the validator.
 For this purposes use <code>HiddenField</code>. This field will be present in <code>validated_data</code> but <em>will not</em> be used in the serializer output representation.</p>
 <div class="admonition note">
@@ -2902,13 +3372,13 @@ For this purposes use <code>HiddenField</code>. This field will be present in <c
 <p>Using a <code>read_only=True</code> field is excluded from writable fields so it won't use a <code>default=…</code> argument. Look <a href="https://www.django-rest-framework.org/community/3.8-announcement/#altered-the-behavior-of-read_only-plus-default-on-field">3.8 announcement</a>.</p>
 </div>
 <p>REST framework includes a couple of defaults that may be useful in this context.</p>
-<h4 id="currentuserdefault">CurrentUserDefault<a class="headerlink" href="#currentuserdefault" title="Permanent link">&para;</a></h4>
+<h3 id="currentuserdefault">CurrentUserDefault<a class="headerlink" href="#currentuserdefault" title="Permanent link">&para;</a></h3>
 <p>A default class that can be used to represent the current user. In order to use this, the 'request' must have been provided as part of the context dictionary when instantiating the serializer.</p>
 <div class="language-text highlight"><pre><span></span><code>owner = serializers.HiddenField(
     default=serializers.CurrentUserDefault()
 )
 </code></pre></div>
-<h4 id="createonlydefault">CreateOnlyDefault<a class="headerlink" href="#createonlydefault" title="Permanent link">&para;</a></h4>
+<h3 id="createonlydefault">CreateOnlyDefault<a class="headerlink" href="#createonlydefault" title="Permanent link">&para;</a></h3>
 <p>A default class that can be used to <em>only set a default argument during create operations</em>. During updates the field is omitted.</p>
 <p>It takes a single argument, which is the default value or callable that should be used during create operations.</p>
 <div class="language-text highlight"><pre><span></span><code>created_at = serializers.DateTimeField(
@@ -2916,13 +3386,13 @@ For this purposes use <code>HiddenField</code>. This field will be present in <c
 )
 </code></pre></div>
 <hr />
-<h1 id="limitations-of-validators">Limitations of validators<a class="headerlink" href="#limitations-of-validators" title="Permanent link">&para;</a></h1>
+<h2 id="limitations-of-validators">Limitations of validators<a class="headerlink" href="#limitations-of-validators" title="Permanent link">&para;</a></h2>
 <p>There are some ambiguous cases where you'll need to instead handle validation
 explicitly, rather than relying on the default serializer classes that
 <code>ModelSerializer</code> generates.</p>
 <p>In these cases you may want to disable the automatically generated validators,
 by specifying an empty list for the serializer <code>Meta.validators</code> attribute.</p>
-<h2 id="optional-fields">Optional fields<a class="headerlink" href="#optional-fields" title="Permanent link">&para;</a></h2>
+<h3 id="optional-fields">Optional fields<a class="headerlink" href="#optional-fields" title="Permanent link">&para;</a></h3>
 <p>By default "unique together" validation enforces that all fields be
 <code>required=True</code>. In some cases, you might want to explicit apply
 <code>required=False</code> to one of the fields, in which case the desired behavior
@@ -2940,7 +3410,7 @@ in the <code>.validate()</code> method, or else in the view.</p>
         extra_kwargs = {&#39;client&#39;: {&#39;required&#39;: False}}
         validators = []  # Remove a default &quot;unique together&quot; constraint.
 </code></pre></div>
-<h2 id="updating-nested-serializers">Updating nested serializers<a class="headerlink" href="#updating-nested-serializers" title="Permanent link">&para;</a></h2>
+<h3 id="updating-nested-serializers">Updating nested serializers<a class="headerlink" href="#updating-nested-serializers" title="Permanent link">&para;</a></h3>
 <p>When applying an update to an existing instance, uniqueness validators will
 exclude the current instance from the uniqueness check. The current instance
 is available in the context of the uniqueness check, because it exists as
@@ -2951,7 +3421,7 @@ applying this exclusion, because the instance is not available.</p>
 <p>Again, you'll probably want to explicitly remove the validator from the
 serializer class, and write the code for the validation constraint
 explicitly, in a <code>.validate()</code> method, or in the view.</p>
-<h2 id="debugging-complex-cases">Debugging complex cases<a class="headerlink" href="#debugging-complex-cases" title="Permanent link">&para;</a></h2>
+<h3 id="debugging-complex-cases">Debugging complex cases<a class="headerlink" href="#debugging-complex-cases" title="Permanent link">&para;</a></h3>
 <p>If you're not sure exactly what behavior a <code>ModelSerializer</code> class will
 generate it is usually a good idea to run <code>manage.py shell</code>, and print
 an instance of the serializer, so that you can inspect the fields and
@@ -2966,9 +3436,9 @@ define your serializer classes, rather than relying on the default
 <code>ModelSerializer</code> behavior. This involves a little more code, but ensures
 that the resulting behavior is more transparent.</p>
 <hr />
-<h1 id="writing-custom-validators">Writing custom validators<a class="headerlink" href="#writing-custom-validators" title="Permanent link">&para;</a></h1>
+<h2 id="writing-custom-validators">Writing custom validators<a class="headerlink" href="#writing-custom-validators" title="Permanent link">&para;</a></h2>
 <p>You can use any of Django's existing validators, or write your own custom validators.</p>
-<h2 id="function-based">Function based<a class="headerlink" href="#function-based" title="Permanent link">&para;</a></h2>
+<h3 id="function-based">Function based<a class="headerlink" href="#function-based" title="Permanent link">&para;</a></h3>
 <p>A validator may be any callable that raises a <code>serializers.ValidationError</code> on failure.</p>
 <div class="language-text highlight"><pre><span></span><code>def even_number(value):
     if value % 2 != 0:
@@ -2978,7 +3448,7 @@ that the resulting behavior is more transparent.</p>
 <p>You can specify custom field-level validation by adding <code>.validate_&lt;field_name&gt;</code> methods
 to your <code>Serializer</code> subclass. This is documented in the
 <a href="https://www.django-rest-framework.org/api-guide/serializers/#field-level-validation">Serializer docs</a></p>
-<h2 id="class-based">Class-based<a class="headerlink" href="#class-based" title="Permanent link">&para;</a></h2>
+<h3 id="class-based">Class-based<a class="headerlink" href="#class-based" title="Permanent link">&para;</a></h3>
 <p>To write a class-based validator, use the <code>__call__</code> method. Class-based validators are useful as they allow you to parameterize and reuse behavior.</p>
 <div class="language-text highlight"><pre><span></span><code>class MultipleOf:
     def __init__(self, base):
@@ -3063,7 +3533,7 @@ or <code>serializer</code> as an additional argument.</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["content.tabs.link", "content.code.annotate", "content.code.copy", "navigation.tabs", "navigation.tabs.sticky", "navigation.instant", "navigation.instant.prefetch", "navigation.instant.progress", "navigation.path", "navigation.sections", "navigation.top", "navigation.tracking", "search.suggest", "toc.follow", "toc.integrate"], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["content.tabs.link", "content.code.annotate", "content.code.copy", "navigation.tabs", "navigation.tabs.sticky", "navigation.instant", "navigation.instant.prefetch", "navigation.instant.progress", "navigation.path", "navigation.sections", "navigation.top", "navigation.tracking", "search.suggest", "toc.follow"], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
     

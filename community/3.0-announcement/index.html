@@ -355,9 +355,7 @@
   
 
 
-  
-
-<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
     <a href="../.." title="Django REST framework" class="md-nav__button md-logo" aria-label="Django REST framework" data-md-component="logo">
       
@@ -3232,6 +3230,685 @@
               </div>
             
             
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#new-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New features
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="New features">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#rest-framework-under-the-hood" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REST framework: Under the hood.
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#request-objects" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Request objects
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Request objects">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-data-and-query_params-properties" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The .data and .query_params properties.
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#serializers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Serializers
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Serializers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#single-step-object-creation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Single-step object creation.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-create-and-update-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The .create() and .update() methods.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-validated_data-instead-of-object" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use .validated_data instead of .object.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-is_validraise_exceptiontrue" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Using .is_valid(raise_exception=True)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-serializersvalidationerror" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Using serializers.ValidationError.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#change-to-validate_field_name" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Change to validate_&lt;field_name&gt;.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#removal-of-transform_field_name" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Removal of transform_&lt;field_name&gt;.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#differences-between-modelserializer-validation-and-modelform" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Differences between ModelSerializer validation and ModelForm.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#writable-nested-serialization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Writable nested serialization.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#printable-serializer-representations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Printable serializer representations.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-extra_kwargs-option" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The extra_kwargs option.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#changes-to-hyperlinkedmodelserializer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Changes to HyperlinkedModelSerializer.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fields-for-model-methods-and-properties" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fields for model methods and properties.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-listserializer-class" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The ListSerializer class.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-baseserializer-class" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The BaseSerializer class.
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The BaseSerializer class.">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#read-only-baseserializer-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Read-only BaseSerializer classes.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#read-write-baseserializer-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Read-write BaseSerializer classes.
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#creating-new-generic-serializers-with-baseserializer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Creating new generic serializers with BaseSerializer.
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#serializer-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Serializer fields
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Serializer fields">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-field-and-readonly-field-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Field and ReadOnly field classes.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-required-allow_null-allow_blank-and-default-arguments" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The required, allow_null, allow_blank and default arguments.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#coercing-output-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Coercing output types.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#removal-of-validate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Removal of .validate().
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-listfield-class" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The ListField class.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-choicefield-class-may-now-accept-a-flat-list" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The ChoiceField class may now accept a flat list.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-multiplechoicefield-class" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The MultipleChoiceField class.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#changes-to-the-custom-field-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Changes to the custom field API.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#explicit-queryset-required-on-relational-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Explicit queryset required on relational fields.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#optional-argument-to-serializermethodfield" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Optional argument to SerializerMethodField.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#enforcing-consistent-source-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Enforcing consistent source usage.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-uniquevalidator-and-uniquetogethervalidator-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The UniqueValidator and UniqueTogetherValidator classes.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-uniquefordatevalidator-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The UniqueForDateValidator classes.
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#generic-views" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Generic views
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Generic views">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#simplification-of-view-logic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Simplification of view logic.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#changes-to-prepost-save-hooks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Changes to pre/post save hooks.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#removal-of-view-attributes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Removal of view attributes.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#put-as-create" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PUT as create.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#customizing-error-responses" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Customizing error responses.
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-metadata-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The metadata API
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#serializers-as-html-forms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Serializers as HTML forms
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Serializers as HTML forms">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-style-keyword-argument-for-serializer-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The style keyword argument for serializer fields.
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#api-style" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        API style
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="API style">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#unicode-json-by-default" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Unicode JSON by default.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#compact-json-by-default" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Compact JSON by default.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#file-fields-as-urls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        File fields as URLs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#throttle-headers-using-retry-after" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Throttle headers using Retry-After.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#date-and-time-objects-as-iso-8601-strings-in-serializer-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Date and time objects as ISO-8601 strings in serializer data.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#decimals-as-strings-in-serializer-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Decimals as strings in serializer data.
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#miscellaneous-notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Miscellaneous notes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#whats-coming-next" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What's coming next
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
           
           
             <div class="md-content" data-md-component="content">
@@ -4092,7 +4769,7 @@ amount = serializers.DecimalField(
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["content.tabs.link", "content.code.annotate", "content.code.copy", "navigation.tabs", "navigation.tabs.sticky", "navigation.instant", "navigation.instant.prefetch", "navigation.instant.progress", "navigation.path", "navigation.sections", "navigation.top", "navigation.tracking", "search.suggest", "toc.follow", "toc.integrate"], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["content.tabs.link", "content.code.annotate", "content.code.copy", "navigation.tabs", "navigation.tabs.sticky", "navigation.instant", "navigation.instant.prefetch", "navigation.instant.progress", "navigation.path", "navigation.sections", "navigation.top", "navigation.tracking", "search.suggest", "toc.follow"], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
     

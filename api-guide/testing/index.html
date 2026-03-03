@@ -355,9 +355,7 @@
   
 
 
-  
-
-<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
     <a href="../.." title="Django REST framework" class="md-nav__button md-logo" aria-label="Django REST framework" data-md-component="logo">
       
@@ -1464,6 +1462,24 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -1480,6 +1496,426 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#apirequestfactory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        APIRequestFactory
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="APIRequestFactory">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#creating-test-requests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Creating test requests
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Creating test requests">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#using-the-format-argument" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Using the format argument
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#explicitly-encoding-the-request-body" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Explicitly encoding the request body
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#put-and-patch-with-form-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PUT and PATCH with form data
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#forcing-authentication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Forcing authentication
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#forcing-csrf-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Forcing CSRF validation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#apiclient" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        APIClient
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="APIClient">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#making-requests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Making requests
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#authenticating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Authenticating
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Authenticating">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#loginkwargs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        .login(**kwargs)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#credentialskwargs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        .credentials(**kwargs)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#force_authenticateusernone-tokennone" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        .force_authenticate(user=None, token=None)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#csrf-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CSRF validation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#requestsclient" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RequestsClient
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="RequestsClient">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#requestsclient-and-working-with-the-database" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RequestsClient and working with the database
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#headers-authentication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Headers &amp; Authentication
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#csrf" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CSRF
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#live-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Live tests
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#coreapiclient" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CoreAPIClient
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CoreAPIClient">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#headers-authentication_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Headers &amp; Authentication
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#api-test-cases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        API Test cases
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="API Test cases">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#urlpatternstestcase" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        URLPatternsTestCase
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="URLPatternsTestCase">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#testing-responses" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Testing responses
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Testing responses">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#checking-the-response-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Checking the response data
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rendering-responses" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rendering responses
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#setting-the-default-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Setting the default format
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setting-the-available-formats" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Setting the available formats
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -2542,6 +2978,433 @@
               </div>
             
             
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#apirequestfactory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        APIRequestFactory
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="APIRequestFactory">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#creating-test-requests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Creating test requests
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Creating test requests">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#using-the-format-argument" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Using the format argument
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#explicitly-encoding-the-request-body" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Explicitly encoding the request body
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#put-and-patch-with-form-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PUT and PATCH with form data
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#forcing-authentication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Forcing authentication
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#forcing-csrf-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Forcing CSRF validation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#apiclient" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        APIClient
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="APIClient">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#making-requests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Making requests
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#authenticating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Authenticating
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Authenticating">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#loginkwargs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        .login(**kwargs)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#credentialskwargs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        .credentials(**kwargs)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#force_authenticateusernone-tokennone" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        .force_authenticate(user=None, token=None)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#csrf-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CSRF validation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#requestsclient" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RequestsClient
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="RequestsClient">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#requestsclient-and-working-with-the-database" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RequestsClient and working with the database
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#headers-authentication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Headers &amp; Authentication
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#csrf" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CSRF
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#live-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Live tests
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#coreapiclient" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CoreAPIClient
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CoreAPIClient">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#headers-authentication_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Headers &amp; Authentication
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#api-test-cases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        API Test cases
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="API Test cases">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#urlpatternstestcase" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        URLPatternsTestCase
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="URLPatternsTestCase">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#testing-responses" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Testing responses
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Testing responses">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#checking-the-response-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Checking the response data
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rendering-responses" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rendering responses
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#setting-the-default-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Setting the default format
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setting-the-available-formats" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Setting the available formats
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
           
           
             <div class="md-content" data-md-component="content">
@@ -2609,9 +3472,9 @@
 <p>&mdash; <a href="https://jacobian.org/writing/django-apps-with-buildout/#s-create-a-test-wrapper">Jacob Kaplan-Moss</a></p>
 </blockquote>
 <p>REST framework includes a few helper classes that extend Django's existing test framework, and improve support for making API requests.</p>
-<h1 id="apirequestfactory">APIRequestFactory<a class="headerlink" href="#apirequestfactory" title="Permanent link">&para;</a></h1>
+<h2 id="apirequestfactory">APIRequestFactory<a class="headerlink" href="#apirequestfactory" title="Permanent link">&para;</a></h2>
 <p>Extends <a href="https://docs.djangoproject.com/en/stable/topics/testing/advanced/#django.test.client.RequestFactory">Django's existing <code>RequestFactory</code> class</a>.</p>
-<h2 id="creating-test-requests">Creating test requests<a class="headerlink" href="#creating-test-requests" title="Permanent link">&para;</a></h2>
+<h3 id="creating-test-requests">Creating test requests<a class="headerlink" href="#creating-test-requests" title="Permanent link">&para;</a></h3>
 <p>The <code>APIRequestFactory</code> class supports an almost identical API to Django's standard <code>RequestFactory</code> class.  This means that the standard <code>.get()</code>, <code>.post()</code>, <code>.put()</code>, <code>.patch()</code>, <code>.delete()</code>, <code>.head()</code> and <code>.options()</code> methods are all available.</p>
 <div class="language-text highlight"><pre><span></span><code>from rest_framework.test import APIRequestFactory
 
@@ -2649,7 +3512,7 @@ content = encode_multipart(&#39;BoUnDaRyStRiNg&#39;, data)
 content_type = &#39;multipart/form-data; boundary=BoUnDaRyStRiNg&#39;
 request = factory.put(&#39;/notes/547/&#39;, content, content_type=content_type)
 </code></pre></div>
-<h2 id="forcing-authentication">Forcing authentication<a class="headerlink" href="#forcing-authentication" title="Permanent link">&para;</a></h2>
+<h3 id="forcing-authentication">Forcing authentication<a class="headerlink" href="#forcing-authentication" title="Permanent link">&para;</a></h3>
 <p>When testing views directly using a request factory, it's often convenient to be able to directly authenticate the request, rather than having to construct the correct authentication credentials.</p>
 <p>To forcibly authenticate a request, use the <code>force_authenticate()</code> method.</p>
 <div class="language-text highlight"><pre><span></span><code>from rest_framework.test import force_authenticate
@@ -2696,7 +3559,7 @@ drf_request = DummyView().initialize_request(request)
 assert drf_request.data.get(&#39;example&#39;) == &#39;test&#39;
 </code></pre></div>
 </div>
-<h2 id="forcing-csrf-validation">Forcing CSRF validation<a class="headerlink" href="#forcing-csrf-validation" title="Permanent link">&para;</a></h2>
+<h3 id="forcing-csrf-validation">Forcing CSRF validation<a class="headerlink" href="#forcing-csrf-validation" title="Permanent link">&para;</a></h3>
 <p>By default, requests created with <code>APIRequestFactory</code> will not have CSRF validation applied when passed to a REST framework view.  If you need to explicitly turn CSRF validation on, you can do so by setting the <code>enforce_csrf_checks</code> flag when instantiating the factory.</p>
 <div class="language-text highlight"><pre><span></span><code>factory = APIRequestFactory(enforce_csrf_checks=True)
 </code></pre></div>
@@ -2704,9 +3567,9 @@ assert drf_request.data.get(&#39;example&#39;) == &#39;test&#39;
 <p class="admonition-title">Note</p>
 <p>It's worth noting that Django's standard <code>RequestFactory</code> doesn't need to include this option, because when using regular Django the CSRF validation takes place in middleware, which is not run when testing views directly.  When using REST framework, CSRF validation takes place inside the view, so the request factory needs to disable view-level CSRF checks.</p>
 </div>
-<h1 id="apiclient">APIClient<a class="headerlink" href="#apiclient" title="Permanent link">&para;</a></h1>
+<h2 id="apiclient">APIClient<a class="headerlink" href="#apiclient" title="Permanent link">&para;</a></h2>
 <p>Extends <a href="https://docs.djangoproject.com/en/stable/topics/testing/tools/#the-test-client">Django's existing <code>Client</code> class</a>.</p>
-<h2 id="making-requests">Making requests<a class="headerlink" href="#making-requests" title="Permanent link">&para;</a></h2>
+<h3 id="making-requests">Making requests<a class="headerlink" href="#making-requests" title="Permanent link">&para;</a></h3>
 <p>The <code>APIClient</code> class supports the same request interface as Django's standard <code>Client</code> class.  This means that the standard <code>.get()</code>, <code>.post()</code>, <code>.put()</code>, <code>.patch()</code>, <code>.delete()</code>, <code>.head()</code> and <code>.options()</code> methods are all available.  For example:</p>
 <div class="language-text highlight"><pre><span></span><code>from rest_framework.test import APIClient
 
@@ -2714,7 +3577,7 @@ client = APIClient()
 client.post(&#39;/notes/&#39;, {&#39;title&#39;: &#39;new idea&#39;}, format=&#39;json&#39;)
 </code></pre></div>
 <p>To support a wider set of request formats, or change the default format, <a href="#configuration">see the configuration section</a>.</p>
-<h2 id="authenticating">Authenticating<a class="headerlink" href="#authenticating" title="Permanent link">&para;</a></h2>
+<h3 id="authenticating">Authenticating<a class="headerlink" href="#authenticating" title="Permanent link">&para;</a></h3>
 <h4 id="loginkwargs">.login(**kwargs)<a class="headerlink" href="#loginkwargs" title="Permanent link">&para;</a></h4>
 <p>The <code>login</code> method functions exactly as it does with Django's regular <code>Client</code> class.  This allows you to authenticate requests against any views which include <code>SessionAuthentication</code>.</p>
 <div class="language-text highlight"><pre><span></span><code># Make all requests in the context of a logged in session.
@@ -2751,13 +3614,13 @@ client.force_authenticate(user=user)
 <p>To unauthenticate subsequent requests, call <code>force_authenticate</code> setting the user and/or token to <code>None</code>.</p>
 <div class="language-text highlight"><pre><span></span><code>client.force_authenticate(user=None)
 </code></pre></div>
-<h2 id="csrf-validation">CSRF validation<a class="headerlink" href="#csrf-validation" title="Permanent link">&para;</a></h2>
+<h3 id="csrf-validation">CSRF validation<a class="headerlink" href="#csrf-validation" title="Permanent link">&para;</a></h3>
 <p>By default CSRF validation is not applied when using <code>APIClient</code>.  If you need to explicitly enable CSRF validation, you can do so by setting the <code>enforce_csrf_checks</code> flag when instantiating the client.</p>
 <div class="language-text highlight"><pre><span></span><code>client = APIClient(enforce_csrf_checks=True)
 </code></pre></div>
 <p>As usual CSRF validation will only apply to any session authenticated views.  This means CSRF validation will only occur if the client has been logged in by calling <code>login()</code>.</p>
 <hr />
-<h1 id="requestsclient">RequestsClient<a class="headerlink" href="#requestsclient" title="Permanent link">&para;</a></h1>
+<h2 id="requestsclient">RequestsClient<a class="headerlink" href="#requestsclient" title="Permanent link">&para;</a></h2>
 <p>REST framework also includes a client for interacting with your application
 using the popular Python library, <code>requests</code>. This may be useful if:</p>
 <ul>
@@ -2775,10 +3638,10 @@ response = client.get(&#39;http://testserver/users/&#39;)
 assert response.status_code == 200
 </code></pre></div>
 <p>Note that the requests client requires you to pass fully qualified URLs.</p>
-<h2 id="requestsclient-and-working-with-the-database">RequestsClient and working with the database<a class="headerlink" href="#requestsclient-and-working-with-the-database" title="Permanent link">&para;</a></h2>
+<h3 id="requestsclient-and-working-with-the-database">RequestsClient and working with the database<a class="headerlink" href="#requestsclient-and-working-with-the-database" title="Permanent link">&para;</a></h3>
 <p>The <code>RequestsClient</code> class is useful if you want to write tests that solely interact with the service interface. This is a little stricter than using the standard Django test client, as it means that all interactions should be via the API.</p>
 <p>If you're using <code>RequestsClient</code> you'll want to ensure that test setup, and results assertions are performed as regular API calls, rather than interacting with the database models directly. For example, rather than checking that <code>Customer.objects.count() == 3</code> you would list the customers endpoint, and ensure that it contains three records.</p>
-<h2 id="headers-authentication">Headers &amp; Authentication<a class="headerlink" href="#headers-authentication" title="Permanent link">&para;</a></h2>
+<h3 id="headers-authentication">Headers &amp; Authentication<a class="headerlink" href="#headers-authentication" title="Permanent link">&para;</a></h3>
 <p>Custom headers and authentication credentials can be provided in the same way
 as <a href="https://requests.readthedocs.io/en/latest/user/advanced/#session-objects">when using a standard <code>requests.Session</code> instance</a>.</p>
 <div class="language-text highlight"><pre><span></span><code>from requests.auth import HTTPBasicAuth
@@ -2786,7 +3649,7 @@ as <a href="https://requests.readthedocs.io/en/latest/user/advanced/#session-obj
 client.auth = HTTPBasicAuth(&#39;user&#39;, &#39;pass&#39;)
 client.headers.update({&#39;x-test&#39;: &#39;true&#39;})
 </code></pre></div>
-<h2 id="csrf">CSRF<a class="headerlink" href="#csrf" title="Permanent link">&para;</a></h2>
+<h3 id="csrf">CSRF<a class="headerlink" href="#csrf" title="Permanent link">&para;</a></h3>
 <p>If you're using <code>SessionAuthentication</code> then you'll need to include a CSRF token
 for any <code>POST</code>, <code>PUT</code>, <code>PATCH</code> or <code>DELETE</code> requests.</p>
 <p>You can do so by following the same flow that a JavaScript based client would use.
@@ -2807,7 +3670,7 @@ response = client.post(&#39;http://testserver/organizations/&#39;, json={
 }, headers={&#39;X-CSRFToken&#39;: csrftoken})
 assert response.status_code == 200
 </code></pre></div>
-<h2 id="live-tests">Live tests<a class="headerlink" href="#live-tests" title="Permanent link">&para;</a></h2>
+<h3 id="live-tests">Live tests<a class="headerlink" href="#live-tests" title="Permanent link">&para;</a></h3>
 <p>With careful usage both the <code>RequestsClient</code> and the <code>CoreAPIClient</code> provide
 the ability to write test cases that can run either in development, or be run
 directly against your staging server or production environment.</p>
@@ -2816,7 +3679,7 @@ a powerful way to validate your live service. Doing so may require some careful
 attention to setup and teardown to ensure that the tests run in a way that they
 do not directly affect customer data.</p>
 <hr />
-<h1 id="coreapiclient">CoreAPIClient<a class="headerlink" href="#coreapiclient" title="Permanent link">&para;</a></h1>
+<h2 id="coreapiclient">CoreAPIClient<a class="headerlink" href="#coreapiclient" title="Permanent link">&para;</a></h2>
 <p>The CoreAPIClient allows you to interact with your API using the Python
 <code>coreapi</code> client library.</p>
 <div class="language-text highlight"><pre><span></span><code># Fetch the API schema
@@ -2832,7 +3695,7 @@ data = client.action(schema, [&#39;organizations&#39;, &#39;list&#39;])
 assert(len(data) == 1)
 assert(data == [{&#39;name&#39;: &#39;MegaCorp&#39;, &#39;status&#39;: &#39;active&#39;}])
 </code></pre></div>
-<h2 id="headers-authentication_1">Headers &amp; Authentication<a class="headerlink" href="#headers-authentication_1" title="Permanent link">&para;</a></h2>
+<h3 id="headers-authentication_1">Headers &amp; Authentication<a class="headerlink" href="#headers-authentication_1" title="Permanent link">&para;</a></h3>
 <p>Custom headers and authentication may be used with <code>CoreAPIClient</code> in a
 similar way as with <code>RequestsClient</code>.</p>
 <div class="language-text highlight"><pre><span></span><code>from requests.auth import HTTPBasicAuth
@@ -2842,7 +3705,7 @@ client.session.auth = HTTPBasicAuth(&#39;user&#39;, &#39;pass&#39;)
 client.session.headers.update({&#39;x-test&#39;: &#39;true&#39;})
 </code></pre></div>
 <hr />
-<h1 id="api-test-cases">API Test cases<a class="headerlink" href="#api-test-cases" title="Permanent link">&para;</a></h1>
+<h2 id="api-test-cases">API Test cases<a class="headerlink" href="#api-test-cases" title="Permanent link">&para;</a></h2>
 <p>REST framework includes the following test case classes, that mirror the existing <a href="https://docs.djangoproject.com/en/stable/topics/testing/tools/#provided-test-case-classes">Django's test case classes</a>, but use <code>APIClient</code> instead of Django's default <code>Client</code>.</p>
 <ul>
 <li><code>APISimpleTestCase</code></li>
@@ -2850,7 +3713,7 @@ client.session.headers.update({&#39;x-test&#39;: &#39;true&#39;})
 <li><code>APITestCase</code></li>
 <li><code>APILiveServerTestCase</code></li>
 </ul>
-<h2 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h2>
+<h3 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h3>
 <p>You can use any of REST framework's test case classes as you would for the regular Django test case classes.  The <code>self.client</code> attribute will be an <code>APIClient</code> instance.</p>
 <div class="language-text highlight"><pre><span></span><code>from django.urls import reverse
 from rest_framework import status
@@ -2870,9 +3733,9 @@ class AccountTests(APITestCase):
         self.assertEqual(Account.objects.get().name, &#39;DabApps&#39;)
 </code></pre></div>
 <hr />
-<h1 id="urlpatternstestcase">URLPatternsTestCase<a class="headerlink" href="#urlpatternstestcase" title="Permanent link">&para;</a></h1>
+<h2 id="urlpatternstestcase">URLPatternsTestCase<a class="headerlink" href="#urlpatternstestcase" title="Permanent link">&para;</a></h2>
 <p>REST framework also provides a test case class for isolating <code>urlpatterns</code> on a per-class basis. Note that this inherits from Django's <code>SimpleTestCase</code>, and will most likely need to be mixed with another test case class.</p>
-<h2 id="example_1">Example<a class="headerlink" href="#example_1" title="Permanent link">&para;</a></h2>
+<h3 id="example_1">Example<a class="headerlink" href="#example_1" title="Permanent link">&para;</a></h3>
 <div class="language-text highlight"><pre><span></span><code>from django.urls import include, path, reverse
 from rest_framework import status
 from rest_framework.test import APITestCase, URLPatternsTestCase
@@ -2893,8 +3756,8 @@ class AccountTests(APITestCase, URLPatternsTestCase):
         self.assertEqual(len(response.data), 1)
 </code></pre></div>
 <hr />
-<h1 id="testing-responses">Testing responses<a class="headerlink" href="#testing-responses" title="Permanent link">&para;</a></h1>
-<h2 id="checking-the-response-data">Checking the response data<a class="headerlink" href="#checking-the-response-data" title="Permanent link">&para;</a></h2>
+<h2 id="testing-responses">Testing responses<a class="headerlink" href="#testing-responses" title="Permanent link">&para;</a></h2>
+<h3 id="checking-the-response-data">Checking the response data<a class="headerlink" href="#checking-the-response-data" title="Permanent link">&para;</a></h3>
 <p>When checking the validity of test responses it's often more convenient to inspect the data that the response was created with, rather than inspecting the fully rendered response.</p>
 <p>For example, it's easier to inspect <code>response.data</code>:</p>
 <div class="language-text highlight"><pre><span></span><code>response = self.client.get(&#39;/users/4/&#39;)
@@ -2904,7 +3767,7 @@ self.assertEqual(response.data, {&#39;id&#39;: 4, &#39;username&#39;: &#39;laure
 <div class="language-text highlight"><pre><span></span><code>response = self.client.get(&#39;/users/4/&#39;)
 self.assertEqual(json.loads(response.content), {&#39;id&#39;: 4, &#39;username&#39;: &#39;lauren&#39;})
 </code></pre></div>
-<h2 id="rendering-responses">Rendering responses<a class="headerlink" href="#rendering-responses" title="Permanent link">&para;</a></h2>
+<h3 id="rendering-responses">Rendering responses<a class="headerlink" href="#rendering-responses" title="Permanent link">&para;</a></h3>
 <p>If you're testing views directly using <code>APIRequestFactory</code>, the responses that are returned will not yet be rendered, as rendering of template responses is performed by Django's internal request-response cycle.  In order to access <code>response.content</code>, you'll first need to render the response.</p>
 <div class="language-text highlight"><pre><span></span><code>view = UserDetail.as_view()
 request = factory.get(&#39;/users/4&#39;)
@@ -2913,15 +3776,15 @@ response.render()  # Cannot access `response.content` without this.
 self.assertEqual(response.content, &#39;{&quot;username&quot;: &quot;lauren&quot;, &quot;id&quot;: 4}&#39;)
 </code></pre></div>
 <hr />
-<h1 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h1>
-<h2 id="setting-the-default-format">Setting the default format<a class="headerlink" href="#setting-the-default-format" title="Permanent link">&para;</a></h2>
+<h2 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h2>
+<h3 id="setting-the-default-format">Setting the default format<a class="headerlink" href="#setting-the-default-format" title="Permanent link">&para;</a></h3>
 <p>The default format used to make test requests may be set using the <code>TEST_REQUEST_DEFAULT_FORMAT</code> setting key.  For example, to always use JSON for test requests by default instead of standard multipart form requests, set the following in your <code>settings.py</code> file:</p>
 <div class="language-text highlight"><pre><span></span><code>REST_FRAMEWORK = {
     ...
     &#39;TEST_REQUEST_DEFAULT_FORMAT&#39;: &#39;json&#39;
 }
 </code></pre></div>
-<h2 id="setting-the-available-formats">Setting the available formats<a class="headerlink" href="#setting-the-available-formats" title="Permanent link">&para;</a></h2>
+<h3 id="setting-the-available-formats">Setting the available formats<a class="headerlink" href="#setting-the-available-formats" title="Permanent link">&para;</a></h3>
 <p>If you need to test requests using something other than multipart or json requests, you can do so by setting the <code>TEST_REQUEST_RENDERER_CLASSES</code> setting.</p>
 <p>For example, to add support for using <code>format='html'</code> in test requests, you might have something like this in your <code>settings.py</code> file.</p>
 <div class="language-text highlight"><pre><span></span><code>REST_FRAMEWORK = {
@@ -2995,7 +3858,7 @@ self.assertEqual(response.content, &#39;{&quot;username&quot;: &quot;lauren&quot
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["content.tabs.link", "content.code.annotate", "content.code.copy", "navigation.tabs", "navigation.tabs.sticky", "navigation.instant", "navigation.instant.prefetch", "navigation.instant.progress", "navigation.path", "navigation.sections", "navigation.top", "navigation.tracking", "search.suggest", "toc.follow", "toc.integrate"], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["content.tabs.link", "content.code.annotate", "content.code.copy", "navigation.tabs", "navigation.tabs.sticky", "navigation.instant", "navigation.instant.prefetch", "navigation.instant.progress", "navigation.path", "navigation.sections", "navigation.top", "navigation.tracking", "search.suggest", "toc.follow"], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
     

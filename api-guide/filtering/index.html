@@ -355,9 +355,7 @@
   
 
 
-  
-
-<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
     <a href="../.." title="Django REST framework" class="md-nav__button md-logo" aria-label="Django REST framework" data-md-component="logo">
       
@@ -1264,6 +1262,234 @@
       
     </span>
   </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#generic-filtering" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Generic Filtering
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Generic Filtering">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#setting-filter-backends" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Setting filter backends
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#filtering-and-object-lookups" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Filtering and object lookups
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#overriding-the-initial-queryset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overriding the initial queryset
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#api-guide" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        API Guide
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="API Guide">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#djangofilterbackend" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DjangoFilterBackend
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#searchfilter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SearchFilter
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#orderingfilter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        OrderingFilter
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="OrderingFilter">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#specifying-which-fields-may-be-ordered-against" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Specifying which fields may be ordered against
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#specifying-a-default-ordering" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Specifying a default ordering
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#custom-generic-filtering" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom generic filtering
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Custom generic filtering">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#customizing-the-interface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Customizing the interface
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#third-party-packages" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Third party packages
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Third party packages">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#django-rest-framework-filters-package" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Django REST framework filters package
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#django-rest-framework-full-word-search-filter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Django REST framework full word search filter
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#django-url-filter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Django URL Filter
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#drf-url-filters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        drf-url-filters
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -2612,6 +2838,293 @@
               </div>
             
             
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#filtering-against-the-current-user" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Filtering against the current user
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#filtering-against-the-url" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Filtering against the URL
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#filtering-against-query-parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Filtering against query parameters
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#generic-filtering" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Generic Filtering
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Generic Filtering">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#setting-filter-backends" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Setting filter backends
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#filtering-and-object-lookups" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Filtering and object lookups
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#overriding-the-initial-queryset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overriding the initial queryset
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#api-guide" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        API Guide
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="API Guide">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#djangofilterbackend" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DjangoFilterBackend
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#searchfilter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SearchFilter
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#orderingfilter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        OrderingFilter
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="OrderingFilter">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#specifying-which-fields-may-be-ordered-against" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Specifying which fields may be ordered against
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#specifying-a-default-ordering" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Specifying a default ordering
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#custom-generic-filtering" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom generic filtering
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Custom generic filtering">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#customizing-the-interface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Customizing the interface
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#third-party-packages" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Third party packages
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Third party packages">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#django-rest-framework-filters-package" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Django REST framework filters package
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#django-rest-framework-full-word-search-filter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Django REST framework full word search filter
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#django-url-filter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Django URL Filter
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#drf-url-filters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        drf-url-filters
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
           
           
             <div class="md-content" data-md-component="content">
@@ -2735,11 +3248,11 @@ class PurchaseList(generics.ListAPIView):
         return queryset
 </code></pre></div>
 <hr />
-<h1 id="generic-filtering">Generic Filtering<a class="headerlink" href="#generic-filtering" title="Permanent link">&para;</a></h1>
+<h2 id="generic-filtering">Generic Filtering<a class="headerlink" href="#generic-filtering" title="Permanent link">&para;</a></h2>
 <p>As well as being able to override the default queryset, REST framework also includes support for generic filtering backends that allow you to easily construct complex searches and filters.</p>
 <p>Generic filters can also present themselves as HTML controls in the browsable API and admin API.</p>
 <p><img alt="Filter Example" src="../../img/filter-controls.png" /></p>
-<h2 id="setting-filter-backends">Setting filter backends<a class="headerlink" href="#setting-filter-backends" title="Permanent link">&para;</a></h2>
+<h3 id="setting-filter-backends">Setting filter backends<a class="headerlink" href="#setting-filter-backends" title="Permanent link">&para;</a></h3>
 <p>The default filter backends may be set globally, using the <code>DEFAULT_FILTER_BACKENDS</code> setting. For example.</p>
 <div class="language-text highlight"><pre><span></span><code>REST_FRAMEWORK = {
     &#39;DEFAULT_FILTER_BACKENDS&#39;: [&#39;django_filters.rest_framework.DjangoFilterBackend&#39;]
@@ -2757,12 +3270,12 @@ class UserListView(generics.ListAPIView):
     serializer_class = UserSerializer
     filter_backends = [django_filters.rest_framework.DjangoFilterBackend]
 </code></pre></div>
-<h2 id="filtering-and-object-lookups">Filtering and object lookups<a class="headerlink" href="#filtering-and-object-lookups" title="Permanent link">&para;</a></h2>
+<h3 id="filtering-and-object-lookups">Filtering and object lookups<a class="headerlink" href="#filtering-and-object-lookups" title="Permanent link">&para;</a></h3>
 <p>Note that if a filter backend is configured for a view, then as well as being used to filter list views, it will also be used to filter the querysets used for returning a single object.</p>
 <p>For instance, given the previous example, and a product with an id of <code>4675</code>, the following URL would either return the corresponding object, or return a 404 response, depending on if the filtering conditions were met by the given product instance:</p>
 <div class="language-text highlight"><pre><span></span><code>http://example.com/api/products/4675/?category=clothing&amp;max_price=10.00
 </code></pre></div>
-<h2 id="overriding-the-initial-queryset">Overriding the initial queryset<a class="headerlink" href="#overriding-the-initial-queryset" title="Permanent link">&para;</a></h2>
+<h3 id="overriding-the-initial-queryset">Overriding the initial queryset<a class="headerlink" href="#overriding-the-initial-queryset" title="Permanent link">&para;</a></h3>
 <p>Note that you can use both an overridden <code>.get_queryset()</code> and generic filtering together, and everything will work as expected.  For example, if <code>Product</code> had a many-to-many relationship with <code>User</code>, named <code>purchase</code>, you might want to write a view like this:</p>
 <div class="language-text highlight"><pre><span></span><code>class PurchasedProductsList(generics.ListAPIView):
     &quot;&quot;&quot;
@@ -2778,8 +3291,8 @@ class UserListView(generics.ListAPIView):
         return user.purchase_set.all()
 </code></pre></div>
 <hr />
-<h1 id="api-guide">API Guide<a class="headerlink" href="#api-guide" title="Permanent link">&para;</a></h1>
-<h2 id="djangofilterbackend">DjangoFilterBackend<a class="headerlink" href="#djangofilterbackend" title="Permanent link">&para;</a></h2>
+<h2 id="api-guide">API Guide<a class="headerlink" href="#api-guide" title="Permanent link">&para;</a></h2>
+<h3 id="djangofilterbackend">DjangoFilterBackend<a class="headerlink" href="#djangofilterbackend" title="Permanent link">&para;</a></h3>
 <p>The <a href="https://django-filter.readthedocs.io/en/latest/index.html"><code>django-filter</code></a> library includes a <code>DjangoFilterBackend</code> class which
 supports highly customizable field filtering for REST framework.</p>
 <p>To use <code>DjangoFilterBackend</code>, first install <code>django-filter</code>.</p>
@@ -2817,7 +3330,7 @@ class UserListView(generics.ListAPIView):
 <p>For more advanced filtering requirements you can specify a <code>FilterSet</code> class that should be used by the view.
 You can read more about <code>FilterSet</code>s in the <a href="https://django-filter.readthedocs.io/en/latest/index.html">django-filter documentation</a>.
 It's also recommended that you read the section on <a href="https://django-filter.readthedocs.io/en/latest/guide/rest_framework.html">DRF integration</a>.</p>
-<h2 id="searchfilter">SearchFilter<a class="headerlink" href="#searchfilter" title="Permanent link">&para;</a></h2>
+<h3 id="searchfilter">SearchFilter<a class="headerlink" href="#searchfilter" title="Permanent link">&para;</a></h3>
 <p>The <code>SearchFilter</code> class supports simple single query parameter based searching, and is based on the <a href="https://docs.djangoproject.com/en/stable/ref/contrib/admin/#django.contrib.admin.ModelAdmin.search_fields">Django admin's search functionality</a>.</p>
 <p>When in use, the browsable API will include a <code>SearchFilter</code> control:</p>
 <p><img alt="Search Filter" src="../../img/search-filter.png" /></p>
@@ -2892,7 +3405,7 @@ class CustomSearchFilter(filters.SearchFilter):
 </code></pre></div>
 <p>For more details, see the <a href="https://docs.djangoproject.com/en/stable/ref/contrib/admin/#django.contrib.admin.ModelAdmin.search_fields">Django documentation</a>.</p>
 <hr />
-<h2 id="orderingfilter">OrderingFilter<a class="headerlink" href="#orderingfilter" title="Permanent link">&para;</a></h2>
+<h3 id="orderingfilter">OrderingFilter<a class="headerlink" href="#orderingfilter" title="Permanent link">&para;</a></h3>
 <p>The <code>OrderingFilter</code> class supports simple query parameter controlled ordering of results.</p>
 <p><img alt="Ordering Filter" src="../../img/ordering-filter.png" /></p>
 <p>By default, the query parameter is named <code>'ordering'</code>, but this may be overridden with the <code>ORDERING_PARAM</code> setting in the <code>REST_FRAMEWORK</code> configuration.</p>
@@ -2905,7 +3418,7 @@ class CustomSearchFilter(filters.SearchFilter):
 <p>Multiple orderings may also be specified:</p>
 <div class="language-text highlight"><pre><span></span><code>http://example.com/api/users?ordering=account,username
 </code></pre></div>
-<h3 id="specifying-which-fields-may-be-ordered-against">Specifying which fields may be ordered against<a class="headerlink" href="#specifying-which-fields-may-be-ordered-against" title="Permanent link">&para;</a></h3>
+<h4 id="specifying-which-fields-may-be-ordered-against">Specifying which fields may be ordered against<a class="headerlink" href="#specifying-which-fields-may-be-ordered-against" title="Permanent link">&para;</a></h4>
 <p>It's recommended that you explicitly specify which fields the API should allow in the ordering filter.  You can do this by setting an <code>ordering_fields</code> attribute on the view, like so:</p>
 <div class="language-text highlight"><pre><span></span><code>class UserListView(generics.ListAPIView):
     queryset = User.objects.all()
@@ -2922,7 +3435,7 @@ class CustomSearchFilter(filters.SearchFilter):
     filter_backends = [filters.OrderingFilter]
     ordering_fields = &#39;__all__&#39;
 </code></pre></div>
-<h3 id="specifying-a-default-ordering">Specifying a default ordering<a class="headerlink" href="#specifying-a-default-ordering" title="Permanent link">&para;</a></h3>
+<h4 id="specifying-a-default-ordering">Specifying a default ordering<a class="headerlink" href="#specifying-a-default-ordering" title="Permanent link">&para;</a></h4>
 <p>If an <code>ordering</code> attribute is set on the view, this will be used as the default ordering.</p>
 <p>Typically you'd instead control this by setting <code>order_by</code> on the initial queryset, but using the <code>ordering</code> parameter on the view allows you to specify the ordering in a way that it can then be passed automatically as context to a rendered template.  This makes it possible to automatically render column headers differently if they are being used to order the results.</p>
 <div class="language-text highlight"><pre><span></span><code>class UserListView(generics.ListAPIView):
@@ -2934,11 +3447,11 @@ class CustomSearchFilter(filters.SearchFilter):
 </code></pre></div>
 <p>The <code>ordering</code> attribute may be either a string or a list/tuple of strings.</p>
 <hr />
-<h1 id="custom-generic-filtering">Custom generic filtering<a class="headerlink" href="#custom-generic-filtering" title="Permanent link">&para;</a></h1>
+<h2 id="custom-generic-filtering">Custom generic filtering<a class="headerlink" href="#custom-generic-filtering" title="Permanent link">&para;</a></h2>
 <p>You can also provide your own generic filtering backend, or write an installable app for other developers to use.</p>
 <p>To do so override <code>BaseFilterBackend</code>, and override the <code>.filter_queryset(self, request, queryset, view)</code> method.  The method should return a new, filtered queryset.</p>
 <p>As well as allowing clients to perform searches and filtering, generic filter backends can be useful for restricting which objects should be visible to any given request or user.</p>
-<h2 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h2>
+<h3 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h3>
 <p>For example, you might need to restrict users to only being able to see objects they created.</p>
 <div class="language-text highlight"><pre><span></span><code>class IsOwnerFilterBackend(filters.BaseFilterBackend):
     &quot;&quot;&quot;
@@ -2948,19 +3461,19 @@ class CustomSearchFilter(filters.SearchFilter):
         return queryset.filter(owner=request.user)
 </code></pre></div>
 <p>We could achieve the same behavior by overriding <code>get_queryset()</code> on the views, but using a filter backend allows you to more easily add this restriction to multiple views, or to apply it across the entire API.</p>
-<h2 id="customizing-the-interface">Customizing the interface<a class="headerlink" href="#customizing-the-interface" title="Permanent link">&para;</a></h2>
+<h3 id="customizing-the-interface">Customizing the interface<a class="headerlink" href="#customizing-the-interface" title="Permanent link">&para;</a></h3>
 <p>Generic filters may also present an interface in the browsable API. To do so you should implement a <code>to_html()</code> method which returns a rendered HTML representation of the filter. This method should have the following signature:</p>
 <p><code>to_html(self, request, queryset, view)</code></p>
 <p>The method should return a rendered HTML string.</p>
-<h1 id="third-party-packages">Third party packages<a class="headerlink" href="#third-party-packages" title="Permanent link">&para;</a></h1>
+<h2 id="third-party-packages">Third party packages<a class="headerlink" href="#third-party-packages" title="Permanent link">&para;</a></h2>
 <p>The following third party packages provide additional filter implementations.</p>
-<h2 id="django-rest-framework-filters-package">Django REST framework filters package<a class="headerlink" href="#django-rest-framework-filters-package" title="Permanent link">&para;</a></h2>
+<h3 id="django-rest-framework-filters-package">Django REST framework filters package<a class="headerlink" href="#django-rest-framework-filters-package" title="Permanent link">&para;</a></h3>
 <p>The <a href="https://github.com/philipn/django-rest-framework-filters">django-rest-framework-filters package</a> works together with the <code>DjangoFilterBackend</code> class, and allows you to easily create filters across relationships, or create multiple filter lookup types for a given field.</p>
-<h2 id="django-rest-framework-full-word-search-filter">Django REST framework full word search filter<a class="headerlink" href="#django-rest-framework-full-word-search-filter" title="Permanent link">&para;</a></h2>
+<h3 id="django-rest-framework-full-word-search-filter">Django REST framework full word search filter<a class="headerlink" href="#django-rest-framework-full-word-search-filter" title="Permanent link">&para;</a></h3>
 <p>The <a href="https://github.com/trollknurr/django-rest-framework-word-search-filter">djangorestframework-word-filter</a> developed as alternative to <code>filters.SearchFilter</code> which will search full word in text, or exact match.</p>
-<h2 id="django-url-filter">Django URL Filter<a class="headerlink" href="#django-url-filter" title="Permanent link">&para;</a></h2>
+<h3 id="django-url-filter">Django URL Filter<a class="headerlink" href="#django-url-filter" title="Permanent link">&para;</a></h3>
 <p><a href="https://github.com/miki725/django-url-filter">django-url-filter</a> provides a safe way to filter data via human-friendly URLs. It works very similar to DRF serializers and fields in a sense that they can be nested except they are called filtersets and filters. That provides easy way to filter related data. Also this library is generic-purpose so it can be used to filter other sources of data and not only Django <code>QuerySet</code>s.</p>
-<h2 id="drf-url-filters">drf-url-filters<a class="headerlink" href="#drf-url-filters" title="Permanent link">&para;</a></h2>
+<h3 id="drf-url-filters">drf-url-filters<a class="headerlink" href="#drf-url-filters" title="Permanent link">&para;</a></h3>
 <p><a href="https://github.com/manjitkumar/drf-url-filters">drf-url-filter</a> is a simple Django app to apply filters on drf <code>ModelViewSet</code>'s <code>Queryset</code> in a clean, simple and configurable way. It also supports validations on incoming query params and their values. A beautiful python package <code>Voluptuous</code> is being used for validations on the incoming query parameters. The best part about voluptuous is you can define your own validations as per your query params requirements.</p>
 
 
@@ -3024,7 +3537,7 @@ class CustomSearchFilter(filters.SearchFilter):
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["content.tabs.link", "content.code.annotate", "content.code.copy", "navigation.tabs", "navigation.tabs.sticky", "navigation.instant", "navigation.instant.prefetch", "navigation.instant.progress", "navigation.path", "navigation.sections", "navigation.top", "navigation.tracking", "search.suggest", "toc.follow", "toc.integrate"], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["content.tabs.link", "content.code.annotate", "content.code.copy", "navigation.tabs", "navigation.tabs.sticky", "navigation.instant", "navigation.instant.prefetch", "navigation.instant.progress", "navigation.path", "navigation.sections", "navigation.top", "navigation.tracking", "search.suggest", "toc.follow"], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
     

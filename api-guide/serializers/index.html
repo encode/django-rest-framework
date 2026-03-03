@@ -355,9 +355,7 @@
   
 
 
-  
-
-<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
     <a href="../.." title="Django REST framework" class="md-nav__button md-logo" aria-label="Django REST framework" data-md-component="logo">
       
@@ -957,8 +955,6 @@
       <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
       
       
-        
-      
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
           
@@ -1001,8 +997,6 @@
   
   
   
-    
-  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -1011,6 +1005,18 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#serializers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Serializers
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Serializers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#declaring-serializers" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1020,8 +1026,8 @@
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#serializing-objects" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1031,8 +1037,8 @@
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#deserializing-objects" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1042,8 +1048,8 @@
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#saving-instances" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1081,8 +1087,8 @@
     </nav>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#validation" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1142,8 +1148,8 @@
     </nav>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#accessing-the-initial-data-and-instance" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1153,8 +1159,8 @@
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#partial-updates" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1164,8 +1170,8 @@
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#dealing-with-nested-objects" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1175,8 +1181,8 @@
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#writable-nested-representations" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1225,8 +1231,8 @@
     </nav>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#dealing-with-multiple-objects" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1264,8 +1270,8 @@
     </nav>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#including-extra-context" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1273,6 +1279,692 @@
       
     </span>
   </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#modelserializer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ModelSerializer
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ModelSerializer">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#inspecting-a-modelserializer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Inspecting a ModelSerializer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#specifying-which-fields-to-include" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Specifying which fields to include
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#specifying-nested-serialization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Specifying nested serialization
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#specifying-fields-explicitly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Specifying fields explicitly
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#specifying-read-only-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Specifying read only fields
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#additional-keyword-arguments" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Additional keyword arguments
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#relational-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Relational fields
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#customizing-field-mappings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Customizing field mappings
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Customizing field mappings">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#serializer_field_mapping" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        serializer_field_mapping
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#serializer_related_field" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        serializer_related_field
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#serializer_url_field" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        serializer_url_field
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#serializer_choice_field" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        serializer_choice_field
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-field_class-and-field_kwargs-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The field_class and field_kwargs API
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#build_standard_fieldself-field_name-model_field" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        build_standard_field(self, field_name, model_field)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#build_relational_fieldself-field_name-relation_info" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        build_relational_field(self, field_name, relation_info)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#build_nested_fieldself-field_name-relation_info-nested_depth" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        build_nested_field(self, field_name, relation_info, nested_depth)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#build_property_fieldself-field_name-model_class" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        build_property_field(self, field_name, model_class)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#build_url_fieldself-field_name-model_class" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        build_url_field(self, field_name, model_class)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#build_unknown_fieldself-field_name-model_class" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        build_unknown_field(self, field_name, model_class)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hyperlinkedmodelserializer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HyperlinkedModelSerializer
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="HyperlinkedModelSerializer">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#absolute-and-relative-urls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Absolute and relative URLs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-hyperlinked-views-are-determined" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How hyperlinked views are determined
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#changing-the-url-field-name" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Changing the URL field name
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#listserializer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ListSerializer
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ListSerializer">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#customizing-listserializer-behavior" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Customizing ListSerializer behavior
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#customizing-multiple-create" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Customizing multiple create
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#customizing-multiple-update" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Customizing multiple update
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#customizing-listserializer-initialization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Customizing ListSerializer initialization
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#baseserializer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BaseSerializer
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="BaseSerializer">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#read-only-baseserializer-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Read-only BaseSerializer classes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#read-write-baseserializer-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Read-write BaseSerializer classes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#creating-new-base-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Creating new base classes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#advanced-serializer-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Advanced serializer usage
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Advanced serializer usage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#overriding-serialization-and-deserialization-behavior" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overriding serialization and deserialization behavior
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Overriding serialization and deserialization behavior">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#to_representationself-instance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        to_representation(self, instance)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#to_internal_valueself-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        to_internal_value(self, data)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#serializer-inheritance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Serializer Inheritance
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynamically-modifying-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dynamically modifying fields
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Dynamically modifying fields">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#customizing-the-default-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Customizing the default fields
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#third-party-packages" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Third party packages
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Third party packages">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#django-rest-marshmallow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Django REST marshmallow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#serpy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Serpy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mongoenginemodelserializer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MongoengineModelSerializer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#geofeaturemodelserializer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GeoFeatureModelSerializer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hstoreserializer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HStoreSerializer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynamic-rest" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dynamic REST
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynamic-fields-mixin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dynamic Fields Mixin
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#drf-flexfields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DRF FlexFields
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#serializer-extensions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Serializer Extensions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#html-json-forms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HTML JSON Forms
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#drf-base64" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DRF-Base64
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#queryfields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QueryFields
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#drf-writable-nested" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DRF Writable Nested
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#drf-encrypt-content" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DRF Encrypt Content
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#shapeless-serializers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Shapeless Serializers
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -2845,6 +3537,994 @@
               </div>
             
             
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#serializers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Serializers
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Serializers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#declaring-serializers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Declaring Serializers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#serializing-objects" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Serializing objects
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deserializing-objects" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deserializing objects
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#saving-instances" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Saving instances
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Saving instances">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#passing-additional-attributes-to-save" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Passing additional attributes to .save()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#overriding-save-directly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overriding .save() directly.
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Validation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Validation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#raising-an-exception-on-invalid-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Raising an exception on invalid data
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#field-level-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Field-level validation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#object-level-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Object-level validation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#validators" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Validators
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#accessing-the-initial-data-and-instance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Accessing the initial data and instance
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#partial-updates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Partial updates
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dealing-with-nested-objects" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dealing with nested objects
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#writable-nested-representations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Writable nested representations
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Writable nested representations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#writing-create-methods-for-nested-representations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Writing .create() methods for nested representations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#writing-update-methods-for-nested-representations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Writing .update() methods for nested representations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#handling-saving-related-instances-in-model-manager-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Handling saving related instances in model manager classes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dealing-with-multiple-objects" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dealing with multiple objects
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Dealing with multiple objects">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#serializing-multiple-objects" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Serializing multiple objects
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deserializing-multiple-objects" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deserializing multiple objects
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#including-extra-context" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Including extra context
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#modelserializer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ModelSerializer
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ModelSerializer">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#inspecting-a-modelserializer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Inspecting a ModelSerializer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#specifying-which-fields-to-include" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Specifying which fields to include
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#specifying-nested-serialization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Specifying nested serialization
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#specifying-fields-explicitly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Specifying fields explicitly
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#specifying-read-only-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Specifying read only fields
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#additional-keyword-arguments" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Additional keyword arguments
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#relational-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Relational fields
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#customizing-field-mappings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Customizing field mappings
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Customizing field mappings">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#serializer_field_mapping" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        serializer_field_mapping
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#serializer_related_field" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        serializer_related_field
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#serializer_url_field" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        serializer_url_field
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#serializer_choice_field" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        serializer_choice_field
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-field_class-and-field_kwargs-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The field_class and field_kwargs API
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#build_standard_fieldself-field_name-model_field" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        build_standard_field(self, field_name, model_field)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#build_relational_fieldself-field_name-relation_info" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        build_relational_field(self, field_name, relation_info)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#build_nested_fieldself-field_name-relation_info-nested_depth" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        build_nested_field(self, field_name, relation_info, nested_depth)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#build_property_fieldself-field_name-model_class" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        build_property_field(self, field_name, model_class)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#build_url_fieldself-field_name-model_class" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        build_url_field(self, field_name, model_class)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#build_unknown_fieldself-field_name-model_class" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        build_unknown_field(self, field_name, model_class)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hyperlinkedmodelserializer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HyperlinkedModelSerializer
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="HyperlinkedModelSerializer">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#absolute-and-relative-urls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Absolute and relative URLs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-hyperlinked-views-are-determined" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How hyperlinked views are determined
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#changing-the-url-field-name" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Changing the URL field name
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#listserializer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ListSerializer
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ListSerializer">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#customizing-listserializer-behavior" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Customizing ListSerializer behavior
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#customizing-multiple-create" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Customizing multiple create
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#customizing-multiple-update" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Customizing multiple update
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#customizing-listserializer-initialization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Customizing ListSerializer initialization
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#baseserializer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BaseSerializer
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="BaseSerializer">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#read-only-baseserializer-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Read-only BaseSerializer classes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#read-write-baseserializer-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Read-write BaseSerializer classes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#creating-new-base-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Creating new base classes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#advanced-serializer-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Advanced serializer usage
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Advanced serializer usage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#overriding-serialization-and-deserialization-behavior" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overriding serialization and deserialization behavior
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Overriding serialization and deserialization behavior">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#to_representationself-instance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        to_representation(self, instance)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#to_internal_valueself-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        to_internal_value(self, data)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#serializer-inheritance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Serializer Inheritance
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynamically-modifying-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dynamically modifying fields
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Dynamically modifying fields">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#customizing-the-default-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Customizing the default fields
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#third-party-packages" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Third party packages
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Third party packages">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#django-rest-marshmallow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Django REST marshmallow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#serpy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Serpy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mongoenginemodelserializer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MongoengineModelSerializer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#geofeaturemodelserializer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GeoFeatureModelSerializer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hstoreserializer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HStoreSerializer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynamic-rest" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dynamic REST
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynamic-fields-mixin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dynamic Fields Mixin
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#drf-flexfields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DRF FlexFields
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#serializer-extensions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Serializer Extensions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#html-json-forms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HTML JSON Forms
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#drf-base64" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DRF-Base64
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#queryfields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QueryFields
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#drf-writable-nested" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DRF Writable Nested
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#drf-encrypt-content" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DRF Encrypt Content
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#shapeless-serializers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Shapeless Serializers
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
           
           
             <div class="md-content" data-md-component="content">
@@ -2906,7 +4586,8 @@
   
 
 
-<h1 id="serializers">Serializers<a class="headerlink" href="#serializers" title="Permanent link">&para;</a></h1>
+  <h1>Serializers</h1>
+
 <blockquote>
 <p>Expanding the usefulness of the serializers is something that we would
 like to address.  However, it's not a trivial problem, and it
@@ -2915,7 +4596,8 @@ will take some serious design work.</p>
 </blockquote>
 <p>Serializers allow complex data such as querysets and model instances to be converted to native Python datatypes that can then be easily rendered into <code>JSON</code>, <code>XML</code> or other content types.  Serializers also provide deserialization, allowing parsed data to be converted back into complex types, after first validating the incoming data.</p>
 <p>The serializers in REST framework work very similarly to Django's <code>Form</code> and <code>ModelForm</code> classes. We provide a <code>Serializer</code> class which gives you a powerful, generic way to control the output of your responses, as well as a <code>ModelSerializer</code> class which provides a useful shortcut for creating serializers that deal with model instances and querysets.</p>
-<h2 id="declaring-serializers">Declaring Serializers<a class="headerlink" href="#declaring-serializers" title="Permanent link">&para;</a></h2>
+<h2 id="serializers">Serializers<a class="headerlink" href="#serializers" title="Permanent link">&para;</a></h2>
+<h3 id="declaring-serializers">Declaring Serializers<a class="headerlink" href="#declaring-serializers" title="Permanent link">&para;</a></h3>
 <p>Let's start by creating a simple object we can use for example purposes:</p>
 <div class="language-text highlight"><pre><span></span><code>from datetime import datetime
 
@@ -2936,7 +4618,7 @@ class CommentSerializer(serializers.Serializer):
     content = serializers.CharField(max_length=200)
     created = serializers.DateTimeField()
 </code></pre></div>
-<h2 id="serializing-objects">Serializing objects<a class="headerlink" href="#serializing-objects" title="Permanent link">&para;</a></h2>
+<h3 id="serializing-objects">Serializing objects<a class="headerlink" href="#serializing-objects" title="Permanent link">&para;</a></h3>
 <p>We can now use <code>CommentSerializer</code> to serialize a comment, or list of comments. Again, using the <code>Serializer</code> class looks a lot like using a <code>Form</code> class.</p>
 <div class="language-text highlight"><pre><span></span><code>serializer = CommentSerializer(comment)
 serializer.data
@@ -2949,7 +4631,7 @@ json = JSONRenderer().render(serializer.data)
 json
 # b&#39;{&quot;email&quot;:&quot;leila@example.com&quot;,&quot;content&quot;:&quot;foo bar&quot;,&quot;created&quot;:&quot;2016-01-27T15:17:10.375877&quot;}&#39;
 </code></pre></div>
-<h2 id="deserializing-objects">Deserializing objects<a class="headerlink" href="#deserializing-objects" title="Permanent link">&para;</a></h2>
+<h3 id="deserializing-objects">Deserializing objects<a class="headerlink" href="#deserializing-objects" title="Permanent link">&para;</a></h3>
 <p>Deserialization is similar. First we parse a stream into Python native datatypes...</p>
 <div class="language-text highlight"><pre><span></span><code>import io
 from rest_framework.parsers import JSONParser
@@ -2964,7 +4646,7 @@ serializer.is_valid()
 serializer.validated_data
 # {&#39;content&#39;: &#39;foo bar&#39;, &#39;email&#39;: &#39;leila@example.com&#39;, &#39;created&#39;: datetime.datetime(2012, 08, 22, 16, 20, 09, 822243)}
 </code></pre></div>
-<h2 id="saving-instances">Saving instances<a class="headerlink" href="#saving-instances" title="Permanent link">&para;</a></h2>
+<h3 id="saving-instances">Saving instances<a class="headerlink" href="#saving-instances" title="Permanent link">&para;</a></h3>
 <p>If we want to be able to return complete object instances based on the validated data we need to implement one or both of the <code>.create()</code> and <code>.update()</code> methods. For example:</p>
 <div class="language-text highlight"><pre><span></span><code>class CommentSerializer(serializers.Serializer):
     email = serializers.EmailField()
@@ -3022,7 +4704,7 @@ serializer = CommentSerializer(comment, data=data)
         send_email(from=email, message=message)
 </code></pre></div>
 <p>Note that in the case above we're now having to access the serializer <code>.validated_data</code> property directly.</p>
-<h2 id="validation">Validation<a class="headerlink" href="#validation" title="Permanent link">&para;</a></h2>
+<h3 id="validation">Validation<a class="headerlink" href="#validation" title="Permanent link">&para;</a></h3>
 <p>When deserializing data, you always need to call <code>is_valid()</code> before attempting to access the validated data, or save an object instance. If any validation errors occur, the <code>.errors</code> property will contain a dictionary representing the resulting error messages.  For example:</p>
 <div class="language-text highlight"><pre><span></span><code>serializer = CommentSerializer(data={&#39;email&#39;: &#39;foobar&#39;, &#39;content&#39;: &#39;baz&#39;})
 serializer.is_valid()
@@ -3103,15 +4785,15 @@ class GameRecord(serializers.Serializer):
         ]
 </code></pre></div>
 <p>For more information see the <a href="../validators/">validators documentation</a>.</p>
-<h2 id="accessing-the-initial-data-and-instance">Accessing the initial data and instance<a class="headerlink" href="#accessing-the-initial-data-and-instance" title="Permanent link">&para;</a></h2>
+<h3 id="accessing-the-initial-data-and-instance">Accessing the initial data and instance<a class="headerlink" href="#accessing-the-initial-data-and-instance" title="Permanent link">&para;</a></h3>
 <p>When passing an initial object or queryset to a serializer instance, the object will be made available as <code>.instance</code>. If no initial object is passed then the <code>.instance</code> attribute will be <code>None</code>.</p>
 <p>When passing data to a serializer instance, the unmodified data will be made available as <code>.initial_data</code>. If the <code>data</code> keyword argument is not passed then the <code>.initial_data</code> attribute will not exist.</p>
-<h2 id="partial-updates">Partial updates<a class="headerlink" href="#partial-updates" title="Permanent link">&para;</a></h2>
+<h3 id="partial-updates">Partial updates<a class="headerlink" href="#partial-updates" title="Permanent link">&para;</a></h3>
 <p>By default, serializers must be passed values for all required fields or they will raise validation errors. You can use the <code>partial</code> argument in order to allow partial updates.</p>
 <div class="language-text highlight"><pre><span></span><code># Update `comment` with partial data
 serializer = CommentSerializer(comment, data={&#39;content&#39;: &#39;foo bar&#39;}, partial=True)
 </code></pre></div>
-<h2 id="dealing-with-nested-objects">Dealing with nested objects<a class="headerlink" href="#dealing-with-nested-objects" title="Permanent link">&para;</a></h2>
+<h3 id="dealing-with-nested-objects">Dealing with nested objects<a class="headerlink" href="#dealing-with-nested-objects" title="Permanent link">&para;</a></h3>
 <p>The previous examples are fine for dealing with objects that only have simple datatypes, but sometimes we also need to be able to represent more complex objects, where some of the attributes of an object might not be simple datatypes such as strings, dates or integers.</p>
 <p>The <code>Serializer</code> class is itself a type of <code>Field</code>, and can be used to represent relationships where one object type is nested inside another.</p>
 <div class="language-text highlight"><pre><span></span><code>class UserSerializer(serializers.Serializer):
@@ -3136,7 +4818,7 @@ class CommentSerializer(serializers.Serializer):
     content = serializers.CharField(max_length=200)
     created = serializers.DateTimeField()
 </code></pre></div>
-<h2 id="writable-nested-representations">Writable nested representations<a class="headerlink" href="#writable-nested-representations" title="Permanent link">&para;</a></h2>
+<h3 id="writable-nested-representations">Writable nested representations<a class="headerlink" href="#writable-nested-representations" title="Permanent link">&para;</a></h3>
 <p>When dealing with nested representations that support deserializing the data, any errors with nested objects will be nested under the field name of the nested object.</p>
 <div class="language-text highlight"><pre><span></span><code>serializer = CommentSerializer(data={&#39;user&#39;: {&#39;email&#39;: &#39;foobar&#39;, &#39;username&#39;: &#39;doe&#39;}, &#39;content&#39;: &#39;baz&#39;})
 serializer.is_valid()
@@ -3222,7 +4904,7 @@ serializer.errors
     )
 </code></pre></div>
 <p>For more details on this approach see the Django documentation on <a href="https://docs.djangoproject.com/en/stable/topics/db/managers/">model managers</a>, and <a href="https://www.dabapps.com/blog/django-models-and-encapsulation/">this blogpost on using model and manager classes</a>.</p>
-<h2 id="dealing-with-multiple-objects">Dealing with multiple objects<a class="headerlink" href="#dealing-with-multiple-objects" title="Permanent link">&para;</a></h2>
+<h3 id="dealing-with-multiple-objects">Dealing with multiple objects<a class="headerlink" href="#dealing-with-multiple-objects" title="Permanent link">&para;</a></h3>
 <p>The <code>Serializer</code> class can also handle serializing or deserializing lists of objects.</p>
 <h4 id="serializing-multiple-objects">Serializing multiple objects<a class="headerlink" href="#serializing-multiple-objects" title="Permanent link">&para;</a></h4>
 <p>To serialize a queryset or list of objects instead of a single object instance, you should pass the <code>many=True</code> flag when instantiating the serializer.  You can then pass a queryset or list of objects to be serialized.</p>
@@ -3237,7 +4919,7 @@ serializer.data
 </code></pre></div>
 <h4 id="deserializing-multiple-objects">Deserializing multiple objects<a class="headerlink" href="#deserializing-multiple-objects" title="Permanent link">&para;</a></h4>
 <p>The default behavior for deserializing multiple objects is to support multiple object creation, but not support multiple object updates. For more information on how to support or customize either of these cases, see the <a href="#listserializer">ListSerializer</a> documentation below.</p>
-<h2 id="including-extra-context">Including extra context<a class="headerlink" href="#including-extra-context" title="Permanent link">&para;</a></h2>
+<h3 id="including-extra-context">Including extra context<a class="headerlink" href="#including-extra-context" title="Permanent link">&para;</a></h3>
 <p>There are some cases where you need to provide extra context to the serializer in addition to the object being serialized.  One common case is if you're using a serializer that includes hyperlinked relations, which requires the serializer to have access to the current request so that it can properly generate fully qualified URLs.</p>
 <p>You can provide arbitrary additional context by passing a <code>context</code> argument when instantiating the serializer.  For example:</p>
 <div class="language-text highlight"><pre><span></span><code>serializer = AccountSerializer(account, context={&#39;request&#39;: request})
@@ -3246,7 +4928,7 @@ serializer.data
 </code></pre></div>
 <p>The context dictionary can be used within any serializer field logic, such as a custom <code>.to_representation()</code> method, by accessing the <code>self.context</code> attribute.</p>
 <hr />
-<h1 id="modelserializer">ModelSerializer<a class="headerlink" href="#modelserializer" title="Permanent link">&para;</a></h1>
+<h2 id="modelserializer">ModelSerializer<a class="headerlink" href="#modelserializer" title="Permanent link">&para;</a></h2>
 <p>Often you'll want serializer classes that map closely to Django model definitions.</p>
 <p>The <code>ModelSerializer</code> class provides a shortcut that lets you automatically create a <code>Serializer</code> class with fields that correspond to the Model fields.</p>
 <p><strong>The <code>ModelSerializer</code> class is the same as a regular <code>Serializer</code> class, except that</strong>:</p>
@@ -3263,7 +4945,7 @@ serializer.data
 </code></pre></div>
 <p>By default, all the model fields on the class will be mapped to a corresponding serializer fields.</p>
 <p>Any relationships such as foreign keys on the model will be mapped to <code>PrimaryKeyRelatedField</code>. Reverse relationships are not included by default unless explicitly included as specified in the <a href="../relations/">serializer relations</a> documentation.</p>
-<h4 id="inspecting-a-modelserializer">Inspecting a <code>ModelSerializer</code><a class="headerlink" href="#inspecting-a-modelserializer" title="Permanent link">&para;</a></h4>
+<h3 id="inspecting-a-modelserializer">Inspecting a <code>ModelSerializer</code><a class="headerlink" href="#inspecting-a-modelserializer" title="Permanent link">&para;</a></h3>
 <p>Serializer classes generate helpful verbose representation strings, that allow you to fully inspect the state of their fields. This is particularly useful when working with <code>ModelSerializers</code> where you want to determine what set of fields and validators are being automatically created for you.</p>
 <p>To do so, open the Django shell, using <code>python manage.py shell</code>, then import the serializer class, instantiate it, and print the object representation…</p>
 <div class="language-text highlight"><pre><span></span><code>&gt;&gt;&gt; from myapp.serializers import AccountSerializer
@@ -3274,7 +4956,7 @@ AccountSerializer():
     name = CharField(allow_blank=True, max_length=100, required=False)
     owner = PrimaryKeyRelatedField(queryset=User.objects.all())
 </code></pre></div>
-<h2 id="specifying-which-fields-to-include">Specifying which fields to include<a class="headerlink" href="#specifying-which-fields-to-include" title="Permanent link">&para;</a></h2>
+<h3 id="specifying-which-fields-to-include">Specifying which fields to include<a class="headerlink" href="#specifying-which-fields-to-include" title="Permanent link">&para;</a></h3>
 <p>If you only want a subset of the default fields to be used in a model serializer, you can do so using <code>fields</code> or <code>exclude</code> options, just as you would with a <code>ModelForm</code>. It is strongly recommended that you explicitly set all fields that should be serialized using the <code>fields</code> attribute. This will make it less likely to result in unintentionally exposing data when your models change.</p>
 <p>For example:</p>
 <div class="language-text highlight"><pre><span></span><code>class AccountSerializer(serializers.ModelSerializer):
@@ -3300,7 +4982,7 @@ AccountSerializer():
 <p>The names in the <code>fields</code> and <code>exclude</code> attributes will normally map to model fields on the model class.</p>
 <p>Alternatively names in the <code>fields</code> options can map to properties or methods which take no arguments that exist on the model class.</p>
 <p>Since version 3.3.0, it is <strong>mandatory</strong> to provide one of the attributes <code>fields</code> or <code>exclude</code>.</p>
-<h2 id="specifying-nested-serialization">Specifying nested serialization<a class="headerlink" href="#specifying-nested-serialization" title="Permanent link">&para;</a></h2>
+<h3 id="specifying-nested-serialization">Specifying nested serialization<a class="headerlink" href="#specifying-nested-serialization" title="Permanent link">&para;</a></h3>
 <p>The default <code>ModelSerializer</code> uses primary keys for relationships, but you can also easily generate nested representations using the <code>depth</code> option:</p>
 <div class="language-text highlight"><pre><span></span><code>class AccountSerializer(serializers.ModelSerializer):
     class Meta:
@@ -3310,7 +4992,7 @@ AccountSerializer():
 </code></pre></div>
 <p>The <code>depth</code> option should be set to an integer value that indicates the depth of relationships that should be traversed before reverting to a flat representation.</p>
 <p>If you want to customize the way the serialization is done you'll need to define the field yourself.</p>
-<h2 id="specifying-fields-explicitly">Specifying fields explicitly<a class="headerlink" href="#specifying-fields-explicitly" title="Permanent link">&para;</a></h2>
+<h3 id="specifying-fields-explicitly">Specifying fields explicitly<a class="headerlink" href="#specifying-fields-explicitly" title="Permanent link">&para;</a></h3>
 <p>You can add extra fields to a <code>ModelSerializer</code> or override the default fields by declaring fields on the class, just as you would for a <code>Serializer</code> class.</p>
 <div class="language-text highlight"><pre><span></span><code>class AccountSerializer(serializers.ModelSerializer):
     url = serializers.CharField(source=&#39;get_absolute_url&#39;, read_only=True)
@@ -3321,7 +5003,7 @@ AccountSerializer():
         fields = [&#39;url&#39;, &#39;groups&#39;]
 </code></pre></div>
 <p>Extra fields can correspond to any property or callable on the model.</p>
-<h2 id="specifying-read-only-fields">Specifying read only fields<a class="headerlink" href="#specifying-read-only-fields" title="Permanent link">&para;</a></h2>
+<h3 id="specifying-read-only-fields">Specifying read only fields<a class="headerlink" href="#specifying-read-only-fields" title="Permanent link">&para;</a></h3>
 <p>You may wish to specify multiple fields as read-only. Instead of adding each field explicitly with the <code>read_only=True</code> attribute, you may use the shortcut Meta option, <code>read_only_fields</code>.</p>
 <p>This option should be a list or tuple of field names, and is declared as follows:</p>
 <div class="language-text highlight"><pre><span></span><code>class AccountSerializer(serializers.ModelSerializer):
@@ -3340,7 +5022,7 @@ AccountSerializer():
 </code></pre></div>
 <p>Please review the <a href="/api-guide/validators/">Validators Documentation</a> for details on the <a href="/api-guide/validators/#uniquetogethervalidator">UniqueTogetherValidator</a> and <a href="/api-guide/validators/#currentuserdefault">CurrentUserDefault</a> classes.</p>
 </div>
-<h2 id="additional-keyword-arguments">Additional keyword arguments<a class="headerlink" href="#additional-keyword-arguments" title="Permanent link">&para;</a></h2>
+<h3 id="additional-keyword-arguments">Additional keyword arguments<a class="headerlink" href="#additional-keyword-arguments" title="Permanent link">&para;</a></h3>
 <p>There is also a shortcut allowing you to specify arbitrary additional keyword arguments on fields, using the <code>extra_kwargs</code> option. As in the case of <code>read_only_fields</code>, this means you do not need to explicitly declare the field on the serializer.</p>
 <p>This option is a dictionary, mapping field names to a dictionary of keyword arguments. For example:</p>
 <div class="language-text highlight"><pre><span></span><code>class CreateUserSerializer(serializers.ModelSerializer):
@@ -3359,49 +5041,49 @@ AccountSerializer():
         return user
 </code></pre></div>
 <p>Please keep in mind that, if the field has already been explicitly declared on the serializer class, then the <code>extra_kwargs</code> option will be ignored.</p>
-<h2 id="relational-fields">Relational fields<a class="headerlink" href="#relational-fields" title="Permanent link">&para;</a></h2>
+<h3 id="relational-fields">Relational fields<a class="headerlink" href="#relational-fields" title="Permanent link">&para;</a></h3>
 <p>When serializing model instances, there are a number of different ways you might choose to represent relationships.  The default representation for <code>ModelSerializer</code> is to use the primary keys of the related instances.</p>
 <p>Alternative representations include serializing using hyperlinks, serializing complete nested representations, or serializing with a custom representation.</p>
 <p>For full details see the <a href="../relations/">serializer relations</a> documentation.</p>
-<h2 id="customizing-field-mappings">Customizing field mappings<a class="headerlink" href="#customizing-field-mappings" title="Permanent link">&para;</a></h2>
+<h3 id="customizing-field-mappings">Customizing field mappings<a class="headerlink" href="#customizing-field-mappings" title="Permanent link">&para;</a></h3>
 <p>The ModelSerializer class also exposes an API that you can override in order to alter how serializer fields are automatically determined when instantiating the serializer.</p>
 <p>Normally if a <code>ModelSerializer</code> does not generate the fields you need by default then you should either add them to the class explicitly, or simply use a regular <code>Serializer</code> class instead. However in some cases you may want to create a new base class that defines how the serializer fields are created for any given model.</p>
-<h3 id="serializer_field_mapping"><code>serializer_field_mapping</code><a class="headerlink" href="#serializer_field_mapping" title="Permanent link">&para;</a></h3>
+<h4 id="serializer_field_mapping"><code>serializer_field_mapping</code><a class="headerlink" href="#serializer_field_mapping" title="Permanent link">&para;</a></h4>
 <p>A mapping of Django model fields to REST framework serializer fields. You can override this mapping to alter the default serializer fields that should be used for each model field.</p>
-<h3 id="serializer_related_field"><code>serializer_related_field</code><a class="headerlink" href="#serializer_related_field" title="Permanent link">&para;</a></h3>
+<h4 id="serializer_related_field"><code>serializer_related_field</code><a class="headerlink" href="#serializer_related_field" title="Permanent link">&para;</a></h4>
 <p>This property should be the serializer field class, that is used for relational fields by default.</p>
 <p>For <code>ModelSerializer</code> this defaults to <code>serializers.PrimaryKeyRelatedField</code>.</p>
 <p>For <code>HyperlinkedModelSerializer</code> this defaults to <code>serializers.HyperlinkedRelatedField</code>.</p>
-<h3 id="serializer_url_field"><code>serializer_url_field</code><a class="headerlink" href="#serializer_url_field" title="Permanent link">&para;</a></h3>
+<h4 id="serializer_url_field"><code>serializer_url_field</code><a class="headerlink" href="#serializer_url_field" title="Permanent link">&para;</a></h4>
 <p>The serializer field class that should be used for any <code>url</code> field on the serializer.</p>
 <p>Defaults to <code>serializers.HyperlinkedIdentityField</code></p>
-<h3 id="serializer_choice_field"><code>serializer_choice_field</code><a class="headerlink" href="#serializer_choice_field" title="Permanent link">&para;</a></h3>
+<h4 id="serializer_choice_field"><code>serializer_choice_field</code><a class="headerlink" href="#serializer_choice_field" title="Permanent link">&para;</a></h4>
 <p>The serializer field class that should be used for any choice fields on the serializer.</p>
 <p>Defaults to <code>serializers.ChoiceField</code></p>
-<h3 id="the-field_class-and-field_kwargs-api">The field_class and field_kwargs API<a class="headerlink" href="#the-field_class-and-field_kwargs-api" title="Permanent link">&para;</a></h3>
+<h4 id="the-field_class-and-field_kwargs-api">The field_class and field_kwargs API<a class="headerlink" href="#the-field_class-and-field_kwargs-api" title="Permanent link">&para;</a></h4>
 <p>The following methods are called to determine the class and keyword arguments for each field that should be automatically included on the serializer. Each of these methods should return a two tuple of <code>(field_class, field_kwargs)</code>.</p>
-<h3 id="build_standard_fieldself-field_name-model_field"><code>build_standard_field(self, field_name, model_field)</code><a class="headerlink" href="#build_standard_fieldself-field_name-model_field" title="Permanent link">&para;</a></h3>
+<h4 id="build_standard_fieldself-field_name-model_field"><code>build_standard_field(self, field_name, model_field)</code><a class="headerlink" href="#build_standard_fieldself-field_name-model_field" title="Permanent link">&para;</a></h4>
 <p>Called to generate a serializer field that maps to a standard model field.</p>
 <p>The default implementation returns a serializer class based on the <code>serializer_field_mapping</code> attribute.</p>
-<h3 id="build_relational_fieldself-field_name-relation_info"><code>build_relational_field(self, field_name, relation_info)</code><a class="headerlink" href="#build_relational_fieldself-field_name-relation_info" title="Permanent link">&para;</a></h3>
+<h4 id="build_relational_fieldself-field_name-relation_info"><code>build_relational_field(self, field_name, relation_info)</code><a class="headerlink" href="#build_relational_fieldself-field_name-relation_info" title="Permanent link">&para;</a></h4>
 <p>Called to generate a serializer field that maps to a relational model field.</p>
 <p>The default implementation returns a serializer class based on the <code>serializer_related_field</code> attribute.</p>
 <p>The <code>relation_info</code> argument is a named tuple, that contains <code>model_field</code>, <code>related_model</code>, <code>to_many</code> and <code>has_through_model</code> properties.</p>
-<h3 id="build_nested_fieldself-field_name-relation_info-nested_depth"><code>build_nested_field(self, field_name, relation_info, nested_depth)</code><a class="headerlink" href="#build_nested_fieldself-field_name-relation_info-nested_depth" title="Permanent link">&para;</a></h3>
+<h4 id="build_nested_fieldself-field_name-relation_info-nested_depth"><code>build_nested_field(self, field_name, relation_info, nested_depth)</code><a class="headerlink" href="#build_nested_fieldself-field_name-relation_info-nested_depth" title="Permanent link">&para;</a></h4>
 <p>Called to generate a serializer field that maps to a relational model field, when the <code>depth</code> option has been set.</p>
 <p>The default implementation dynamically creates a nested serializer class based on either <code>ModelSerializer</code> or <code>HyperlinkedModelSerializer</code>.</p>
 <p>The <code>nested_depth</code> will be the value of the <code>depth</code> option, minus one.</p>
 <p>The <code>relation_info</code> argument is a named tuple, that contains <code>model_field</code>, <code>related_model</code>, <code>to_many</code> and <code>has_through_model</code> properties.</p>
-<h3 id="build_property_fieldself-field_name-model_class"><code>build_property_field(self, field_name, model_class)</code><a class="headerlink" href="#build_property_fieldself-field_name-model_class" title="Permanent link">&para;</a></h3>
+<h4 id="build_property_fieldself-field_name-model_class"><code>build_property_field(self, field_name, model_class)</code><a class="headerlink" href="#build_property_fieldself-field_name-model_class" title="Permanent link">&para;</a></h4>
 <p>Called to generate a serializer field that maps to a property or zero-argument method on the model class.</p>
 <p>The default implementation returns a <code>ReadOnlyField</code> class.</p>
-<h3 id="build_url_fieldself-field_name-model_class"><code>build_url_field(self, field_name, model_class)</code><a class="headerlink" href="#build_url_fieldself-field_name-model_class" title="Permanent link">&para;</a></h3>
+<h4 id="build_url_fieldself-field_name-model_class"><code>build_url_field(self, field_name, model_class)</code><a class="headerlink" href="#build_url_fieldself-field_name-model_class" title="Permanent link">&para;</a></h4>
 <p>Called to generate a serializer field for the serializer's own <code>url</code> field. The default implementation returns a <code>HyperlinkedIdentityField</code> class.</p>
-<h3 id="build_unknown_fieldself-field_name-model_class"><code>build_unknown_field(self, field_name, model_class)</code><a class="headerlink" href="#build_unknown_fieldself-field_name-model_class" title="Permanent link">&para;</a></h3>
+<h4 id="build_unknown_fieldself-field_name-model_class"><code>build_unknown_field(self, field_name, model_class)</code><a class="headerlink" href="#build_unknown_fieldself-field_name-model_class" title="Permanent link">&para;</a></h4>
 <p>Called when the field name did not map to any model field or model property.
 The default implementation raises an error, although subclasses may customize this behavior.</p>
 <hr />
-<h1 id="hyperlinkedmodelserializer">HyperlinkedModelSerializer<a class="headerlink" href="#hyperlinkedmodelserializer" title="Permanent link">&para;</a></h1>
+<h2 id="hyperlinkedmodelserializer">HyperlinkedModelSerializer<a class="headerlink" href="#hyperlinkedmodelserializer" title="Permanent link">&para;</a></h2>
 <p>The <code>HyperlinkedModelSerializer</code> class is similar to the <code>ModelSerializer</code> class except that it uses hyperlinks to represent relationships, rather than primary keys.</p>
 <p>By default the serializer will include a <code>url</code> field instead of a primary key field.</p>
 <p>The url field will be represented using a <code>HyperlinkedIdentityField</code> serializer field, and any relationships on the model will be represented using a <code>HyperlinkedRelatedField</code> serializer field.</p>
@@ -3411,7 +5093,7 @@ The default implementation raises an error, although subclasses may customize th
         model = Account
         fields = [&#39;url&#39;, &#39;id&#39;, &#39;account_name&#39;, &#39;users&#39;, &#39;created&#39;]
 </code></pre></div>
-<h2 id="absolute-and-relative-urls">Absolute and relative URLs<a class="headerlink" href="#absolute-and-relative-urls" title="Permanent link">&para;</a></h2>
+<h3 id="absolute-and-relative-urls">Absolute and relative URLs<a class="headerlink" href="#absolute-and-relative-urls" title="Permanent link">&para;</a></h3>
 <p>When instantiating a <code>HyperlinkedModelSerializer</code> you must include the current
 <code>request</code> in the serializer context, for example:</p>
 <div class="language-text highlight"><pre><span></span><code>serializer = AccountSerializer(queryset, context={&#39;request&#39;: request})
@@ -3425,7 +5107,7 @@ so that the resulting representation uses fully qualified URLs, such as:</p>
 </code></pre></div>
 <p>If you <em>do</em> want to use relative URLs, you should explicitly pass <code>{'request': None}</code>
 in the serializer context.</p>
-<h2 id="how-hyperlinked-views-are-determined">How hyperlinked views are determined<a class="headerlink" href="#how-hyperlinked-views-are-determined" title="Permanent link">&para;</a></h2>
+<h3 id="how-hyperlinked-views-are-determined">How hyperlinked views are determined<a class="headerlink" href="#how-hyperlinked-views-are-determined" title="Permanent link">&para;</a></h3>
 <p>There needs to be a way of determining which views should be used for hyperlinking to model instances.</p>
 <p>By default hyperlinks are expected to correspond to a view name that matches the style <code>'{model_name}-detail'</code>, and looks up the instance by a <code>pk</code> keyword argument.</p>
 <p>You can override a URL field view name and lookup field by using either, or both of, the <code>view_name</code> and <code>lookup_field</code> options in the <code>extra_kwargs</code> setting, like so:</p>
@@ -3458,19 +5140,24 @@ in the serializer context.</p>
 <hr />
 <p><strong>Tip</strong>: Properly matching together hyperlinked representations and your URL conf can sometimes be a bit fiddly. Printing the <code>repr</code> of a <code>HyperlinkedModelSerializer</code> instance is a particularly useful way to inspect exactly which view names and lookup fields the relationships are expected to map too.</p>
 <hr />
-<h2 id="changing-the-url-field-name">Changing the URL field name<a class="headerlink" href="#changing-the-url-field-name" title="Permanent link">&para;</a></h2>
+<h3 id="changing-the-url-field-name">Changing the URL field name<a class="headerlink" href="#changing-the-url-field-name" title="Permanent link">&para;</a></h3>
 <p>The name of the URL field defaults to 'url'.  You can override this globally, by using the <code>URL_FIELD_NAME</code> setting.</p>
 <hr />
-<h1 id="listserializer">ListSerializer<a class="headerlink" href="#listserializer" title="Permanent link">&para;</a></h1>
+<h2 id="listserializer">ListSerializer<a class="headerlink" href="#listserializer" title="Permanent link">&para;</a></h2>
 <p>The <code>ListSerializer</code> class provides the behavior for serializing and validating multiple objects at once. You won't <em>typically</em> need to use <code>ListSerializer</code> directly, but should instead simply pass <code>many=True</code> when instantiating a serializer.</p>
 <p>When a serializer is instantiated and <code>many=True</code> is passed, a <code>ListSerializer</code> instance will be created. The serializer class then becomes a child of the parent <code>ListSerializer</code></p>
 <p>The following argument can also be passed to a <code>ListSerializer</code> field or a serializer that is passed <code>many=True</code>:</p>
-<h3 id="allow_empty"><code>allow_empty</code><a class="headerlink" href="#allow_empty" title="Permanent link">&para;</a></h3>
-<p>This is <code>True</code> by default, but can be set to <code>False</code> if you want to disallow empty lists as valid input.</p>
-<h3 id="max_length"><code>max_length</code><a class="headerlink" href="#max_length" title="Permanent link">&para;</a></h3>
-<p>This is <code>None</code> by default, but can be set to a positive integer if you want to validate that the list contains no more than this number of elements.</p>
-<h3 id="min_length"><code>min_length</code><a class="headerlink" href="#min_length" title="Permanent link">&para;</a></h3>
-<p>This is <code>None</code> by default, but can be set to a positive integer if you want to validate that the list contains no fewer than this number of elements.</p>
+<ul>
+<li>
+<p><code>allow_empty</code>: this is <code>True</code> by default, but can be set to <code>False</code> if you want to disallow empty lists as valid input.</p>
+</li>
+<li>
+<p><code>max_length</code>: this is <code>None</code> by default, but can be set to a positive integer if you want to validate that the list contains no more than this number of elements.</p>
+</li>
+<li>
+<p><code>min_length</code>: this is <code>None</code> by default, but can be set to a positive integer if you want to validate that the list contains no fewer than this number of elements.</p>
+</li>
+</ul>
 <h3 id="customizing-listserializer-behavior">Customizing <code>ListSerializer</code> behavior<a class="headerlink" href="#customizing-listserializer-behavior" title="Permanent link">&para;</a></h3>
 <p>There <em>are</em> a few use cases when you might want to customize the <code>ListSerializer</code> behavior. For example:</p>
 <ul>
@@ -3487,7 +5174,7 @@ class CustomSerializer(serializers.Serializer):
     class Meta:
         list_serializer_class = CustomListSerializer
 </code></pre></div>
-<h4 id="customizing-multiple-create">Customizing multiple create<a class="headerlink" href="#customizing-multiple-create" title="Permanent link">&para;</a></h4>
+<h3 id="customizing-multiple-create">Customizing multiple create<a class="headerlink" href="#customizing-multiple-create" title="Permanent link">&para;</a></h3>
 <p>The default implementation for multiple object creation is to simply call <code>.create()</code> for each item in the list. If you want to customize this behavior, you'll need to customize the <code>.create()</code> method on <code>ListSerializer</code> class that is used when <code>many=True</code> is passed.</p>
 <p>For example:</p>
 <div class="language-text highlight"><pre><span></span><code>class BookListSerializer(serializers.ListSerializer):
@@ -3500,7 +5187,7 @@ class BookSerializer(serializers.Serializer):
     class Meta:
         list_serializer_class = BookListSerializer
 </code></pre></div>
-<h4 id="customizing-multiple-update">Customizing multiple update<a class="headerlink" href="#customizing-multiple-update" title="Permanent link">&para;</a></h4>
+<h3 id="customizing-multiple-update">Customizing multiple update<a class="headerlink" href="#customizing-multiple-update" title="Permanent link">&para;</a></h3>
 <p>By default the <code>ListSerializer</code> class does not support multiple updates. This is because the behavior that should be expected for insertions and deletions is ambiguous.</p>
 <p>To support multiple updates you'll need to do so explicitly. When writing your multiple update code make sure to keep the following in mind:</p>
 <ul>
@@ -3542,7 +5229,7 @@ class BookSerializer(serializers.Serializer):
     class Meta:
         list_serializer_class = BookListSerializer
 </code></pre></div>
-<h4 id="customizing-listserializer-initialization">Customizing ListSerializer initialization<a class="headerlink" href="#customizing-listserializer-initialization" title="Permanent link">&para;</a></h4>
+<h3 id="customizing-listserializer-initialization">Customizing ListSerializer initialization<a class="headerlink" href="#customizing-listserializer-initialization" title="Permanent link">&para;</a></h3>
 <p>When a serializer with <code>many=True</code> is instantiated, we need to determine which arguments and keyword arguments should be passed to the <code>.__init__()</code> method for both the child <code>Serializer</code> class, and for the parent <code>ListSerializer</code> class.</p>
 <p>The default implementation is to pass all arguments to both classes, except for <code>validators</code>, and any custom keyword arguments, both of which are assumed to be intended for the child serializer class.</p>
 <p>Occasionally you might need to explicitly specify how the child and parent classes should be instantiated when <code>many=True</code> is passed. You can do so by using the <code>many_init</code> class method.</p>
@@ -3554,7 +5241,7 @@ class BookSerializer(serializers.Serializer):
         return CustomListSerializer(*args, **kwargs)
 </code></pre></div>
 <hr />
-<h1 id="baseserializer">BaseSerializer<a class="headerlink" href="#baseserializer" title="Permanent link">&para;</a></h1>
+<h2 id="baseserializer">BaseSerializer<a class="headerlink" href="#baseserializer" title="Permanent link">&para;</a></h2>
 <p><code>BaseSerializer</code> class that can be used to easily support alternative serialization and deserialization styles.</p>
 <p>This class implements the same basic API as the <code>Serializer</code> class:</p>
 <ul>
@@ -3572,7 +5259,7 @@ class BookSerializer(serializers.Serializer):
 </ul>
 <p>Because this class provides the same interface as the <code>Serializer</code> class, you can use it with the existing generic class-based views exactly as you would for a regular <code>Serializer</code> or <code>ModelSerializer</code>.</p>
 <p>The only difference you'll notice when doing so is the <code>BaseSerializer</code> classes will not generate HTML forms in the browsable API. This is because the data they return does not include all the field information that would allow each field to be rendered into a suitable HTML input.</p>
-<h4 id="read-only-baseserializer-classes">Read-only <code>BaseSerializer</code> classes<a class="headerlink" href="#read-only-baseserializer-classes" title="Permanent link">&para;</a></h4>
+<h3 id="read-only-baseserializer-classes">Read-only <code>BaseSerializer</code> classes<a class="headerlink" href="#read-only-baseserializer-classes" title="Permanent link">&para;</a></h3>
 <p>To implement a read-only serializer using the <code>BaseSerializer</code> class, we just need to override the <code>.to_representation()</code> method. Let's take a look at an example using a simple Django model:</p>
 <div class="language-text highlight"><pre><span></span><code>class HighScore(models.Model):
     created = models.DateTimeField(auto_now_add=True)
@@ -3601,7 +5288,7 @@ def all_high_scores(request):
     serializer = HighScoreSerializer(queryset, many=True)
     return Response(serializer.data)
 </code></pre></div>
-<h4 id="read-write-baseserializer-classes">Read-write <code>BaseSerializer</code> classes<a class="headerlink" href="#read-write-baseserializer-classes" title="Permanent link">&para;</a></h4>
+<h3 id="read-write-baseserializer-classes">Read-write <code>BaseSerializer</code> classes<a class="headerlink" href="#read-write-baseserializer-classes" title="Permanent link">&para;</a></h3>
 <p>To create a read-write serializer we first need to implement a <code>.to_internal_value()</code> method. This method returns the validated values that will be used to construct the object instance, and may raise a <code>serializers.ValidationError</code> if the supplied data is in an incorrect format.</p>
 <p>Once you've implemented <code>.to_internal_value()</code>, the basic validation API will be available on the serializer, and you will be able to use <code>.is_valid()</code>, <code>.validated_data</code> and <code>.errors</code>.</p>
 <p>If you want to also support <code>.save()</code> you'll need to also implement either or both of the <code>.create()</code> and <code>.update()</code> methods.</p>
@@ -3641,7 +5328,7 @@ def all_high_scores(request):
     def create(self, validated_data):
         return HighScore.objects.create(**validated_data)
 </code></pre></div>
-<h4 id="creating-new-base-classes">Creating new base classes<a class="headerlink" href="#creating-new-base-classes" title="Permanent link">&para;</a></h4>
+<h3 id="creating-new-base-classes">Creating new base classes<a class="headerlink" href="#creating-new-base-classes" title="Permanent link">&para;</a></h3>
 <p>The <code>BaseSerializer</code> class is also useful if you want to implement new generic serializer classes for dealing with particular serialization styles, or for integrating with alternative storage backends.</p>
 <p>The following class is an example of a generic serializer that can handle coercing arbitrary complex objects into primitive representations.</p>
 <div class="language-text highlight"><pre><span></span><code>class ObjectSerializer(serializers.BaseSerializer):
@@ -3679,8 +5366,8 @@ def all_high_scores(request):
         return output
 </code></pre></div>
 <hr />
-<h1 id="advanced-serializer-usage">Advanced serializer usage<a class="headerlink" href="#advanced-serializer-usage" title="Permanent link">&para;</a></h1>
-<h2 id="overriding-serialization-and-deserialization-behavior">Overriding serialization and deserialization behavior<a class="headerlink" href="#overriding-serialization-and-deserialization-behavior" title="Permanent link">&para;</a></h2>
+<h2 id="advanced-serializer-usage">Advanced serializer usage<a class="headerlink" href="#advanced-serializer-usage" title="Permanent link">&para;</a></h2>
+<h3 id="overriding-serialization-and-deserialization-behavior">Overriding serialization and deserialization behavior<a class="headerlink" href="#overriding-serialization-and-deserialization-behavior" title="Permanent link">&para;</a></h3>
 <p>If you need to alter the serialization or deserialization behavior of a serializer class, you can do so by overriding the <code>.to_representation()</code> or <code>.to_internal_value()</code> methods.</p>
 <p>Some reasons this might be useful include...</p>
 <ul>
@@ -3702,7 +5389,7 @@ def all_high_scores(request):
 <p>Takes the unvalidated incoming data as input and should return the validated data that will be made available as <code>serializer.validated_data</code>. The return value will also be passed to the <code>.create()</code> or <code>.update()</code> methods if <code>.save()</code> is called on the serializer class.</p>
 <p>If any of the validation fails, then the method should raise a <code>serializers.ValidationError(errors)</code>. The <code>errors</code> argument should be a dictionary mapping field names (or <code>settings.NON_FIELD_ERRORS_KEY</code>) to a list of error messages. If you don't need to alter deserialization behavior and instead want to provide object-level validation, it's recommended that you instead override the <a href="#object-level-validation"><code>.validate()</code></a> method.</p>
 <p>The <code>data</code> argument passed to this method will normally be the value of <code>request.data</code>, so the datatype it provides will depend on the parser classes you have configured for your API.</p>
-<h2 id="serializer-inheritance">Serializer Inheritance<a class="headerlink" href="#serializer-inheritance" title="Permanent link">&para;</a></h2>
+<h3 id="serializer-inheritance">Serializer Inheritance<a class="headerlink" href="#serializer-inheritance" title="Permanent link">&para;</a></h3>
 <p>Similar to Django forms, you can extend and reuse serializers through inheritance. This allows you to declare a common set of fields or methods on a parent class that can then be used in a number of serializers. For example,</p>
 <div class="language-text highlight"><pre><span></span><code>class MyBaseSerializer(Serializer):
     my_field = serializers.CharField()
@@ -3733,10 +5420,10 @@ class MySerializer(MyBaseSerializer):
 <p>However, you can only use this technique to opt out from a field defined declaratively by a parent class; it won’t prevent the <code>ModelSerializer</code> from generating a default field. To opt-out from default fields, see <a href="#specifying-which-fields-to-include">Specifying which fields to include</a>.</p>
 </li>
 </ul>
-<h2 id="dynamically-modifying-fields">Dynamically modifying fields<a class="headerlink" href="#dynamically-modifying-fields" title="Permanent link">&para;</a></h2>
+<h3 id="dynamically-modifying-fields">Dynamically modifying fields<a class="headerlink" href="#dynamically-modifying-fields" title="Permanent link">&para;</a></h3>
 <p>Once a serializer has been initialized, the dictionary of fields that are set on the serializer may be accessed using the <code>.fields</code> attribute.  Accessing and modifying this attribute allows you to dynamically modify the serializer.</p>
 <p>Modifying the <code>fields</code> argument directly allows you to do interesting things such as changing the arguments on serializer fields at runtime, rather than at the point of declaring the serializer.</p>
-<h3 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h3>
+<h4 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h4>
 <p>For example, if you wanted to be able to set which fields should be used by a serializer at the point of initializing it, you could create a serializer class like so:</p>
 <div class="language-text highlight"><pre><span></span><code>class DynamicFieldsModelSerializer(serializers.ModelSerializer):
     &quot;&quot;&quot;
@@ -3770,45 +5457,45 @@ class MySerializer(MyBaseSerializer):
 &gt;&gt;&gt; print(UserSerializer(user, fields=(&#39;id&#39;, &#39;email&#39;)))
 {&#39;id&#39;: 2, &#39;email&#39;: &#39;jon@example.com&#39;}
 </code></pre></div>
-<h2 id="customizing-the-default-fields">Customizing the default fields<a class="headerlink" href="#customizing-the-default-fields" title="Permanent link">&para;</a></h2>
+<h3 id="customizing-the-default-fields">Customizing the default fields<a class="headerlink" href="#customizing-the-default-fields" title="Permanent link">&para;</a></h3>
 <p>REST framework 2 provided an API to allow developers to override how a <code>ModelSerializer</code> class would automatically generate the default set of fields.</p>
 <p>This API included the <code>.get_field()</code>, <code>.get_pk_field()</code> and other methods.</p>
 <p>Because the serializers have been fundamentally redesigned with 3.0 this API no longer exists. You can still modify the fields that get created but you'll need to refer to the source code, and be aware that if the changes you make are against private bits of API then they may be subject to change.</p>
 <hr />
-<h1 id="third-party-packages">Third party packages<a class="headerlink" href="#third-party-packages" title="Permanent link">&para;</a></h1>
+<h2 id="third-party-packages">Third party packages<a class="headerlink" href="#third-party-packages" title="Permanent link">&para;</a></h2>
 <p>The following third party packages are also available.</p>
-<h2 id="django-rest-marshmallow">Django REST marshmallow<a class="headerlink" href="#django-rest-marshmallow" title="Permanent link">&para;</a></h2>
+<h3 id="django-rest-marshmallow">Django REST marshmallow<a class="headerlink" href="#django-rest-marshmallow" title="Permanent link">&para;</a></h3>
 <p>The <a href="https://marshmallow-code.github.io/django-rest-marshmallow/">django-rest-marshmallow</a> package provides an alternative implementation for serializers, using the python <a href="https://marshmallow.readthedocs.io/en/latest/">marshmallow</a> library. It exposes the same API as the REST framework serializers, and can be used as a drop-in replacement in some use-cases.</p>
-<h2 id="serpy">Serpy<a class="headerlink" href="#serpy" title="Permanent link">&para;</a></h2>
+<h3 id="serpy">Serpy<a class="headerlink" href="#serpy" title="Permanent link">&para;</a></h3>
 <p>The <a href="https://github.com/clarkduvall/serpy">serpy</a> package is an alternative implementation for serializers that is built for speed. <a href="https://github.com/clarkduvall/serpy">Serpy</a> serializes complex datatypes to simple native types. The native types can be easily converted to JSON or any other format needed.</p>
-<h2 id="mongoenginemodelserializer">MongoengineModelSerializer<a class="headerlink" href="#mongoenginemodelserializer" title="Permanent link">&para;</a></h2>
+<h3 id="mongoenginemodelserializer">MongoengineModelSerializer<a class="headerlink" href="#mongoenginemodelserializer" title="Permanent link">&para;</a></h3>
 <p>The <a href="https://github.com/umutbozkurt/django-rest-framework-mongoengine">django-rest-framework-mongoengine</a> package provides a <code>MongoEngineModelSerializer</code> serializer class that supports using MongoDB as the storage layer for Django REST framework.</p>
-<h2 id="geofeaturemodelserializer">GeoFeatureModelSerializer<a class="headerlink" href="#geofeaturemodelserializer" title="Permanent link">&para;</a></h2>
+<h3 id="geofeaturemodelserializer">GeoFeatureModelSerializer<a class="headerlink" href="#geofeaturemodelserializer" title="Permanent link">&para;</a></h3>
 <p>The <a href="https://github.com/djangonauts/django-rest-framework-gis">django-rest-framework-gis</a> package provides a <code>GeoFeatureModelSerializer</code> serializer class that supports GeoJSON both for read and write operations.</p>
-<h2 id="hstoreserializer">HStoreSerializer<a class="headerlink" href="#hstoreserializer" title="Permanent link">&para;</a></h2>
+<h3 id="hstoreserializer">HStoreSerializer<a class="headerlink" href="#hstoreserializer" title="Permanent link">&para;</a></h3>
 <p>The <a href="https://github.com/djangonauts/django-rest-framework-hstore">django-rest-framework-hstore</a> package provides an <code>HStoreSerializer</code> to support <a href="https://github.com/djangonauts/django-hstore">django-hstore</a> <code>DictionaryField</code> model field and its <code>schema-mode</code> feature.</p>
-<h2 id="dynamic-rest">Dynamic REST<a class="headerlink" href="#dynamic-rest" title="Permanent link">&para;</a></h2>
+<h3 id="dynamic-rest">Dynamic REST<a class="headerlink" href="#dynamic-rest" title="Permanent link">&para;</a></h3>
 <p>The <a href="https://github.com/AltSchool/dynamic-rest">dynamic-rest</a> package extends the ModelSerializer and ModelViewSet interfaces, adding API query parameters for filtering, sorting, and including / excluding all fields and relationships defined by your serializers.</p>
-<h2 id="dynamic-fields-mixin">Dynamic Fields Mixin<a class="headerlink" href="#dynamic-fields-mixin" title="Permanent link">&para;</a></h2>
+<h3 id="dynamic-fields-mixin">Dynamic Fields Mixin<a class="headerlink" href="#dynamic-fields-mixin" title="Permanent link">&para;</a></h3>
 <p>The <a href="https://github.com/dbrgn/drf-dynamic-fields">drf-dynamic-fields</a> package provides a mixin to dynamically limit the fields per serializer to a subset specified by an URL parameter.</p>
-<h2 id="drf-flexfields">DRF FlexFields<a class="headerlink" href="#drf-flexfields" title="Permanent link">&para;</a></h2>
+<h3 id="drf-flexfields">DRF FlexFields<a class="headerlink" href="#drf-flexfields" title="Permanent link">&para;</a></h3>
 <p>The <a href="https://github.com/rsinger86/drf-flex-fields">drf-flex-fields</a> package extends the ModelSerializer and ModelViewSet to provide commonly used functionality for dynamically setting fields and expanding primitive fields to nested models, both from URL parameters and your serializer class definitions.</p>
-<h2 id="serializer-extensions">Serializer Extensions<a class="headerlink" href="#serializer-extensions" title="Permanent link">&para;</a></h2>
+<h3 id="serializer-extensions">Serializer Extensions<a class="headerlink" href="#serializer-extensions" title="Permanent link">&para;</a></h3>
 <p>The <a href="https://github.com/evenicoulddoit/django-rest-framework-serializer-extensions">django-rest-framework-serializer-extensions</a>
 package provides a collection of tools to DRY up your serializers, by allowing
 fields to be defined on a per-view/request basis. Fields can be whitelisted,
 blacklisted and child serializers can be optionally expanded.</p>
-<h2 id="html-json-forms">HTML JSON Forms<a class="headerlink" href="#html-json-forms" title="Permanent link">&para;</a></h2>
+<h3 id="html-json-forms">HTML JSON Forms<a class="headerlink" href="#html-json-forms" title="Permanent link">&para;</a></h3>
 <p>The <a href="https://github.com/wq/html-json-forms">html-json-forms</a> package provides an algorithm and serializer for processing <code>&lt;form&gt;</code> submissions per the (inactive) <a href="https://www.w3.org/TR/html-json-forms/">HTML JSON Form specification</a>.  The serializer facilitates processing of arbitrarily nested JSON structures within HTML.  For example, <code>&lt;input name="items[0][id]" value="5"&gt;</code> will be interpreted as <code>{"items": [{"id": "5"}]}</code>.</p>
-<h2 id="drf-base64">DRF-Base64<a class="headerlink" href="#drf-base64" title="Permanent link">&para;</a></h2>
+<h3 id="drf-base64">DRF-Base64<a class="headerlink" href="#drf-base64" title="Permanent link">&para;</a></h3>
 <p><a href="https://bitbucket.org/levit_scs/drf_base64">DRF-Base64</a> provides a set of field and model serializers that handles the upload of base64-encoded files.</p>
-<h2 id="queryfields">QueryFields<a class="headerlink" href="#queryfields" title="Permanent link">&para;</a></h2>
+<h3 id="queryfields">QueryFields<a class="headerlink" href="#queryfields" title="Permanent link">&para;</a></h3>
 <p><a href="https://djangorestframework-queryfields.readthedocs.io/">djangorestframework-queryfields</a> allows API clients to specify which fields will be sent in the response via inclusion/exclusion query parameters.</p>
-<h2 id="drf-writable-nested">DRF Writable Nested<a class="headerlink" href="#drf-writable-nested" title="Permanent link">&para;</a></h2>
+<h3 id="drf-writable-nested">DRF Writable Nested<a class="headerlink" href="#drf-writable-nested" title="Permanent link">&para;</a></h3>
 <p>The <a href="https://github.com/beda-software/drf-writable-nested">drf-writable-nested</a> package provides writable nested model serializer which allows to create/update models with nested related data.</p>
-<h2 id="drf-encrypt-content">DRF Encrypt Content<a class="headerlink" href="#drf-encrypt-content" title="Permanent link">&para;</a></h2>
+<h3 id="drf-encrypt-content">DRF Encrypt Content<a class="headerlink" href="#drf-encrypt-content" title="Permanent link">&para;</a></h3>
 <p>The <a href="https://github.com/oguzhancelikarslan/drf-encrypt-content">drf-encrypt-content</a> package helps you encrypt your data, serialized through ModelSerializer. It also contains some helper functions. Which helps you to encrypt your data.</p>
-<h2 id="shapeless-serializers">Shapeless Serializers<a class="headerlink" href="#shapeless-serializers" title="Permanent link">&para;</a></h2>
+<h3 id="shapeless-serializers">Shapeless Serializers<a class="headerlink" href="#shapeless-serializers" title="Permanent link">&para;</a></h3>
 <p>The <a href="https://github.com/khaledsukkar2/drf-shapeless-serializers">drf-shapeless-serializers</a> package provides dynamic serializer configuration capabilities, allowing runtime field selection, renaming, attribute modification, and nested relationship configuration without creating multiple serializer classes. It helps eliminate serializer boilerplate while providing flexible API responses.</p>
 
 
@@ -3872,7 +5559,7 @@ blacklisted and child serializers can be optionally expanded.</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["content.tabs.link", "content.code.annotate", "content.code.copy", "navigation.tabs", "navigation.tabs.sticky", "navigation.instant", "navigation.instant.prefetch", "navigation.instant.progress", "navigation.path", "navigation.sections", "navigation.top", "navigation.tracking", "search.suggest", "toc.follow", "toc.integrate"], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["content.tabs.link", "content.code.annotate", "content.code.copy", "navigation.tabs", "navigation.tabs.sticky", "navigation.instant", "navigation.instant.prefetch", "navigation.instant.progress", "navigation.path", "navigation.sections", "navigation.top", "navigation.tracking", "search.suggest", "toc.follow"], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
     
