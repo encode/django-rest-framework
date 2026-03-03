@@ -11,10 +11,10 @@ on:
       # Order matters, the last rule that applies to a tag
       # is the one that takes effect:
       # https://docs.github.com/en/actions/writing-workflows/workflow-syntax-for-github-actions#example-including-and-excluding-branches-and-tags
-      - '*'
+      - '*.*.*'
       # There should be no dev tags created, but to be safe,
       # let's not publish them.
-      - '!*.dev*'
+      - '!*.*.*.dev*'
 
 env:
   PYPI_URL: https://pypi.org/p/djangorestframework
@@ -32,7 +32,7 @@ jobs:
         python-version: "3.x"
     - name: Install pypa/build
       run:
-        python3 -m pip install build --user
+        python3 -m pip install build
     - name: Build a binary wheel and a source tarball
       run: python3 -m build
     - name: Store the distribution packages
