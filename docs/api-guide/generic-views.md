@@ -49,15 +49,15 @@ For very simple cases you might want to pass through any class attributes using 
 
 ---
 
-# API Reference
+## API Reference
 
-## GenericAPIView
+### GenericAPIView
 
 This class extends REST framework's `APIView` class, adding commonly required behavior for standard list and detail views.
 
 Each of the concrete generic views provided is built by combining `GenericAPIView`, with one or more mixin classes.
 
-### Attributes
+#### Attributes
 
 **Basic settings**:
 
@@ -78,11 +78,11 @@ The following attributes are used to control pagination when used with list view
 
 * `filter_backends` - A list of filter backend classes that should be used for filtering the queryset.  Defaults to the same value as the `DEFAULT_FILTER_BACKENDS` setting.
 
-### Methods
+#### Methods
 
 **Base methods**:
 
-#### `get_queryset(self)`
+##### `get_queryset(self)`
 
 Returns the queryset that should be used for list views, and that should be used as the base for lookups in detail views.  Defaults to returning the queryset specified by the `queryset` attribute.
 
@@ -99,7 +99,7 @@ For example:
 !!! tip
     If the `serializer_class` used in the generic view spans ORM relations, leading to an N+1 problem, you could optimize your queryset in this method using `select_related` and `prefetch_related`. To get more information about N+1 problem and use cases of the mentioned methods refer to related section in [django documentation][django-docs-select-related].
 
-### Avoiding N+1 Queries
+#### Avoiding N+1 Queries
 
 When listing objects (e.g. using `ListAPIView` or `ModelViewSet`), serializers may trigger an N+1 query pattern if related objects are accessed individually for each item.
 
@@ -132,7 +132,7 @@ These optimizations reduce repeated database access and improve list view perfor
 
 ---
 
-#### `get_object(self)`
+##### `get_object(self)`
 
 Returns an object instance that should be used for detail views.  Defaults to using the `lookup_field` parameter to filter the base queryset.
 
@@ -152,7 +152,7 @@ For example:
 
 Note that if your API doesn't include any object level permissions, you may optionally exclude the `self.check_object_permissions`, and simply return the object from the `get_object_or_404` lookup.
 
-#### `filter_queryset(self, queryset)`
+##### `filter_queryset(self, queryset)`
 
 Given a queryset, filter it with whichever filter backends are in use, returning a new queryset.
 
@@ -171,7 +171,7 @@ For example:
 
         return queryset
 
-#### `get_serializer_class(self)`
+##### `get_serializer_class(self)`
 
 Returns the class that should be used for the serializer.  Defaults to returning the `serializer_class` attribute.
 
@@ -223,19 +223,19 @@ You won't typically need to override the following methods, although you might n
 
 ---
 
-# Mixins
+## Mixins
 
 The mixin classes provide the actions that are used to provide the basic view behavior.  Note that the mixin classes provide action methods rather than defining the handler methods, such as `.get()` and `.post()`, directly.  This allows for more flexible composition of behavior.
 
 The mixin classes can be imported from `rest_framework.mixins`.
 
-## ListModelMixin
+### ListModelMixin
 
 Provides a `.list(request, *args, **kwargs)` method, that implements listing a queryset.
 
 If the queryset is populated, this returns a `200 OK` response, with a serialized representation of the queryset as the body of the response.  The response data may optionally be paginated.
 
-## CreateModelMixin
+### CreateModelMixin
 
 Provides a `.create(request, *args, **kwargs)` method, that implements creating and saving a new model instance.
 
@@ -243,13 +243,13 @@ If an object is created this returns a `201 Created` response, with a serialized
 
 If the request data provided for creating the object was invalid, a `400 Bad Request` response will be returned, with the error details as the body of the response.
 
-## RetrieveModelMixin
+### RetrieveModelMixin
 
 Provides a `.retrieve(request, *args, **kwargs)` method, that implements returning an existing model instance in a response.
 
 If an object can be retrieved this returns a `200 OK` response, with a serialized representation of the object as the body of the response.  Otherwise, it will return a `404 Not Found`.
 
-## UpdateModelMixin
+### UpdateModelMixin
 
 Provides a `.update(request, *args, **kwargs)` method, that implements updating and saving an existing model instance.
 
@@ -259,7 +259,7 @@ If an object is updated this returns a `200 OK` response, with a serialized repr
 
 If the request data provided for updating the object was invalid, a `400 Bad Request` response will be returned, with the error details as the body of the response.
 
-## DestroyModelMixin
+### DestroyModelMixin
 
 Provides a `.destroy(request, *args, **kwargs)` method, that implements deletion of an existing model instance.
 
@@ -267,13 +267,13 @@ If an object is deleted this returns a `204 No Content` response, otherwise it w
 
 ---
 
-# Concrete View Classes
+## Concrete View Classes
 
 The following classes are the concrete generic views.  If you're using generic views this is normally the level you'll be working at unless you need heavily customized behavior.
 
 The view classes can be imported from `rest_framework.generics`.
 
-## CreateAPIView
+### CreateAPIView
 
 Used for **create-only** endpoints.
 
@@ -281,7 +281,7 @@ Provides a `post` method handler.
 
 Extends: [GenericAPIView], [CreateModelMixin]
 
-## ListAPIView
+### ListAPIView
 
 Used for **read-only** endpoints to represent a **collection of model instances**.
 
@@ -289,7 +289,7 @@ Provides a `get` method handler.
 
 Extends: [GenericAPIView], [ListModelMixin]
 
-## RetrieveAPIView
+### RetrieveAPIView
 
 Used for **read-only** endpoints to represent a **single model instance**.
 
@@ -297,7 +297,7 @@ Provides a `get` method handler.
 
 Extends: [GenericAPIView], [RetrieveModelMixin]
 
-## DestroyAPIView
+### DestroyAPIView
 
 Used for **delete-only** endpoints for a **single model instance**.
 
@@ -305,7 +305,7 @@ Provides a `delete` method handler.
 
 Extends: [GenericAPIView], [DestroyModelMixin]
 
-## UpdateAPIView
+### UpdateAPIView
 
 Used for **update-only** endpoints for a **single model instance**.
 
@@ -313,7 +313,7 @@ Provides `put` and `patch` method handlers.
 
 Extends: [GenericAPIView], [UpdateModelMixin]
 
-## ListCreateAPIView
+### ListCreateAPIView
 
 Used for **read-write** endpoints to represent a **collection of model instances**.
 
@@ -321,7 +321,7 @@ Provides `get` and `post` method handlers.
 
 Extends: [GenericAPIView], [ListModelMixin], [CreateModelMixin]
 
-## RetrieveUpdateAPIView
+### RetrieveUpdateAPIView
 
 Used for **read or update** endpoints to represent a **single model instance**.
 
@@ -329,7 +329,7 @@ Provides `get`, `put` and `patch` method handlers.
 
 Extends: [GenericAPIView], [RetrieveModelMixin], [UpdateModelMixin]
 
-## RetrieveDestroyAPIView
+### RetrieveDestroyAPIView
 
 Used for **read or delete** endpoints to represent a **single model instance**.
 
@@ -337,7 +337,7 @@ Provides `get` and `delete` method handlers.
 
 Extends: [GenericAPIView], [RetrieveModelMixin], [DestroyModelMixin]
 
-## RetrieveUpdateDestroyAPIView
+### RetrieveUpdateDestroyAPIView
 
 Used for **read-write-delete** endpoints to represent a **single model instance**.
 
@@ -347,11 +347,11 @@ Extends: [GenericAPIView], [RetrieveModelMixin], [UpdateModelMixin], [DestroyMod
 
 ---
 
-# Customizing the generic views
+## Customizing the generic views
 
 Often you'll want to use the existing generic views, but use some slightly customized behavior.  If you find yourself reusing some bit of customized behavior in multiple places, you might want to refactor the behavior into a common class that you can then just apply to any view or viewset as needed.
 
-## Creating custom mixins
+### Creating custom mixins
 
 For example, if you need to lookup objects based on multiple fields in the URL conf, you could create a mixin class like the following:
 
@@ -380,7 +380,7 @@ You can then simply apply this mixin to a view or viewset anytime you need to ap
 
 Using custom mixins is a good option if you have custom behavior that needs to be used.
 
-## Creating custom base classes
+### Creating custom base classes
 
 If you are using a mixin across multiple views, you can take this a step further and create your own set of base views that can then be used throughout your project.  For example:
 
@@ -396,7 +396,7 @@ Using custom base classes is a good option if you have custom behavior that cons
 
 ---
 
-# PUT as create
+## PUT as create
 
 Prior to version 3.0 the REST framework mixins treated `PUT` as either an update or a create operation, depending on if the object already existed or not.
 
@@ -406,11 +406,11 @@ Both styles "`PUT` as 404" and "`PUT` as create" can be valid in different circu
 
 ---
 
-# Third party packages
+## Third party packages
 
 The following third party packages provide additional generic view implementations.
 
-## Django Rest Multiple Models
+### Django Rest Multiple Models
 
 [Django Rest Multiple Models][django-rest-multiple-models] provides a generic view (and mixin) for sending multiple serialized models and/or querysets via a single API request.
 
