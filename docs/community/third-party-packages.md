@@ -46,7 +46,7 @@ Check out a grid detailing all the packages and ecosystem around Django REST Fra
 
 To submit new content, [create a pull request][drf-create-pr].
 
-## Async Support
+### Async Support
 
 *  [adrf](https://github.com/em1208/adrf) - Async support, provides async Views, ViewSets, and Serializers.
 
