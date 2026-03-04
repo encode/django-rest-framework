@@ -56,14 +56,14 @@ test = [
 docs = [
   # MkDocs to build our documentation.
   "mkdocs==1.6.1",
-  "mkdocs-material[imaging]==9.7.0",
+  "mkdocs-material[imaging]==9.7.3",
   # pylinkvalidator to check for broken links in documentation.
   "pylinkvalidator==0.3",
 ]
 optional = [
   # Optional packages which may be used with REST framework.
   "django-filter",
-  "django-guardian>=2.4.0,<3.3",
+  "django-guardian>=2.4.0,<3.4",
   "inflection==0.5.1",
   "legacy-cgi; python_version>='3.13'",
   "markdown>=3.3.7",

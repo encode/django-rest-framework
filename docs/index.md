@@ -1,3 +1,8 @@
+---
+hide:
+  - navigation
+---
+
 <style>
 .promo li a {
     float: left;

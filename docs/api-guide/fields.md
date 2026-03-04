@@ -135,9 +135,9 @@ For more details see the [HTML & Forms][html-and-forms] documentation.
 
 ---
 
-# Boolean fields
+## Boolean fields
 
-## BooleanField
+### BooleanField
 
 A boolean representation.
 
@@ -158,9 +158,9 @@ Corresponds to `django.db.models.fields.BooleanField`.
 
 ---
 
-# String fields
+## String fields
 
-## CharField
+### CharField
 
 A text representation. Optionally validates the text to be shorter than `max_length` and longer than `min_length`.
 
@@ -175,7 +175,7 @@ Corresponds to `django.db.models.fields.CharField` or `django.db.models.fields.T
 
 The `allow_null` option is also available for string fields, although its usage is discouraged in favor of `allow_blank`. It is valid to set both `allow_blank=True` and `allow_null=True`, but doing so means that there will be two differing types of empty value permissible for string representations, which can lead to data inconsistencies and subtle application bugs.
 
-## EmailField
+### EmailField
 
 A text representation, validates the text to be a valid email address.
 
@@ -183,7 +183,7 @@ Corresponds to `django.db.models.fields.EmailField`
 
 **Signature:** `EmailField(max_length=None, min_length=None, allow_blank=False)`
 
-## RegexField
+### RegexField
 
 A text representation, that validates the given value matches against a certain regular expression.
 
@@ -195,7 +195,7 @@ The mandatory `regex` argument may either be a string, or a compiled python regu
 
 Uses Django's `django.core.validators.RegexValidator` for validation.
 
-## SlugField
+### SlugField
 
 A `RegexField` that validates the input against the pattern `[a-zA-Z0-9_-]+`.
 
@@ -203,7 +203,7 @@ Corresponds to `django.db.models.fields.SlugField`.
 
 **Signature:** `SlugField(max_length=50, min_length=None, allow_blank=False)`
 
-## URLField
+### URLField
 
 A `RegexField` that validates the input against a URL matching pattern. Expects fully qualified URLs of the form `http://<host>/<path>`.
 
@@ -211,7 +211,7 @@ Corresponds to `django.db.models.fields.URLField`.  Uses Django's `django.core.v
 
 **Signature:** `URLField(max_length=200, min_length=None, allow_blank=False)`
 
-## UUIDField
+### UUIDField
 
 A field that ensures the input is a valid UUID string. The `to_internal_value` method will return a `uuid.UUID` instance. On output the field will return a string in the canonical hyphenated format, for example:
 
@@ -226,7 +226,7 @@ A field that ensures the input is a valid UUID string. The `to_internal_value` m
     * `'urn'` - RFC 4122 URN representation of the UUID: `"urn:uuid:5ce0e9a5-5ffa-654b-cee0-1238041fb31a"`
   Changing the `format` parameters only affects representation values. All formats are accepted by `to_internal_value`
 
-## FilePathField
+### FilePathField
 
 A field whose choices are limited to the filenames in a certain directory on the filesystem
 
@@ -240,7 +240,7 @@ Corresponds to `django.forms.fields.FilePathField`.
 * `allow_files` - Specifies whether files in the specified location should be included. Default is `True`. Either this or `allow_folders` must be `True`.
 * `allow_folders` - Specifies whether folders in the specified location should be included. Default is `False`. Either this or `allow_files` must be `True`.
 
-## IPAddressField
+### IPAddressField
 
 A field that ensures the input is a valid IPv4 or IPv6 string.
 
@@ -253,9 +253,9 @@ Corresponds to `django.forms.fields.IPAddressField` and `django.forms.fields.Gen
 
 ---
 
-# Numeric fields
+## Numeric fields
 
-## IntegerField
+### IntegerField
 
 An integer representation.
 
@@ -266,7 +266,7 @@ Corresponds to `django.db.models.fields.IntegerField`, `django.db.models.fields.
 * `max_value` Validate that the number provided is no greater than this value.
 * `min_value` Validate that the number provided is no less than this value.
 
-## BigIntegerField
+### BigIntegerField
 
 A biginteger representation.
 
@@ -278,7 +278,7 @@ Corresponds to `django.db.models.fields.BigIntegerField`.
 * `min_value` Validate that the number provided is no less than this value.
 * `coerce_to_string` Set to `True` if string values should be returned for the representation, or `False` if `BigInteger` objects should be returned. Defaults to the same value as the `COERCE_BIGINT_TO_STRING` settings key, which will be `False` unless overridden. If `BigInteger` objects are returned by the serializer, then the final output format will be determined by the renderer.
 
-## FloatField
+### FloatField
 
 A floating point representation.
 
@@ -289,7 +289,7 @@ Corresponds to `django.db.models.fields.FloatField`.
 * `max_value` Validate that the number provided is no greater than this value.
 * `min_value` Validate that the number provided is no less than this value.
 
-## DecimalField
+### DecimalField
 
 A decimal representation, represented in Python by a `Decimal` instance.
 
@@ -318,9 +318,9 @@ And to validate numbers up to anything less than one billion with a resolution o
 
 ---
 
-# Date and time fields
+## Date and time fields
 
-## DateTimeField
+### DateTimeField
 
 A date and time representation.
 
@@ -350,7 +350,7 @@ If you want to override this behavior, you'll need to declare the `DateTimeField
         class Meta:
             model = Comment
 
-## DateField
+### DateField
 
 A date representation.
 
@@ -365,7 +365,7 @@ Corresponds to `django.db.models.fields.DateField`
 
 Format strings may either be [Python strftime formats][strftime] which explicitly specify the format, or the special string `'iso-8601'`, which indicates that [ISO 8601][iso8601] style dates should be used. (eg `'2013-01-29'`)
 
-## TimeField
+### TimeField
 
 A time representation.
 
@@ -380,7 +380,7 @@ Corresponds to `django.db.models.fields.TimeField`
 
 Format strings may either be [Python strftime formats][strftime] which explicitly specify the format, or the special string `'iso-8601'`, which indicates that [ISO 8601][iso8601] style times should be used. (eg `'12:34:56.000000'`)
 
-## DurationField
+### DurationField
 
 A Duration representation.
 Corresponds to `django.db.models.fields.DurationField`
@@ -398,9 +398,9 @@ Format may either be the special string `'iso-8601'`, which indicates that [ISO 
 
 ---
 
-# Choice selection fields
+## Choice selection fields
 
-## ChoiceField
+### ChoiceField
 
 A field that can accept a value out of a limited set of choices.
 
@@ -415,7 +415,7 @@ Used by `ModelSerializer` to automatically generate fields if the corresponding 
 
 Both the `allow_blank` and `allow_null` are valid options on `ChoiceField`, although it is highly recommended that you only use one and not both. `allow_blank` should be preferred for textual choices, and `allow_null` should be preferred for numeric or other non-textual choices.
 
-## MultipleChoiceField
+### MultipleChoiceField
 
 A field that can accept a list of zero, one or many values, chosen from a limited set of choices. Takes a single mandatory argument. `to_internal_value` returns a `list` containing the selected values, deduplicated.
 
@@ -430,14 +430,13 @@ As with `ChoiceField`, both the `allow_blank` and `allow_null` options are valid
 
 ---
 
-# File upload fields
+## File upload fields
 
-#### Parsers and file uploads.
+!!! note
+    The `FileField` and `ImageField` classes are only suitable for use with `MultiPartParser` or `FileUploadParser`. Most parsers, such as e.g. JSON don't support file uploads.
+    Django's regular [FILE_UPLOAD_HANDLERS] are used for handling uploaded files.
 
-The `FileField` and `ImageField` classes are only suitable for use with `MultiPartParser` or `FileUploadParser`. Most parsers, such as e.g. JSON don't support file uploads.
-Django's regular [FILE_UPLOAD_HANDLERS] are used for handling uploaded files.
-
-## FileField
+### FileField
 
 A file representation.  Performs Django's standard FileField validation.
 
@@ -449,7 +448,7 @@ Corresponds to `django.forms.fields.FileField`.
 * `allow_empty_file` - Designates if empty files are allowed.
 * `use_url` - If set to `True` then URL string values will be used for the output representation. If set to `False` then filename string values will be used for the output representation. Defaults to the value of the `UPLOADED_FILES_USE_URL` settings key, which is `True` unless set otherwise.
 
-## ImageField
+### ImageField
 
 An image representation. Validates the uploaded file content as matching a known image format.
 
@@ -465,9 +464,9 @@ Requires either the `Pillow` package or `PIL` package.  The `Pillow` package is 
 
 ---
 
-# Composite fields
+## Composite fields
 
-## ListField
+### ListField
 
 A field class that validates a list of objects.
 
@@ -491,7 +490,7 @@ The `ListField` class also supports a declarative style that allows you to write
 
 We can now reuse our custom `StringListField` class throughout our application, without having to provide a `child` argument to it.
 
-## DictField
+### DictField
 
 A field class that validates a dictionary of objects. The keys in `DictField` are always assumed to be string values.
 
@@ -509,7 +508,7 @@ You can also use the declarative style, as with `ListField`. For example:
     class DocumentField(DictField):
         child = CharField()
 
-## HStoreField
+### HStoreField
 
 A preconfigured `DictField` that is compatible with Django's postgres `HStoreField`.
 
@@ -520,7 +519,7 @@ A preconfigured `DictField` that is compatible with Django's postgres `HStoreFie
 
 Note that the child field **must** be an instance of `CharField`, as the hstore extension stores values as strings.
 
-## JSONField
+### JSONField
 
 A field class that validates that the incoming data structure consists of valid JSON primitives. In its alternate binary mode, it will represent and validate JSON-encoded binary strings.
 
@@ -531,9 +530,9 @@ A field class that validates that the incoming data structure consists of valid 
 
 ---
 
-# Miscellaneous fields
+## Miscellaneous fields
 
-## ReadOnlyField
+### ReadOnlyField
 
 A field class that simply returns the value of the field without modification.
 
@@ -548,7 +547,7 @@ For example, if `has_expired` was a property on the `Account` model, then the fo
             model = Account
             fields = ['id', 'account_name', 'has_expired']
 
-## HiddenField
+### HiddenField
 
 A field class that does not take a value based on user input, but instead takes its value from a default value or callable.
 
@@ -565,7 +564,7 @@ For further examples on `HiddenField` see the [validators](validators.md) docume
 !!! note
     `HiddenField()` does not appear in `partial=True` serializer (when making `PATCH` request).
 
-## ModelField
+### ModelField
 
 A generic field that can be tied to any arbitrary model field. The `ModelField` class delegates the task of serialization/deserialization to its associated model field.  This field can be used to create serializer fields for custom model fields, without having to create a new custom serializer field.
 
@@ -575,7 +574,7 @@ This field is used by `ModelSerializer` to correspond to custom model field clas
 
 The `ModelField` class is generally intended for internal use, but can be used by your API if needed.  In order to properly instantiate a `ModelField`, it must be passed a field that is attached to an instantiated model.  For example: `ModelField(model_field=MyModel()._meta.get_field('custom_field'))`
 
-## SerializerMethodField
+### SerializerMethodField
 
 This is a read-only field. It gets its value by calling a method on the serializer class it is attached to. It can be used to add any sort of data to the serialized representation of your object.
 
@@ -601,7 +600,7 @@ The serializer method referred to by the `method_name` argument should accept a 
 
 ---
 
-# Custom fields
+## Custom fields
 
 If you want to create a custom field, you'll need to subclass `Field` and then override either one or both of the `.to_representation()` and `.to_internal_value()` methods.  These two methods are used to convert between the initial datatype, and a primitive, serializable datatype. Primitive datatypes will typically be any of a number, string, boolean, `date`/`time`/`datetime` or `None`. They may also be any list or dictionary like object that only contains other primitive objects. Other types might be supported, depending on the renderer that you are using.
 
@@ -609,9 +608,9 @@ The `.to_representation()` method is called to convert the initial datatype into
 
 The `.to_internal_value()` method is called to restore a primitive datatype into its internal python representation. This method should raise a `serializers.ValidationError` if the data is invalid.
 
-## Examples
+### Examples
 
-### A Basic Custom Field
+#### A Basic Custom Field
 
 Let's look at an example of serializing a class that represents an RGB color value:
 
@@ -652,7 +651,7 @@ As an example, let's create a field that can be used to represent the class name
             """
             return value.__class__.__name__
 
-### Raising validation errors
+#### Raising validation errors
 
 Our `ColorField` class above currently does not perform any data validation.
 To indicate invalid data, we should raise a `serializers.ValidationError`, like so:
@@ -698,7 +697,7 @@ The `.fail()` method is a shortcut for raising `ValidationError` that takes a me
 
 This style keeps your error messages cleaner and more separated from your code, and should be preferred.
 
-### Using `source='*'`
+#### Using `source='*'`
 
 Here we'll take an example of a _flat_ `DataPoint` model with `x_coordinate` and `y_coordinate` attributes.
 
@@ -829,23 +828,23 @@ would use the custom field approach when the nested serializer becomes infeasibl
 or overly complex.
 
 
-# Third party packages
+## Third party packages
 
 The following third party packages are also available.
 
-## DRF Compound Fields
+### DRF Compound Fields
 
 The [drf-compound-fields][drf-compound-fields] package provides "compound" serializer fields, such as lists of simple values, which can be described by other fields rather than serializers with the `many=True` option. Also provided are fields for typed dictionaries and values that can be either a specific type or a list of items of that type.
 
-## DRF Extra Fields
+### DRF Extra Fields
 
 The [drf-extra-fields][drf-extra-fields] package provides extra serializer fields for REST framework, including `Base64ImageField` and `PointField` classes.
 
-## djangorestframework-recursive
+### djangorestframework-recursive
 
 the [djangorestframework-recursive][djangorestframework-recursive] package provides a `RecursiveField` for serializing and deserializing recursive structures
 
-## django-rest-framework-gis
+### django-rest-framework-gis
 
 The [django-rest-framework-gis][django-rest-framework-gis] package provides geographic addons for django rest framework like a `GeometryField` field and a GeoJSON serializer.
 
