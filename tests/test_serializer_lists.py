@@ -775,3 +775,32 @@ class TestToRepresentationManagerCheck:
         queryset = NullableOneToOneSource.objects.all()
         serializer = self.serializer(queryset, many=True)
         assert serializer.data
+
+
+def test_many_true_instance_level_validation_uses_matched_instance():
+    class Obj:
+        def __init__(self, id, valid):
+            self.id = id
+            self.valid = valid
+
+    class TestSerializer(serializers.Serializer):
+        id = serializers.IntegerField()
+        status = serializers.CharField()
+
+        def validate_status(self, value):
+            if self.instance is None:
+                raise serializers.ValidationError("Instance not matched")
+            if not self.instance.valid:
+                raise serializers.ValidationError("Invalid instance")
+            return value
+
+    objs = [Obj(1, True), Obj(2, False)]
+    serializer = TestSerializer(
+        instance=objs,
+        data=[{"id": 1, "status": "ok"}, {"id": 2, "status": "fail"}],
+        many=True,
+        partial=True,
+    )
+
+    assert not serializer.is_valid()
+    assert serializer.errors == [{}, {'status': ['Invalid instance']}]
