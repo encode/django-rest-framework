@@ -2522,6 +2522,14 @@ class TestDictField(FieldValues):
 
         assert exc_info.value.detail == ['This dictionary may not be empty.']
 
+    def test_partial_update_does_not_include_missing_html_dict_field(self):
+        class TestSerializer(serializers.Serializer):
+            field_name = serializers.DictField(required=False)
+
+        serializer = TestSerializer(data=QueryDict(''), partial=True)
+        assert serializer.is_valid()
+        assert 'field_name' not in serializer.validated_data
+
 
 class TestNestedDictField(FieldValues):
     """
