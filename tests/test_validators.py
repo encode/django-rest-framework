@@ -1099,6 +1099,8 @@ class TestUniqueConstraintNullsDistinct(TestCase):
     def setUp(self):
         from tests.test_validators import UniqueConstraintNullsDistinctModel
 
+        self.model = UniqueConstraintNullsDistinctModel
+
         class UniqueConstraintNullsDistinctSerializer(serializers.ModelSerializer):
             class Meta:
                 model = UniqueConstraintNullsDistinctModel
@@ -1111,39 +1113,21 @@ class TestUniqueConstraintNullsDistinct(TestCase):
         When nulls_distinct=False, creating a second record with NULL values
         in the constrained fields should fail validation.
         """
-        from tests.test_validators import UniqueConstraintNullsDistinctModel
+        self.model.objects.create(name='First', code=None, category=None)
 
-        # Create first record with NULL values
-        UniqueConstraintNullsDistinctModel.objects.create(
-            name='First',
-            code=None,
-            category=None
-        )
-
-        # Attempt to create second record with same NULL values
         serializer = self.serializer_class(data={
             'name': 'Second',
             'code': None,
             'category': None
         })
-
-        # Should fail validation because nulls_distinct=False
         assert not serializer.is_valid()
 
     def test_nulls_distinct_false_allows_different_non_null_values(self):
         """
         Non-NULL values should still work normally with uniqueness validation.
         """
-        from tests.test_validators import UniqueConstraintNullsDistinctModel
+        self.model.objects.create(name='First', code='A', category='X')
 
-        # Create first record with non-NULL values
-        UniqueConstraintNullsDistinctModel.objects.create(
-            name='First',
-            code='A',
-            category='X'
-        )
-
-        # Create second record with different values - should pass
         serializer = self.serializer_class(data={
             'name': 'Second',
             'code': 'B',
@@ -1155,19 +1139,54 @@ class TestUniqueConstraintNullsDistinct(TestCase):
         """
         Duplicate non-NULL values should still fail validation.
         """
-        from tests.test_validators import UniqueConstraintNullsDistinctModel
+        self.model.objects.create(name='First', code='A', category='X')
 
-        # Create first record
-        UniqueConstraintNullsDistinctModel.objects.create(
-            name='First',
-            code='A',
-            category='X'
-        )
-
-        # Attempt to create duplicate - should fail
         serializer = self.serializer_class(data={
             'name': 'Second',
             'code': 'A',
+            'category': 'X'
+        })
+        assert not serializer.is_valid()
+
+    def test_nulls_distinct_false_update_with_null_values(self):
+        """
+        Updating an existing instance with NULL values should not
+        raise a uniqueness error against itself.
+        """
+        instance = self.model.objects.create(name='First', code=None, category=None)
+
+        serializer = self.serializer_class(instance=instance, data={
+            'name': 'Updated',
+            'code': None,
+            'category': None
+        })
+        assert serializer.is_valid(), serializer.errors
+
+    def test_nulls_distinct_false_update_to_existing_null(self):
+        """
+        Updating an instance to NULL values that already exist in
+        another record should fail validation.
+        """
+        self.model.objects.create(name='First', code=None, category=None)
+        instance = self.model.objects.create(name='Second', code='A', category='X')
+
+        serializer = self.serializer_class(instance=instance, data={
+            'name': 'Second',
+            'code': None,
+            'category': None
+        })
+        assert not serializer.is_valid()
+
+    def test_nulls_distinct_false_partial_null(self):
+        """
+        When only one constrained field is NULL and the other is non-NULL,
+        validation should still treat NULL as equal for the NULL field.
+        """
+        self.model.objects.create(name='First', code=None, category='X')
+
+        serializer = self.serializer_class(data={
+            'name': 'Second',
+            'code': None,
             'category': 'X'
         })
         assert not serializer.is_valid()
