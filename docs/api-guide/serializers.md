@@ -1180,6 +1180,10 @@ The [drf-encrypt-content][drf-encrypt-content] package helps you encrypt your da
 
 The [drf-shapeless-serializers][drf-shapeless-serializers] package provides dynamic serializer configuration capabilities, allowing runtime field selection, renaming, attribute modification, and nested relationship configuration without creating multiple serializer classes. It helps eliminate serializer boilerplate while providing flexible API responses.
 
+### DRF Pydantic
+
+The [drf-pydantic][drf-pydantic] package allows you to use Pydantic with Django REST framework for data validation and (de)serialization. If you develop DRF APIs and rely on Pydantic for data validation, this package provides seamless integration between both libraries.
+
 
 [cite]: https://groups.google.com/d/topic/django-users/sVFaOfQi4wY/discussion
 [relations]: relations.md
@@ -1204,3 +1208,4 @@ The [drf-shapeless-serializers][drf-shapeless-serializers] package provides dyna
 [drf-writable-nested]: https://github.com/beda-software/drf-writable-nested
 [drf-encrypt-content]: https://github.com/oguzhancelikarslan/drf-encrypt-content
 [drf-shapeless-serializers]: https://github.com/khaledsukkar2/drf-shapeless-serializers
+[drf-pydantic]: https://github.com/georgebv/drf-pydantic
