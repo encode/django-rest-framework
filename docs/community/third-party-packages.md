@@ -165,6 +165,7 @@ To submit new content, [create a pull request][drf-create-pr].
 * [drf-api-action][drf-api-action] - uses the power of DRF also as a library functions
 * [apitally] - A simple API monitoring, analytics, and request logging tool using middleware. For DRF-specific setup guide, [click here](https://docs.apitally.io/frameworks/django-rest-framework).
 * [wireup][wireup] - Dependency injection container with Django integration support. For integration docs, [click here][wireup-django-docs].
+* [drf-commons][drf-commons] - Production-grade utility library providing composable model mixins, pre-built ViewSet classes, 20+ serializer field types, bulk operations, async-safe audit tracking, and import/export services for scalable DRF APIs.
 
 ### Customization
 
@@ -267,6 +268,7 @@ To submit new content, [create a pull request][drf-create-pr].
 [drf-standardized-errors]: https://github.com/ghazi-git/drf-standardized-errors
 [drf-api-action]: https://github.com/Ori-Roza/drf-api-action
 [drf-restwind]: https://github.com/youzarsiph/drf-restwind
+[drf-commons]: https://github.com/htvictoire/drf-commons
 [drf-redesign]: https://github.com/youzarsiph/drf-redesign
 [drf-material]: https://github.com/youzarsiph/drf-material
 [django-pyoidc]: https://github.com/makinacorpus/django_pyoidc
