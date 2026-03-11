@@ -4,6 +4,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 from django import VERSION as django_version
+from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db import DataError, models
 from django.test import TestCase
 
@@ -828,6 +829,75 @@ class TestUniqueConstraintValidation(TestCase):
         assert not serializer.is_valid()
         assert serializer.errors == {"non_field_errors": [expected_message]}
         assert serializer.errors["non_field_errors"][0].code == UniqueTogetherValidator.code
+
+
+class UniqueConstraintWithRelationModel(models.Model):
+    value = models.IntegerField()
+    first_related = models.ForeignKey(IntegerFieldModel, related_name='+', on_delete=models.CASCADE, null=True, blank=True)
+    second_related = models.ForeignKey(IntegerFieldModel, related_name='+', on_delete=models.CASCADE, null=True, blank=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=('value', 'first_related'), condition=models.Q(second_related__isnull=True), name='unique_constraint_with_relationa'),
+            models.UniqueConstraint(fields=('value', 'second_related'), condition=models.Q(first_related__isnull=True), name='unique_constraint_with_relationb'),
+        ]
+
+
+class UniqueConstraintWithRelationModelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UniqueConstraintWithRelationModel
+        fields = '__all__'
+
+
+class TestUniqueConstraintWithRelationValidation(TestCase):
+    def setUp(self):
+        self.related_model = IntegerFieldModel.objects.create(integer=1)
+        self.instance_first = UniqueConstraintWithRelationModel.objects.create(
+            value=1,
+            first_related=self.related_model,
+            second_related=None
+        )
+        self.instance_second = UniqueConstraintWithRelationModel.objects.create(
+            value=1,
+            first_related=None,
+            second_related=self.related_model
+        )
+
+    def test_unique_constraint_with_relation_first(self):
+        instance = UniqueConstraintWithRelationModel(value=1, first_related=self.related_model, second_related=None)
+        with pytest.raises(DjangoValidationError) as excinfo:
+            instance.validate_constraints()
+
+        assert str(excinfo.value) == "{'__all__': ['Constraint “unique_constraint_with_relationa” is violated.']}"
+        serializer = UniqueConstraintWithRelationModelSerializer(data={
+            'value': 1,
+            'first_related': self.related_model.pk,
+            'second_related': None
+        })
+        assert not serializer.is_valid()
+        assert serializer.errors == {
+            'non_field_errors': [
+                'The fields value, first_related must make a unique set.'
+            ]
+        }
+
+    def test_unique_constraint_with_relation_second(self):
+        instance = UniqueConstraintWithRelationModel(value=1, second_related=self.related_model, first_related=None)
+        with pytest.raises(DjangoValidationError) as excinfo:
+            instance.validate_constraints()
+
+        assert str(excinfo.value) == "{'__all__': ['Constraint “unique_constraint_with_relationb” is violated.']}"
+        serializer = UniqueConstraintWithRelationModelSerializer(data={
+            'value': 1,
+            'first_related': None,
+            'second_related': self.related_model.pk
+        })
+        assert not serializer.is_valid()
+        assert serializer.errors == {
+            'non_field_errors': [
+                'The fields value, second_related must make a unique set.'
+            ]
+        }
 
 
 # Tests for `UniqueForDateValidator`
