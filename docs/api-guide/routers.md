@@ -154,9 +154,9 @@ The router will match lookup values containing any characters except slashes and
 
 Note that path converters will be used on all URLs registered in the router, including viewset actions.
 
-# API Guide
+## API Guide
 
-## SimpleRouter
+### SimpleRouter
 
 This router includes routes for the standard set of `list`, `create`, `retrieve`, `update`, `partial_update` and `destroy` actions.  The viewset can also mark additional methods to be routed, using the `@action` decorator.
 
@@ -179,7 +179,7 @@ This behavior can be modified by setting the `trailing_slash` argument to `False
 
 Trailing slashes are conventional in Django, but are not used by default in some other frameworks such as Rails.  Which style you choose to use is largely a matter of preference, although some javascript frameworks may expect a particular routing style.
 
-## DefaultRouter
+### DefaultRouter
 
 This router is similar to `SimpleRouter` as above, but additionally includes a default API root view, that returns a response containing hyperlinks to all the list views.  It also generates routes for optional `.json` style format suffixes.
 
@@ -200,7 +200,7 @@ As with `SimpleRouter` the trailing slashes on the URL routes can be removed by 
 
     router = DefaultRouter(trailing_slash=False)
 
-# Custom Routers
+## Custom Routers
 
 Implementing a custom router isn't something you'd need to do very often, but it can be useful if you have specific requirements about how the URLs for your API are structured.  Doing so allows you to encapsulate the URL structure in a reusable way that ensures you don't have to write your URL patterns explicitly for each new view.
 
@@ -222,7 +222,7 @@ The arguments to the `Route` named tuple are:
 
 **initkwargs**: A dictionary of any additional arguments that should be passed when instantiating the view.  Note that the `detail`, `basename`, and `suffix` arguments are reserved for viewset introspection and are also used by the browsable API to generate the view name and breadcrumb links.
 
-## Customizing dynamic routes
+### Customizing dynamic routes
 
 You can also customize how the `@action` decorator is routed. Include the `DynamicRoute` named tuple in the `.routes` list, setting the `detail` argument as appropriate for the list-based and detail-based routes. In addition to `detail`, the arguments to `DynamicRoute` are:
 
@@ -235,7 +235,7 @@ You can also customize how the `@action` decorator is routed. Include the `Dynam
 
 **initkwargs**: A dictionary of any additional arguments that should be passed when instantiating the view.
 
-## Example
+### Example
 
 The following example will only route to the `list` and `retrieve` actions, and does not use the trailing slash convention.
 
@@ -307,21 +307,21 @@ The following mappings would be generated...
 
 For another example of setting the `.routes` attribute, see the source code for the `SimpleRouter` class.
 
-## Advanced custom routers
+### Advanced custom routers
 
 If you want to provide totally custom behavior, you can override `BaseRouter` and override the `get_urls(self)` method.  The method should inspect the registered viewsets and return a list of URL patterns.  The registered prefix, viewset and basename tuples may be inspected by accessing the `self.registry` attribute.
 
 You may also want to override the `get_default_basename(self, viewset)` method, or else always explicitly set the `basename` argument when registering your viewsets with the router.
 
-# Third Party Packages
+## Third Party Packages
 
 The following third party packages are also available.
 
-## DRF Nested Routers
+### DRF Nested Routers
 
 The [drf-nested-routers package][drf-nested-routers] provides routers and relationship fields for working with nested resources.
 
-## ModelRouter (wq.db.rest)
+### ModelRouter (wq.db.rest)
 
 The [wq.db package][wq.db] provides an advanced [ModelRouter][wq.db-router] class (and singleton instance) that extends `DefaultRouter` with a `register_model()` API. Much like Django's `admin.site.register`, the only required argument to `rest.router.register_model` is a model class.  Reasonable defaults for a url prefix, serializer, and viewset will be inferred from the model and global configuration.
 
@@ -330,7 +330,7 @@ The [wq.db package][wq.db] provides an advanced [ModelRouter][wq.db-router] clas
 
     rest.router.register_model(MyModel)
 
-## DRF-extensions
+### DRF-extensions
 
 The [`DRF-extensions` package][drf-extensions] provides [routers][drf-extensions-routers] for creating [nested viewsets][drf-extensions-nested-viewsets], [collection level controllers][drf-extensions-collection-level-controllers] with [customizable endpoint names][drf-extensions-customizable-endpoint-names].
 
