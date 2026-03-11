@@ -1680,18 +1680,36 @@ class ListField(Field):
             self.validators.append(MinLengthValidator(self.min_length, message=message))
 
     def get_value(self, dictionary):
-        if self.field_name not in dictionary:
-            if getattr(self.root, 'partial', False):
-                return empty
         # We override the default field access in order to support
         # lists in HTML forms.
         if html.is_html_input(dictionary):
-            val = dictionary.getlist(self.field_name, [])
-            if len(val) > 0:
-                # Support QueryDict lists in HTML input.
+            # First, try to get the value using the plain field name with getlist.
+            # This handles standard HTML form list submissions like:
+            # <select multiple name="field"><option value="a">...
+            try:
+                # Call getlist with a single argument to support duck-typed MultiDicts
+                # that do not accept a default parameter.
+                val = dictionary.getlist(self.field_name)
+            except (TypeError, KeyError, AttributeError):
+                # Fall back to treating the value as not provided.
+                val = []
+            if val:
+                # Support QueryDict lists and other list-like results in HTML input.
                 return val
+            # For partial updates, avoid calling parse_html_list unless indexed keys are present.
+            # This reduces unnecessary parsing overhead for omitted list fields.
+            if getattr(self.root, 'partial', False):
+                # Quick check: are there any keys matching field_name[*]?
+                prefix = self.field_name + '['
+                if not any(key.startswith(prefix) for key in dictionary):
+                    return empty
+            # Parse indexed keys (e.g., field[0], field[1])
+            # This handles form submissions with explicit indices
             return html.parse_html_list(dictionary, prefix=self.field_name, default=empty)
 
+        # Non-HTML input: standard dictionary access
+        if self.field_name not in dictionary and getattr(self.root, 'partial', False):
+            return empty
         return dictionary.get(self.field_name, empty)
 
     def to_internal_value(self, data):
