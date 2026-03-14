@@ -19,9 +19,9 @@ Unless you want to heavily customize REST framework for some reason, you should 
 
 ---
 
-# Creating responses
+## Creating responses
 
-## Response()
+### Response()
 
 **Signature:** `Response(data, status=None, template_name=None, headers=None, content_type=None)`
 
@@ -41,37 +41,37 @@ Arguments:
 
 ---
 
-# Attributes
+## Attributes
 
-## .data
+### .data
 
 The unrendered, serialized data of the response.
 
-## .status_code
+### .status_code
 
 The numeric status code of the HTTP response.
 
-## .content
+### .content
 
 The rendered content of the response.  The `.render()` method must have been called before `.content` can be accessed.
 
-## .template_name
+### .template_name
 
 The `template_name`, if supplied.  Only required if `HTMLRenderer` or some other custom template renderer is the accepted renderer for the response.
 
-## .accepted_renderer
+### .accepted_renderer
 
 The renderer instance that will be used to render the response.
 
 Set automatically by the `APIView` or `@api_view` immediately before the response is returned from the view.
 
-## .accepted_media_type
+### .accepted_media_type
 
 The media type that was selected by the content negotiation stage.
 
 Set automatically by the `APIView` or `@api_view` immediately before the response is returned from the view.
 
-## .renderer_context
+### .renderer_context
 
 A dictionary of additional context information that will be passed to the renderer's `.render()` method.
 
@@ -79,14 +79,14 @@ Set automatically by the `APIView` or `@api_view` immediately before the respons
 
 ---
 
-# Standard HttpResponse attributes
+## Standard HttpResponse attributes
 
 The `Response` class extends `SimpleTemplateResponse`, and all the usual attributes and methods are also available on the response.  For example you can set headers on the response in the standard way:
 
     response = Response()
     response['Cache-Control'] = 'no-cache'
 
-## .render()
+### .render()
 
 **Signature:** `.render()`
 

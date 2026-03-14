@@ -28,7 +28,7 @@ Be mindful in the language you choose.  As an example, in an environment that is
 
 The [Django code of conduct][code-of-conduct] gives a fuller set of guidelines for participating in community forums.
 
-# Issues
+## Issues
 
 Our contribution process is that the [GitHub discussions page](https://github.com/encode/django-rest-framework/discussions) should generally be your starting point. Some tips on good potential issue reporting:
 
@@ -36,7 +36,7 @@ Our contribution process is that the [GitHub discussions page](https://github.co
 * Search the GitHub project page for related items, and make sure you're running the latest version of REST framework before reporting an issue.
 * Feature requests will typically be closed with a recommendation that they be implemented outside the core REST framework library (e.g. as third-party libraries).  This approach allows us to keep down the maintenance overhead of REST framework, so that the focus can be on continued stability and great documentation.
 
-## Triaging issues
+### Triaging issues
 
 Getting involved in triaging incoming issues is a good way to start contributing.  Every single ticket that comes into the ticket tracker needs to be reviewed in order to determine what the next steps should be.  Anyone can help out with this, you just need to be willing to
 
@@ -46,7 +46,7 @@ Getting involved in triaging incoming issues is a good way to start contributing
 * If the ticket is a feature request, could the feature request instead be implemented as a third party package?
 * If a ticket hasn't had much activity and addresses something you need, then comment on the ticket and try to find out what's needed to get it moving again.
 
-# Development
+## Development
 
 To start developing on Django REST framework, first create a Fork from the
 [Django REST Framework repo][repo] on GitHub.
@@ -68,7 +68,7 @@ Then run:
 
     pre-commit install
 
-## Testing
+### Testing
 
 To run the tests, clone the repository, and then:
 
@@ -104,7 +104,7 @@ To run the tests, clone the repository, and then:
     
     You can reuse existing models defined in `tests/models.py` for your tests.
 
-### Test options
+#### Test options
 
 Run using a more concise output style.
 
@@ -132,13 +132,13 @@ Shorter form to run the tests for a given test method.
 !!! note
     The test case and test method matching is fuzzy and will sometimes run other tests that contain a partial string match to the given  command line input.
 
-### Running against multiple environments
+#### Running against multiple environments
 
 You can also use the excellent [tox][tox] testing tool to run the tests against all supported versions of Python and Django.  Install `tox` globally, and then simply run:
 
     tox
 
-## Pull requests
+### Pull requests
 
 It's a good idea to make pull requests early on.  A pull request represents the start of a discussion, and doesn't necessarily need to be the final, finished submission.
 
@@ -156,17 +156,17 @@ Once you've made a pull request take a look at the build status in the GitHub in
 
 *Above: build notifications*
 
-## Managing compatibility issues
+### Managing compatibility issues
 
 Sometimes, in order to ensure your code works on various different versions of Django, Python or third party libraries, you'll need to run slightly different code depending on the environment.  Any code that branches in this way should be isolated into the `compat.py` module, and should provide a single common interface that the rest of the codebase can use.
 
-# Documentation
+## Documentation
 
 The documentation for REST framework is built from the [Markdown][markdown] source files in [the docs directory][docs].
 
 There are many great Markdown editors that make working with the documentation really easy.  The [Mou editor for Mac][mou] is one such editor that comes highly recommended.
 
-## Building the documentation
+### Building the documentation
 
 To build the documentation, install MkDocs with `pip install mkdocs` and then run the following command.
 
@@ -178,7 +178,7 @@ You can build the documentation and open a preview in a browser window by using 
 
     mkdocs serve
 
-## Language style
+### Language style
 
 Documentation should be in American English.  The tone of the documentation is very important - try to stick to a simple, plain, objective and well-balanced style where possible.
 
@@ -187,11 +187,11 @@ Some other tips:
 * Keep paragraphs reasonably short.
 * Don't use abbreviations such as 'e.g.' but instead use the long form, such as 'For example'.
 
-## Markdown style
+### Markdown style
 
 There are a couple of conventions you should follow when working on the documentation.
 
-##### 1. Headers
+#### 1. Headers
 
 Headers should use the hash style.  For example:
 
@@ -202,7 +202,7 @@ The underline style should not be used.  **Don't do this:**
     Some important topic
     ====================
 
-##### 2. Links
+#### 2. Links
 
 Links should always use the reference style, with the referenced hyperlinks kept at the end of the document.
 
@@ -220,7 +220,7 @@ If you are hyperlinking to another REST framework document, you should use a rel
 
 Linking in this style means you'll be able to click the hyperlink in your Markdown editor to open the referenced document.  When the documentation is built, these links will be converted into regular links to HTML pages.
 
-##### 3. Notes
+#### 3. Notes
 
 If you want to draw attention to a note or warning, use an [admonition], like so:
 
