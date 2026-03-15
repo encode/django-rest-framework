@@ -3,8 +3,6 @@ source:
     - request.py
 ---
 
-# Requests
-
 > If you're doing REST-based web service stuff ... you should ignore request.POST.
 >
 > &mdash; Malcom Tredinnick, [Django developers group][cite]
@@ -13,11 +11,11 @@ REST framework's `Request` class extends the standard `HttpRequest`, adding supp
 
 ---
 
-# Request parsing
+## Request parsing
 
 REST framework's Request objects provide flexible request parsing that allows you to treat requests with JSON data or other media types in the same way that you would normally deal with form data.
 
-## .data
+### .data
 
 `request.data` returns the parsed content of the request body.  This is similar to the standard `request.POST` and `request.FILES` attributes except that:
 
@@ -27,13 +25,13 @@ REST framework's Request objects provide flexible request parsing that allows yo
 
 For more details see the [parsers documentation].
 
-## .query_params
+### .query_params
 
 `request.query_params` is a more correctly named synonym for `request.GET`.
 
 For clarity inside your code, we recommend using `request.query_params` instead of the Django's standard `request.GET`. Doing so will help keep your codebase more correct and obvious - any HTTP method type may include query parameters, not just `GET` requests.
 
-## .parsers
+### .parsers
 
 The `APIView` class or `@api_view` decorator will ensure that this property is automatically set to a list of `Parser` instances, based on the `parser_classes` set on the view or based on the `DEFAULT_PARSER_CLASSES` setting.
 
@@ -44,21 +42,21 @@ You won't typically need to access this property.
 
     If a client sends a request with a content-type that cannot be parsed then a `UnsupportedMediaType` exception will be raised, which by default will be caught and return a `415 Unsupported Media Type` response.
 
-# Content negotiation
+## Content negotiation
 
 The request exposes some properties that allow you to determine the result of the content negotiation stage. This allows you to implement behavior such as selecting a different serialization schemes for different media types.
 
-## .accepted_renderer
+### .accepted_renderer
 
 The renderer instance that was selected by the content negotiation stage.
 
-## .accepted_media_type
+### .accepted_media_type
 
 A string representing the media type that was accepted by the content negotiation stage.
 
 ---
 
-# Authentication
+## Authentication
 
 REST framework provides flexible, per-request authentication, that gives you the ability to:
 
@@ -66,7 +64,7 @@ REST framework provides flexible, per-request authentication, that gives you the
 * Support the use of multiple authentication policies.
 * Provide both user and token information associated with the incoming request.
 
-## .user
+### .user
 
 `request.user` typically returns an instance of `django.contrib.auth.models.User`, although the behavior depends on the authentication policy being used.
 
@@ -74,7 +72,7 @@ If the request is unauthenticated the default value of `request.user` is an inst
 
 For more details see the [authentication documentation].
 
-## .auth
+### .auth
 
 `request.auth` returns any additional authentication context.  The exact behavior of `request.auth` depends on the authentication policy being used, but it may typically be an instance of the token that the request was authenticated against.
 
@@ -82,7 +80,7 @@ If the request is unauthenticated, or if no additional context is present, the d
 
 For more details see the [authentication documentation].
 
-## .authenticators
+### .authenticators
 
 The `APIView` class or `@api_view` decorator will ensure that this property is automatically set to a list of `Authentication` instances, based on the `authentication_classes` set on the view or based on the `DEFAULT_AUTHENTICATORS` setting.
 
@@ -91,11 +89,11 @@ You won't typically need to access this property.
 !!! note
     You may see a `WrappedAttributeError` raised when calling the `.user` or `.auth` properties. These errors originate from an authenticator as a standard `AttributeError`, however it's necessary that they be re-raised as a different exception type in order to prevent them from being suppressed by the outer property access. Python will not recognize that the `AttributeError` originates from the authenticator and will instead assume that the request object does not have a `.user` or `.auth` property. The authenticator will need to be fixed.
 
-# Browser enhancements
+## Browser enhancements
 
 REST framework supports a few browser enhancements such as browser-based `PUT`, `PATCH` and `DELETE` forms.
 
-## .method
+### .method
 
 `request.method` returns the **uppercased** string representation of the request's HTTP method.
 
@@ -103,7 +101,7 @@ Browser-based `PUT`, `PATCH` and `DELETE` forms are transparently supported.
 
 For more information see the [browser enhancements documentation].
 
-## .content_type
+### .content_type
 
 `request.content_type`, returns a string object representing the media type of the HTTP request's body, or an empty string if no media type was provided.
 
@@ -113,7 +111,7 @@ If you do need to access the content type of the request you should use the `.co
 
 For more information see the [browser enhancements documentation].
 
-## .stream
+### .stream
 
 `request.stream` returns a stream representing the content of the request body.
 
@@ -121,7 +119,7 @@ You won't typically need to directly access the request's content, as you'll nor
 
 ---
 
-# Standard HttpRequest attributes
+## Standard HttpRequest attributes
 
 As REST framework's `Request` extends Django's `HttpRequest`, all the other standard attributes and methods are also available.  For example the `request.META` and `request.session` dictionaries are available as normal.
 

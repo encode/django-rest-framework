@@ -60,19 +60,23 @@ The following template should be used for the description of the issue, and serv
         - [ ] `README` Python & Django versions
         - [ ] `docs` Python & Django versions
     - [ ] Ensure the pull request increments the version to `*.*.*` in [`restframework/__init__.py`](https://github.com/encode/django-rest-framework/blob/main/rest_framework/__init__.py).
+    - [ ] Update the release-notes.md:
+        - Start drafting a new release in GitHub: https://github.com/encode/django-rest-framework/releases/new
+        - Select the tag that you want to give to the next release and the previous tag
+        - Click the "Generate release notes" button
+        - Don't confirm anything yet! Copy the generated content to a file `input.md`
+        - Run `uv tool run linkify-gh-markdown input.md` to make the links absolute
+        - Put the generated content in the release-notes.md file
     - [ ] Ensure documentation validates
         - Build and serve docs `mkdocs serve`
         - Validate links `pylinkvalidate.py -P http://127.0.0.1:8000`
-    - [ ] Confirm with @tomchristie that release is finalized and ready to go.
+    - [ ] Confirm with other maintainers that the release is finalized and ready to go.
     - [ ] Ensure that release date is included in pull request.
     - [ ] Merge the release pull request.
-    - [ ] Install the release tools: `pip install build twine`
-    - [ ] Build the package: `python -m build`
-    - [ ] Push the package to PyPI with `twine upload dist/*`
-    - [ ] Tag the release, with `git tag -a *.*.* -m 'version *.*.*'; git push --tags`.
-    - [ ] Deploy the documentation with `mkdocs gh-deploy`.
+    - [ ] Tag the release, either with `git tag -a *.*.* -m 'version *.*.*'; git push --tags` or in GitHub.
+    - [ ] Wait for the release workflow to run. It will build the distribution, upload it to Test PyPI, PyPI and create the GitHub release.
     - [ ] Make a release announcement on the [discussion group](https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework).
-    - [ ] Make a release announcement on twitter.
+    - [ ] Make a release announcement on social media (Mastodon, etc...) and on the [Django forum](https://forum.djangoproject.com/).
     - [ ] Close the milestone on GitHub.
 
     To modify this process for future releases make a pull request to the [project management](https://www.django-rest-framework.org/topics/project-management/) documentation.

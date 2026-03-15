@@ -46,7 +46,7 @@ Check out a grid detailing all the packages and ecosystem around Django REST Fra
 
 To submit new content, [create a pull request][drf-create-pr].
 
-## Async Support
+### Async Support
 
 *  [adrf](https://github.com/em1208/adrf) - Async support, provides async Views, ViewSets, and Serializers.
 
@@ -79,6 +79,8 @@ To submit new content, [create a pull request][drf-create-pr].
 
 * [django-rest-framework-mongoengine][django-rest-framework-mongoengine] - Serializer class that supports using MongoDB as the storage layer for Django REST framework.
 * [djangorestframework-gis][djangorestframework-gis] - Geographic add-ons
+* [django-pydantic-field][django-pydantic-field] - Provides a way to use Pydantic models as schemas for Django's JSONField with full support for Pydantic v1 and v2, type safety and integration with Django REST Framework.
+* [drf-pydantic][drf-pydantic] - Use Pydantic with Django REST framework for data validation and (de)serialization.
 * [djangorestframework-hstore][djangorestframework-hstore] - Serializer class to support django-hstore DictionaryField model field and its schema-mode feature.
 * [djangorestframework-jsonapi][djangorestframework-jsonapi] - Provides a parser, renderer, serializers, and other tools to help build an API that is compliant with the jsonapi.org spec.
 * [html-json-forms][html-json-forms] - Provides an algorithm and serializer to process HTML JSON Form submissions per the (inactive) spec.
@@ -162,6 +164,7 @@ To submit new content, [create a pull request][drf-create-pr].
 * [drf-standardized-errors][drf-standardized-errors] - DRF exception handler to standardize error responses for all API endpoints.
 * [drf-api-action][drf-api-action] - uses the power of DRF also as a library functions
 * [apitally] - A simple API monitoring, analytics, and request logging tool using middleware. For DRF-specific setup guide, [click here](https://docs.apitally.io/frameworks/django-rest-framework).
+* [wireup][wireup] - Dependency injection container with Django integration support. For integration docs, [click here][wireup-django-docs].
 
 ### Customization
 
@@ -258,6 +261,8 @@ To submit new content, [create a pull request][drf-create-pr].
 [graphwrap]: https://github.com/PaulGilmartin/graph_wrap
 [rest-framework-actions]: https://github.com/AlexisMunera98/rest-framework-actions
 [fast-drf]: https://github.com/iashraful/fast-drf
+[wireup]: https://github.com/maldoinc/wireup
+[wireup-django-docs]: https://maldoinc.github.io/wireup/latest/integrations/django/
 [django-requestlogs]: https://github.com/Raekkeri/django-requestlogs
 [drf-standardized-errors]: https://github.com/ghazi-git/drf-standardized-errors
 [drf-api-action]: https://github.com/Ori-Roza/drf-api-action
@@ -269,3 +274,5 @@ To submit new content, [create a pull request][drf-create-pr].
 [drf-shapeless-serializers]: https://github.com/khaledsukkar2/drf-shapeless-serializers
 [django-lisan]: https://github.com/Nabute/django-lisan
 [axioms-drf-py]: https://github.com/abhishektiwari/axioms-drf-py
+[django-pydantic-field]: https://github.com/surenkov/django-pydantic-field
+[drf-pydantic]: https://github.com/georgebv/drf-pydantic
