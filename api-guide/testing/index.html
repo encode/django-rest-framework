@@ -1752,34 +1752,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#coreapiclient" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        CoreAPIClient
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="CoreAPIClient">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#headers-authentication_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Headers &amp; Authentication
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#api-test-cases" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3237,34 +3209,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#coreapiclient" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        CoreAPIClient
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="CoreAPIClient">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#headers-authentication_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Headers &amp; Authentication
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#api-test-cases" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3671,39 +3615,18 @@ response = client.post(&#39;http://testserver/organizations/&#39;, json={
 assert response.status_code == 200
 </code></pre></div>
 <h3 id="live-tests">Live tests<a class="headerlink" href="#live-tests" title="Permanent link">&para;</a></h3>
-<p>With careful usage both the <code>RequestsClient</code> and the <code>CoreAPIClient</code> provide
-the ability to write test cases that can run either in development, or be run
-directly against your staging server or production environment.</p>
-<p>Using this style to create basic tests of a few core pieces of functionality is
+<p>With careful usage the <code>RequestsClient</code> provides the ability to write tests
+that exercise your API views in a more end-to-end fashion than <code>APIClient</code>,
+while still running entirely in-process against your local Django application.</p>
+<p>Note that <code>RequestsClient</code> mounts a WSGI adapter and does not perform real
+network I/O. It cannot be used to send HTTP requests to remote services such
+as staging or production servers. For live tests against a deployed service,
+you should instead use a plain <code>requests.Session</code> (or similar HTTP client)
+configured with the appropriate base URL and authentication.
+Using this style to create basic tests of a few core pieces of functionality is
 a powerful way to validate your live service. Doing so may require some careful
 attention to setup and teardown to ensure that the tests run in a way that they
 do not directly affect customer data.</p>
-<hr />
-<h2 id="coreapiclient">CoreAPIClient<a class="headerlink" href="#coreapiclient" title="Permanent link">&para;</a></h2>
-<p>The CoreAPIClient allows you to interact with your API using the Python
-<code>coreapi</code> client library.</p>
-<div class="language-text highlight"><pre><span></span><code># Fetch the API schema
-client = CoreAPIClient()
-schema = client.get(&#39;http://testserver/schema/&#39;)
-
-# Create a new organization
-params = {&#39;name&#39;: &#39;MegaCorp&#39;, &#39;status&#39;: &#39;active&#39;}
-client.action(schema, [&#39;organizations&#39;, &#39;create&#39;], params)
-
-# Ensure that the organization exists in the listing
-data = client.action(schema, [&#39;organizations&#39;, &#39;list&#39;])
-assert(len(data) == 1)
-assert(data == [{&#39;name&#39;: &#39;MegaCorp&#39;, &#39;status&#39;: &#39;active&#39;}])
-</code></pre></div>
-<h3 id="headers-authentication_1">Headers &amp; Authentication<a class="headerlink" href="#headers-authentication_1" title="Permanent link">&para;</a></h3>
-<p>Custom headers and authentication may be used with <code>CoreAPIClient</code> in a
-similar way as with <code>RequestsClient</code>.</p>
-<div class="language-text highlight"><pre><span></span><code>from requests.auth import HTTPBasicAuth
-
-client = CoreAPIClient()
-client.session.auth = HTTPBasicAuth(&#39;user&#39;, &#39;pass&#39;)
-client.session.headers.update({&#39;x-test&#39;: &#39;true&#39;})
-</code></pre></div>
 <hr />
 <h2 id="api-test-cases">API Test cases<a class="headerlink" href="#api-test-cases" title="Permanent link">&para;</a></h2>
 <p>REST framework includes the following test case classes, that mirror the existing <a href="https://docs.djangoproject.com/en/stable/topics/testing/tools/#provided-test-case-classes">Django's test case classes</a>, but use <code>APIClient</code> instead of Django's default <code>Client</code>.</p>

@@ -3510,7 +3510,7 @@ decorator. For example:</p>
 from rest_framework.schemas import AutoSchema
 
 class CustomAutoSchema(AutoSchema):
-    def get_link(self, path, method, base_url):
+    def get_operation(self, path, method):
         # override view introspection here...
 
 @api_view([&#39;GET&#39;])
@@ -3518,8 +3518,8 @@ class CustomAutoSchema(AutoSchema):
 def view(request):
     return Response({&quot;message&quot;: &quot;Hello for today! See you tomorrow!&quot;})
 </code></pre></div>
-<p>This decorator takes a single <code>AutoSchema</code> instance, an <code>AutoSchema</code> subclass
-instance or <code>ManualSchema</code> instance as described in the <a href="../schemas/">Schemas documentation</a>.
+<p>This decorator takes a single <code>AutoSchema</code> instance or an <code>AutoSchema</code> subclass
+instance as described in the <a href="../schemas/">Schemas documentation</a>.
 You may pass <code>None</code> in order to exclude the view from schema generation.</p>
 <div class="language-text highlight"><pre><span></span><code>@api_view([&#39;GET&#39;])
 @schema(None)
