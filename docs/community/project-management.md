@@ -54,7 +54,7 @@ Our PyPI releases is automated in GitHub actions on tag pushes. The following te
     - Run `uv tool run linkify-gh-markdown input.md` to make the links absolute
     - Put the generated content in the `release-notes.md` file
 - Update supported versions:
-    - `pyproject.toml` `python_requires` list
+    - `pyproject.toml` ensure the `requires-python` key is up to date
     - `pyproject.toml` Python & Django version trove classifiers
     - `README` Python & Django versions
     - `docs` Python & Django versions
