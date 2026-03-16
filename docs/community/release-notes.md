@@ -85,7 +85,7 @@ You can determine your currently installed version using `pip show`:
 ### Other changes
 
 * Refactor token generation to use the `secrets` module by (https://github.com/mahdirahimi1999) in (https://github.com/encode/django-rest-framework/pull/9760)
-* Add validation for decorator out-of-order with `(https://github.com/api_view)` by (https://github.com/kernelshard) in (https://github.com/encode/django-rest-framework/pull/9821)
+* Add validation for decorator out-of-order with `@api_view` by (https://github.com/kernelshard) in (https://github.com/encode/django-rest-framework/pull/9821)
 * Switch to mkdocs material theme for documentation by (https://github.com/browniebroke) in (https://github.com/encode/django-rest-framework/pull/9849)
 
 ## New Contributors
