@@ -42,12 +42,12 @@ You can determine your currently installed version using `pip show`:
 
 **Date**: 17th March 2026
 
-### Breaking changes
+#### Breaking changes
 
 * Drop support for Python 3.9 by [@auvipy](https://github.com/auvipy) in [#9781](https://github.com/encode/django-rest-framework/pull/9781)
 * Drop deprecated coreapi support by [@browniebroke](https://github.com/browniebroke) in [#9895](https://github.com/encode/django-rest-framework/pull/9895)
 
-### Features
+#### Features
 
 * Add ability to specify output format for `DurationField` by [@sevdog](https://github.com/sevdog) in [#8532](https://github.com/encode/django-rest-framework/pull/8532)
 * Add missing decorators: `@versioning_class()`, `@content_negotiation_class()`, `@metadata_class()` for function-based views by [@qqii](https://github.com/qqii) in [#9719](https://github.com/encode/django-rest-framework/pull/9719)
@@ -57,7 +57,7 @@ You can determine your currently installed version using `pip show`:
 * Add optional support to serialize `BigInteger` to string by [@HoodyH](https://github.com/HoodyH) in [#9775](https://github.com/encode/django-rest-framework/pull/9775)
 * Add Django 6.0 support by [@MehrazRumman](https://github.com/MehrazRumman) in [#9819](https://github.com/encode/django-rest-framework/pull/9819)
 
-### Bug fixes
+#### Bug fixes
 
 * Prevent small risk of `Token` overwrite by [@mahdirahimi1999](https://github.com/mahdirahimi1999) in [#9754](https://github.com/encode/django-rest-framework/pull/9754)
 * Fix `UniqueTogetherValidator` validation when condition references a read-only field by [@ticosax](https://github.com/ticosax) in [#9764](https://github.com/encode/django-rest-framework/pull/9764)
@@ -68,25 +68,26 @@ You can determine your currently installed version using `pip show`:
 * Update TokenAdmin to respect USERNAME_FIELD of the user model. by [@m000](https://github.com/m000) in [#9836](https://github.com/encode/django-rest-framework/pull/9836)
 * Preserve ordering in `MultipleChoiceField` by [@fbozhang](https://github.com/fbozhang) in [#9735](https://github.com/encode/django-rest-framework/pull/9735)
 
-### Translations
+#### Translations
 
 * Update French translation by [@SebCorbin](https://github.com/SebCorbin) in [#9770](https://github.com/encode/django-rest-framework/pull/9770)
 * Update Brazilian Portuguese translations by [@JVPinheiroReis](https://github.com/JVPinheiroReis) in [#9828](https://github.com/encode/django-rest-framework/pull/9828)
 * Fix and improve French translations by [@deronnax](https://github.com/deronnax) in [#9896](https://github.com/encode/django-rest-framework/pull/9896)
 * Add missing Russian translation by [@minorytanaka](https://github.com/minorytanaka) in [#9903](https://github.com/encode/django-rest-framework/pull/9903)
 
-### Packaging
+#### Packaging
 
 * Migrate packaging to `pyproject.toml` by [@deronnax](https://github.com/deronnax) in [#9056](https://github.com/encode/django-rest-framework/pull/9056)
 * Setup release workflow with trusted publisher by [@browniebroke](https://github.com/browniebroke) in [#9852](https://github.com/encode/django-rest-framework/pull/9852)
 
-### Other changes
+#### Other changes
 
 * Refactor token generation to use the `secrets` module by [@mahdirahimi1999](https://github.com/mahdirahimi1999) in [#9760](https://github.com/encode/django-rest-framework/pull/9760)
 * Add validation for decorator out-of-order with `@api_view` by [@kernelshard](https://github.com/kernelshard) in [#9821](https://github.com/encode/django-rest-framework/pull/9821)
 * Switch to mkdocs material theme for documentation by [@browniebroke](https://github.com/browniebroke) in [#9849](https://github.com/encode/django-rest-framework/pull/9849)
 
-## New Contributors
+####  New Contributors
+
 * [@khaledsukkar2](https://github.com/khaledsukkar2) made their first contribution in [#9717](https://github.com/encode/django-rest-framework/pull/9717)
 * [@qqii](https://github.com/qqii) made their first contribution in [#9719](https://github.com/encode/django-rest-framework/pull/9719)
 * [@zankoAn](https://github.com/zankoAn) made their first contribution in [#9788](https://github.com/encode/django-rest-framework/pull/9788)
