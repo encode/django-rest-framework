@@ -36,6 +36,97 @@ You can determine your currently installed version using `pip show`:
 
 ---
 
+## 3.17.x series
+
+### 3.17.0
+
+**Date**: 17th March 2026
+
+#### Breaking changes
+
+* Drop support for Python 3.9 by (https://github.com/auvipy) in (https://github.com/encode/django-rest-framework/pull/9781)
+* Drop deprecated Core API support by (https://github.com/browniebroke) in (https://github.com/encode/django-rest-framework/pull/9895).
+
+#### Features
+
+* Add official support for Python 3.14 by (https://github.com/cclauss) in (https://github.com/encode/django-rest-framework/pull/9780)
+* Add official Django 6.0 support by (https://github.com/MehrazRumman) in (https://github.com/encode/django-rest-framework/pull/9819)
+* Add ability to specify output format for `DurationField` by (https://github.com/sevdog) in (https://github.com/encode/django-rest-framework/pull/8532)
+* Add missing decorators: `@versioning_class()`, `@content_negotiation_class()`, `@metadata_class()` for function-based views  by (https://github.com/qqii) in 
+(https://github.com/encode/django-rest-framework/pull/9719)
+* Support `violation_error_code` and `violation_error_message` from `UniqueConstraint` in `UniqueTogetherValidator` by (https://github.com/s-aleshin) in 
+(https://github.com/encode/django-rest-framework/pull/9766)
+* Add support for `ipaddress` objects in `JSONEncoder` by (https://github.com/corenting) in (https://github.com/encode/django-rest-framework/pull/9087)
+* Add optional support to serialize `BigInteger` to string by (https://github.com/HoodyH) in (https://github.com/encode/django-rest-framework/pull/9775)
+
+#### Bug fixes
+
+* Prevent small risk of `Token` overwrite by (https://github.com/mahdirahimi1999) in (https://github.com/encode/django-rest-framework/pull/9754)
+* Fix `UniqueTogetherValidator` validation when condition references a read-only field by (https://github.com/ticosax) in (https://github.com/encode/django-rest-framework/pull/9764)
+* Fix validation on many to many field when `default=None` by (https://github.com/Genarito) in (https://github.com/encode/django-rest-framework/pull/9790)
+* Fix invalid SPDX license expression in `__init__.py` by (https://github.com/TheFunctionalGuy) in (https://github.com/encode/django-rest-framework/pull/9799)
+* Fix `HTMLFormRenderer` to ensure a valid `datetime-local` format by (https://github.com/mgaligniana) in (https://github.com/encode/django-rest-framework/pull/9365)
+* Fix mutable default arguments in OrderingFilter methods by (https://github.com/killerdevildog) in (https://github.com/encode/django-rest-framework/pull/9742)
+* Update TokenAdmin to respect USERNAME_FIELD of the user model. by (https://github.com/m000) in (https://github.com/encode/django-rest-framework/pull/9836)
+* Preserve ordering in `MultipleChoiceField` by (https://github.com/fbozhang) in (https://github.com/encode/django-rest-framework/pull/9735)
+
+### Translations
+
+* Update French translation by (https://github.com/SebCorbin) in (https://github.com/encode/django-rest-framework/pull/9770)
+* Update Brazilian Portuguese translations by (https://github.com/JVPinheiroReis) in (https://github.com/encode/django-rest-framework/pull/9828)
+* Fix and improve French translations by (https://github.com/deronnax) in (https://github.com/encode/django-rest-framework/pull/9896)
+* Add missing Russian translation by (https://github.com/minorytanaka) in (https://github.com/encode/django-rest-framework/pull/9903)
+
+### Packaging
+
+* Migrate packaging to `pyproject.toml` by (https://github.com/deronnax) in (https://github.com/encode/django-rest-framework/pull/9056)
+* Setup release workflow with trusted publisher by (https://github.com/browniebroke) in (https://github.com/encode/django-rest-framework/pull/9852)
+
+### Other changes
+
+* Refactor token generation to use the `secrets` module by (https://github.com/mahdirahimi1999) in (https://github.com/encode/django-rest-framework/pull/9760)
+* Add validation for decorator out-of-order with `(https://github.com/api_view)` by (https://github.com/kernelshard) in (https://github.com/encode/django-rest-framework/pull/9821)
+* Switch to mkdocs material theme for documentation by (https://github.com/browniebroke) in (https://github.com/encode/django-rest-framework/pull/9849)
+
+## New Contributors
+* 
+* (https://github.com/khaledsukkar2) made their first contribution in (https://github.com/encode/django-rest-framework/pull/9717)
+* (https://github.com/qqii) made their first contribution in (https://github.com/encode/django-rest-framework/pull/9719)
+* (https://github.com/zankoAn) made their first contribution in (https://github.com/encode/django-rest-framework/pull/9788)
+* (https://github.com/uche-wealth) made their first contribution in (https://github.com/encode/django-rest-framework/pull/9795)
+* (https://github.com/s-aleshin) made their first contribution in (https://github.com/encode/django-rest-framework/pull/9766)
+* (https://github.com/Infamous003) made their first contribution in (https://github.com/encode/django-rest-framework/pull/9794)
+* (https://github.com/Genarito) made their first contribution in (https://github.com/encode/django-rest-framework/pull/9790)
+* (https://github.com/TheFunctionalGuy) made their first contribution in (https://github.com/encode/django-rest-framework/pull/9799)
+* (https://github.com/mahdighadiriii) made their first contribution in (https://github.com/encode/django-rest-framework/pull/9800)
+* (https://github.com/p-r-a-v-i-n) made their first contribution in (https://github.com/encode/django-rest-framework/pull/9801)
+* (https://github.com/itssimon) made their first contribution in (https://github.com/encode/django-rest-framework/pull/9718)
+* (https://github.com/huynguyengl99) made their first contribution in (https://github.com/encode/django-rest-framework/pull/9785)
+* (https://github.com/corenting) made their first contribution in (https://github.com/encode/django-rest-framework/pull/9087)
+* (https://github.com/killerdevildog) made their first contribution in (https://github.com/encode/django-rest-framework/pull/9742)
+* (https://github.com/dayandavid) made their first contribution in (https://github.com/encode/django-rest-framework/pull/9820)
+* (https://github.com/abhishektiwari) made their first contribution in (https://github.com/encode/django-rest-framework/pull/9826)
+* (https://github.com/HoodyH) made their first contribution in (https://github.com/encode/django-rest-framework/pull/9775)
+* (https://github.com/Shrikantgiri25) made their first contribution in (https://github.com/encode/django-rest-framework/pull/9808)
+* (https://github.com/JVPinheiroReis) made their first contribution in (https://github.com/encode/django-rest-framework/pull/9828)
+* (https://github.com/m000) made their first contribution in (https://github.com/encode/django-rest-framework/pull/9836)
+* (https://github.com/Nabute) made their first contribution in (https://github.com/encode/django-rest-framework/pull/9767)
+* (https://github.com/therealjozber) made their first contribution in (https://github.com/encode/django-rest-framework/pull/9845)
+* (https://github.com/nexapytech) made their first contribution in (https://github.com/encode/django-rest-framework/pull/9867)
+* (https://github.com/RispaJoseph) made their first contribution in (https://github.com/encode/django-rest-framework/pull/9874)
+* (https://github.com/LorenzoGuideri) made their first contribution in (https://github.com/encode/django-rest-framework/pull/9875)
+* (https://github.com/maldoinc) made their first contribution in (https://github.com/encode/django-rest-framework/pull/9893)
+* (https://github.com/0Nafi0) made their first contribution in (https://github.com/encode/django-rest-framework/pull/9861)
+* (https://github.com/MoeSalah1999) made their first contribution in (https://github.com/encode/django-rest-framework/pull/9870)
+* (https://github.com/kelsonbrito50) made their first contribution in (https://github.com/encode/django-rest-framework/pull/9901)
+* (https://github.com/fbozhang) made their first contribution in (https://github.com/encode/django-rest-framework/pull/9735)
+* (https://github.com/minorytanaka) made their first contribution in (https://github.com/encode/django-rest-framework/pull/9903)
+* (https://github.com/kosbemrunal) made their first contribution in (https://github.com/encode/django-rest-framework/pull/9904)
+* (https://github.com/htvictoire) made their first contribution in (https://github.com/encode/django-rest-framework/pull/9916)
+
+**Full Changelog**: https://github.com/encode/django-rest-framework/compare/3.16.1...3.17.0
+
+
 ## 3.16.x series
 
 ### 3.16.1
