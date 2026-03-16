@@ -56,7 +56,7 @@ test = [
 docs = [
   # MkDocs to build our documentation.
   "mkdocs==1.6.1",
-  "mkdocs-material[imaging]==9.7.3",
+  "mkdocs-material[imaging]==9.7.4",
   # pylinkvalidator to check for broken links in documentation.
   "pylinkvalidator==0.3",
 ]
