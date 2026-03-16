@@ -65,7 +65,7 @@ You can determine your currently installed version using `pip show`:
 * Fix invalid SPDX license expression in `__init__.py` by [@TheFunctionalGuy](https://github.com/TheFunctionalGuy) in [#9799](https://github.com/encode/django-rest-framework/pull/9799)
 * Fix `HTMLFormRenderer` to ensure a valid `datetime-local` format by [@mgaligniana](https://github.com/mgaligniana) in [#9365](https://github.com/encode/django-rest-framework/pull/9365)
 * Fix mutable default arguments in OrderingFilter methods by [@killerdevildog](https://github.com/killerdevildog) in [#9742](https://github.com/encode/django-rest-framework/pull/9742)
-* Update TokenAdmin to respect USERNAME_FIELD of the user model. by [@m000](https://github.com/m000) in [#9836](https://github.com/encode/django-rest-framework/pull/9836)
+* Update TokenAdmin to respect USERNAME_FIELD of the user model by [@m000](https://github.com/m000) in [#9836](https://github.com/encode/django-rest-framework/pull/9836)
 * Preserve ordering in `MultipleChoiceField` by [@fbozhang](https://github.com/fbozhang) in [#9735](https://github.com/encode/django-rest-framework/pull/9735)
 
 #### Translations
@@ -86,7 +86,7 @@ You can determine your currently installed version using `pip show`:
 * Add validation for decorator out-of-order with `@api_view` by [@kernelshard](https://github.com/kernelshard) in [#9821](https://github.com/encode/django-rest-framework/pull/9821)
 * Switch to mkdocs material theme for documentation by [@browniebroke](https://github.com/browniebroke) in [#9849](https://github.com/encode/django-rest-framework/pull/9849)
 
-####  New Contributors
+#### New Contributors
 
 * [@khaledsukkar2](https://github.com/khaledsukkar2) made their first contribution in [#9717](https://github.com/encode/django-rest-framework/pull/9717)
 * [@qqii](https://github.com/qqii) made their first contribution in [#9719](https://github.com/encode/django-rest-framework/pull/9719)
