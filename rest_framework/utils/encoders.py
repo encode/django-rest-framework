@@ -14,8 +14,6 @@ from django.utils import timezone
 from django.utils.encoding import force_str
 from django.utils.functional import Promise
 
-from rest_framework.compat import coreapi
-
 
 class JSONEncoder(json.JSONEncoder):
     """
@@ -63,11 +61,6 @@ class JSONEncoder(json.JSONEncoder):
         elif hasattr(obj, 'tolist'):
             # Numpy arrays and array scalars.
             return obj.tolist()
-        elif (coreapi is not None) and isinstance(obj, (coreapi.Document, coreapi.Error)):
-            raise RuntimeError(
-                'Cannot return a coreapi object from a JSON view. '
-                'You should be using a schema renderer instead for this view.'
-            )
         elif hasattr(obj, '__getitem__'):
             cls = (list if isinstance(obj, (list, tuple)) else dict)
             with contextlib.suppress(Exception):
