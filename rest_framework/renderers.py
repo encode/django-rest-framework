@@ -7,11 +7,9 @@ on the response, such as JSON encoded data or HTML output.
 REST framework also provides an HTML renderer that renders the browsable API.
 """
 
-import base64
 import contextlib
 import datetime
 import sys
-from urllib import parse
 
 from django import forms
 from django.conf import settings
@@ -19,14 +17,12 @@ from django.core.exceptions import ImproperlyConfigured
 from django.core.paginator import Page
 from django.template import engines, loader
 from django.urls import NoReverseMatch
-from django.utils.html import mark_safe
 from django.utils.http import parse_header_parameters
 from django.utils.safestring import SafeString
 
 from rest_framework import ISO_8601, VERSION, exceptions, serializers, status
 from rest_framework.compat import (
-    INDENT_SEPARATORS, LONG_SEPARATORS, SHORT_SEPARATORS, coreapi, coreschema,
-    pygments_css, yaml
+    INDENT_SEPARATORS, LONG_SEPARATORS, SHORT_SEPARATORS, pygments_css, yaml
 )
 from rest_framework.exceptions import ParseError
 from rest_framework.request import is_form_media_type, override_method
@@ -872,57 +868,6 @@ class AdminRenderer(BrowsableAPIRenderer):
             return
 
 
-class DocumentationRenderer(BaseRenderer):
-    media_type = 'text/html'
-    format = 'html'
-    charset = 'utf-8'
-    template = 'rest_framework/docs/index.html'
-    error_template = 'rest_framework/docs/error.html'
-    code_style = 'emacs'
-    languages = ['shell', 'javascript', 'python']
-
-    def get_context(self, data, request):
-        return {
-            'document': data,
-            'langs': self.languages,
-            'lang_htmls': ["rest_framework/docs/langs/%s.html" % language for language in self.languages],
-            'lang_intro_htmls': ["rest_framework/docs/langs/%s-intro.html" % language for language in self.languages],
-            'code_style': pygments_css(self.code_style),
-            'request': request
-        }
-
-    def render(self, data, accepted_media_type=None, renderer_context=None):
-        if isinstance(data, coreapi.Document):
-            template = loader.get_template(self.template)
-            context = self.get_context(data, renderer_context['request'])
-            return template.render(context, request=renderer_context['request'])
-        else:
-            template = loader.get_template(self.error_template)
-            context = {
-                "data": data,
-                "request": renderer_context['request'],
-                "response": renderer_context['response'],
-                "debug": settings.DEBUG,
-            }
-            return template.render(context, request=renderer_context['request'])
-
-
-class SchemaJSRenderer(BaseRenderer):
-    media_type = 'application/javascript'
-    format = 'javascript'
-    charset = 'utf-8'
-    template = 'rest_framework/schema.js'
-
-    def render(self, data, accepted_media_type=None, renderer_context=None):
-        codec = coreapi.codecs.CoreJSONCodec()
-        schema = base64.b64encode(codec.encode(data)).decode('ascii')
-
-        template = loader.get_template(self.template)
-        context = {'schema': mark_safe(schema)}
-        request = renderer_context['request']
-        return template.render(context, request=request)
-
-
 class MultiPartRenderer(BaseRenderer):
     media_type = 'multipart/form-data; boundary=BoUnDaRyStRiNg'
     format = 'multipart'
@@ -941,139 +886,6 @@ class MultiPartRenderer(BaseRenderer):
                     "test case." % key
                 )
         return encode_multipart(self.BOUNDARY, data)
-
-
-class CoreJSONRenderer(BaseRenderer):
-    media_type = 'application/coreapi+json'
-    charset = None
-    format = 'corejson'
-
-    def __init__(self):
-        assert coreapi, 'Using CoreJSONRenderer, but `coreapi` is not installed.'
-
-    def render(self, data, media_type=None, renderer_context=None):
-        indent = bool(renderer_context.get('indent', 0))
-        codec = coreapi.codecs.CoreJSONCodec()
-        return codec.dump(data, indent=indent)
-
-
-class _BaseOpenAPIRenderer:
-    def get_schema(self, instance):
-        CLASS_TO_TYPENAME = {
-            coreschema.Object: 'object',
-            coreschema.Array: 'array',
-            coreschema.Number: 'number',
-            coreschema.Integer: 'integer',
-            coreschema.String: 'string',
-            coreschema.Boolean: 'boolean',
-        }
-
-        schema = {}
-        if instance.__class__ in CLASS_TO_TYPENAME:
-            schema['type'] = CLASS_TO_TYPENAME[instance.__class__]
-        schema['title'] = instance.title
-        schema['description'] = instance.description
-        if hasattr(instance, 'enum'):
-            schema['enum'] = instance.enum
-        return schema
-
-    def get_parameters(self, link):
-        parameters = []
-        for field in link.fields:
-            if field.location not in ['path', 'query']:
-                continue
-            parameter = {
-                'name': field.name,
-                'in': field.location,
-            }
-            if field.required:
-                parameter['required'] = True
-            if field.description:
-                parameter['description'] = field.description
-            if field.schema:
-                parameter['schema'] = self.get_schema(field.schema)
-            parameters.append(parameter)
-        return parameters
-
-    def get_operation(self, link, name, tag):
-        operation_id = "%s_%s" % (tag, name) if tag else name
-        parameters = self.get_parameters(link)
-
-        operation = {
-            'operationId': operation_id,
-        }
-        if link.title:
-            operation['summary'] = link.title
-        if link.description:
-            operation['description'] = link.description
-        if parameters:
-            operation['parameters'] = parameters
-        if tag:
-            operation['tags'] = [tag]
-        return operation
-
-    def get_paths(self, document):
-        paths = {}
-
-        tag = None
-        for name, link in document.links.items():
-            path = parse.urlparse(link.url).path
-            method = link.action.lower()
-            paths.setdefault(path, {})
-            paths[path][method] = self.get_operation(link, name, tag=tag)
-
-        for tag, section in document.data.items():
-            for name, link in section.links.items():
-                path = parse.urlparse(link.url).path
-                method = link.action.lower()
-                paths.setdefault(path, {})
-                paths[path][method] = self.get_operation(link, name, tag=tag)
-
-        return paths
-
-    def get_structure(self, data):
-        return {
-            'openapi': '3.0.0',
-            'info': {
-                'version': '',
-                'title': data.title,
-                'description': data.description
-            },
-            'servers': [{
-                'url': data.url
-            }],
-            'paths': self.get_paths(data)
-        }
-
-
-class CoreAPIOpenAPIRenderer(_BaseOpenAPIRenderer):
-    media_type = 'application/vnd.oai.openapi'
-    charset = None
-    format = 'openapi'
-
-    def __init__(self):
-        assert coreapi, 'Using CoreAPIOpenAPIRenderer, but `coreapi` is not installed.'
-        assert yaml, 'Using CoreAPIOpenAPIRenderer, but `pyyaml` is not installed.'
-
-    def render(self, data, media_type=None, renderer_context=None):
-        structure = self.get_structure(data)
-        return yaml.dump(structure, default_flow_style=False).encode()
-
-
-class CoreAPIJSONOpenAPIRenderer(_BaseOpenAPIRenderer):
-    media_type = 'application/vnd.oai.openapi+json'
-    charset = None
-    format = 'openapi-json'
-    ensure_ascii = not api_settings.UNICODE_JSON
-
-    def __init__(self):
-        assert coreapi, 'Using CoreAPIJSONOpenAPIRenderer, but `coreapi` is not installed.'
-
-    def render(self, data, media_type=None, renderer_context=None):
-        structure = self.get_structure(data)
-        return json.dumps(
-            structure, indent=4,
-            ensure_ascii=self.ensure_ascii).encode('utf-8')
 
 
 class OpenAPIRenderer(BaseRenderer):
