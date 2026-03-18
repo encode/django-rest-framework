@@ -49,13 +49,13 @@ You can determine your currently installed version using `pip show`:
 
 #### Features
 
+* Add Django 6.0 support by [@MehrazRumman](https://github.com/MehrazRumman) in [#9819](https://github.com/encode/django-rest-framework/pull/9819)
+* Add support for Python 3.14 by [@cclauss](https://github.com/cclauss) in [#9780](https://github.com/encode/django-rest-framework/pull/9780)
 * Add ability to specify output format for `DurationField` by [@sevdog](https://github.com/sevdog) in [#8532](https://github.com/encode/django-rest-framework/pull/8532)
 * Add missing decorators: `@versioning_class()`, `@content_negotiation_class()`, `@metadata_class()` for function-based views by [@qqii](https://github.com/qqii) in [#9719](https://github.com/encode/django-rest-framework/pull/9719)
-* Add support for Python 3.14 by [@cclauss](https://github.com/cclauss) in [#9780](https://github.com/encode/django-rest-framework/pull/9780)
 * Support `violation_error_code` and `violation_error_message` from `UniqueConstraint` in `UniqueTogetherValidator` by [@s-aleshin](https://github.com/s-aleshin) in [#9766](https://github.com/encode/django-rest-framework/pull/9766)
 * Add support for `ipaddress` objects in `JSONEncoder` by [@corenting](https://github.com/corenting) in [#9087](https://github.com/encode/django-rest-framework/pull/9087)
 * Add optional support to serialize `BigInteger` to string by [@HoodyH](https://github.com/HoodyH) in [#9775](https://github.com/encode/django-rest-framework/pull/9775)
-* Add Django 6.0 support by [@MehrazRumman](https://github.com/MehrazRumman) in [#9819](https://github.com/encode/django-rest-framework/pull/9819)
 
 #### Bug fixes
 
