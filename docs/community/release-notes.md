@@ -78,6 +78,7 @@ You can determine your currently installed version using `pip show`:
 #### Packaging
 
 * Migrate packaging to `pyproject.toml` by [@deronnax](https://github.com/deronnax) in [#9056](https://github.com/encode/django-rest-framework/pull/9056)
+* Move package data rules from `MANIFEST.in` to `pyproject.toml` by [@p-r-a-v-i-n](https://github.com/p-r-a-v-i-n) in [#9825](https://github.com/encode/django-rest-framework/pull/9825)
 * Set up release workflow with trusted publisher by [@browniebroke](https://github.com/browniebroke) in [#9852](https://github.com/encode/django-rest-framework/pull/9852)
 
 #### Other changes
