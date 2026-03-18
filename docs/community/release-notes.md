@@ -40,7 +40,7 @@ You can determine your currently installed version using `pip show`:
 
 ### 3.17.0
 
-**Date**: 17th March 2026
+**Date**: 18th March 2026
 
 #### Breaking changes
 
