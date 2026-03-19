@@ -566,6 +566,14 @@ class TestDateTimeFieldHTMLFormRender(TestCase):
             "2024-12-23T09:55:30.345"  # Rendered in -06:00
         )
 
+    def test_datetime_field_rendering_empty_string_raises_no_error(self):
+        """
+        Regression test for #9927 (issue):
+        Ensures that an empty string value doesn't cause a ValueError
+        when the HTMLFormRenderer tries to parse it via fromisoformat.
+        """
+        self._assert_datetime_rendering("", "")
+
 
 class TestHTMLFormRenderer(TestCase):
     def setUp(self):
