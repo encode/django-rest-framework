@@ -574,6 +574,14 @@ class TestDateTimeFieldHTMLFormRender(TestCase):
         """
         self._assert_datetime_rendering("", "")
 
+    def test_datetime_field_rendering_none_value_raises_no_error(self):
+        """
+        Additional regression coverage for #9927:
+        Ensures that a None value, which is converted to an empty string
+        by as_form_field(), doesn't cause a ValueError when rendered.
+        """
+        self._assert_datetime_rendering(None, "")
+
 
 class TestHTMLFormRenderer(TestCase):
     def setUp(self):
