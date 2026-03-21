@@ -82,7 +82,7 @@ We can override `.get_queryset()` to deal with URLs such as `http://example.com/
 
 ---
 
-# Generic Filtering
+## Generic Filtering
 
 As well as being able to override the default queryset, REST framework also includes support for generic filtering backends that allow you to easily construct complex searches and filters.
 
@@ -90,7 +90,7 @@ Generic filters can also present themselves as HTML controls in the browsable AP
 
 ![Filter Example](../img/filter-controls.png)
 
-## Setting filter backends
+### Setting filter backends
 
 The default filter backends may be set globally, using the `DEFAULT_FILTER_BACKENDS` setting. For example.
 
@@ -111,7 +111,7 @@ using the `GenericAPIView` class-based views.
         serializer_class = UserSerializer
         filter_backends = [django_filters.rest_framework.DjangoFilterBackend]
 
-## Filtering and object lookups
+### Filtering and object lookups
 
 Note that if a filter backend is configured for a view, then as well as being used to filter list views, it will also be used to filter the querysets used for returning a single object.
 
@@ -119,7 +119,7 @@ For instance, given the previous example, and a product with an id of `4675`, th
 
     http://example.com/api/products/4675/?category=clothing&max_price=10.00
 
-## Overriding the initial queryset
+### Overriding the initial queryset
 
 Note that you can use both an overridden `.get_queryset()` and generic filtering together, and everything will work as expected.  For example, if `Product` had a many-to-many relationship with `User`, named `purchase`, you might want to write a view like this:
 
@@ -138,9 +138,9 @@ Note that you can use both an overridden `.get_queryset()` and generic filtering
 
 ---
 
-# API Guide
+## API Guide
 
-## DjangoFilterBackend
+### DjangoFilterBackend
 
 The [`django-filter`][django-filter-docs] library includes a `DjangoFilterBackend` class which
 supports highly customizable field filtering for REST framework.
@@ -188,7 +188,7 @@ You can read more about `FilterSet`s in the [django-filter documentation][django
 It's also recommended that you read the section on [DRF integration][django-filter-drf-docs].
 
 
-## SearchFilter
+### SearchFilter
 
 The `SearchFilter` class supports simple single query parameter based searching, and is based on the [Django admin's search functionality][search-django-admin].
 
@@ -251,7 +251,7 @@ For more details, see the [Django documentation][search-django-admin].
 
 ---
 
-## OrderingFilter
+### OrderingFilter
 
 The `OrderingFilter` class supports simple query parameter controlled ordering of results.
 
@@ -271,7 +271,7 @@ Multiple orderings may also be specified:
 
     http://example.com/api/users?ordering=account,username
 
-### Specifying which fields may be ordered against
+#### Specifying which fields may be ordered against
 
 It's recommended that you explicitly specify which fields the API should allow in the ordering filter.  You can do this by setting an `ordering_fields` attribute on the view, like so:
 
@@ -293,7 +293,7 @@ If you are confident that the queryset being used by the view doesn't contain an
         filter_backends = [filters.OrderingFilter]
         ordering_fields = '__all__'
 
-### Specifying a default ordering
+#### Specifying a default ordering
 
 If an `ordering` attribute is set on the view, this will be used as the default ordering.
 
@@ -310,7 +310,7 @@ The `ordering` attribute may be either a string or a list/tuple of strings.
 
 ---
 
-# Custom generic filtering
+## Custom generic filtering
 
 You can also provide your own generic filtering backend, or write an installable app for other developers to use.
 
@@ -318,7 +318,7 @@ To do so override `BaseFilterBackend`, and override the `.filter_queryset(self, 
 
 As well as allowing clients to perform searches and filtering, generic filter backends can be useful for restricting which objects should be visible to any given request or user.
 
-## Example
+### Example
 
 For example, you might need to restrict users to only being able to see objects they created.
 
@@ -331,7 +331,7 @@ For example, you might need to restrict users to only being able to see objects 
 
 We could achieve the same behavior by overriding `get_queryset()` on the views, but using a filter backend allows you to more easily add this restriction to multiple views, or to apply it across the entire API.
 
-## Customizing the interface
+### Customizing the interface
 
 Generic filters may also present an interface in the browsable API. To do so you should implement a `to_html()` method which returns a rendered HTML representation of the filter. This method should have the following signature:
 
@@ -339,23 +339,23 @@ Generic filters may also present an interface in the browsable API. To do so you
 
 The method should return a rendered HTML string.
 
-# Third party packages
+## Third party packages
 
 The following third party packages provide additional filter implementations.
 
-## Django REST framework filters package
+### Django REST framework filters package
 
 The [django-rest-framework-filters package][django-rest-framework-filters] works together with the `DjangoFilterBackend` class, and allows you to easily create filters across relationships, or create multiple filter lookup types for a given field.
 
-## Django REST framework full word search filter
+### Django REST framework full word search filter
 
 The [djangorestframework-word-filter][django-rest-framework-word-search-filter] developed as alternative to `filters.SearchFilter` which will search full word in text, or exact match.
 
-## Django URL Filter
+### Django URL Filter
 
 [django-url-filter][django-url-filter] provides a safe way to filter data via human-friendly URLs. It works very similar to DRF serializers and fields in a sense that they can be nested except they are called filtersets and filters. That provides easy way to filter related data. Also this library is generic-purpose so it can be used to filter other sources of data and not only Django `QuerySet`s.
 
-## drf-url-filters
+### drf-url-filters
 
 [drf-url-filter][drf-url-filter] is a simple Django app to apply filters on drf `ModelViewSet`'s `Queryset` in a clean, simple and configurable way. It also supports validations on incoming query params and their values. A beautiful python package `Voluptuous` is being used for validations on the incoming query parameters. The best part about voluptuous is you can define your own validations as per your query params requirements.
 

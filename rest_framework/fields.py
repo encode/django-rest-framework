@@ -1523,17 +1523,22 @@ class MultipleChoiceField(ChoiceField):
         if not self.allow_empty and len(data) == 0:
             self.fail('empty')
 
-        return {
-            # Arguments for super() are needed because of scoping inside
-            # comprehensions.
-            super(MultipleChoiceField, self).to_internal_value(item)
-            for item in data
-        }
+        # Arguments for super() are needed because of scoping inside
+        # comprehensions.
+        return list(
+            dict.fromkeys(
+                super(MultipleChoiceField, self).to_internal_value(item)
+                for item in data
+            )
+        )
 
     def to_representation(self, value):
-        return {
-            self.choice_strings_to_values.get(str(item), item) for item in value
-        }
+        return list(
+            dict.fromkeys(
+                self.choice_strings_to_values.get(str(item), item)
+                for item in value
+            )
+        )
 
 
 class FilePathField(ChoiceField):
