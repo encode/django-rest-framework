@@ -265,45 +265,19 @@ For example...
 
 ### Live tests
 
-With careful usage both the `RequestsClient` and the `CoreAPIClient` provide
-the ability to write test cases that can run either in development, or be run
-directly against your staging server or production environment.
+With careful usage the `RequestsClient` provides the ability to write tests
+that exercise your API views in a more end-to-end fashion than `APIClient`,
+while still running entirely in-process against your local Django application.
 
+Note that `RequestsClient` mounts a WSGI adapter and does not perform real
+network I/O. It cannot be used to send HTTP requests to remote services such
+as staging or production servers. For live tests against a deployed service,
+you should instead use a plain `requests.Session` (or similar HTTP client)
+configured with the appropriate base URL and authentication.
 Using this style to create basic tests of a few core pieces of functionality is
 a powerful way to validate your live service. Doing so may require some careful
 attention to setup and teardown to ensure that the tests run in a way that they
 do not directly affect customer data.
-
----
-
-## CoreAPIClient
-
-The CoreAPIClient allows you to interact with your API using the Python
-`coreapi` client library.
-
-    # Fetch the API schema
-    client = CoreAPIClient()
-    schema = client.get('http://testserver/schema/')
-
-    # Create a new organization
-    params = {'name': 'MegaCorp', 'status': 'active'}
-    client.action(schema, ['organizations', 'create'], params)
-
-    # Ensure that the organization exists in the listing
-    data = client.action(schema, ['organizations', 'list'])
-    assert(len(data) == 1)
-    assert(data == [{'name': 'MegaCorp', 'status': 'active'}])
-
-### Headers & Authentication
-
-Custom headers and authentication may be used with `CoreAPIClient` in a
-similar way as with `RequestsClient`.
-
-    from requests.auth import HTTPBasicAuth
-
-    client = CoreAPIClient()
-    client.session.auth = HTTPBasicAuth('user', 'pass')
-    client.session.headers.update({'x-test': 'true'})
 
 ---
 
