@@ -1525,20 +1525,16 @@ class MultipleChoiceField(ChoiceField):
 
         # Arguments for super() are needed because of scoping inside
         # comprehensions.
-        return list(
-            dict.fromkeys(
-                super(MultipleChoiceField, self).to_internal_value(item)
-                for item in data
-            )
-        )
+        return [
+            super(MultipleChoiceField, self).to_internal_value(item)
+            for item in data
+        ]
 
     def to_representation(self, value):
-        return list(
-            dict.fromkeys(
-                self.choice_strings_to_values.get(str(item), item)
-                for item in value
-            )
-        )
+        return [
+            self.choice_strings_to_values.get(str(item), item)
+            for item in value
+        ]
 
 
 class FilePathField(ChoiceField):
