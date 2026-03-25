@@ -345,7 +345,7 @@ class HTMLFormRenderer(BaseRenderer):
             except AttributeError:
                 format_ = api_settings.DATETIME_FORMAT
 
-            if format_ is not None:
+            if format_ is not None and field.value not in (None, ''):
                 # field.value is expected to be a string
                 # https://www.django-rest-framework.org/api-guide/fields/#datetimefield
                 field_value = field.value
@@ -358,10 +358,11 @@ class HTMLFormRenderer(BaseRenderer):
                     else datetime.datetime.strptime(field_value, format_)
                 )
 
-            # The format of an input type="datetime-local" is "yyyy-MM-ddThh:mm"
-            # followed by optional ":ss" or ":ss.SSS", so keep only the first three
-            # digits of milliseconds to avoid browser console error.
-            field.value = field.value.replace(tzinfo=None).isoformat(timespec="milliseconds")
+            if isinstance(field.value, datetime.datetime):
+                # The format of an input type="datetime-local" is "yyyy-MM-ddThh:mm"
+                # followed by optional ":ss" or ":ss.SSS", so keep only the first three
+                # digits of milliseconds to avoid browser console error.
+                field.value = field.value.replace(tzinfo=None).isoformat(timespec="milliseconds")
 
         if 'template' in style:
             template_name = style['template']
