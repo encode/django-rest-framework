@@ -10,7 +10,8 @@ source:
 >
 > &mdash; [Reinout van Rees][cite]
 
-REST framework provides an `APIView` class, which subclasses Django's `View` class.
+REST framework provides an `APIView` class, which subclasses Django’s base `View` class.
+
 
 `APIView` classes are different from regular `View` classes in the following ways:
 
@@ -19,7 +20,9 @@ REST framework provides an `APIView` class, which subclasses Django's `View` cla
 * Any `APIException` exceptions will be caught and mediated into appropriate responses.
 * Incoming requests will be authenticated and appropriate permission and/or throttle checks will be run before dispatching the request to the handler method.
 
-Using the `APIView` class is pretty much the same as using a regular `View` class, as usual, the incoming request is dispatched to an appropriate handler method such as `.get()` or `.post()`.  Additionally, a number of attributes may be set on the class that control various aspects of the API policy.
+Using the `APIView` class is very similar to using a regular Django `View` class.  
+As usual, the incoming request is dispatched to an appropriate handler method such as `.get()` or `.post()`.
+
 
 For example:
 
