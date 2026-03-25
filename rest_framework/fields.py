@@ -1754,7 +1754,10 @@ class DictField(Field):
         # We override the default field access in order to support
         # dictionaries in HTML forms.
         if html.is_html_input(dictionary):
-            return html.parse_html_dict(dictionary, prefix=self.field_name)
+            value = html.parse_html_dict(dictionary, prefix=self.field_name)
+            if not value and getattr(self.root, 'partial', False):
+                return empty
+            return value
         return dictionary.get(self.field_name, empty)
 
     def to_internal_value(self, data):
