@@ -1655,7 +1655,8 @@ class ListField(Field):
         'not_a_list': _('Expected a list of items but got type "{input_type}".'),
         'empty': _('This list may not be empty.'),
         'min_length': _('Ensure this field has at least {min_length} elements.'),
-        'max_length': _('Ensure this field has no more than {max_length} elements.')
+        'max_length': _('Ensure this field has no more than {max_length} elements.'),
+        'max_depth': _('List nesting depth exceeds maximum allowed depth of {max_depth}.')
     }
 
     def __init__(self, **kwargs):
@@ -1663,6 +1664,7 @@ class ListField(Field):
         self.allow_empty = kwargs.pop('allow_empty', True)
         self.max_length = kwargs.pop('max_length', None)
         self.min_length = kwargs.pop('min_length', None)
+        self.max_depth = kwargs.pop('max_depth', None)
 
         assert not inspect.isclass(self.child), '`child` has not been instantiated.'
         assert self.child.source is None, (
@@ -1671,6 +1673,8 @@ class ListField(Field):
         )
 
         super().__init__(**kwargs)
+        self._current_depth = 0
+        self._root_max_depth = self.max_depth
         self.child.bind(field_name='', parent=self)
         if self.max_length is not None:
             message = lazy_format(self.error_messages['max_length'], max_length=self.max_length)
@@ -1678,6 +1682,29 @@ class ListField(Field):
         if self.min_length is not None:
             message = lazy_format(self.error_messages['min_length'], min_length=self.min_length)
             self.validators.append(MinLengthValidator(self.min_length, message=message))
+
+    def bind(self, field_name, parent):
+        super().bind(field_name, parent)
+        if self.max_depth is None and hasattr(parent, '_root_max_depth') and parent._root_max_depth is not None:
+            self._root_max_depth = parent._root_max_depth
+            self._current_depth = parent._current_depth + 1
+        self._propagate_depth_to_child()
+
+    def _propagate_depth_to_child(self):
+        if self._root_max_depth is not None and hasattr(self.child, '_root_max_depth'):
+            self.child._root_max_depth = self._root_max_depth
+            self.child._current_depth = self._current_depth + 1
+            if hasattr(self.child, '_propagate_depth_to_child'):
+                self.child._propagate_depth_to_child()
+
+    def _check_data_depth(self, data, current_level):
+        items = data.values() if isinstance(data, dict) else data
+        for item in items:
+            if isinstance(item, (list, tuple, dict)):
+                next_level = current_level + 1
+                if next_level > self._root_max_depth:
+                    self.fail('max_depth', max_depth=self._root_max_depth)
+                self._check_data_depth(item, next_level)
 
     def get_value(self, dictionary):
         if self.field_name not in dictionary:
@@ -1704,6 +1731,12 @@ class ListField(Field):
             self.fail('not_a_list', input_type=type(data).__name__)
         if not self.allow_empty and len(data) == 0:
             self.fail('empty')
+        if self._root_max_depth is not None:
+            start_level = self._current_depth if self._current_depth > 0 else 1
+            if start_level > self._root_max_depth:
+                self.fail('max_depth', max_depth=self._root_max_depth)
+            if self.max_depth is not None:
+                self._check_data_depth(data, start_level)
         return self.run_child_validation(data)
 
     def to_representation(self, data):
@@ -1735,11 +1768,13 @@ class DictField(Field):
     default_error_messages = {
         'not_a_dict': _('Expected a dictionary of items but got type "{input_type}".'),
         'empty': _('This dictionary may not be empty.'),
+        'max_depth': _('Dictionary nesting depth exceeds maximum allowed depth of {max_depth}.')
     }
 
     def __init__(self, **kwargs):
         self.child = kwargs.pop('child', copy.deepcopy(self.child))
         self.allow_empty = kwargs.pop('allow_empty', True)
+        self.max_depth = kwargs.pop('max_depth', None)
 
         assert not inspect.isclass(self.child), '`child` has not been instantiated.'
         assert self.child.source is None, (
@@ -1748,7 +1783,32 @@ class DictField(Field):
         )
 
         super().__init__(**kwargs)
+        self._current_depth = 0
+        self._root_max_depth = self.max_depth
         self.child.bind(field_name='', parent=self)
+
+    def bind(self, field_name, parent):
+        super().bind(field_name, parent)
+        if self.max_depth is None and hasattr(parent, '_root_max_depth') and parent._root_max_depth is not None:
+            self._root_max_depth = parent._root_max_depth
+            self._current_depth = parent._current_depth + 1
+        self._propagate_depth_to_child()
+
+    def _propagate_depth_to_child(self):
+        if self._root_max_depth is not None and hasattr(self.child, '_root_max_depth'):
+            self.child._root_max_depth = self._root_max_depth
+            self.child._current_depth = self._current_depth + 1
+            if hasattr(self.child, '_propagate_depth_to_child'):
+                self.child._propagate_depth_to_child()
+
+    def _check_data_depth(self, data, current_level):
+        items = data.values() if isinstance(data, dict) else data
+        for item in items:
+            if isinstance(item, (list, tuple, dict)):
+                next_level = current_level + 1
+                if next_level > self._root_max_depth:
+                    self.fail('max_depth', max_depth=self._root_max_depth)
+                self._check_data_depth(item, next_level)
 
     def get_value(self, dictionary):
         # We override the default field access in order to support
@@ -1767,7 +1827,12 @@ class DictField(Field):
             self.fail('not_a_dict', input_type=type(data).__name__)
         if not self.allow_empty and len(data) == 0:
             self.fail('empty')
-
+        if self._root_max_depth is not None:
+            start_level = self._current_depth if self._current_depth > 0 else 1
+            if start_level > self._root_max_depth:
+                self.fail('max_depth', max_depth=self._root_max_depth)
+            if self.max_depth is not None:
+                self._check_data_depth(data, start_level)
         return self.run_child_validation(data)
 
     def to_representation(self, value):
