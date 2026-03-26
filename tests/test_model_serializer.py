@@ -371,8 +371,9 @@ class TestRegularFieldMappings(TestCase):
                 fields = '__all__'
 
         serializer = ExampleSerializer()
-        non_editable_choice_field = serializer.get_fields()["non_editable_choice_field"]
+        non_editable_choice_field = serializer.get_fields()['non_editable_choice_field']
         assert isinstance(non_editable_choice_field, ChoiceField)
+        assert non_editable_choice_field.read_only is True
 
 
 class TestDurationFieldMapping(TestCase):
