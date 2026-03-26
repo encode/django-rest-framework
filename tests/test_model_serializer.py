@@ -362,7 +362,11 @@ class TestRegularFieldMappings(TestCase):
                 model = ChoicesModel
                 fields = '__all__'
 
-        ExampleSerializer()
+        serializer = ExampleSerializer()
+        choices_field_with_nonstandard_args = serializer.get_fields()['choices_field_with_nonstandard_args']
+        assert isinstance(choices_field_with_nonstandard_args, ChoiceField)
+        assert choices_field_with_nonstandard_args.choices
+        assert choices_field_with_nonstandard_args.read_only is False
 
     def test_non_editable_choice_field(self):
         class ExampleSerializer(serializers.ModelSerializer):
@@ -374,6 +378,7 @@ class TestRegularFieldMappings(TestCase):
         non_editable_choice_field = serializer.get_fields()['non_editable_choice_field']
         assert isinstance(non_editable_choice_field, ChoiceField)
         assert non_editable_choice_field.read_only is True
+        assert non_editable_choice_field.choices
 
 
 class TestDurationFieldMapping(TestCase):
