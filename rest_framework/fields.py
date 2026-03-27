@@ -1690,7 +1690,7 @@ class ListField(Field):
                 # Call getlist with a single argument to support duck-typed MultiDicts
                 # that do not accept a default parameter.
                 val = dictionary.getlist(self.field_name)
-            except (TypeError, KeyError, AttributeError):
+            except (TypeError, KeyError):
                 # Fall back to treating the value as not provided.
                 val = []
             if val:
