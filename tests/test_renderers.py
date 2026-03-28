@@ -7,18 +7,16 @@ import pytest
 from django.core.cache import cache
 from django.db import models
 from django.http.request import HttpRequest
-from django.template import loader
 from django.test import TestCase, override_settings
 from django.urls import include, path, re_path
 from django.utils.safestring import SafeText
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework import permissions, serializers, status
-from rest_framework.compat import coreapi
 from rest_framework.decorators import action
 from rest_framework.renderers import (
-    AdminRenderer, BaseRenderer, BrowsableAPIRenderer, DocumentationRenderer,
-    HTMLFormRenderer, JSONRenderer, SchemaJSRenderer, StaticHTMLRenderer
+    AdminRenderer, BaseRenderer, BrowsableAPIRenderer, HTMLFormRenderer,
+    JSONRenderer, StaticHTMLRenderer
 )
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -568,6 +566,22 @@ class TestDateTimeFieldHTMLFormRender(TestCase):
             "2024-12-23T09:55:30.345"  # Rendered in -06:00
         )
 
+    def test_datetime_field_rendering_empty_string_raises_no_error(self):
+        """
+        Regression test for #9927 (issue):
+        Ensures that an empty string value doesn't cause a ValueError
+        when the HTMLFormRenderer tries to parse it via fromisoformat.
+        """
+        self._assert_datetime_rendering("", "")
+
+    def test_datetime_field_rendering_none_value_raises_no_error(self):
+        """
+        Additional regression coverage for #9927:
+        Ensures that a None value, which is converted to an empty string
+        by as_form_field(), doesn't cause a ValueError when rendered.
+        """
+        self._assert_datetime_rendering(None, "")
+
 
 class TestHTMLFormRenderer(TestCase):
     def setUp(self):
@@ -952,61 +966,3 @@ class AdminRendererTests(TestCase):
         self.assertEqual(results[1]['url'], '/example')
         self.assertEqual(results[2]['url'], None)
         self.assertNotIn('url', results[3])
-
-
-@pytest.mark.skipif(not coreapi, reason='coreapi is not installed')
-class TestDocumentationRenderer(TestCase):
-
-    def test_document_with_link_named_data(self):
-        """
-        Ref #5395: Doc's `document.data` would fail with a Link named "data".
-            As per #4972, use templatetag instead.
-        """
-        document = coreapi.Document(
-            title='Data Endpoint API',
-            url='https://api.example.org/',
-            content={
-                'data': coreapi.Link(
-                    url='/data/',
-                    action='get',
-                    fields=[],
-                    description='Return data.'
-                )
-            }
-        )
-
-        factory = APIRequestFactory()
-        request = factory.get('/')
-
-        renderer = DocumentationRenderer()
-
-        html = renderer.render(document, accepted_media_type="text/html", renderer_context={"request": request})
-        assert '<h1>Data Endpoint API</h1>' in html
-
-    def test_shell_code_example_rendering(self):
-        template = loader.get_template('rest_framework/docs/langs/shell.html')
-        context = {
-            'document': coreapi.Document(url='https://api.example.org/'),
-            'link_key': 'testcases > list',
-            'link': coreapi.Link(url='/data/', action='get', fields=[]),
-        }
-        html = template.render(context)
-        assert 'testcases<span class="w"> </span>list' in html
-
-
-@pytest.mark.skipif(not coreapi, reason='coreapi is not installed')
-class TestSchemaJSRenderer(TestCase):
-
-    def test_schemajs_output(self):
-        """
-        Test output of the SchemaJS renderer as per #5608. Django 2.0 on Py3 prints binary data as b'xyz' in templates,
-        and the base64 encoding used by SchemaJSRenderer outputs base64 as binary. Test fix.
-        """
-        factory = APIRequestFactory()
-        request = factory.get('/')
-
-        renderer = SchemaJSRenderer()
-
-        output = renderer.render('data', renderer_context={"request": request})
-        assert "'ImRhdGEi'" in output
-        assert "'b'ImRhdGEi''" not in output

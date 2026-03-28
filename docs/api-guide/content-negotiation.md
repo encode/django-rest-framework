@@ -3,8 +3,6 @@ source:
     - negotiation.py
 ---
 
-# Content negotiation
-
 > HTTP has provisions for several mechanisms for "content negotiation" - the process of selecting the best representation for a given response when there are multiple representations available.
 >
 > &mdash; [RFC 2616][cite], Fielding et al.
@@ -40,7 +38,7 @@ For more information on the `HTTP Accept` header, see [RFC 2616][accept-header]
 
     This is a valid approach as the HTTP spec deliberately underspecifies how a server should weight server-based preferences against client-based preferences.
 
-# Custom content negotiation
+## Custom content negotiation
 
 It's unlikely that you'll want to provide a custom content negotiation scheme for REST framework, but you can do so if needed.  To implement a custom content negotiation scheme override `BaseContentNegotiation`.
 
@@ -50,7 +48,7 @@ The `select_parser()` method should return one of the parser instances from the 
 
 The `select_renderer()` method should return a two-tuple of (renderer instance, media type), or raise a `NotAcceptable` exception.
 
-## Example
+### Example
 
 The following is a custom content negotiation class which ignores the client
 request when selecting the appropriate parser or renderer.
@@ -70,7 +68,7 @@ request when selecting the appropriate parser or renderer.
             """
             return (renderers[0], renderers[0].media_type)
 
-## Setting the content negotiation
+### Setting the content negotiation
 
 The default content negotiation class may be set globally, using the `DEFAULT_CONTENT_NEGOTIATION_CLASS` setting.  For example, the following settings would use our example `IgnoreClientContentNegotiation` class.
 
