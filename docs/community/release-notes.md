@@ -38,6 +38,16 @@ You can determine your currently installed version using `pip show`:
 
 ## 3.17.x series
 
+### 3.17.1
+
+**Date**: 24th March 2026
+
+#### Bug fixes
+
+* Fix `HTMLFormRenderer` with empty `datetime` values by [@p-r-a-v-i-n](https://github.com/p-r-a-v-i-n) in [#9928](https://github.com/encode/django-rest-framework/pull/9928)
+
+**Full Changelog**: [3.17.0...3.17.1](https://github.com/encode/django-rest-framework/compare/3.17.0...3.17.1)
+
 ### 3.17.0
 
 **Date**: 18th March 2026
