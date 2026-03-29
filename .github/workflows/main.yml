@@ -94,8 +94,8 @@ jobs:
           languages: python
           queries: security-and-quality
 
-      # Para Python NO hace falta build ni dependencias
-      # CodeQL analiza el código fuente directamente
+      # For Python, no build or dependencies are required
+      # CodeQL analyzes the source code directly
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
