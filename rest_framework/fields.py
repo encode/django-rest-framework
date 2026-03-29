@@ -1686,25 +1686,16 @@ class ListField(Field):
             # First, try to get the value using the plain field name with getlist.
             # This handles standard HTML form list submissions like:
             # <select multiple name="field"><option value="a">...
-            try:
-                # Call getlist with a single argument to support duck-typed MultiDicts
-                # that do not accept a default parameter.
-                val = dictionary.getlist(self.field_name)
-            except (TypeError, KeyError):
-                # Fall back to treating the value as not provided.
-                val = []
+            val = dictionary.getlist(self.field_name)
             if val:
                 # Support QueryDict lists and other list-like results in HTML input.
                 return val
             # For partial updates, avoid calling parse_html_list unless indexed keys are present.
             # This reduces unnecessary parsing overhead for omitted list fields.
             if getattr(self.root, 'partial', False):
-                # Quick check: are there any keys matching field_name[*]?
                 prefix = self.field_name + '['
                 if not any(key.startswith(prefix) for key in dictionary):
                     return empty
-            # Parse indexed keys (e.g., field[0], field[1])
-            # This handles form submissions with explicit indices
             return html.parse_html_list(dictionary, prefix=self.field_name, default=empty)
 
         # Non-HTML input: standard dictionary access
