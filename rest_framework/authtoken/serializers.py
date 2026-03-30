@@ -24,9 +24,17 @@ class AuthTokenSerializer(serializers.Serializer):
         super().__init__(*args, **kwargs)
         User = get_user_model()
         username_field = User.USERNAME_FIELD
-        if username_field != 'username':
-            self.fields[username_field] = self.fields.pop('username')
-            self.fields[username_field].label = _(username_field.capitalize())
+        if username_field != 'username' and 'username' in self.fields:
+            # Rebuild the fields mapping to preserve the original position
+            # of the login field when renaming it.
+            original_items = list(self.fields.items())
+            new_fields = self.fields.__class__(self)
+            for name, field in original_items:
+                if name == 'username':
+                    name = username_field
+                    field.label = _(username_field.capitalize())
+                new_fields[name] = field
+            self.fields = new_fields
 
     def validate(self, attrs):
         User = get_user_model()
