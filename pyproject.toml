@@ -44,7 +44,7 @@ dev = [
   { include-group = "test" },
 ]
 test = [
-  "importlib-metadata<9.0",
+  "importlib-metadata<10.0",
   # Pytest for running the tests.
   "pytest==9.*",
   "pytest-cov==7.*",
