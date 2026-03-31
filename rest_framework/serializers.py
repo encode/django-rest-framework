@@ -668,20 +668,27 @@ class ListSerializer(BaseSerializer):
             return self.child.run_validation(data)
 
         original_instance = self.child.instance
+        had_initial_data = hasattr(self.child, 'initial_data')
+        original_initial_data = getattr(self.child, 'initial_data', None)
+
         try:
             if (
                 hasattr(self, '_list_serializer_instance_map') and
-                isinstance(data, Mapping) and
-                original_instance is self.instance
+                isinstance(data, Mapping)
             ):
-                data_pk = data.get('id')
-                if data_pk is None:
-                    data_pk = data.get('pk')
-                self.child.instance = self._list_serializer_instance_map.get(str(data_pk)) if data_pk is not None else None
+                data_pk = data.get('id') or data.get('pk')
+                self.child.instance = (self._list_serializer_instance_map.get(str(data_pk))
+                                       if data_pk is not None else None)
 
+            self.child.initial_data = data
             return self.child.run_validation(data)
         finally:
             self.child.instance = original_instance
+            if had_initial_data:
+                self.child.initial_data = original_initial_data
+            else:
+                if hasattr(self.child, 'initial_data'):
+                    del self.child.initial_data
 
     def to_internal_value(self, data):
         """
@@ -804,7 +811,7 @@ class ListSerializer(BaseSerializer):
             "inspect 'serializer.validated_data' instead. "
             "You can also pass additional keyword arguments to 'save()' if you "
             "need to set extra attributes on the saved model instance. "
-            "For example: 'serializer.save(owner=request.user)'.'"
+            "For example: 'serializer.save(owner=request.user)'."
         )
         assert not hasattr(self, '_data'), (
             "You cannot call `.save()` after accessing `serializer.data`."
