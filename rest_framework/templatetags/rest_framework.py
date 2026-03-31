@@ -37,30 +37,6 @@ class CodeNode(template.Node):
         return pygments_highlight(text, self.lang, self.style)
 
 
-@register.filter()
-def with_location(fields, location):
-    return [
-        field for field in fields
-        if field.location == location
-    ]
-
-
-@register.simple_tag
-def form_for_link(link):
-    import coreschema
-    properties = {
-        field.name: field.schema or coreschema.String()
-        for field in link.fields
-    }
-    required = [
-        field.name
-        for field in link.fields
-        if field.required
-    ]
-    schema = coreschema.Object(properties=properties, required=required)
-    return mark_safe(coreschema.render_to_form(schema))
-
-
 @register.simple_tag
 def render_markdown(markdown_text):
     if apply_markdown is None:
@@ -246,43 +222,6 @@ def items(value):
         # not in the context, so neither should `{% for k, v in value|items %}`
         return []
     return value.items()
-
-
-@register.filter
-def data(value):
-    """
-    Simple filter to access `data` attribute of object,
-    specifically coreapi.Document.
-
-    As per `items` filter above, allows accessing `document.data` when
-    Document contains Link keyed-at "data".
-
-    See issue #5395
-    """
-    return value.data
-
-
-@register.filter
-def schema_links(section, sec_key=None):
-    """
-    Recursively find every link in a schema, even nested.
-    """
-    NESTED_FORMAT = '%s > %s'  # this format is used in docs/js/api.js:normalizeKeys
-    links = section.links
-    if section.data:
-        data = section.data.items()
-        for sub_section_key, sub_section in data:
-            new_links = schema_links(sub_section, sec_key=sub_section_key)
-            links.update(new_links)
-
-    if sec_key is not None:
-        new_links = {}
-        for link_key, link in links.items():
-            new_key = NESTED_FORMAT % (sec_key, link_key)
-            new_links.update({new_key: link})
-        return new_links
-
-    return links
 
 
 @register.filter
