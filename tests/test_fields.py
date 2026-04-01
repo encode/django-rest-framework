@@ -2572,6 +2572,24 @@ class TestDictField(FieldValues):
         assert not serializer.is_valid()
         assert 'data' in serializer.errors
 
+    def test_partial_update_can_clear_html_dict_field(self):
+        """
+        Test that a partial update can clear a DictField when provided with an
+        empty string value through a QueryDict.
+        """
+        class TestSerializer(serializers.Serializer):
+            field_name = serializers.DictField(required=False)
+            other_field = serializers.CharField(required=False)
+
+        serializer = TestSerializer(
+            data=QueryDict('field_name='),
+            partial=True,
+        )
+        assert serializer.is_valid()
+        assert 'field_name' in serializer.validated_data
+        assert serializer.validated_data['field_name'] == {}
+        assert 'other_field' not in serializer.validated_data
+
 
 class TestNestedDictField(FieldValues):
     """
