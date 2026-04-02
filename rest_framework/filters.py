@@ -3,7 +3,6 @@ Provides generic filtering backends that can be used to filter the results
 returned by list views.
 """
 import operator
-import warnings
 from functools import reduce
 
 from django.core.exceptions import FieldDoesNotExist, ImproperlyConfigured
@@ -14,8 +13,6 @@ from django.utils.encoding import force_str
 from django.utils.text import smart_split, unescape_string_literal
 from django.utils.translation import gettext_lazy as _
 
-from rest_framework import RemovedInDRF318Warning
-from rest_framework.compat import coreapi, coreschema
 from rest_framework.fields import CharField
 from rest_framework.settings import api_settings
 
@@ -47,13 +44,6 @@ class BaseFilterBackend:
         Return a filtered queryset.
         """
         raise NotImplementedError(".filter_queryset() must be overridden.")
-
-    def get_schema_fields(self, view):
-        assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'
-        if coreapi is not None:
-            warnings.warn('CoreAPI compatibility is deprecated and will be removed in DRF 3.18', RemovedInDRF318Warning)
-        assert coreschema is not None, 'coreschema must be installed to use `get_schema_fields()`'
-        return []
 
     def get_schema_operation_parameters(self, view):
         return []
@@ -185,23 +175,6 @@ class SearchFilter(BaseFilterBackend):
         }
         template = loader.get_template(self.template)
         return template.render(context)
-
-    def get_schema_fields(self, view):
-        assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'
-        if coreapi is not None:
-            warnings.warn('CoreAPI compatibility is deprecated and will be removed in DRF 3.18', RemovedInDRF318Warning)
-        assert coreschema is not None, 'coreschema must be installed to use `get_schema_fields()`'
-        return [
-            coreapi.Field(
-                name=self.search_param,
-                required=False,
-                location='query',
-                schema=coreschema.String(
-                    title=force_str(self.search_title),
-                    description=force_str(self.search_description)
-                )
-            )
-        ]
 
     def get_schema_operation_parameters(self, view):
         return [
@@ -351,23 +324,6 @@ class OrderingFilter(BaseFilterBackend):
         template = loader.get_template(self.template)
         context = self.get_template_context(request, queryset, view)
         return template.render(context)
-
-    def get_schema_fields(self, view):
-        assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'
-        if coreapi is not None:
-            warnings.warn('CoreAPI compatibility is deprecated and will be removed in DRF 3.18', RemovedInDRF318Warning)
-        assert coreschema is not None, 'coreschema must be installed to use `get_schema_fields()`'
-        return [
-            coreapi.Field(
-                name=self.ordering_param,
-                required=False,
-                location='query',
-                schema=coreschema.String(
-                    title=force_str(self.ordering_title),
-                    description=force_str(self.ordering_description)
-                )
-            )
-        ]
 
     def get_schema_operation_parameters(self, view):
         return [
