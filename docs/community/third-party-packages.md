@@ -46,7 +46,7 @@ Check out a grid detailing all the packages and ecosystem around Django REST Fra
 
 To submit new content, [create a pull request][drf-create-pr].
 
-## Async Support
+### Async Support
 
 *  [adrf](https://github.com/em1208/adrf) - Async support, provides async Views, ViewSets, and Serializers.
 
@@ -58,6 +58,7 @@ To submit new content, [create a pull request][drf-create-pr].
 * [hawkrest][hawkrest] - Provides Hawk HTTP Authorization.
 * [djangorestframework-httpsignature][djangorestframework-httpsignature] - Provides an easy to use HTTP Signature Authentication mechanism.
 * [djoser][djoser] - Provides a set of views to handle basic actions such as registration, login, logout, password reset and account activation.
+* [DRF Auth Kit][drf-auth-kit] - Provides complete REST authentication with JWT cookies, social login, MFA, and user management. Features full type safety and automatic OpenAPI schema generation.
 * [dj-rest-auth][dj-rest-auth] - Provides a set of REST API endpoints for registration, authentication (including social media authentication), password reset, retrieve and update user details, etc.
 * [drf-oidc-auth][drf-oidc-auth] - Implements OpenID Connect token authentication for DRF.
 * [drfpasswordless][drfpasswordless] - Adds (Medium, Square Cash inspired) passwordless logins and signups via email and mobile numbers.
@@ -72,11 +73,14 @@ To submit new content, [create a pull request][drf-create-pr].
 * [dry-rest-permissions][dry-rest-permissions] - Provides a simple way to define permissions for individual api actions.
 * [drf-access-policy][drf-access-policy] - Declarative and flexible permissions inspired by AWS' IAM policies.
 * [drf-psq][drf-psq] - An extension that gives support for having action-based **permission_classes**, **serializer_class**, and **queryset** dependent on permission-based rules.
+* [axioms-drf-py][axioms-drf-py] - Supports authentication and claim-based fine-grained authorization (**scopes**, **roles**, **groups**, **permissions**, etc. including object-level checks) using JWT tokens issued by an OAuth2/OIDC Authorization Server. 
 
 ### Serializers
 
 * [django-rest-framework-mongoengine][django-rest-framework-mongoengine] - Serializer class that supports using MongoDB as the storage layer for Django REST framework.
 * [djangorestframework-gis][djangorestframework-gis] - Geographic add-ons
+* [django-pydantic-field][django-pydantic-field] - Provides a way to use Pydantic models as schemas for Django's JSONField with full support for Pydantic v1 and v2, type safety and integration with Django REST Framework.
+* [drf-pydantic][drf-pydantic] - Use Pydantic with Django REST framework for data validation and (de)serialization.
 * [djangorestframework-hstore][djangorestframework-hstore] - Serializer class to support django-hstore DictionaryField model field and its schema-mode feature.
 * [djangorestframework-jsonapi][djangorestframework-jsonapi] - Provides a parser, renderer, serializers, and other tools to help build an API that is compliant with the jsonapi.org spec.
 * [html-json-forms][html-json-forms] - Provides an algorithm and serializer to process HTML JSON Form submissions per the (inactive) spec.
@@ -88,6 +92,7 @@ To submit new content, [create a pull request][drf-create-pr].
 * [djangorestframework-dataclasses][djangorestframework-dataclasses] - Serializer providing automatic field generation for Python dataclasses, like the built-in ModelSerializer does for models.
 * [django-restql][django-restql] - Turn your REST API into a GraphQL like API(It allows clients to control which fields will be sent in a response, uses GraphQL like syntax, supports read and write on both flat and nested fields).
 * [graphwrap][graphwrap] - Transform your REST API into a fully compliant GraphQL API with just two lines of code. Leverages [Graphene-Django](https://docs.graphene-python.org/projects/django/en/latest/) to dynamically build, at runtime, a GraphQL ObjectType for each view in your API.
+* [drf-shapeless-serializers][drf-shapeless-serializers] - Dynamically assemble, configure, and shape your Django Rest Framework serializers at runtime, much like connecting Lego bricks.
 
 ### Serializer fields
 
@@ -126,7 +131,7 @@ To submit new content, [create a pull request][drf-create-pr].
 * [djangorestframework-chain][djangorestframework-chain] - Allows arbitrary chaining of both relations and lookup filters.
 * [django-url-filter][django-url-filter] - Allows a safe way to filter data via human-friendly URLs. It is a generic library which is not tied to DRF but it provides easy integration with DRF.
 * [drf-url-filter][drf-url-filter] is a simple Django app to apply filters on drf `ModelViewSet`'s `Queryset` in a clean, simple and configurable way. It also supports validations on incoming query params and their values.
-* [django-rest-framework-guardian2][django-rest-framework-guardian2] - Provides integration with django-guardian, including the `DjangoObjectPermissionsFilter` previously found in DRF.
+* [django-rest-framework-guardian][django-rest-framework-guardian] - Provides integration with django-guardian, including the `DjangoObjectPermissionsFilter` previously found in DRF.
 
 ### Misc
 
@@ -149,14 +154,17 @@ To submit new content, [create a pull request][drf-create-pr].
 * [django-rest-framework-condition][django-rest-framework-condition] - Decorators for managing HTTP cache headers for Django REST framework (ETag and Last-modified).
 * [django-rest-witchcraft][django-rest-witchcraft] - Provides DRF integration with SQLAlchemy with SQLAlchemy model serializers/viewsets and a bunch of other goodies
 * [djangorestframework-mvt][djangorestframework-mvt] - An extension for creating views that serve Postgres data as Map Box Vector Tiles.
-* [drf-viewset-profiler][drf-viewset-profiler] - Lib to profile all methods from a viewset line by line.
+* [drf-viewset-profiler][drf-viewset-profiler] - Lib to profile all methods from a viewset line by line.
 * [djangorestframework-features][djangorestframework-features] - Advanced schema generation and more based on named features.
 * [django-elasticsearch-dsl-drf][django-elasticsearch-dsl-drf] - Integrate Elasticsearch DSL with Django REST framework. Package provides views, serializers, filter backends, pagination and other handy add-ons.
+* [django-lisan][django-lisan] - A lightweight translation and localization framework for Django REST Framework APIs.
 * [django-api-client][django-api-client] - DRF client that groups the Endpoint response, for use in CBVs and FBV as if you were working with Django's Native Models..
 * [fast-drf] - A model based library for making API development faster and easier.
 * [django-requestlogs] - Providing middleware and other helpers for audit logging for REST framework.
 * [drf-standardized-errors][drf-standardized-errors] - DRF exception handler to standardize error responses for all API endpoints.
 * [drf-api-action][drf-api-action] - uses the power of DRF also as a library functions
+* [apitally] - A simple API monitoring, analytics, and request logging tool using middleware. For DRF-specific setup guide, [click here](https://docs.apitally.io/frameworks/django-rest-framework).
+* [wireup][wireup] - Dependency injection container with Django integration support. For integration docs, [click here][wireup-django-docs].
 
 ### Customization
 
@@ -172,13 +180,14 @@ To submit new content, [create a pull request][drf-create-pr].
 [pypi-register]: https://pypi.org/account/register/
 [semver]: https://semver.org/
 [tox-docs]: https://tox.readthedocs.io/en/latest/
-[drf-compat]: https://github.com/encode/django-rest-framework/blob/master/rest_framework/compat.py
+[drf-compat]: https://github.com/encode/django-rest-framework/blob/main/rest_framework/compat.py
 [rest-framework-grid]: https://www.djangopackages.com/grids/g/django-rest-framework/
 [drf-create-pr]: https://github.com/encode/django-rest-framework/compare
 [authentication]: ../api-guide/authentication.md
 [permissions]: ../api-guide/permissions.md
-[third-party-packages]: ../topics/third-party-packages/#existing-third-party-packages
+[third-party-packages]: #existing-third-party-packages
 [discussion-group]: https://groups.google.com/forum/#!forum/django-rest-framework
+[drf-auth-kit]: https://github.com/huynguyengl99/drf-auth-kit
 [djangorestframework-digestauth]: https://github.com/juanriaza/django-rest-framework-digestauth
 [django-oauth-toolkit]: https://github.com/evonove/django-oauth-toolkit
 [djangorestframework-jwt]: https://github.com/GetBlimp/django-rest-framework-jwt
@@ -242,7 +251,7 @@ To submit new content, [create a pull request][drf-create-pr].
 [djangorestframework-dataclasses]: https://github.com/oxan/djangorestframework-dataclasses
 [django-restql]: https://github.com/yezyilomo/django-restql
 [djangorestframework-mvt]: https://github.com/corteva/djangorestframework-mvt
-[django-rest-framework-guardian2]: https://github.com/johnthagen/django-rest-framework-guardian2
+[django-rest-framework-guardian]: https://github.com/rpkilby/django-rest-framework-guardian
 [drf-viewset-profiler]: https://github.com/fvlima/drf-viewset-profiler
 [djangorestframework-features]: https://github.com/cloudcode-hungary/django-rest-framework-features/
 [django-elasticsearch-dsl-drf]: https://github.com/barseghyanartur/django-elasticsearch-dsl-drf
@@ -252,6 +261,8 @@ To submit new content, [create a pull request][drf-create-pr].
 [graphwrap]: https://github.com/PaulGilmartin/graph_wrap
 [rest-framework-actions]: https://github.com/AlexisMunera98/rest-framework-actions
 [fast-drf]: https://github.com/iashraful/fast-drf
+[wireup]: https://github.com/maldoinc/wireup
+[wireup-django-docs]: https://maldoinc.github.io/wireup/latest/integrations/django/
 [django-requestlogs]: https://github.com/Raekkeri/django-requestlogs
 [drf-standardized-errors]: https://github.com/ghazi-git/drf-standardized-errors
 [drf-api-action]: https://github.com/Ori-Roza/drf-api-action
@@ -259,3 +270,9 @@ To submit new content, [create a pull request][drf-create-pr].
 [drf-redesign]: https://github.com/youzarsiph/drf-redesign
 [drf-material]: https://github.com/youzarsiph/drf-material
 [django-pyoidc]: https://github.com/makinacorpus/django_pyoidc
+[apitally]: https://github.com/apitally/apitally-py
+[drf-shapeless-serializers]: https://github.com/khaledsukkar2/drf-shapeless-serializers
+[django-lisan]: https://github.com/Nabute/django-lisan
+[axioms-drf-py]: https://github.com/abhishektiwari/axioms-drf-py
+[django-pydantic-field]: https://github.com/surenkov/django-pydantic-field
+[drf-pydantic]: https://github.com/georgebv/drf-pydantic

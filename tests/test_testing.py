@@ -17,6 +17,7 @@ from rest_framework.response import Response
 from rest_framework.test import (
     APIClient, APIRequestFactory, URLPatternsTestCase, force_authenticate
 )
+from rest_framework.views import APIView
 
 
 @api_view(['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'])
@@ -293,6 +294,28 @@ class TestAPIRequestFactory(TestCase):
         expected = {'detail': 'CSRF Failed: CSRF cookie not set.'}
         assert response.status_code == 403
         assert response.data == expected
+
+    def test_transform_factory_django_request_to_drf_request(self):
+        """
+        ref: GH-3608, GH-4440 & GH-6488.
+        """
+
+        factory = APIRequestFactory()
+
+        class DummyView(APIView):  # Your custom view.
+            ...
+
+        request = factory.get('/', {'demo': 'test'})
+        drf_request = DummyView().initialize_request(request)
+        assert drf_request.query_params == {'demo': ['test']}
+
+        assert hasattr(drf_request, 'accepted_media_type') is False
+        DummyView().initial(drf_request)
+        assert drf_request.accepted_media_type == 'application/json'
+
+        request = factory.post('/', {'example': 'test'})
+        drf_request = DummyView().initialize_request(request)
+        assert drf_request.data.get('example') == 'test'
 
     def test_invalid_format(self):
         """
