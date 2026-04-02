@@ -1528,6 +1528,8 @@ class ModelSerializer(Serializer):
                     default = ''
                 else:
                     default = empty
+            else:
+                default = empty
 
             if unique_constraint_name in model_fields:
                 # The corresponding field is present in the serializer

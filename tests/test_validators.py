@@ -640,10 +640,11 @@ class UniqueConstraintBlankModel(models.Model):
         constraints = [
             # Unique constraint on one required field (age) and one blank field (tag)
             models.UniqueConstraint(
-              name='unique_constraint', 
-              fields=('age', 'tag'), 
-              condition=~models.Q(models.Q(title='') & models.Q(tag='True')))
-          ]
+                name='unique_constraint',
+                fields=('age', 'tag'),
+                condition=~models.Q(tag=''),
+            )
+        ]
 
         
 class UniqueConstraintReadOnlyFieldModel(models.Model):
