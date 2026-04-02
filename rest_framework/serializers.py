@@ -7,7 +7,7 @@ Serialization in REST framework is a two-phase process:
 
 1. Serializers marshal between complex types like model instances, and
 python primitives.
-2. The process of marshalling between python primitives and request and
+2. The process of marshaling between python primitives and request and
 response content is handled by parsers and renderers.
 """
 
@@ -26,7 +26,9 @@ from django.utils import timezone
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 
-from rest_framework.compat import postgres_fields
+from rest_framework.compat import (
+    get_referenced_base_fields_from_q, postgres_fields
+)
 from rest_framework.exceptions import ErrorDetail, ValidationError
 from rest_framework.fields import get_error_detail
 from rest_framework.settings import api_settings
@@ -51,7 +53,7 @@ from rest_framework.validators import (
 # This helps keep the separation between model fields, form fields, and
 # serializer fields more explicit.
 from rest_framework.fields import (  # NOQA # isort:skip
-    BooleanField, CharField, ChoiceField, DateField, DateTimeField, DecimalField,
+    BigIntegerField, BooleanField, CharField, ChoiceField, DateField, DateTimeField, DecimalField,
     DictField, DurationField, EmailField, Field, FileField, FilePathField, FloatField,
     HiddenField, HStoreField, IPAddressField, ImageField, IntegerField, JSONField,
     ListField, ModelField, MultipleChoiceField, ReadOnlyField,
@@ -310,6 +312,18 @@ class SerializerMetaclass(type):
 
 
 def as_serializer_error(exc):
+    """
+    Coerce validation exceptions into a standardized serialized error format.
+
+    This function normalizes both Django's `ValidationError` and REST
+    framework's `ValidationError` into a dictionary structure compatible
+    with serializer `.errors`, ensuring all values are represented as
+    lists of error details.
+
+    The returned structure conforms to the serializer error contract:
+    - Field-specific errors are returned as '{field-name: [errors]}'
+    - Non-field errors are returned under the 'NON_FIELD_ERRORS_KEY'
+    """
     assert isinstance(exc, (ValidationError, DjangoValidationError))
 
     if isinstance(exc, DjangoValidationError):
@@ -813,22 +827,29 @@ class ListSerializer(BaseSerializer):
 
 def raise_errors_on_nested_writes(method_name, serializer, validated_data):
     """
-    Give explicit errors when users attempt to pass writable nested data.
+    Enforce explicit handling of writable nested and dotted-source fields.
 
-    If we don't do this explicitly they'd get a less helpful error when
-    calling `.save()` on the serializer.
+    This helper raises clear and actionable errors when a serializer attempts
+    to perform writable nested updates or creates using the default
+    `ModelSerializer` behavior.
 
-    We don't *automatically* support these sorts of nested writes because
-    there are too many ambiguities to define a default behavior.
+    Writable nested relationships and dotted-source fields are intentionally
+    unsupported by default due to ambiguous persistence semantics. Developers
+    must either:
+    - Override the `.create()` / `.update()` methods explicitly, or
+    - Mark nested serializers as `read_only=True`
+
+    This check is invoked internally by default `ModelSerializer.create()`
+    and `ModelSerializer.update()` implementations.
 
     Eg. Suppose we have a `UserSerializer` with a nested profile. How should
     we handle the case of an update, where the `profile` relationship does
     not exist? Any of the following might be valid:
-
     * Raise an application error.
     * Silently ignore the nested part of the update.
     * Automatically create a profile instance.
     """
+
     ModelClass = serializer.Meta.model
     model_field_info = model_meta.get_field_info(ModelClass)
 
@@ -904,7 +925,8 @@ class ModelSerializer(Serializer):
     """
     serializer_field_mapping = {
         models.AutoField: IntegerField,
-        models.BigIntegerField: IntegerField,
+        models.BigAutoField: BigIntegerField,
+        models.BigIntegerField: BigIntegerField,
         models.BooleanField: BooleanField,
         models.CharField: CharField,
         models.CommaSeparatedIntegerField: CharField,
@@ -1087,6 +1109,13 @@ class ModelSerializer(Serializer):
 
         # Determine the fields that should be included on the serializer.
         fields = {}
+
+        # If it's a ManyToMany field, and the default is None, then raises an exception to prevent exceptions on .set()
+        for field_name in declared_fields.keys():
+            if field_name in info.relations and info.relations[field_name].to_many and declared_fields[field_name].default is None:
+                raise ValueError(
+                    f"The field '{field_name}' on serializer '{self.__class__.__name__}' is a ManyToMany field and cannot have a default value of None."
+                )
 
         for field_name in field_names:
             # If the field is explicitly declared on the class then use that.
@@ -1425,20 +1454,20 @@ class ModelSerializer(Serializer):
 
     def get_unique_together_constraints(self, model):
         """
-        Returns iterator of (fields, queryset), each entry describes an unique together
-        constraint on `fields` in `queryset`.
+        Returns iterator of (fields, queryset, condition_fields, condition),
+        each entry describes an unique together constraint on `fields` in `queryset`
+        with respect of constraint's `condition`.
         """
         for parent_class in [model] + list(model._meta.parents):
             for unique_together in parent_class._meta.unique_together:
-                yield unique_together, model._default_manager
+                yield unique_together, model._default_manager, [], None
             for constraint in parent_class._meta.constraints:
                 if isinstance(constraint, models.UniqueConstraint) and len(constraint.fields) > 1:
-                    yield (
-                        constraint.fields,
-                        model._default_manager
-                        if constraint.condition is None
-                        else model._default_manager.filter(constraint.condition)
-                    )
+                    if constraint.condition is None:
+                        condition_fields = []
+                    else:
+                        condition_fields = list(get_referenced_base_fields_from_q(constraint.condition))
+                    yield (constraint.fields, model._default_manager, condition_fields, constraint.condition)
 
     def get_uniqueness_extra_kwargs(self, field_names, declared_fields, extra_kwargs):
         """
@@ -1467,12 +1496,14 @@ class ModelSerializer(Serializer):
                                         model_field.unique_for_year}
 
         unique_constraint_names -= {None}
+        model_fields_names = set(model_fields.keys())
 
         # Include each of the `unique_together` and `UniqueConstraint` field names,
         # so long as all the field names are included on the serializer.
-        for unique_together_list, queryset in self.get_unique_together_constraints(model):
-            if set(field_names).issuperset(unique_together_list):
-                unique_constraint_names |= set(unique_together_list)
+        for unique_together_list, queryset, condition_fields, condition in self.get_unique_together_constraints(model):
+            unique_together_list_and_condition_fields = set(unique_together_list) | set(condition_fields)
+            if model_fields_names.issuperset(unique_together_list_and_condition_fields):
+                unique_constraint_names |= unique_together_list_and_condition_fields
 
         # Now we have all the field names that have uniqueness constraints
         # applied, we can add the extra 'required=...' or 'default=...'
@@ -1490,6 +1521,8 @@ class ModelSerializer(Serializer):
                 default = timezone.now
             elif unique_constraint_field.has_default():
                 default = unique_constraint_field.default
+            elif unique_constraint_field.null:
+                default = None
             else:
                 default = empty
 
@@ -1563,6 +1596,17 @@ class ModelSerializer(Serializer):
             self.get_unique_for_date_validators()
         )
 
+    def _get_constraint_violation_error_message(self, constraint):
+        """
+        Returns the violation error message for the UniqueConstraint,
+        or None if the message is the default.
+        """
+        violation_error_message = constraint.get_violation_error_message()
+        default_error_message = constraint.default_violation_error_message % {"name": constraint.name}
+        if violation_error_message == default_error_message:
+            return None
+        return violation_error_message
+
     def get_unique_together_validators(self):
         """
         Determine a default set of validators for any unique_together constraints.
@@ -1589,15 +1633,23 @@ class ModelSerializer(Serializer):
         for name, source in field_sources.items():
             source_map[source].append(name)
 
+        unique_constraint_by_fields = {
+            constraint.fields: constraint
+            for model_cls in (*self.Meta.model._meta.parents, self.Meta.model)
+            for constraint in model_cls._meta.constraints
+            if isinstance(constraint, models.UniqueConstraint)
+        }
+
         # Note that we make sure to check `unique_together` both on the
         # base model class, but also on any parent classes.
         validators = []
-        for unique_together, queryset in self.get_unique_together_constraints(self.Meta.model):
+        for unique_together, queryset, condition_fields, condition in self.get_unique_together_constraints(self.Meta.model):
             # Skip if serializer does not map to all unique together sources
-            if not set(source_map).issuperset(unique_together):
+            unique_together_and_condition_fields = set(unique_together) | set(condition_fields)
+            if not set(source_map).issuperset(unique_together_and_condition_fields):
                 continue
 
-            for source in unique_together:
+            for source in unique_together_and_condition_fields:
                 assert len(source_map[source]) == 1, (
                     "Unable to create `UniqueTogetherValidator` for "
                     "`{model}.{field}` as `{serializer}` has multiple "
@@ -1614,9 +1666,17 @@ class ModelSerializer(Serializer):
                 )
 
             field_names = tuple(source_map[f][0] for f in unique_together)
+
+            constraint = unique_constraint_by_fields.get(tuple(unique_together))
+            violation_error_message = self._get_constraint_violation_error_message(constraint) if constraint else None
+
             validator = UniqueTogetherValidator(
                 queryset=queryset,
-                fields=field_names
+                fields=field_names,
+                condition_fields=tuple(source_map[f][0] for f in condition_fields),
+                condition=condition,
+                message=violation_error_message,
+                code=getattr(constraint, 'violation_error_code', None),
             )
             validators.append(validator)
         return validators

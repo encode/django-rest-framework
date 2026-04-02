@@ -66,9 +66,9 @@ Or apply the style globally, using the `DEFAULT_PAGINATION_CLASS` settings key. 
 
 ---
 
-# API Reference
+## API Reference
 
-## PageNumberPagination
+### PageNumberPagination
 
 This pagination style accepts a single number page number in the request query parameters.
 
@@ -99,6 +99,18 @@ To enable the `PageNumberPagination` style globally, use the following configura
 
 On `GenericAPIView` subclasses you may also set the `pagination_class` attribute to select `PageNumberPagination` on a per-view basis.
 
+By default, the query parameter name used for pagination is `page`.
+This can be customized by subclassing `PageNumberPagination` and overriding the `page_query_param` attribute.
+
+For example:
+
+    from rest_framework.pagination import PageNumberPagination
+
+    class CustomPagination(PageNumberPagination):
+        page_query_param = 'p'
+
+With this configuration, clients would request pages using `?p=2` instead of `?page=2`.
+
 #### Configuration
 
 The `PageNumberPagination` class includes a number of attributes that may be overridden to modify the pagination style.
@@ -110,12 +122,12 @@ To set these attributes you should override the `PageNumberPagination` class, an
 * `page_query_param` - A string value indicating the name of the query parameter to use for the pagination control.
 * `page_size_query_param` - If set, this is a string value indicating the name of a query parameter that allows the client to set the page size on a per-request basis. Defaults to `None`, indicating that the client may not control the requested page size.
 * `max_page_size` - If set, this is a numeric value indicating the maximum allowable requested page size. This attribute is only valid if `page_size_query_param` is also set.
-* `last_page_strings` - A list or tuple of string values indicating values that may be used with the `page_query_param` to request the final page in the set. Defaults to `('last',)`
+* `last_page_strings` - A list or tuple of string values indicating values that may be used with the `page_query_param` to request the final page in the set. Defaults to `('last',)`. For example, use `?page=last` to go directly to the last page.
 * `template` - The name of a template to use when rendering pagination controls in the browsable API. May be overridden to modify the rendering style, or set to `None` to disable HTML pagination controls completely. Defaults to `"rest_framework/pagination/numbers.html"`.
 
 ---
 
-## LimitOffsetPagination
+### LimitOffsetPagination
 
 This pagination style mirrors the syntax used when looking up multiple database records. The client includes both a "limit" and an
 "offset" query parameter. The limit indicates the maximum number of items to return, and is equivalent to the `page_size` in other styles. The offset indicates the starting position of the query in relation to the complete set of unpaginated items.
@@ -162,7 +174,7 @@ To set these attributes you should override the `LimitOffsetPagination` class, a
 
 ---
 
-## CursorPagination
+### CursorPagination
 
 The cursor-based pagination presents an opaque "cursor" indicator that the client may use to page through the result set. This pagination style only presents forward and reverse controls, and does not allow the client to navigate to arbitrary positions.
 
@@ -218,7 +230,7 @@ To set these attributes you should override the `CursorPagination` class, and th
 
 ---
 
-# Custom pagination styles
+## Custom pagination styles
 
 To create a custom pagination serializer class, you should inherit the subclass `pagination.BasePagination`, override the `paginate_queryset(self, queryset, request, view=None)`, and `get_paginated_response(self, data)` methods:
 
@@ -227,7 +239,7 @@ To create a custom pagination serializer class, you should inherit the subclass 
 
 Note that the `paginate_queryset` method may set state on the pagination instance, that may later be used by the `get_paginated_response` method.
 
-## Example
+### Example
 
 Suppose we want to replace the default pagination output style with a modified format that includes the next and previous links under in a nested 'links' key. We could specify a custom pagination class like so:
 
@@ -251,7 +263,7 @@ We'd then need to set up the custom class in our configuration:
 
 Note that if you care about how the ordering of keys is displayed in responses in the browsable API you might choose to use an `OrderedDict` when constructing the body of paginated responses, but this is optional.
 
-## Using your custom pagination class
+### Using your custom pagination class
 
 To have your custom pagination class be used by default, use the `DEFAULT_PAGINATION_CLASS` setting:
 
@@ -268,11 +280,11 @@ API responses for list endpoints will now include a `Link` header, instead of in
 
 ---
 
-# HTML pagination controls
+## HTML pagination controls
 
 By default using the pagination classes will cause HTML pagination controls to be displayed in the browsable API. There are two built-in display styles. The `PageNumberPagination` and `LimitOffsetPagination` classes display a list of page numbers with previous and next controls. The `CursorPagination` class displays a simpler style that only displays a previous and next control.
 
-## Customizing the controls
+### Customizing the controls
 
 You can override the templates that render the HTML pagination controls. The two built-in styles are:
 
@@ -291,19 +303,19 @@ The `.to_html()` and `.get_html_context()` methods may also be overridden in a c
 
 ---
 
-# Third party packages
+## Third party packages
 
 The following third party packages are also available.
 
-## DRF-extensions
+### DRF-extensions
 
 The [`DRF-extensions` package][drf-extensions] includes a [`PaginateByMaxMixin` mixin class][paginate-by-max-mixin] that allows your API clients to specify `?page_size=max` to obtain the maximum allowed page size.
 
-## drf-proxy-pagination
+### drf-proxy-pagination
 
 The [`drf-proxy-pagination` package][drf-proxy-pagination] includes a `ProxyPagination` class which allows to choose pagination class with a query parameter.
 
-## link-header-pagination
+### link-header-pagination
 
 The [`django-rest-framework-link-header-pagination` package][drf-link-header-pagination] includes a `LinkHeaderPagination` class which provides pagination via an HTTP `Link` header as described in [GitHub REST API documentation][github-traversing-with-pagination].
 

@@ -66,7 +66,7 @@ def get_unique_validators(field_name, model_field):
     """
     Returns a list of UniqueValidators that should be applied to the field.
     """
-    field_set = set([field_name])
+    field_set = {field_name}
     conditions = {
         c.condition
         for c in model_field.model._meta.constraints
@@ -121,6 +121,9 @@ def get_field_kwargs(field_name, model_field):
     if model_field.null:
         kwargs['allow_null'] = True
 
+    if model_field.choices:
+        kwargs['choices'] = model_field.choices
+
     if isinstance(model_field, models.AutoField) or not model_field.editable:
         # If this field is read-only, then return early.
         # Further keyword arguments are not valid.
@@ -151,9 +154,7 @@ def get_field_kwargs(field_name, model_field):
         if model_field.allow_folders is not False:
             kwargs['allow_folders'] = model_field.allow_folders
 
-    if model_field.choices:
-        kwargs['choices'] = model_field.choices
-    else:
+    if not model_field.choices:
         # Ensure that max_value is passed explicitly as a keyword arg,
         # rather than as a validator.
         max_value = next((

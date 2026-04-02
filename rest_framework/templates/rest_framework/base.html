@@ -176,7 +176,7 @@
 
               <div class="response-info" aria-label="{% trans "response info" %}">
                 <pre class="prettyprint"><span class="meta nocode"><b>HTTP {{ response.status_code }} {{ response.status_text }}</b>{% for key, val in response_headers|items %}
-<b>{{ key }}:</b> <span class="lit">{{ val|break_long_headers|urlize }}</span>{% endfor %}
+<b>{{ key }}:</b> <span class="lit">{{ val|urlize }}</span>{% endfor %}
 
 </span>{{ content|urlize }}</pre>
               </div>

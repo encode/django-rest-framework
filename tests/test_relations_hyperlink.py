@@ -1,3 +1,4 @@
+import pytest
 from django.test import TestCase, override_settings
 from django.urls import path
 
@@ -68,7 +69,6 @@ class NullableOneToOneTargetSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('url', 'name', 'nullable_source')
 
 
-# TODO: Add test that .data cannot be accessed prior to .is_valid
 @override_settings(ROOT_URLCONF='tests.test_relations_hyperlink')
 class HyperlinkedManyToManyTests(TestCase):
     def setUp(self):
@@ -192,6 +192,15 @@ class HyperlinkedManyToManyTests(TestCase):
             {'url': 'http://testserver/manytomanytarget/4/', 'name': 'target-4', 'sources': ['http://testserver/manytomanysource/1/', 'http://testserver/manytomanysource/3/']}
         ]
         assert serializer.data == expected
+
+    def test_data_cannot_be_accessed_prior_to_is_valid(self):
+        """Test that .data cannot be accessed prior to .is_valid for hyperlinked serializers."""
+        serializer = ManyToManySourceSerializer(
+            data={'name': 'test-source', 'targets': ['http://testserver/manytomanytarget/1/']},
+            context={'request': request}
+        )
+        with pytest.raises(AssertionError):
+            serializer.data
 
 
 @override_settings(ROOT_URLCONF='tests.test_relations_hyperlink')

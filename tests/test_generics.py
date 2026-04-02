@@ -1,5 +1,3 @@
-import sys
-
 import pytest
 from django.db import models
 from django.http import Http404
@@ -291,7 +289,7 @@ class TestInstanceView(TestCase):
         """
         data = {'text': 'foo'}
         filtered_out_pk = BasicModel.objects.filter(text='filtered out')[0].pk
-        request = factory.put('/{}'.format(filtered_out_pk), data, format='json')
+        request = factory.put(f'/{filtered_out_pk}', data, format='json')
         response = self.view(request, pk=filtered_out_pk).render()
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
@@ -703,23 +701,11 @@ class TestSerializer(TestCase):
 
 
 class TestTyping(TestCase):
-    @pytest.mark.skipif(
-        sys.version_info < (3, 7),
-        reason="subscriptable classes requires Python 3.7 or higher",
-    )
     def test_genericview_is_subscriptable(self):
         assert generics.GenericAPIView is generics.GenericAPIView["foo"]
 
-    @pytest.mark.skipif(
-        sys.version_info < (3, 7),
-        reason="subscriptable classes requires Python 3.7 or higher",
-    )
     def test_listview_is_subscriptable(self):
         assert generics.ListAPIView is generics.ListAPIView["foo"]
 
-    @pytest.mark.skipif(
-        sys.version_info < (3, 7),
-        reason="subscriptable classes requires Python 3.7 or higher",
-    )
     def test_instanceview_is_subscriptable(self):
         assert generics.RetrieveAPIView is generics.RetrieveAPIView["foo"]

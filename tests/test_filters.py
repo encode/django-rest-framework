@@ -10,7 +10,6 @@ from django.test import SimpleTestCase, TestCase
 from django.test.utils import override_settings
 
 from rest_framework import filters, generics, serializers
-from rest_framework.compat import coreschema
 from rest_framework.exceptions import ValidationError
 from rest_framework.test import APIRequestFactory
 
@@ -19,7 +18,7 @@ factory = APIRequestFactory()
 
 class SearchSplitTests(SimpleTestCase):
 
-    def test_keep_quoted_togheter_regardless_of_commas(self):
+    def test_keep_quoted_together_regardless_of_commas(self):
         assert ['hello, world'] == list(filters.search_smart_split('"hello, world"'))
 
     def test_strips_commas_around_quoted(self):
@@ -38,24 +37,11 @@ class SearchSplitTests(SimpleTestCase):
 
 class BaseFilterTests(TestCase):
     def setUp(self):
-        self.original_coreapi = filters.coreapi
-        filters.coreapi = True  # mock it, because not None value needed
         self.filter_backend = filters.BaseFilterBackend()
-
-    def tearDown(self):
-        filters.coreapi = self.original_coreapi
 
     def test_filter_queryset_raises_error(self):
         with pytest.raises(NotImplementedError):
             self.filter_backend.filter_queryset(None, None, None)
-
-    @pytest.mark.skipif(not coreschema, reason='coreschema is not installed')
-    def test_get_schema_fields_checks_for_coreapi(self):
-        filters.coreapi = None
-        with pytest.raises(AssertionError):
-            self.filter_backend.get_schema_fields({})
-        filters.coreapi = True
-        assert self.filter_backend.get_schema_fields({}) == []
 
 
 class SearchFilterModel(models.Model):
@@ -516,7 +502,7 @@ class OrderingFilterModel(models.Model):
 
 
 class OrderingFilterRelatedModel(models.Model):
-    related_object = models.ForeignKey(OrderingFilterModel, related_name="relateds", on_delete=models.CASCADE)
+    related_object = models.ForeignKey(OrderingFilterModel, related_name="related", on_delete=models.CASCADE)
     index = models.SmallIntegerField(help_text="A non-related field to test with", default=0)
 
 
@@ -725,9 +711,9 @@ class OrderingFilterTests(TestCase):
     def test_ordering_by_aggregate_field(self):
         # create some related models to aggregate order by
         num_objs = [2, 5, 3]
-        for obj, num_relateds in zip(OrderingFilterModel.objects.all(),
-                                     num_objs):
-            for _ in range(num_relateds):
+        for obj, num_related in zip(OrderingFilterModel.objects.all(),
+                                    num_objs):
+            for _ in range(num_related):
                 new_related = OrderingFilterRelatedModel(
                     related_object=obj
                 )
@@ -739,10 +725,10 @@ class OrderingFilterTests(TestCase):
             ordering = 'title'
             ordering_fields = '__all__'
             queryset = OrderingFilterModel.objects.all().annotate(
-                models.Count("relateds"))
+                models.Count("related"))
 
         view = OrderingListView.as_view()
-        request = factory.get('/', {'ordering': 'relateds__count'})
+        request = factory.get('/', {'ordering': 'related__count'})
         response = view(request)
         assert response.data == [
             {'id': 1, 'title': 'zyx', 'text': 'abc'},

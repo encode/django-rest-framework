@@ -25,6 +25,7 @@ from django.test import TestCase
 
 from rest_framework import serializers
 from rest_framework.compat import postgres_fields
+from rest_framework.fields import ChoiceField
 
 from .models import NestedForeignKeySource
 
@@ -95,6 +96,7 @@ class FieldOptionsModel(models.Model):
 
 class ChoicesModel(models.Model):
     choices_field_with_nonstandard_args = models.DecimalField(max_digits=3, decimal_places=1, choices=DECIMAL_CHOICES, verbose_name='A label')
+    non_editable_choice_field = models.CharField(choices=COLOR_CHOICES, default=COLOR_CHOICES[0][0], editable=False, max_length=5)
 
 
 class Issue3674ParentModel(models.Model):
@@ -160,6 +162,7 @@ class TestModelSerializer(TestCase):
 
 
 class TestRegularFieldMappings(TestCase):
+    @pytest.mark.skipif(sys.platform.startswith("win"), reason="Test not supported on Windows")
     def test_regular_fields(self):
         """
         Model fields should map to their equivalent serializer fields.
@@ -172,7 +175,7 @@ class TestRegularFieldMappings(TestCase):
         expected = dedent(r"""
             TestSerializer\(\):
                 auto_field = IntegerField\(read_only=True\)
-                big_integer_field = IntegerField\(.*\)
+                big_integer_field = BigIntegerField\(.*\)
                 boolean_field = BooleanField\(required=False\)
                 char_field = CharField\(max_length=100\)
                 comma_separated_integer_field = CharField\(max_length=100, validators=\[<django.core.validators.RegexValidator object>\]\)
@@ -359,7 +362,23 @@ class TestRegularFieldMappings(TestCase):
                 model = ChoicesModel
                 fields = '__all__'
 
-        ExampleSerializer()
+        serializer = ExampleSerializer()
+        choices_field_with_nonstandard_args = serializer.get_fields()['choices_field_with_nonstandard_args']
+        assert isinstance(choices_field_with_nonstandard_args, ChoiceField)
+        assert choices_field_with_nonstandard_args.choices
+        assert choices_field_with_nonstandard_args.read_only is False
+
+    def test_non_editable_choice_field(self):
+        class ExampleSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = ChoicesModel
+                fields = '__all__'
+
+        serializer = ExampleSerializer()
+        non_editable_choice_field = serializer.get_fields()['non_editable_choice_field']
+        assert isinstance(non_editable_choice_field, ChoiceField)
+        assert non_editable_choice_field.read_only is True
+        assert non_editable_choice_field.choices
 
 
 class TestDurationFieldMapping(TestCase):
@@ -397,10 +416,6 @@ class TestDurationFieldMapping(TestCase):
                 fields = '__all__'
 
         expected = dedent("""
-            TestSerializer():
-                id = IntegerField(label='ID', read_only=True)
-                duration_field = DurationField(max_value=datetime.timedelta(3), min_value=datetime.timedelta(1))
-        """) if sys.version_info < (3, 7) else dedent("""
             TestSerializer():
                 id = IntegerField(label='ID', read_only=True)
                 duration_field = DurationField(max_value=datetime.timedelta(days=3), min_value=datetime.timedelta(days=1))
@@ -797,7 +812,7 @@ class TestIntegration(TestCase):
         )
         self.instance.many_to_many.set(self.many_to_many_targets)
 
-    def test_pk_retrival(self):
+    def test_pk_retrieval(self):
         class TestSerializer(serializers.ModelSerializer):
             class Meta:
                 model = RelationalModel
