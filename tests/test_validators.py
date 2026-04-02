@@ -639,7 +639,25 @@ class UniqueConstraintBlankModel(models.Model):
     class Meta:
         constraints = [
             # Unique constraint on one required field (age) and one blank field (tag)
-            models.UniqueConstraint(name='unique_constraint', fields=('age', 'tag'), condition=~models.Q(models.Q(title='') & models.Q(tag='True')))
+            models.UniqueConstraint(
+              name='unique_constraint', 
+              fields=('age', 'tag'), 
+              condition=~models.Q(models.Q(title='') & models.Q(tag='True')))
+          ]
+
+        
+class UniqueConstraintReadOnlyFieldModel(models.Model):
+    state = models.CharField(max_length=100, default="new")
+    position = models.IntegerField()
+    something = models.IntegerField()
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                name="unique_constraint_%(class)s",
+                fields=("position", "something"),
+                condition=models.Q(state="new"),
+            ),
         ]
 
 
@@ -652,6 +670,26 @@ class UniqueConstraintNullableModel(models.Model):
         constraints = [
             # Unique constraint on 2 nullable fields
             models.UniqueConstraint(name='unique_constraint', fields=('age', 'tag'))
+        ]
+
+
+class UniqueConstraintCustomMessageCodeModel(models.Model):
+    username = models.CharField(max_length=32)
+    company_id = models.IntegerField()
+    role = models.CharField(max_length=32)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=("username", "company_id"),
+                name="unique_username_company_custom_msg",
+                violation_error_message="Username must be unique within a company.",
+                **(dict(violation_error_code="duplicate_username") if django_version[0] >= 5 else {}),
+            ),
+            models.UniqueConstraint(
+                fields=("company_id", "role"),
+                name="unique_company_role_default_msg",
+            ),
         ]
 
 
@@ -671,6 +709,12 @@ class UniqueConstraintNullableSerializer(serializers.ModelSerializer):
     class Meta:
         model = UniqueConstraintNullableModel
         fields = ('title', 'age', 'tag')
+
+
+class UniqueConstraintCustomMessageCodeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UniqueConstraintCustomMessageCodeModel
+        fields = ('username', 'company_id', 'role')
 
 
 class TestUniqueConstraintValidation(TestCase):
@@ -771,7 +815,7 @@ class TestUniqueConstraintValidation(TestCase):
 
         validators = serializer.fields['fancy_conditions'].validators
         assert len(validators) == 2 + extra_validators_qty
-        ids_in_qs = {frozenset(v.queryset.values_list(flat=True)) for v in validators if hasattr(v, "queryset")}
+        ids_in_qs = {frozenset(v.queryset.values_list('id', flat=True)) for v in validators if hasattr(v, "queryset")}
         assert ids_in_qs == {frozenset([1]), frozenset([3])}
 
     def test_blank_unique_constraint_fields_are_not_required(self):
@@ -803,6 +847,56 @@ class TestUniqueConstraintValidation(TestCase):
             }
         )
         assert serializer.is_valid()
+
+    def test_uniq_constraint_condition_read_only_create(self):
+        class UniqueConstraintReadOnlyFieldModelSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = UniqueConstraintReadOnlyFieldModel
+                read_only_fields = ("state",)
+                fields = ("position", "something", *read_only_fields)
+        serializer = UniqueConstraintReadOnlyFieldModelSerializer(
+            data={"position": 1, "something": 1}
+        )
+        assert serializer.is_valid()
+
+    def test_uniq_constraint_condition_read_only_partial(self):
+        class UniqueConstraintReadOnlyFieldModelSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = UniqueConstraintReadOnlyFieldModel
+                read_only_fields = ("state",)
+                fields = ("position", "something", *read_only_fields)
+        instance = UniqueConstraintReadOnlyFieldModel.objects.create(position=1, something=1)
+        serializer = UniqueConstraintReadOnlyFieldModelSerializer(
+            instance=instance,
+            data={"position": 1, "something": 1},
+            partial=True
+        )
+        assert serializer.is_valid()
+
+    def test_unique_constraint_custom_message_code(self):
+        UniqueConstraintCustomMessageCodeModel.objects.create(username="Alice", company_id=1, role="member")
+        expected_code = "duplicate_username" if django_version[0] >= 5 else UniqueTogetherValidator.code
+
+        serializer = UniqueConstraintCustomMessageCodeSerializer(data={
+            "username": "Alice",
+            "company_id": 1,
+            "role": "admin",
+        })
+        assert not serializer.is_valid()
+        assert serializer.errors == {"non_field_errors": ["Username must be unique within a company."]}
+        assert serializer.errors["non_field_errors"][0].code == expected_code
+
+    def test_unique_constraint_default_message_code(self):
+        UniqueConstraintCustomMessageCodeModel.objects.create(username="Alice", company_id=1, role="member")
+        serializer = UniqueConstraintCustomMessageCodeSerializer(data={
+            "username": "John",
+            "company_id": 1,
+            "role": "member",
+        })
+        expected_message = UniqueTogetherValidator.message.format(field_names=', '.join(("company_id", "role")))
+        assert not serializer.is_valid()
+        assert serializer.errors == {"non_field_errors": [expected_message]}
+        assert serializer.errors["non_field_errors"][0].code == UniqueTogetherValidator.code
 
 
 # Tests for `UniqueForDateValidator`
