@@ -6,8 +6,6 @@ some fairly ad-hoc information about the view.
 Future implementations might use JSON schema or other definitions in order
 to return this information in a more standardized way.
 """
-from collections import OrderedDict
-
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
 from django.utils.encoding import force_str
@@ -36,7 +34,6 @@ class SimpleMetadata(BaseMetadata):
     label_lookup = ClassLookupDict({
         serializers.Field: 'field',
         serializers.BooleanField: 'boolean',
-        serializers.NullBooleanField: 'boolean',
         serializers.CharField: 'string',
         serializers.UUIDField: 'string',
         serializers.URLField: 'url',
@@ -49,6 +46,7 @@ class SimpleMetadata(BaseMetadata):
         serializers.DateField: 'date',
         serializers.DateTimeField: 'datetime',
         serializers.TimeField: 'time',
+        serializers.DurationField: 'duration',
         serializers.ChoiceField: 'choice',
         serializers.MultipleChoiceField: 'multiple choice',
         serializers.FileField: 'file upload',
@@ -59,11 +57,12 @@ class SimpleMetadata(BaseMetadata):
     })
 
     def determine_metadata(self, request, view):
-        metadata = OrderedDict()
-        metadata['name'] = view.get_view_name()
-        metadata['description'] = view.get_view_description()
-        metadata['renders'] = [renderer.media_type for renderer in view.renderer_classes]
-        metadata['parses'] = [parser.media_type for parser in view.parser_classes]
+        metadata = {
+            "name": view.get_view_name(),
+            "description": view.get_view_description(),
+            "renders": [renderer.media_type for renderer in view.renderer_classes],
+            "parses": [parser.media_type for parser in view.parser_classes],
+        }
         if hasattr(view, 'get_serializer'):
             actions = self.determine_actions(request, view)
             if actions:
@@ -106,25 +105,27 @@ class SimpleMetadata(BaseMetadata):
             # If this is a `ListSerializer` then we want to examine the
             # underlying child serializer instance instead.
             serializer = serializer.child
-        return OrderedDict([
-            (field_name, self.get_field_info(field))
+        return {
+            field_name: self.get_field_info(field)
             for field_name, field in serializer.fields.items()
             if not isinstance(field, serializers.HiddenField)
-        ])
+        }
 
     def get_field_info(self, field):
         """
         Given an instance of a serializer field, return a dictionary
         of metadata about it.
         """
-        field_info = OrderedDict()
-        field_info['type'] = self.label_lookup[field]
-        field_info['required'] = getattr(field, 'required', False)
+        field_info = {
+            "type": self.label_lookup[field],
+            "required": getattr(field, "required", False),
+        }
 
         attrs = [
             'read_only', 'label', 'help_text',
             'min_length', 'max_length',
-            'min_value', 'max_value'
+            'min_value', 'max_value',
+            'max_digits', 'decimal_places'
         ]
 
         for attr in attrs:

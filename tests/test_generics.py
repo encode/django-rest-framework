@@ -5,6 +5,7 @@ from django.shortcuts import get_object_or_404
 from django.test import TestCase
 
 from rest_framework import generics, renderers, serializers, status
+from rest_framework.exceptions import ErrorDetail
 from rest_framework.response import Response
 from rest_framework.test import APIRequestFactory
 from tests.models import (
@@ -288,7 +289,7 @@ class TestInstanceView(TestCase):
         """
         data = {'text': 'foo'}
         filtered_out_pk = BasicModel.objects.filter(text='filtered out')[0].pk
-        request = factory.put('/{}'.format(filtered_out_pk), data, format='json')
+        request = factory.put(f'/{filtered_out_pk}', data, format='json')
         response = self.view(request, pk=filtered_out_pk).render()
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
@@ -519,7 +520,12 @@ class TestFilterBackendAppliedToViews(TestCase):
         request = factory.get('/1')
         response = instance_view(request, pk=1).render()
         assert response.status_code == status.HTTP_404_NOT_FOUND
-        assert response.data == {'detail': 'Not found.'}
+        assert response.data == {
+            'detail': ErrorDetail(
+                string='No BasicModel matches the given query.',
+                code='not_found'
+            )
+        }
 
     def test_get_instance_view_will_return_single_object_when_filter_does_not_exclude_it(self):
         """
@@ -692,3 +698,14 @@ class TestSerializer(TestCase):
         serializer = response.serializer
 
         assert serializer.context is context
+
+
+class TestTyping(TestCase):
+    def test_genericview_is_subscriptable(self):
+        assert generics.GenericAPIView is generics.GenericAPIView["foo"]
+
+    def test_listview_is_subscriptable(self):
+        assert generics.ListAPIView is generics.ListAPIView["foo"]
+
+    def test_instanceview_is_subscriptable(self):
+        assert generics.RetrieveAPIView is generics.RetrieveAPIView["foo"]

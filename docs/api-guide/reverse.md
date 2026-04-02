@@ -32,16 +32,16 @@ You should **include the request as a keyword argument** to the function, for ex
 
     from rest_framework.reverse import reverse
     from rest_framework.views import APIView
-	from django.utils.timezone import now
+    from django.utils.timezone import now
 
-	class APIRootView(APIView):
-	    def get(self, request):
-	        year = now().year
-			data = {
- 				...
-    		    'year-summary-url': reverse('year-summary', args=[year], request=request)
+    class APIRootView(APIView):
+        def get(self, request):
+            year = now().year
+            data = {
+                ...
+                'year-summary-url': reverse('year-summary', args=[year], request=request)
             }
-    		return Response(data)
+            return Response(data)
 
 ## reverse_lazy
 
@@ -54,5 +54,5 @@ As with the `reverse` function, you should **include the request as a keyword ar
     api_root = reverse_lazy('api-root', request=request)
 
 [cite]: https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_1_5
-[reverse]: https://docs.djangoproject.com/en/stable/topics/http/urls/#reverse
-[reverse-lazy]: https://docs.djangoproject.com/en/stable/topics/http/urls/#reverse-lazy
+[reverse]: https://docs.djangoproject.com/en/stable/ref/urlresolvers/#reverse
+[reverse-lazy]: https://docs.djangoproject.com/en/stable/ref/urlresolvers/#reverse-lazy

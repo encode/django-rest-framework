@@ -52,7 +52,7 @@ class SimpleRateThrottle(BaseThrottle):
     A simple cache implementation, that only requires `.get_cache_key()`
     to be overridden.
 
-    The rate (requests / seconds) is set by a `rate` attribute on the View
+    The rate (requests / seconds) is set by a `rate` attribute on the Throttle
     class.  The attribute is a string of the form 'number_of_requests/period'.
 
     Period should be one of: ('s', 'sec', 'm', 'min', 'h', 'hour', 'd', 'day')
@@ -171,7 +171,7 @@ class AnonRateThrottle(SimpleRateThrottle):
     scope = 'anon'
 
     def get_cache_key(self, request, view):
-        if request.user.is_authenticated:
+        if request.user and request.user.is_authenticated:
             return None  # Only throttle unauthenticated requests.
 
         return self.cache_format % {
@@ -191,7 +191,7 @@ class UserRateThrottle(SimpleRateThrottle):
     scope = 'user'
 
     def get_cache_key(self, request, view):
-        if request.user.is_authenticated:
+        if request.user and request.user.is_authenticated:
             ident = request.user.pk
         else:
             ident = self.get_ident(request)
@@ -237,9 +237,9 @@ class ScopedRateThrottle(SimpleRateThrottle):
         If `view.throttle_scope` is not set, don't apply this throttle.
 
         Otherwise generate the unique cache key by concatenating the user id
-        with the '.throttle_scope` property of the view.
+        with the `.throttle_scope` property of the view.
         """
-        if request.user.is_authenticated:
+        if request.user and request.user.is_authenticated:
             ident = request.user.pk
         else:
             ident = self.get_ident(request)

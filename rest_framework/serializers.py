@@ -7,13 +7,15 @@ Serialization in REST framework is a two-phase process:
 
 1. Serializers marshal between complex types like model instances, and
 python primitives.
-2. The process of marshalling between python primitives and request and
+2. The process of marshaling between python primitives and request and
 response content is handled by parsers and renderers.
 """
+
+import contextlib
 import copy
 import inspect
 import traceback
-from collections import OrderedDict, defaultdict
+from collections import defaultdict
 from collections.abc import Mapping
 
 from django.core.exceptions import FieldDoesNotExist, ImproperlyConfigured
@@ -24,9 +26,11 @@ from django.utils import timezone
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 
-from rest_framework.compat import postgres_fields
+from rest_framework.compat import (
+    get_referenced_base_fields_from_q, postgres_fields
+)
 from rest_framework.exceptions import ErrorDetail, ValidationError
-from rest_framework.fields import get_error_detail, set_value
+from rest_framework.fields import get_error_detail
 from rest_framework.settings import api_settings
 from rest_framework.utils import html, model_meta, representation
 from rest_framework.utils.field_mapping import (
@@ -49,10 +53,10 @@ from rest_framework.validators import (
 # This helps keep the separation between model fields, form fields, and
 # serializer fields more explicit.
 from rest_framework.fields import (  # NOQA # isort:skip
-    BooleanField, CharField, ChoiceField, DateField, DateTimeField, DecimalField,
+    BigIntegerField, BooleanField, CharField, ChoiceField, DateField, DateTimeField, DecimalField,
     DictField, DurationField, EmailField, Field, FileField, FilePathField, FloatField,
     HiddenField, HStoreField, IPAddressField, ImageField, IntegerField, JSONField,
-    ListField, ModelField, MultipleChoiceField, NullBooleanField, ReadOnlyField,
+    ListField, ModelField, MultipleChoiceField, ReadOnlyField,
     RegexField, SerializerMethodField, SlugField, TimeField, URLField, UUIDField,
 )
 from rest_framework.relations import (  # NOQA # isort:skip
@@ -71,8 +75,10 @@ from rest_framework.relations import Hyperlink, PKOnlyObject  # NOQA # isort:ski
 LIST_SERIALIZER_KWARGS = (
     'read_only', 'write_only', 'required', 'default', 'initial', 'source',
     'label', 'help_text', 'style', 'error_messages', 'allow_empty',
-    'instance', 'data', 'partial', 'context', 'allow_null'
+    'instance', 'data', 'partial', 'context', 'allow_null',
+    'max_length', 'min_length'
 )
+LIST_SERIALIZER_KWARGS_REMOVE = ('allow_empty', 'min_length', 'max_length')
 
 ALL_FIELDS = '__all__'
 
@@ -142,13 +148,12 @@ class BaseSerializer(Field):
             kwargs['child'] = cls()
             return CustomListSerializer(*args, **kwargs)
         """
-        allow_empty = kwargs.pop('allow_empty', None)
-        child_serializer = cls(*args, **kwargs)
-        list_kwargs = {
-            'child': child_serializer,
-        }
-        if allow_empty is not None:
-            list_kwargs['allow_empty'] = allow_empty
+        list_kwargs = {}
+        for key in LIST_SERIALIZER_KWARGS_REMOVE:
+            value = kwargs.pop(key, None)
+            if value is not None:
+                list_kwargs[key] = value
+        list_kwargs['child'] = cls(*args, **kwargs)
         list_kwargs.update({
             key: value for key, value in kwargs.items()
             if key in LIST_SERIALIZER_KWARGS
@@ -209,7 +214,7 @@ class BaseSerializer(Field):
 
         return self.instance
 
-    def is_valid(self, raise_exception=False):
+    def is_valid(self, *, raise_exception=False):
         assert hasattr(self, 'initial_data'), (
             'Cannot call `.is_valid()` as no `data=` keyword argument was '
             'passed when instantiating the serializer instance.'
@@ -299,7 +304,7 @@ class SerializerMetaclass(type):
             for name, f in base._declared_fields.items() if name not in known
         ]
 
-        return OrderedDict(base_fields + fields)
+        return dict(base_fields + fields)
 
     def __new__(cls, name, bases, attrs):
         attrs['_declared_fields'] = cls._get_declared_fields(bases, attrs)
@@ -307,6 +312,18 @@ class SerializerMetaclass(type):
 
 
 def as_serializer_error(exc):
+    """
+    Coerce validation exceptions into a standardized serialized error format.
+
+    This function normalizes both Django's `ValidationError` and REST
+    framework's `ValidationError` into a dictionary structure compatible
+    with serializer `.errors`, ensuring all values are represented as
+    lists of error details.
+
+    The returned structure conforms to the serializer error contract:
+    - Field-specific errors are returned as '{field-name: [errors]}'
+    - Non-field errors are returned under the 'NON_FIELD_ERRORS_KEY'
+    """
     assert isinstance(exc, (ValidationError, DjangoValidationError))
 
     if isinstance(exc, DjangoValidationError):
@@ -336,6 +353,26 @@ class Serializer(BaseSerializer, metaclass=SerializerMetaclass):
     default_error_messages = {
         'invalid': _('Invalid data. Expected a dictionary, but got {datatype}.')
     }
+
+    def set_value(self, dictionary, keys, value):
+        """
+        Similar to Python's built in `dictionary[key] = value`,
+        but takes a list of nested keys instead of a single key.
+
+        set_value({'a': 1}, [], {'b': 2}) -> {'a': 1, 'b': 2}
+        set_value({'a': 1}, ['x'], 2) -> {'a': 1, 'x': 2}
+        set_value({'a': 1}, ['x', 'y'], 2) -> {'a': 1, 'x': {'y': 2}}
+        """
+        if not keys:
+            dictionary.update(value)
+            return
+
+        for key in keys[:-1]:
+            if key not in dictionary:
+                dictionary[key] = {}
+            dictionary = dictionary[key]
+
+        dictionary[keys[-1]] = value
 
     @cached_property
     def fields(self):
@@ -384,20 +421,20 @@ class Serializer(BaseSerializer, metaclass=SerializerMetaclass):
         if hasattr(self, 'initial_data'):
             # initial_data may not be a valid type
             if not isinstance(self.initial_data, Mapping):
-                return OrderedDict()
+                return {}
 
-            return OrderedDict([
-                (field_name, field.get_value(self.initial_data))
+            return {
+                field_name: field.get_value(self.initial_data)
                 for field_name, field in self.fields.items()
                 if (field.get_value(self.initial_data) is not empty) and
                 not field.read_only
-            ])
+            }
 
-        return OrderedDict([
-            (field.field_name, field.get_initial())
+        return {
+            field.field_name: field.get_initial()
             for field in self.fields.values()
             if not field.read_only
-        ])
+        }
 
     def get_value(self, dictionary):
         # We override the default field access in order to support
@@ -432,7 +469,7 @@ class Serializer(BaseSerializer, metaclass=SerializerMetaclass):
             if (field.read_only) and (field.default != empty) and (field.source != '*') and ('.' not in field.source)
         ]
 
-        defaults = OrderedDict()
+        defaults = {}
         for field in fields:
             try:
                 default = field.get_default()
@@ -465,8 +502,8 @@ class Serializer(BaseSerializer, metaclass=SerializerMetaclass):
                 api_settings.NON_FIELD_ERRORS_KEY: [message]
             }, code='invalid')
 
-        ret = OrderedDict()
-        errors = OrderedDict()
+        ret = {}
+        errors = {}
         fields = self._writable_fields
 
         for field in fields:
@@ -483,7 +520,7 @@ class Serializer(BaseSerializer, metaclass=SerializerMetaclass):
             except SkipField:
                 pass
             else:
-                set_value(ret, field.source_attrs, validated_value)
+                self.set_value(ret, field.source_attrs, validated_value)
 
         if errors:
             raise ValidationError(errors)
@@ -494,7 +531,7 @@ class Serializer(BaseSerializer, metaclass=SerializerMetaclass):
         """
         Object instance -> Dict of primitive datatypes.
         """
-        ret = OrderedDict()
+        ret = {}
         fields = self._readable_fields
 
         for field in fields:
@@ -568,12 +605,16 @@ class ListSerializer(BaseSerializer):
 
     default_error_messages = {
         'not_a_list': _('Expected a list of items but got type "{input_type}".'),
-        'empty': _('This list may not be empty.')
+        'empty': _('This list may not be empty.'),
+        'max_length': _('Ensure this field has no more than {max_length} elements.'),
+        'min_length': _('Ensure this field has at least {min_length} elements.')
     }
 
     def __init__(self, *args, **kwargs):
         self.child = kwargs.pop('child', copy.deepcopy(self.child))
         self.allow_empty = kwargs.pop('allow_empty', True)
+        self.max_length = kwargs.pop('max_length', None)
+        self.min_length = kwargs.pop('min_length', None)
         assert self.child is not None, '`child` is a required argument.'
         assert not inspect.isclass(self.child), '`child` has not been instantiated.'
         super().__init__(*args, **kwargs)
@@ -614,6 +655,17 @@ class ListSerializer(BaseSerializer):
 
         return value
 
+    def run_child_validation(self, data):
+        """
+        Run validation on child serializer.
+        You may need to override this method to support multiple updates. For example:
+
+        self.child.instance = self.instance.get(pk=data['id'])
+        self.child.initial_data = data
+        return super().run_child_validation(data)
+        """
+        return self.child.run_validation(data)
+
     def to_internal_value(self, data):
         """
         List of dicts of native values <- List of dicts of primitive datatypes.
@@ -635,12 +687,24 @@ class ListSerializer(BaseSerializer):
                 api_settings.NON_FIELD_ERRORS_KEY: [message]
             }, code='empty')
 
+        if self.max_length is not None and len(data) > self.max_length:
+            message = self.error_messages['max_length'].format(max_length=self.max_length)
+            raise ValidationError({
+                api_settings.NON_FIELD_ERRORS_KEY: [message]
+            }, code='max_length')
+
+        if self.min_length is not None and len(data) < self.min_length:
+            message = self.error_messages['min_length'].format(min_length=self.min_length)
+            raise ValidationError({
+                api_settings.NON_FIELD_ERRORS_KEY: [message]
+            }, code='min_length')
+
         ret = []
         errors = []
 
         for item in data:
             try:
-                validated = self.child.run_validation(item)
+                validated = self.run_child_validation(item)
             except ValidationError as exc:
                 errors.append(exc.detail)
             else:
@@ -658,7 +722,7 @@ class ListSerializer(BaseSerializer):
         """
         # Dealing with nested relationships, data can be a Manager,
         # so, first get a queryset from the Manager if needed
-        iterable = data.all() if isinstance(data, models.Manager) else data
+        iterable = data.all() if isinstance(data, models.manager.BaseManager) else data
 
         return [
             self.child.to_representation(item) for item in iterable
@@ -712,7 +776,7 @@ class ListSerializer(BaseSerializer):
 
         return self.instance
 
-    def is_valid(self, raise_exception=False):
+    def is_valid(self, *, raise_exception=False):
         # This implementation is the same as the default,
         # except that we use lists, rather than dicts, as the empty case.
         assert hasattr(self, 'initial_data'), (
@@ -763,22 +827,29 @@ class ListSerializer(BaseSerializer):
 
 def raise_errors_on_nested_writes(method_name, serializer, validated_data):
     """
-    Give explicit errors when users attempt to pass writable nested data.
+    Enforce explicit handling of writable nested and dotted-source fields.
 
-    If we don't do this explicitly they'd get a less helpful error when
-    calling `.save()` on the serializer.
+    This helper raises clear and actionable errors when a serializer attempts
+    to perform writable nested updates or creates using the default
+    `ModelSerializer` behavior.
 
-    We don't *automatically* support these sorts of nested writes because
-    there are too many ambiguities to define a default behavior.
+    Writable nested relationships and dotted-source fields are intentionally
+    unsupported by default due to ambiguous persistence semantics. Developers
+    must either:
+    - Override the `.create()` / `.update()` methods explicitly, or
+    - Mark nested serializers as `read_only=True`
+
+    This check is invoked internally by default `ModelSerializer.create()`
+    and `ModelSerializer.update()` implementations.
 
     Eg. Suppose we have a `UserSerializer` with a nested profile. How should
     we handle the case of an update, where the `profile` relationship does
     not exist? Any of the following might be valid:
-
     * Raise an application error.
     * Silently ignore the nested part of the update.
     * Automatically create a profile instance.
     """
+
     ModelClass = serializer.Meta.model
     model_field_info = model_meta.get_field_info(ModelClass)
 
@@ -854,7 +925,8 @@ class ModelSerializer(Serializer):
     """
     serializer_field_mapping = {
         models.AutoField: IntegerField,
-        models.BigIntegerField: IntegerField,
+        models.BigAutoField: BigIntegerField,
+        models.BigIntegerField: BigIntegerField,
         models.BooleanField: BooleanField,
         models.CharField: CharField,
         models.CommaSeparatedIntegerField: CharField,
@@ -1036,7 +1108,14 @@ class ModelSerializer(Serializer):
         )
 
         # Determine the fields that should be included on the serializer.
-        fields = OrderedDict()
+        fields = {}
+
+        # If it's a ManyToMany field, and the default is None, then raises an exception to prevent exceptions on .set()
+        for field_name in declared_fields.keys():
+            if field_name in info.relations and info.relations[field_name].to_many and declared_fields[field_name].default is None:
+                raise ValueError(
+                    f"The field '{field_name}' on serializer '{self.__class__.__name__}' is a ManyToMany field and cannot have a default value of None."
+                )
 
         for field_name in field_names:
             # If the field is explicitly declared on the class then use that.
@@ -1315,8 +1394,8 @@ class ModelSerializer(Serializer):
         Raise an error on any unknown fields.
         """
         raise ImproperlyConfigured(
-            'Field name `%s` is not valid for model `%s`.' %
-            (field_name, model_class.__name__)
+            'Field name `%s` is not valid for model `%s` in `%s.%s`.' %
+            (field_name, model_class.__name__, self.__class__.__module__, self.__class__.__name__)
         )
 
     def include_extra_kwargs(self, kwargs, extra_kwargs):
@@ -1326,9 +1405,8 @@ class ModelSerializer(Serializer):
         """
         if extra_kwargs.get('read_only', False):
             for attr in [
-                'required', 'default', 'allow_blank', 'allow_null',
-                'min_length', 'max_length', 'min_value', 'max_value',
-                'validators', 'queryset'
+                'required', 'default', 'allow_blank', 'min_length',
+                'max_length', 'min_value', 'max_value', 'validators', 'queryset'
             ]:
                 kwargs.pop(attr, None)
 
@@ -1374,6 +1452,23 @@ class ModelSerializer(Serializer):
 
         return extra_kwargs
 
+    def get_unique_together_constraints(self, model):
+        """
+        Returns iterator of (fields, queryset, condition_fields, condition),
+        each entry describes an unique together constraint on `fields` in `queryset`
+        with respect of constraint's `condition`.
+        """
+        for parent_class in [model] + list(model._meta.parents):
+            for unique_together in parent_class._meta.unique_together:
+                yield unique_together, model._default_manager, [], None
+            for constraint in parent_class._meta.constraints:
+                if isinstance(constraint, models.UniqueConstraint) and len(constraint.fields) > 1:
+                    if constraint.condition is None:
+                        condition_fields = []
+                    else:
+                        condition_fields = list(get_referenced_base_fields_from_q(constraint.condition))
+                    yield (constraint.fields, model._default_manager, condition_fields, constraint.condition)
+
     def get_uniqueness_extra_kwargs(self, field_names, declared_fields, extra_kwargs):
         """
         Return any additional field options that need to be included as a
@@ -1401,13 +1496,14 @@ class ModelSerializer(Serializer):
                                         model_field.unique_for_year}
 
         unique_constraint_names -= {None}
+        model_fields_names = set(model_fields.keys())
 
-        # Include each of the `unique_together` field names,
+        # Include each of the `unique_together` and `UniqueConstraint` field names,
         # so long as all the field names are included on the serializer.
-        for parent_class in [model] + list(model._meta.parents):
-            for unique_together_list in parent_class._meta.unique_together:
-                if set(field_names).issuperset(unique_together_list):
-                    unique_constraint_names |= set(unique_together_list)
+        for unique_together_list, queryset, condition_fields, condition in self.get_unique_together_constraints(model):
+            unique_together_list_and_condition_fields = set(unique_together_list) | set(condition_fields)
+            if model_fields_names.issuperset(unique_together_list_and_condition_fields):
+                unique_constraint_names |= unique_together_list_and_condition_fields
 
         # Now we have all the field names that have uniqueness constraints
         # applied, we can add the extra 'required=...' or 'default=...'
@@ -1425,6 +1521,8 @@ class ModelSerializer(Serializer):
                 default = timezone.now
             elif unique_constraint_field.has_default():
                 default = unique_constraint_field.default
+            elif unique_constraint_field.null:
+                default = None
             else:
                 default = empty
 
@@ -1474,12 +1572,10 @@ class ModelSerializer(Serializer):
                 # they can't be nested attribute lookups.
                 continue
 
-            try:
+            with contextlib.suppress(FieldDoesNotExist):
                 field = model._meta.get_field(source)
                 if isinstance(field, DjangoModelField):
                     model_fields[source] = field
-            except FieldDoesNotExist:
-                pass
 
         return model_fields
 
@@ -1500,29 +1596,35 @@ class ModelSerializer(Serializer):
             self.get_unique_for_date_validators()
         )
 
+    def _get_constraint_violation_error_message(self, constraint):
+        """
+        Returns the violation error message for the UniqueConstraint,
+        or None if the message is the default.
+        """
+        violation_error_message = constraint.get_violation_error_message()
+        default_error_message = constraint.default_violation_error_message % {"name": constraint.name}
+        if violation_error_message == default_error_message:
+            return None
+        return violation_error_message
+
     def get_unique_together_validators(self):
         """
         Determine a default set of validators for any unique_together constraints.
         """
-        model_class_inheritance_tree = (
-            [self.Meta.model] +
-            list(self.Meta.model._meta.parents)
-        )
-
         # The field names we're passing though here only include fields
         # which may map onto a model field. Any dotted field name lookups
         # cannot map to a field, and must be a traversal, so we're not
         # including those.
-        field_sources = OrderedDict(
-            (field.field_name, field.source) for field in self._writable_fields
+        field_sources = {
+            field.field_name: field.source for field in self._writable_fields
             if (field.source != '*') and ('.' not in field.source)
-        )
+        }
 
         # Special Case: Add read_only fields with defaults.
-        field_sources.update(OrderedDict(
-            (field.field_name, field.source) for field in self.fields.values()
+        field_sources.update({
+            field.field_name: field.source for field in self.fields.values()
             if (field.read_only) and (field.default != empty) and (field.source != '*') and ('.' not in field.source)
-        ))
+        })
 
         # Invert so we can find the serializer field names that correspond to
         # the model field names in the unique_together sets. This also allows
@@ -1531,37 +1633,52 @@ class ModelSerializer(Serializer):
         for name, source in field_sources.items():
             source_map[source].append(name)
 
+        unique_constraint_by_fields = {
+            constraint.fields: constraint
+            for model_cls in (*self.Meta.model._meta.parents, self.Meta.model)
+            for constraint in model_cls._meta.constraints
+            if isinstance(constraint, models.UniqueConstraint)
+        }
+
         # Note that we make sure to check `unique_together` both on the
         # base model class, but also on any parent classes.
         validators = []
-        for parent_class in model_class_inheritance_tree:
-            for unique_together in parent_class._meta.unique_together:
-                # Skip if serializer does not map to all unique together sources
-                if not set(source_map).issuperset(unique_together):
-                    continue
+        for unique_together, queryset, condition_fields, condition in self.get_unique_together_constraints(self.Meta.model):
+            # Skip if serializer does not map to all unique together sources
+            unique_together_and_condition_fields = set(unique_together) | set(condition_fields)
+            if not set(source_map).issuperset(unique_together_and_condition_fields):
+                continue
 
-                for source in unique_together:
-                    assert len(source_map[source]) == 1, (
-                        "Unable to create `UniqueTogetherValidator` for "
-                        "`{model}.{field}` as `{serializer}` has multiple "
-                        "fields ({fields}) that map to this model field. "
-                        "Either remove the extra fields, or override "
-                        "`Meta.validators` with a `UniqueTogetherValidator` "
-                        "using the desired field names."
-                        .format(
-                            model=self.Meta.model.__name__,
-                            serializer=self.__class__.__name__,
-                            field=source,
-                            fields=', '.join(source_map[source]),
-                        )
+            for source in unique_together_and_condition_fields:
+                assert len(source_map[source]) == 1, (
+                    "Unable to create `UniqueTogetherValidator` for "
+                    "`{model}.{field}` as `{serializer}` has multiple "
+                    "fields ({fields}) that map to this model field. "
+                    "Either remove the extra fields, or override "
+                    "`Meta.validators` with a `UniqueTogetherValidator` "
+                    "using the desired field names."
+                    .format(
+                        model=self.Meta.model.__name__,
+                        serializer=self.__class__.__name__,
+                        field=source,
+                        fields=', '.join(source_map[source]),
                     )
-
-                field_names = tuple(source_map[f][0] for f in unique_together)
-                validator = UniqueTogetherValidator(
-                    queryset=parent_class._default_manager,
-                    fields=field_names
                 )
-                validators.append(validator)
+
+            field_names = tuple(source_map[f][0] for f in unique_together)
+
+            constraint = unique_constraint_by_fields.get(tuple(unique_together))
+            violation_error_message = self._get_constraint_violation_error_message(constraint) if constraint else None
+
+            validator = UniqueTogetherValidator(
+                queryset=queryset,
+                fields=field_names,
+                condition_fields=tuple(source_map[f][0] for f in condition_fields),
+                condition=condition,
+                message=violation_error_message,
+                code=getattr(constraint, 'violation_error_code', None),
+            )
+            validators.append(validator)
         return validators
 
     def get_unique_for_date_validators(self):

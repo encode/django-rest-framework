@@ -1,6 +1,7 @@
 """
 Provides an APIView class that is the base of all views in REST framework.
 """
+from django import VERSION as DJANGO_VERSION
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
 from django.db import connections, models
@@ -79,9 +80,9 @@ def exception_handler(exc, context):
     to be raised.
     """
     if isinstance(exc, Http404):
-        exc = exceptions.NotFound()
+        exc = exceptions.NotFound(*(exc.args))
     elif isinstance(exc, PermissionDenied):
-        exc = exceptions.PermissionDenied()
+        exc = exceptions.PermissionDenied(*(exc.args))
 
     if isinstance(exc, exceptions.APIException):
         headers = {}
@@ -138,6 +139,11 @@ class APIView(View):
         view = super().as_view(**initkwargs)
         view.cls = cls
         view.initkwargs = initkwargs
+
+        # Exempt all DRF views from Django's LoginRequiredMiddleware. Users should set
+        # DEFAULT_PERMISSION_CLASSES to 'rest_framework.permissions.IsAuthenticated' instead
+        if DJANGO_VERSION >= (5, 1):
+            view.login_required = False
 
         # Note: session based authentication is explicitly CSRF validated,
         # all other authentication is CSRF exempt.
@@ -421,7 +427,7 @@ class APIView(View):
         """
         # Make the error obvious if a proper response is not returned
         assert isinstance(response, HttpResponseBase), (
-            'Expected a `Response`, `HttpResponse` or `HttpStreamingResponse` '
+            'Expected a `Response`, `HttpResponse` or `StreamingHttpResponse` '
             'to be returned from the view, but received a `%s`'
             % type(response)
         )

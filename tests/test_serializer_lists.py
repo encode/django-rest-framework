@@ -1,11 +1,12 @@
-import sys
-
 import pytest
 from django.http import QueryDict
 from django.utils.datastructures import MultiValueDict
 
 from rest_framework import serializers
 from rest_framework.exceptions import ErrorDetail
+from tests.models import (
+    CustomManagerModel, NullableOneToOneSource, OneToOneTarget
+)
 
 
 class BasicObject:
@@ -32,7 +33,7 @@ class TestListSerializer:
     Note that this is in contrast to using ListSerializer as a field.
     """
 
-    def setup(self):
+    def setup_method(self):
         class IntegerListSerializer(serializers.ListSerializer):
             child = serializers.IntegerField()
         self.Serializer = IntegerListSerializer
@@ -57,10 +58,6 @@ class TestListSerializer:
         assert serializer.is_valid()
         assert serializer.validated_data == expected_output
 
-    @pytest.mark.skipif(
-        sys.version_info < (3, 7),
-        reason="subscriptable classes requires Python 3.7 or higher",
-    )
     def test_list_serializer_is_subscriptable(self):
         assert serializers.ListSerializer is serializers.ListSerializer["foo"]
 
@@ -70,7 +67,7 @@ class TestListSerializerContainingNestedSerializer:
     Tests for using a ListSerializer containing another serializer.
     """
 
-    def setup(self):
+    def setup_method(self):
         class TestSerializer(serializers.Serializer):
             integer = serializers.IntegerField()
             boolean = serializers.BooleanField()
@@ -150,13 +147,68 @@ class TestListSerializerContainingNestedSerializer:
         assert serializer.is_valid()
         assert serializer.validated_data == expected_output
 
+    def test_update_allow_custom_child_validation(self):
+        """
+        Update a list of objects thanks custom run_child_validation implementation.
+        """
+
+        class TestUpdateSerializer(serializers.Serializer):
+            integer = serializers.IntegerField()
+            boolean = serializers.BooleanField()
+
+            def update(self, instance, validated_data):
+                instance._data.update(validated_data)
+                return instance
+
+            def validate(self, data):
+                # self.instance is set to current BasicObject instance
+                assert isinstance(self.instance, BasicObject)
+                # self.initial_data is current dictionary
+                assert isinstance(self.initial_data, dict)
+                assert self.initial_data["pk"] == self.instance.pk
+                return super().validate(data)
+
+        class ListUpdateSerializer(serializers.ListSerializer):
+            child = TestUpdateSerializer()
+
+            def run_child_validation(self, data):
+                # find related instance in self.instance list
+                child_instance = next(o for o in self.instance if o.pk == data["pk"])
+                # set instance and initial_data for child serializer
+                self.child.instance = child_instance
+                self.child.initial_data = data
+                return super().run_child_validation(data)
+
+            def update(self, instance, validated_data):
+                return [
+                    self.child.update(instance, attrs)
+                    for instance, attrs in zip(self.instance, validated_data)
+                ]
+
+        instance = [
+            BasicObject(pk=1, integer=11, private_field="a"),
+            BasicObject(pk=2, integer=22, private_field="b"),
+        ]
+        input_data = [
+            {"pk": 1, "integer": "123", "boolean": "true"},
+            {"pk": 2, "integer": "456", "boolean": "false"},
+        ]
+        expected_output = [
+            BasicObject(pk=1, integer=123, boolean=True, private_field="a"),
+            BasicObject(pk=2, integer=456, boolean=False, private_field="b"),
+        ]
+        serializer = ListUpdateSerializer(instance, data=input_data)
+        assert serializer.is_valid()
+        updated_instances = serializer.save()
+        assert updated_instances == expected_output
+
 
 class TestNestedListSerializer:
     """
     Tests for using a ListSerializer as a field.
     """
 
-    def setup(self):
+    def setup_method(self):
         class TestSerializer(serializers.Serializer):
             integers = serializers.ListSerializer(child=serializers.IntegerField())
             booleans = serializers.ListSerializer(child=serializers.BooleanField())
@@ -234,8 +286,53 @@ class TestNestedListSerializer:
         assert serializer.validated_data == expected_output
 
 
+class TestListFieldHTMLInput:
+    """
+    Tests for ListField with HTML form input, including indexed keys.
+    """
+
+    def test_listfield_with_indexed_keys(self):
+        """
+        Test that indexed keys (e.g., field[0], field[1]) work correctly
+        in HTML form submissions.
+        """
+        class CommunitySerializer(serializers.Serializer):
+            colors = serializers.ListField(
+                allow_null=True,
+                child=serializers.CharField(label='Colors', max_length=7),
+                required=False
+            )
+        # Simulate form data with indexed keys
+        data = MultiValueDict({
+            'colors[0]': ['#ffffff'],
+            'colors[1]': ['#000000']
+        })
+        serializer = CommunitySerializer(data=data)
+        assert serializer.is_valid()
+        assert 'colors' in serializer.validated_data
+        assert serializer.validated_data['colors'] == ['#ffffff', '#000000']
+
+    def test_listfield_standard_form_submission(self):
+        """
+        Test standard HTML form list submission (e.g., multi-select).
+        Ensures backward compatibility with existing behavior.
+        """
+        class CommunitySerializer(serializers.Serializer):
+            colors = serializers.ListField(
+                child=serializers.CharField(label='Colors', max_length=7),
+                required=True
+            )
+        # Standard multi-select form submission
+        data = MultiValueDict({
+            'colors': ['#ffffff', '#000000', '#ff0000']
+        })
+        serializer = CommunitySerializer(data=data)
+        assert serializer.is_valid()
+        assert serializer.validated_data['colors'] == ['#ffffff', '#000000', '#ff0000']
+
+
 class TestNestedListSerializerAllowEmpty:
-    """Tests the behaviour of allow_empty=False when a ListSerializer is used as a field."""
+    """Tests the behavior of allow_empty=False when a ListSerializer is used as a field."""
 
     @pytest.mark.parametrize('partial', (False, True))
     def test_allow_empty_true(self, partial):
@@ -278,7 +375,7 @@ class TestNestedListSerializerAllowEmpty:
 
 
 class TestNestedListOfListsSerializer:
-    def setup(self):
+    def setup_method(self):
         class TestSerializer(serializers.Serializer):
             integers = serializers.ListSerializer(
                 child=serializers.ListSerializer(
@@ -373,6 +470,69 @@ class TestSerializerPartialUsage:
         assert serializer.is_valid()
         assert serializer.validated_data == {}
         assert serializer.errors == {}
+
+    def test_partial_listfield_with_non_indexed_list(self):
+        """
+        Test that ListField still works with non-indexed list submission
+        in partial updates (backward compatibility check).
+        """
+        class CommunitySerializer(serializers.Serializer):
+            colors = serializers.ListField(
+                allow_null=True,
+                child=serializers.CharField(label='Colors', max_length=7),
+                required=False
+            )
+        # Simulate standard HTML form list (e.g., multiple select)
+        data = MultiValueDict({
+            'colors': ['#ffffff', '#000000']
+        })
+        serializer = CommunitySerializer(data=data, partial=True)
+        assert serializer.is_valid()
+        assert 'colors' in serializer.validated_data
+        assert serializer.validated_data['colors'] == ['#ffffff', '#000000']
+
+    def test_listfield_mixed_plain_and_indexed_keys(self):
+        """
+        Test that when both plain field and indexed keys are present,
+        the plain field takes precedence (standard HTML form behavior).
+        """
+        class CommunitySerializer(serializers.Serializer):
+            colors = serializers.ListField(
+                allow_null=True,
+                child=serializers.CharField(label='Colors', max_length=7),
+                required=False
+            )
+        # When both present, getlist should win (standard HTML form behavior)
+        data = MultiValueDict({
+            'colors': ['#aaaaaa', '#bbbbbb'],  # This should be used
+            'colors[0]': ['#ffffff'],           # These should be ignored
+            'colors[1]': ['#000000']
+        })
+        serializer = CommunitySerializer(data=data, partial=True)
+        assert serializer.is_valid()
+        assert 'colors' in serializer.validated_data
+        # Plain field values should take precedence
+        assert serializer.validated_data['colors'] == ['#aaaaaa', '#bbbbbb']
+
+    def test_partial_listfield_no_data_returns_empty(self):
+        """
+        Test that when a ListField is omitted in partial updates,
+        it does not appear in validated_data (not even as an empty list).
+        """
+        class CommunitySerializer(serializers.Serializer):
+            name = serializers.CharField(max_length=100)
+            colors = serializers.ListField(
+                allow_null=True,
+                child=serializers.CharField(label='Colors', max_length=7),
+                required=False
+            )
+        data = MultiValueDict({
+            'name': ['Community Name']
+        })
+        serializer = CommunitySerializer(data=data, partial=True)
+        assert serializer.is_valid()
+        assert 'name' in serializer.validated_data
+        assert 'colors' not in serializer.validated_data  # Should be skipped
 
     def test_allow_empty_true(self):
         class ListSerializer(serializers.Serializer):
@@ -478,7 +638,7 @@ class TestSerializerPartialUsage:
         assert serializer.validated_data == {}
         assert serializer.errors == {}
 
-    def test_udate_as_field_allow_empty_true(self):
+    def test_update_as_field_allow_empty_true(self):
         class ListSerializer(serializers.Serializer):
             update_field = serializers.IntegerField()
             store_field = serializers.IntegerField()
@@ -591,10 +751,10 @@ class TestSerializerPartialUsage:
 
 class TestEmptyListSerializer:
     """
-    Tests the behaviour of ListSerializers when there is no data passed to it
+    Tests the behavior of ListSerializers when there is no data passed to it
     """
 
-    def setup(self):
+    def setup_method(self):
         class ExampleListSerializer(serializers.ListSerializer):
             child = serializers.IntegerField()
 
@@ -616,3 +776,110 @@ class TestEmptyListSerializer:
 
         assert serializer.is_valid()
         assert serializer.validated_data == []
+
+
+class TestMaxMinLengthListSerializer:
+    """
+    Tests the behavior of ListSerializers when max_length and min_length are used
+    """
+
+    def setup_method(self):
+        class IntegerSerializer(serializers.Serializer):
+            some_int = serializers.IntegerField()
+
+        class MaxLengthSerializer(serializers.Serializer):
+            many_int = IntegerSerializer(many=True, max_length=5)
+
+        class MinLengthSerializer(serializers.Serializer):
+            many_int = IntegerSerializer(many=True, min_length=3)
+
+        class MaxMinLengthSerializer(serializers.Serializer):
+            many_int = IntegerSerializer(many=True, min_length=3, max_length=5)
+
+        self.MaxLengthSerializer = MaxLengthSerializer
+        self.MinLengthSerializer = MinLengthSerializer
+        self.MaxMinLengthSerializer = MaxMinLengthSerializer
+
+    def test_min_max_length_two_items(self):
+        input_data = {'many_int': [{'some_int': i} for i in range(2)]}
+
+        max_serializer = self.MaxLengthSerializer(data=input_data)
+        min_serializer = self.MinLengthSerializer(data=input_data)
+        max_min_serializer = self.MaxMinLengthSerializer(data=input_data)
+
+        assert max_serializer.is_valid()
+        assert max_serializer.validated_data == input_data
+
+        assert not min_serializer.is_valid()
+
+        assert not max_min_serializer.is_valid()
+
+    def test_min_max_length_four_items(self):
+        input_data = {'many_int': [{'some_int': i} for i in range(4)]}
+
+        max_serializer = self.MaxLengthSerializer(data=input_data)
+        min_serializer = self.MinLengthSerializer(data=input_data)
+        max_min_serializer = self.MaxMinLengthSerializer(data=input_data)
+
+        assert max_serializer.is_valid()
+        assert max_serializer.validated_data == input_data
+
+        assert min_serializer.is_valid()
+        assert min_serializer.validated_data == input_data
+
+        assert max_min_serializer.is_valid()
+        assert min_serializer.validated_data == input_data
+
+    def test_min_max_length_six_items(self):
+        input_data = {'many_int': [{'some_int': i} for i in range(6)]}
+
+        max_serializer = self.MaxLengthSerializer(data=input_data)
+        min_serializer = self.MinLengthSerializer(data=input_data)
+        max_min_serializer = self.MaxMinLengthSerializer(data=input_data)
+
+        assert not max_serializer.is_valid()
+
+        assert min_serializer.is_valid()
+        assert min_serializer.validated_data == input_data
+
+        assert not max_min_serializer.is_valid()
+
+
+@pytest.mark.django_db()
+class TestToRepresentationManagerCheck:
+    """
+    https://github.com/encode/django-rest-framework/issues/8726
+    """
+
+    def setup_method(self):
+        class CustomManagerModelSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = CustomManagerModel
+                fields = '__all__'
+
+        class OneToOneTargetSerializer(serializers.ModelSerializer):
+            my_model = CustomManagerModelSerializer(many=True, source="custommanagermodel_set")
+
+            class Meta:
+                model = OneToOneTarget
+                fields = '__all__'
+                depth = 3
+
+        class NullableOneToOneSourceSerializer(serializers.ModelSerializer):
+            target = OneToOneTargetSerializer()
+
+            class Meta:
+                model = NullableOneToOneSource
+                fields = '__all__'
+
+        self.serializer = NullableOneToOneSourceSerializer
+
+    def test(self):
+        o2o_target = OneToOneTarget.objects.create(name='OneToOneTarget')
+        NullableOneToOneSource.objects.create(
+            name='NullableOneToOneSource',
+            target=o2o_target
+        )
+        queryset = NullableOneToOneSource.objects.all()
+        serializer = self.serializer(queryset, many=True)
+        assert serializer.data

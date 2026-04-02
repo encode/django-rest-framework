@@ -11,6 +11,7 @@
 # Murat Çorlu <muratcorlu@me.com>, 2015
 # Recep KIRMIZI <rkirmizi@gmail.com>, 2015
 # Ülgen Sarıkavak <ulgensrkvk@gmail.com>, 2015
+# Sezer BOZKIR <natgho@hotmail.com>, 2025
 msgid ""
 msgstr ""
 "Project-Id-Version: Django REST framework\n"
@@ -108,7 +109,7 @@ msgstr "Sunucu hatası oluştu."
 
 #: exceptions.py:142
 msgid "Invalid input."
-msgstr ""
+msgstr "Geçersiz girdi."
 
 #: exceptions.py:161
 msgid "Malformed request."
@@ -151,12 +152,12 @@ msgstr "Üst üste çok fazla istek yapıldı."
 #: exceptions.py:224
 #, python-brace-format
 msgid "Expected available in {wait} second."
-msgstr ""
+msgstr "{wait} saniye içinde erişilebilir olması bekleniyor."
 
 #: exceptions.py:225
 #, python-brace-format
 msgid "Expected available in {wait} seconds."
-msgstr ""
+msgstr "{wait} saniye içinde erişilebilir olması bekleniyor."
 
 #: fields.py:316 relations.py:245 relations.py:279 validators.py:90
 #: validators.py:183
@@ -169,11 +170,11 @@ msgstr "Bu alan boş bırakılmamalı."
 
 #: fields.py:701
 msgid "Must be a valid boolean."
-msgstr ""
+msgstr "Geçerli bir boolean olmalı."
 
 #: fields.py:766
 msgid "Not a valid string."
-msgstr ""
+msgstr "Geçerli bir string değil."
 
 #: fields.py:767
 msgid "This field may not be blank."
@@ -215,7 +216,7 @@ msgstr "Geçerli bir URL girin."
 
 #: fields.py:867
 msgid "Must be a valid UUID."
-msgstr ""
+msgstr "Geçerli bir UUID olmalı."
 
 #: fields.py:903
 msgid "Enter a valid IPv4 or IPv6 address."
@@ -273,11 +274,11 @@ msgstr "Datetime değeri bekleniyor, ama date değeri geldi."
 #: fields.py:1150
 #, python-brace-format
 msgid "Invalid datetime for the timezone \"{timezone}\"."
-msgstr ""
+msgstr "\"{timezone}\" zaman dilimi için geçersiz datetime."
 
 #: fields.py:1151
 msgid "Datetime value out of range."
-msgstr ""
+msgstr "Datetime değeri aralığın dışında."
 
 #: fields.py:1236
 #, python-brace-format
@@ -358,12 +359,12 @@ msgstr "Bu liste boş olmamalı."
 #: fields.py:1605
 #, python-brace-format
 msgid "Ensure this field has at least {min_length} elements."
-msgstr ""
+msgstr "Bu alanın en az {min_length} eleman içerdiğinden emin olun."
 
 #: fields.py:1606
 #, python-brace-format
 msgid "Ensure this field has no more than {max_length} elements."
-msgstr ""
+msgstr "Bu alanın en fazla {max_length} eleman içerdiğinden emin olun."
 
 #: fields.py:1682
 #, python-brace-format
@@ -372,7 +373,7 @@ msgstr "Sözlük tipi bir değişken beklenirken \"{input_type}\" tipi bir deği
 
 #: fields.py:1683
 msgid "This dictionary may not be empty."
-msgstr ""
+msgstr "Bu sözlük boş olmamalı."
 
 #: fields.py:1755
 msgid "Value must be valid JSON."
@@ -384,7 +385,7 @@ msgstr "Arama"
 
 #: filters.py:50
 msgid "A search term."
-msgstr ""
+msgstr "Bir arama terimi."
 
 #: filters.py:180 templates/rest_framework/filters/ordering.html:3
 msgid "Ordering"
@@ -392,23 +393,23 @@ msgstr "Sıralama"
 
 #: filters.py:181
 msgid "Which field to use when ordering the results."
-msgstr ""
+msgstr "Sonuçların sıralanmasında kullanılacak alan."
 
 #: filters.py:287
 msgid "ascending"
-msgstr ""
+msgstr "artan"
 
 #: filters.py:288
 msgid "descending"
-msgstr ""
+msgstr "azalan"
 
 #: pagination.py:174
 msgid "A page number within the paginated result set."
-msgstr ""
+msgstr "Sayfalanmış sonuç kümesinde bir sayfa numarası."
 
 #: pagination.py:179 pagination.py:372 pagination.py:590
 msgid "Number of results to return per page."
-msgstr ""
+msgstr "Her sayfada döndürülecek sonuç sayısı."
 
 #: pagination.py:189
 msgid "Invalid page."
@@ -416,11 +417,11 @@ msgstr "Geçersiz sayfa."
 
 #: pagination.py:374
 msgid "The initial index from which to return the results."
-msgstr ""
+msgstr "Döndürülecek sonuçların başlangıç indeksi."
 
 #: pagination.py:581
 msgid "The pagination cursor value."
-msgstr ""
+msgstr "Sayfalandırma imleci değeri."
 
 #: pagination.py:583
 msgid "Invalid cursor"
@@ -464,20 +465,20 @@ msgstr "Geçersiz değer."
 
 #: schemas/utils.py:32
 msgid "unique integer value"
-msgstr ""
+msgstr "benzersiz tamsayı değeri"
 
 #: schemas/utils.py:34
 msgid "UUID string"
-msgstr ""
+msgstr "UUID metni"
 
 #: schemas/utils.py:36
 msgid "unique value"
-msgstr ""
+msgstr "benzersiz değer"
 
 #: schemas/utils.py:38
 #, python-brace-format
 msgid "A {value_type} identifying this {name}."
-msgstr ""
+msgstr "Bir {name} öğesini tanımlayan {value_type}."
 
 #: serializers.py:337
 #, python-brace-format
@@ -487,7 +488,7 @@ msgstr "Geçersiz veri. Sözlük bekleniyordu fakat {datatype} geldi. "
 #: templates/rest_framework/admin.html:116
 #: templates/rest_framework/base.html:136
 msgid "Extra Actions"
-msgstr ""
+msgstr "Ekstra Eylemler"
 
 #: templates/rest_framework/admin.html:130
 #: templates/rest_framework/base.html:150
@@ -496,27 +497,27 @@ msgstr "Filtreler"
 
 #: templates/rest_framework/base.html:37
 msgid "navbar"
-msgstr ""
+msgstr "navigasyon çubuğu"
 
 #: templates/rest_framework/base.html:75
 msgid "content"
-msgstr ""
+msgstr "içerik"
 
 #: templates/rest_framework/base.html:78
 msgid "request form"
-msgstr ""
+msgstr "istek formu"
 
 #: templates/rest_framework/base.html:157
 msgid "main content"
-msgstr ""
+msgstr "ana içerik"
 
 #: templates/rest_framework/base.html:173
 msgid "request info"
-msgstr ""
+msgstr "istek bilgisi"
 
 #: templates/rest_framework/base.html:177
 msgid "response info"
-msgstr ""
+msgstr "cevap bilgisi"
 
 #: templates/rest_framework/horizontal/radio.html:4
 #: templates/rest_framework/inline/radio.html:3
@@ -542,7 +543,7 @@ msgstr "{field_names} hep birlikte eşsiz bir küme oluşturmalılar."
 #: validators.py:171
 #, python-brace-format
 msgid "Surrogate characters are not allowed: U+{code_point:X}."
-msgstr ""
+msgstr "Yerine konulmuş karakterlere izin verilmiyor: U+{code_point:X}."
 
 #: validators.py:243
 #, python-brace-format
@@ -569,7 +570,7 @@ msgstr "URL dizininde geçersiz versiyon."
 
 #: versioning.py:116
 msgid "Invalid version in URL path. Does not match any version namespace."
-msgstr ""
+msgstr "Geçersiz versiyon URL dizininde. Hiçbir versiyon ad alanı ile eşleşmiyor."
 
 #: versioning.py:148
 msgid "Invalid version in hostname."

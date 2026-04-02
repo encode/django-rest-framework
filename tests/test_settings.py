@@ -43,6 +43,31 @@ class TestSettings(TestCase):
 
         assert api_settings.PAGE_SIZE is None, "Setting should have been restored"
 
+    def test_pagination_settings(self):
+        """
+        Integration tests for pagination system check.
+        """
+        from rest_framework.checks import pagination_system_check
+
+        def get_pagination_error(error_id: str):
+            errors = pagination_system_check(app_configs=None)
+            return next((error for error in errors if error.id == error_id), None)
+
+        self.assertIsNone(api_settings.PAGE_SIZE)
+        self.assertIsNone(api_settings.DEFAULT_PAGINATION_CLASS)
+
+        pagination_error = get_pagination_error('rest_framework.W001')
+        self.assertIsNone(pagination_error)
+
+        with override_settings(REST_FRAMEWORK={'PAGE_SIZE': 10}):
+            pagination_error = get_pagination_error('rest_framework.W001')
+            self.assertIsNotNone(pagination_error)
+
+        default_pagination_class = 'rest_framework.pagination.PageNumberPagination'
+        with override_settings(REST_FRAMEWORK={'PAGE_SIZE': 10, 'DEFAULT_PAGINATION_CLASS': default_pagination_class}):
+            pagination_error = get_pagination_error('rest_framework.W001')
+            self.assertIsNone(pagination_error)
+
 
 class TestSettingTypes(TestCase):
     def test_settings_consistently_coerced_to_list(self):

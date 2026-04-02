@@ -353,12 +353,12 @@ msgstr "列表字段不能为空值。"
 #: fields.py:1605
 #, python-brace-format
 msgid "Ensure this field has at least {min_length} elements."
-msgstr ""
+msgstr "请确保这个字段至少包含 {min_length} 个元素。"
 
 #: fields.py:1606
 #, python-brace-format
 msgid "Ensure this field has no more than {max_length} elements."
-msgstr ""
+msgstr "请确保这个字段不能超过 {max_length} 个元素。"
 
 #: fields.py:1682
 #, python-brace-format
@@ -367,7 +367,7 @@ msgstr "期望是包含类目的字典，得到类型为 “{input_type}”。"
 
 #: fields.py:1683
 msgid "This dictionary may not be empty."
-msgstr ""
+msgstr "这个字典可能不是空的。"
 
 #: fields.py:1755
 msgid "Value must be valid JSON."

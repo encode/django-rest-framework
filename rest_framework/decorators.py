@@ -36,7 +36,7 @@ def api_view(http_method_names=None):
         #     WrappedAPIView.__doc__ = func.doc    <--- Not possible to do this
 
         # api_view applied without (method_names)
-        assert not(isinstance(http_method_names, types.FunctionType)), \
+        assert not isinstance(http_method_names, types.FunctionType), \
             '@api_view missing list of allowed HTTP methods'
 
         # api_view applied with eg. string instead of list of strings
@@ -70,6 +70,15 @@ def api_view(http_method_names=None):
         WrappedAPIView.permission_classes = getattr(func, 'permission_classes',
                                                     APIView.permission_classes)
 
+        WrappedAPIView.content_negotiation_class = getattr(func, 'content_negotiation_class',
+                                                           APIView.content_negotiation_class)
+
+        WrappedAPIView.metadata_class = getattr(func, 'metadata_class',
+                                                APIView.metadata_class)
+
+        WrappedAPIView.versioning_class = getattr(func, "versioning_class",
+                                                  APIView.versioning_class)
+
         WrappedAPIView.schema = getattr(func, 'schema',
                                         APIView.schema)
 
@@ -78,8 +87,26 @@ def api_view(http_method_names=None):
     return decorator
 
 
+def _check_decorator_order(func, decorator_name):
+    """
+    Check if an API policy decorator is being applied after @api_view.
+    """
+    # Check if func is actually a view function (result of APIView.as_view())
+    if hasattr(func, 'cls') and issubclass(func.cls, APIView):
+        raise TypeError(
+            f"@{decorator_name} must come after (below) the @api_view decorator. "
+            "The correct order is:\n\n"
+            "    @api_view(['GET'])\n"
+            f"    @{decorator_name}(...)\n"
+            "    def my_view(request):\n"
+            "        ...\n\n"
+            "See https://www.django-rest-framework.org/api-guide/views/#api-policy-decorators"
+        )
+
+
 def renderer_classes(renderer_classes):
     def decorator(func):
+        _check_decorator_order(func, 'renderer_classes')
         func.renderer_classes = renderer_classes
         return func
     return decorator
@@ -87,6 +114,7 @@ def renderer_classes(renderer_classes):
 
 def parser_classes(parser_classes):
     def decorator(func):
+        _check_decorator_order(func, 'parser_classes')
         func.parser_classes = parser_classes
         return func
     return decorator
@@ -94,6 +122,7 @@ def parser_classes(parser_classes):
 
 def authentication_classes(authentication_classes):
     def decorator(func):
+        _check_decorator_order(func, 'authentication_classes')
         func.authentication_classes = authentication_classes
         return func
     return decorator
@@ -101,6 +130,7 @@ def authentication_classes(authentication_classes):
 
 def throttle_classes(throttle_classes):
     def decorator(func):
+        _check_decorator_order(func, 'throttle_classes')
         func.throttle_classes = throttle_classes
         return func
     return decorator
@@ -108,13 +138,39 @@ def throttle_classes(throttle_classes):
 
 def permission_classes(permission_classes):
     def decorator(func):
+        _check_decorator_order(func, 'permission_classes')
         func.permission_classes = permission_classes
+        return func
+    return decorator
+
+
+def content_negotiation_class(content_negotiation_class):
+    def decorator(func):
+        _check_decorator_order(func, 'content_negotiation_class')
+        func.content_negotiation_class = content_negotiation_class
+        return func
+    return decorator
+
+
+def metadata_class(metadata_class):
+    def decorator(func):
+        _check_decorator_order(func, 'metadata_class')
+        func.metadata_class = metadata_class
+        return func
+    return decorator
+
+
+def versioning_class(versioning_class):
+    def decorator(func):
+        _check_decorator_order(func, 'versioning_class')
+        func.versioning_class = versioning_class
         return func
     return decorator
 
 
 def schema(view_inspector):
     def decorator(func):
+        _check_decorator_order(func, 'schema')
         func.schema = view_inspector
         return func
     return decorator
@@ -142,7 +198,7 @@ def action(methods=None, detail=None, url_path=None, url_name=None, **kwargs):
                    how the `@renderer_classes` etc. decorators work for function-
                    based API views.
     """
-    methods = ['get'] if (methods is None) else methods
+    methods = ['get'] if methods is None else methods
     methods = [method.lower() for method in methods]
 
     assert detail is not None, (

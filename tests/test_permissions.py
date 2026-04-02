@@ -55,11 +55,16 @@ class EmptyListView(generics.ListCreateAPIView):
     permission_classes = [permissions.DjangoModelPermissions]
 
 
+class IgnoredGetQuerySetListView(GetQuerySetListView):
+    _ignore_model_permissions = True
+
+
 root_view = RootView.as_view()
 api_root_view = DefaultRouter().get_api_root_view()
 instance_view = InstanceView.as_view()
 get_queryset_list_view = GetQuerySetListView.as_view()
 empty_list_view = EmptyListView.as_view()
+ignored_get_queryset_list_view = IgnoredGetQuerySetListView.as_view()
 
 
 def basic_auth_header(username, password):
@@ -105,6 +110,27 @@ class ModelPermissionsIntegrationTests(TestCase):
                               HTTP_AUTHORIZATION=self.permitted_credentials)
         request.resolver_match = ResolverMatch('get', (), {})
         response = api_root_view(request)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_ignore_model_permissions_with_unauthenticated_user(self):
+        """
+        We check that the ``_ignore_model_permissions`` attribute
+        doesn't ignore the authentication.
+        """
+        request = factory.get('/', format='json')
+        request.resolver_match = ResolverMatch('get', (), {})
+        response = ignored_get_queryset_list_view(request)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_ignore_model_permissions_with_authenticated_user(self):
+        """
+        We check that the ``_ignore_model_permissions`` attribute
+        with an authenticated user.
+        """
+        request = factory.get('/', format='json',
+                              HTTP_AUTHORIZATION=self.permitted_credentials)
+        request.resolver_match = ResolverMatch('get', (), {})
+        response = ignored_get_queryset_list_view(request)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_get_queryset_has_create_permissions(self):
@@ -327,7 +353,7 @@ class ObjectPermissionsIntegrationTests(TestCase):
             'delete': f('delete', model_name)
         }
         for perm in perms.values():
-            perm = '{}.{}'.format(app_label, perm)
+            perm = f'{app_label}.{perm}'
             assign_perm(perm, everyone)
         everyone.user_set.add(*users.values())
 
@@ -598,7 +624,7 @@ class PermissionsCompositionTests(TestCase):
         )
         assert composed_perm().has_permission(request, None) is True
 
-    def test_or_lazyness(self):
+    def test_or_laziness(self):
         request = factory.get('/1', format='json')
         request.user = AnonymousUser()
 
@@ -618,7 +644,7 @@ class PermissionsCompositionTests(TestCase):
                 assert mock_deny.call_count == 1
                 assert mock_allow.call_count == 1
 
-    def test_object_or_lazyness(self):
+    def test_object_or_laziness(self):
         request = factory.get('/1', format='json')
         request.user = AnonymousUser()
 
@@ -635,10 +661,10 @@ class PermissionsCompositionTests(TestCase):
                 composed_perm = (permissions.IsAuthenticated | permissions.AllowAny)
                 hasperm = composed_perm().has_object_permission(request, None, None)
                 assert hasperm is True
-                assert mock_deny.call_count == 1
+                assert mock_deny.call_count == 0
                 assert mock_allow.call_count == 1
 
-    def test_and_lazyness(self):
+    def test_and_laziness(self):
         request = factory.get('/1', format='json')
         request.user = AnonymousUser()
 
@@ -658,7 +684,7 @@ class PermissionsCompositionTests(TestCase):
                 assert mock_deny.call_count == 1
                 mock_allow.assert_not_called()
 
-    def test_object_and_lazyness(self):
+    def test_object_and_laziness(self):
         request = factory.get('/1', format='json')
         request.user = AnonymousUser()
 
@@ -677,3 +703,72 @@ class PermissionsCompositionTests(TestCase):
                 assert hasperm is False
                 assert mock_deny.call_count == 1
                 mock_allow.assert_not_called()
+
+    def test_unimplemented_has_object_permission(self):
+        "test for issue 6402 https://github.com/encode/django-rest-framework/issues/6402"
+        request = factory.get('/1', format='json')
+        request.user = AnonymousUser()
+
+        class IsAuthenticatedUserOwner(permissions.IsAuthenticated):
+            def has_object_permission(self, request, view, obj):
+                return True
+
+        composed_perm = (IsAuthenticatedUserOwner | permissions.IsAdminUser)
+        hasperm = composed_perm().has_object_permission(request, None, None)
+        assert hasperm is False
+
+    def test_operand_holder_is_hashable(self):
+        assert hash(permissions.IsAuthenticated & permissions.IsAdminUser)
+
+    def test_operand_holder_hash_same_for_same_operands_and_operator(self):
+        first_operand_holder = (
+            permissions.IsAuthenticated & permissions.IsAdminUser
+        )
+        second_operand_holder = (
+            permissions.IsAuthenticated & permissions.IsAdminUser
+        )
+
+        assert hash(first_operand_holder) == hash(second_operand_holder)
+
+    def test_operand_holder_hash_differs_for_different_operands(self):
+        first_operand_holder = (
+            permissions.IsAuthenticated & permissions.IsAdminUser
+        )
+        second_operand_holder = (
+            permissions.AllowAny & permissions.IsAdminUser
+        )
+        third_operand_holder = (
+            permissions.IsAuthenticated & permissions.AllowAny
+        )
+
+        assert hash(first_operand_holder) != hash(second_operand_holder)
+        assert hash(first_operand_holder) != hash(third_operand_holder)
+        assert hash(second_operand_holder) != hash(third_operand_holder)
+
+    def test_operand_holder_hash_differs_for_different_operators(self):
+        first_operand_holder = (
+            permissions.IsAuthenticated & permissions.IsAdminUser
+        )
+        second_operand_holder = (
+            permissions.IsAuthenticated | permissions.IsAdminUser
+        )
+
+        assert hash(first_operand_holder) != hash(second_operand_holder)
+
+    def test_filtering_permissions(self):
+        unfiltered_permissions = [
+            permissions.IsAuthenticated & permissions.IsAdminUser,
+            permissions.IsAuthenticated & permissions.IsAdminUser,
+            permissions.AllowAny,
+        ]
+        expected_permissions = [
+            permissions.IsAuthenticated & permissions.IsAdminUser,
+            permissions.AllowAny,
+        ]
+
+        filtered_permissions = [
+            perm for perm
+            in dict.fromkeys(unfiltered_permissions)
+        ]
+
+        assert filtered_permissions == expected_permissions

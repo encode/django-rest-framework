@@ -1,6 +1,6 @@
 import pytest
 from django.test import override_settings
-from django.urls import include, path, re_path
+from django.urls import ResolverMatch, include, path, re_path
 
 from rest_framework import serializers, status, versioning
 from rest_framework.decorators import APIView
@@ -126,7 +126,7 @@ class TestRequestVersion:
         assert response.data == {'version': None}
 
     def test_namespace_versioning(self):
-        class FakeResolverMatch:
+        class FakeResolverMatch(ResolverMatch):
             namespace = 'v1'
 
         scheme = versioning.NamespaceVersioning
@@ -152,6 +152,8 @@ class TestURLReversing(URLPatternsTestCase, APITestCase):
         path('v1/', include((included, 'v1'), namespace='v1')),
         path('another/', dummy_view, name='another'),
         re_path(r'^(?P<version>[v1|v2]+)/another/$', dummy_view, name='another'),
+        re_path(r'^(?P<foo>.+)/unversioned/$', dummy_view, name='unversioned'),
+
     ]
 
     def test_reverse_unversioned(self):
@@ -198,8 +200,16 @@ class TestURLReversing(URLPatternsTestCase, APITestCase):
         response = view(request)
         assert response.data == {'url': 'http://testserver/another/'}
 
+        # Test fallback when kwargs is not None
+        request = factory.get('/v1/endpoint/')
+        request.versioning_scheme = scheme()
+        request.version = 'v1'
+
+        reversed_url = reverse('unversioned', request=request, kwargs={'foo': 'bar'})
+        assert reversed_url == 'http://testserver/bar/unversioned/'
+
     def test_reverse_namespace_versioning(self):
-        class FakeResolverMatch:
+        class FakeResolverMatch(ResolverMatch):
             namespace = 'v1'
 
         scheme = versioning.NamespaceVersioning
@@ -250,7 +260,7 @@ class TestInvalidVersion:
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
     def test_invalid_namespace_versioning(self):
-        class FakeResolverMatch:
+        class FakeResolverMatch(ResolverMatch):
             namespace = 'v3'
 
         scheme = versioning.NamespaceVersioning

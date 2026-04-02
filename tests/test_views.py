@@ -1,5 +1,7 @@
 import copy
+import unittest
 
+from django import VERSION as DJANGO_VERSION
 from django.test import TestCase
 
 from rest_framework import status
@@ -45,7 +47,7 @@ def custom_handler(exc, context):
     return Response({'error': 'UnknownError'}, status=500)
 
 
-class OverridenSettingsView(APIView):
+class OverriddenSettingsView(APIView):
     settings = APISettings({'EXCEPTION_HANDLER': custom_handler})
 
     def get(self, request, *args, **kwargs):
@@ -129,10 +131,20 @@ class TestCustomExceptionHandler(TestCase):
 
 class TestCustomSettings(TestCase):
     def setUp(self):
-        self.view = OverridenSettingsView.as_view()
+        self.view = OverriddenSettingsView.as_view()
 
     def test_get_exception_handler(self):
         request = factory.get('/', content_type='application/json')
         response = self.view(request)
         assert response.status_code == 400
         assert response.data == {'error': 'SyntaxError'}
+
+
+@unittest.skipUnless(DJANGO_VERSION >= (5, 1), 'Only for Django 5.1+')
+class TestLoginRequiredMiddlewareCompat(TestCase):
+    def test_class_based_view_opted_out(self):
+        class_based_view = BasicView.as_view()
+        assert class_based_view.login_required is False
+
+    def test_function_based_view_opted_out(self):
+        assert basic_view.login_required is False

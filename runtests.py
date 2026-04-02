@@ -1,4 +1,5 @@
 #! /usr/bin/env python3
+import os
 import sys
 
 import pytest
@@ -33,6 +34,18 @@ if __name__ == "__main__":
                 '--cov', '.',
                 '--cov-report', 'xml',
             ] + pytest_args
+
+        try:
+            pytest_args.remove('--no-pkgroot')
+        except ValueError:
+            pass
+        else:
+            sys.path.pop(0)
+
+            # import rest_framework before pytest re-adds the package root directory.
+            import rest_framework
+            package_dir = os.path.join(os.getcwd(), 'rest_framework')
+            assert not rest_framework.__file__.startswith(package_dir)
 
         if first_arg.startswith('-'):
             # `runtests.py [flags]`

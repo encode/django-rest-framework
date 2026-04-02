@@ -102,12 +102,12 @@ class EndpointEnumerator:
         Given a URL conf regex, return a URI template string.
         """
         # ???: Would it be feasible to adjust this such that we generate the
-        # path, plus the kwargs, plus the type from the convertor, such that we
+        # path, plus the kwargs, plus the type from the converter, such that we
         # could feed that straight into the parameter schema object?
 
         path = simplify_regex(path_regex)
 
-        # Strip Django 2.0 convertors as they are incompatible with uritemplate format
+        # Strip Django 2.0 converters as they are incompatible with uritemplate format
         return re.sub(_PATH_PARAMETER_COMPONENT_RE, r'{\g<parameter>}', path)
 
     def should_include_endpoint(self, path, callback):

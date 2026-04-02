@@ -231,3 +231,7 @@ body a:hover {
   margin-left: 5px;
   margin-right: 5px;
 }
+
+.pagination {
+  margin: 5px 0 10px 0;
+}
