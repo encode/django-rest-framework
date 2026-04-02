@@ -1497,9 +1497,10 @@ class ModelSerializer(Serializer):
             elif unique_constraint_field.null:
                 default = None
             elif unique_constraint_field.blank:
-                default = ''
-            else:
-                default = empty
+                if isinstance(unique_constraint_field, (models.CharField, models.TextField)):
+                    default = ''
+                else:
+                    default = empty
 
             if unique_constraint_name in model_fields:
                 # The corresponding field is present in the serializer
