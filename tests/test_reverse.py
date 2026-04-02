@@ -3,6 +3,7 @@ from django.urls import NoReverseMatch, path
 
 from rest_framework.reverse import reverse
 from rest_framework.test import APIRequestFactory
+from rest_framework.versioning import BaseVersioning
 
 factory = APIRequestFactory()
 
@@ -16,7 +17,7 @@ urlpatterns = [
 ]
 
 
-class MockVersioningScheme:
+class MockVersioningScheme(BaseVersioning):
 
     def __init__(self, raise_error=False):
         self.raise_error = raise_error

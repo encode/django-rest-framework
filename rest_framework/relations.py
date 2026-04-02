@@ -1,5 +1,6 @@
+import contextlib
 import sys
-from collections import OrderedDict
+from operator import attrgetter
 from urllib import parse
 
 from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
@@ -70,6 +71,7 @@ class PKOnlyObject:
     instance, but still want to return an object with a .pk attribute,
     in order to keep the same interface as a regular model instance.
     """
+
     def __init__(self, pk):
         self.pk = pk
 
@@ -170,7 +172,7 @@ class RelatedField(Field):
     def get_attribute(self, instance):
         if self.use_pk_only_optimization() and self.source_attrs:
             # Optimized case, return a mock object only containing the pk attribute.
-            try:
+            with contextlib.suppress(AttributeError):
                 attribute_instance = get_attribute(instance, self.source_attrs[:-1])
                 value = attribute_instance.serializable_value(self.source_attrs[-1])
                 if is_simple_callable(value):
@@ -183,9 +185,6 @@ class RelatedField(Field):
                 value = getattr(value, 'pk', value)
 
                 return PKOnlyObject(pk=value)
-            except AttributeError:
-                pass
-
         # Standard case, return the object instance.
         return super().get_attribute(instance)
 
@@ -199,13 +198,9 @@ class RelatedField(Field):
         if cutoff is not None:
             queryset = queryset[:cutoff]
 
-        return OrderedDict([
-            (
-                self.to_representation(item),
-                self.display_value(item)
-            )
-            for item in queryset
-        ])
+        return {
+            self.to_representation(item): self.display_value(item) for item in queryset
+        }
 
     @property
     def choices(self):
@@ -466,7 +461,11 @@ class SlugRelatedField(RelatedField):
             self.fail('invalid')
 
     def to_representation(self, obj):
-        return getattr(obj, self.slug_field)
+        slug = self.slug_field
+        if "__" in slug:
+            # handling nested relationship if defined
+            slug = slug.replace('__', '.')
+        return attrgetter(slug)(obj)
 
 
 class ManyRelatedField(Field):

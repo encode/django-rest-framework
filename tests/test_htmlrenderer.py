@@ -8,6 +8,7 @@ from django.urls import path
 
 from rest_framework import status
 from rest_framework.decorators import api_view, renderer_classes
+from rest_framework.exceptions import ValidationError
 from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
 
@@ -34,10 +35,17 @@ def not_found(request):
     raise Http404()
 
 
+@api_view(('GET',))
+@renderer_classes((TemplateHTMLRenderer,))
+def validation_error(request):
+    raise ValidationError('error')
+
+
 urlpatterns = [
     path('', example),
     path('permission_denied', permission_denied),
     path('not_found', not_found),
+    path('validation_error', validation_error),
 ]
 
 
@@ -89,6 +97,12 @@ class TemplateHTMLRendererTests(TestCase):
         response = self.client.get('/permission_denied')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(response.content, b"403 Forbidden")
+        self.assertEqual(response['Content-Type'], 'text/html; charset=utf-8')
+
+    def test_validation_error_html_view(self):
+        response = self.client.get('/validation_error')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.content, b"400 Bad Request")
         self.assertEqual(response['Content-Type'], 'text/html; charset=utf-8')
 
     # 2 tests below are based on order of if statements in corresponding method

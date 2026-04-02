@@ -16,10 +16,10 @@ automatically.
     router.register(r'users', UserViewSet, 'user')
     urlpatterns = router.urls
 """
-from collections import OrderedDict
 from functools import update_wrapper
 from inspect import getmembers
 
+from django import VERSION as DJANGO_VERSION
 from django.urls import NoReverseMatch
 from django.utils.decorators import classonlymethod
 from django.views.decorators.csrf import csrf_exempt
@@ -137,6 +137,12 @@ class ViewSetMixin:
         view.cls = cls
         view.initkwargs = initkwargs
         view.actions = actions
+
+        # Exempt from Django's LoginRequiredMiddleware. Users should set
+        # DEFAULT_PERMISSION_CLASSES to 'rest_framework.permissions.IsAuthenticated' instead
+        if DJANGO_VERSION >= (5, 1):
+            view.login_required = False
+
         return csrf_exempt(view)
 
     def initialize_request(self, request, *args, **kwargs):
@@ -183,7 +189,7 @@ class ViewSetMixin:
 
         This method will noop if `detail` was not provided as a view initkwarg.
         """
-        action_urls = OrderedDict()
+        action_urls = {}
 
         # exit early if `detail` has not been provided
         if self.detail is None:
@@ -198,6 +204,10 @@ class ViewSetMixin:
         for action in actions:
             try:
                 url_name = '%s-%s' % (self.basename, action.url_name)
+                namespace = self.request.resolver_match.namespace
+                if namespace:
+                    url_name = '%s:%s' % (namespace, url_name)
+
                 url = reverse(url_name, self.args, self.kwargs, request=self.request)
                 view = self.__class__(**action.kwargs)
                 action_urls[view.get_view_name()] = url

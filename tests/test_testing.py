@@ -2,27 +2,32 @@ import itertools
 from io import BytesIO
 from unittest.mock import patch
 
-import django
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
 from django.test import TestCase, override_settings
 from django.urls import path
 
-from rest_framework import fields, serializers
-from rest_framework.decorators import api_view
+from rest_framework import fields, parsers, renderers, serializers, status
+from rest_framework.authtoken.models import Token
+from rest_framework.decorators import (
+    api_view, parser_classes, renderer_classes
+)
 from rest_framework.response import Response
 from rest_framework.test import (
     APIClient, APIRequestFactory, URLPatternsTestCase, force_authenticate
 )
+from rest_framework.views import APIView
 
 
 @api_view(['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'])
 def view(request):
-    return Response({
-        'auth': request.META.get('HTTP_AUTHORIZATION', b''),
-        'user': request.user.username
-    })
+    data = {'auth': request.META.get('HTTP_AUTHORIZATION', b'')}
+    if request.user:
+        data['user'] = request.user.username
+    if request.auth:
+        data['token'] = request.auth.key
+    return Response(data)
 
 
 @api_view(['GET', 'POST'])
@@ -49,6 +54,18 @@ class BasicSerializer(serializers.Serializer):
 
 
 @api_view(['POST'])
+@parser_classes((parsers.JSONParser,))
+def post_json_view(request):
+    return Response(request.data)
+
+
+@api_view(['DELETE'])
+@renderer_classes((renderers.JSONRenderer, ))
+def delete_json_view(request):
+    return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(['POST'])
 def post_view(request):
     serializer = BasicSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
@@ -60,7 +77,9 @@ urlpatterns = [
     path('session-view/', session_view),
     path('redirect-view/', redirect_view),
     path('redirect-view/<int:code>/', redirect_307_308_view),
-    path('post-view/', post_view)
+    path('post-json-view/', post_json_view),
+    path('delete-json-view/', delete_json_view),
+    path('post-view/', post_view),
 ]
 
 
@@ -78,14 +97,46 @@ class TestAPITestClient(TestCase):
             response = self.client.get('/view/')
             assert response.data['auth'] == 'example'
 
-    def test_force_authenticate(self):
+    def test_force_authenticate_with_user(self):
         """
-        Setting `.force_authenticate()` forcibly authenticates each request.
+        Setting `.force_authenticate()` with a user forcibly authenticates each
+        request with that user.
         """
         user = User.objects.create_user('example', 'example@example.com')
-        self.client.force_authenticate(user)
+
+        self.client.force_authenticate(user=user)
         response = self.client.get('/view/')
+
         assert response.data['user'] == 'example'
+        assert 'token' not in response.data
+
+    def test_force_authenticate_with_token(self):
+        """
+        Setting `.force_authenticate()` with a token forcibly authenticates each
+        request with that token.
+        """
+        user = User.objects.create_user('example', 'example@example.com')
+        token = Token.objects.create(key='xyz', user=user)
+
+        self.client.force_authenticate(token=token)
+        response = self.client.get('/view/')
+
+        assert response.data['token'] == 'xyz'
+        assert 'user' not in response.data
+
+    def test_force_authenticate_with_user_and_token(self):
+        """
+        Setting `.force_authenticate()` with a user and token forcibly
+        authenticates each request with that user and token.
+        """
+        user = User.objects.create_user('example', 'example@example.com')
+        token = Token.objects.create(key='xyz', user=user)
+
+        self.client.force_authenticate(user=user, token=token)
+        response = self.client.get('/view/')
+
+        assert response.data['user'] == 'example'
+        assert response.data['token'] == 'xyz'
 
     def test_force_authenticate_with_sessions(self):
         """
@@ -102,8 +153,9 @@ class TestAPITestClient(TestCase):
         response = self.client.get('/session-view/')
         assert response.data['active_session'] is True
 
-        # Force authenticating as `None` should also logout the user session.
-        self.client.force_authenticate(None)
+        # Force authenticating with `None` user and token should also logout
+        # the user session.
+        self.client.force_authenticate(user=None, token=None)
         response = self.client.get('/session-view/')
         assert response.data['active_session'] is False
 
@@ -201,6 +253,22 @@ class TestAPITestClient(TestCase):
         assert response.status_code == 200
         assert response.data == {"flag": True}
 
+    def test_post_encodes_data_based_on_json_content_type(self):
+        data = {'data': True}
+        response = self.client.post(
+            '/post-json-view/',
+            data=data,
+            content_type='application/json'
+        )
+
+        assert response.status_code == 200
+        assert response.data == data
+
+    def test_delete_based_on_format(self):
+        response = self.client.delete('/delete-json-view/', format='json')
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+        assert response.data is None
+
 
 class TestAPIRequestFactory(TestCase):
     def test_csrf_exempt_by_default(self):
@@ -226,6 +294,28 @@ class TestAPIRequestFactory(TestCase):
         expected = {'detail': 'CSRF Failed: CSRF cookie not set.'}
         assert response.status_code == 403
         assert response.data == expected
+
+    def test_transform_factory_django_request_to_drf_request(self):
+        """
+        ref: GH-3608, GH-4440 & GH-6488.
+        """
+
+        factory = APIRequestFactory()
+
+        class DummyView(APIView):  # Your custom view.
+            ...
+
+        request = factory.get('/', {'demo': 'test'})
+        drf_request = DummyView().initialize_request(request)
+        assert drf_request.query_params == {'demo': ['test']}
+
+        assert hasattr(drf_request, 'accepted_media_type') is False
+        DummyView().initial(drf_request)
+        assert drf_request.accepted_media_type == 'application/json'
+
+        request = factory.post('/', {'example': 'test'})
+        drf_request = DummyView().initialize_request(request)
+        assert drf_request.data.get('example') == 'test'
 
     def test_invalid_format(self):
         """
@@ -283,10 +373,6 @@ class TestAPIRequestFactory(TestCase):
         assert request.META['CONTENT_TYPE'] == 'application/json'
 
 
-def check_urlpatterns(cls):
-    assert urlpatterns is not cls.urlpatterns
-
-
 class TestUrlPatternTestCase(URLPatternsTestCase):
     urlpatterns = [
         path('', view),
@@ -298,18 +384,11 @@ class TestUrlPatternTestCase(URLPatternsTestCase):
         super().setUpClass()
         assert urlpatterns is cls.urlpatterns
 
-        if django.VERSION > (4, 0):
-            cls.addClassCleanup(
-                check_urlpatterns,
-                cls
-            )
-
-    if django.VERSION < (4, 0):
-        @classmethod
-        def tearDownClass(cls):
-            assert urlpatterns is cls.urlpatterns
-            super().tearDownClass()
-            assert urlpatterns is not cls.urlpatterns
+    @classmethod
+    def doClassCleanups(cls):
+        assert urlpatterns is cls.urlpatterns
+        super().doClassCleanups()
+        assert urlpatterns is not cls.urlpatterns
 
     def test_urlpatterns(self):
         assert self.client.get('/').status_code == 200

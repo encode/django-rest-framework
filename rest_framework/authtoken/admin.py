@@ -4,6 +4,7 @@ from django.contrib.admin.views.main import ChangeList
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.urls import reverse
+from django.utils.translation import gettext_lazy as _
 
 from rest_framework.authtoken.models import Token, TokenProxy
 
@@ -22,8 +23,11 @@ class TokenChangeList(ChangeList):
 
 class TokenAdmin(admin.ModelAdmin):
     list_display = ('key', 'user', 'created')
+    list_filter = ('created',)
     fields = ('user',)
-    ordering = ('-created',)
+    search_fields = ('user__%s' % User.USERNAME_FIELD,)
+    search_help_text = _('Username')
+    ordering = ('user__%s' % User.USERNAME_FIELD,)
     actions = None  # Actions not compatible with mapped IDs.
 
     def get_changelist(self, request, **kwargs):

@@ -11,44 +11,38 @@ source:
 
 Relational fields are used to represent model relationships.  They can be applied to `ForeignKey`, `ManyToManyField` and `OneToOneField` relationships, as well as to reverse relationships, and custom relationships such as `GenericForeignKey`.
 
----
+!!! note
+    The relational fields are declared in `relations.py`, but by convention you should import them from the `serializers` module, using `from rest_framework import serializers` and refer to fields as `serializers.<FieldName>`.
 
-**Note:** The relational fields are declared in `relations.py`, but by convention you should import them from the `serializers` module, using `from rest_framework import serializers` and refer to fields as `serializers.<FieldName>`.
+!!! note
+    REST Framework does not attempt to automatically optimize querysets passed to serializers in terms of `select_related` and `prefetch_related` since it would be too much magic. A serializer with a field spanning an ORM relation through its source attribute could require an additional database hit to fetch related objects from the database. It is the programmer's responsibility to optimize queries to avoid additional database hits which could occur while using such a serializer.
 
----
-
----
-
-**Note:** REST Framework does not attempt to automatically optimize querysets passed to serializers in terms of `select_related` and `prefetch_related` since it would be too much magic. A serializer with a field spanning an orm relation through its source attribute could require an additional database hit to fetch related objects from the database. It is the programmer's responsibility to optimize queries to avoid additional database hits which could occur while using such a serializer.
-
-For example, the following serializer would lead to a database hit each time evaluating the tracks field if it is not prefetched:
-
-    class AlbumSerializer(serializers.ModelSerializer):
-        tracks = serializers.SlugRelatedField(
-            many=True,
-            read_only=True,
-            slug_field='title'
-        )
-
-        class Meta:
-            model = Album
-            fields = ['album_name', 'artist', 'tracks']
+    For example, the following serializer would lead to a database hit each time evaluating the tracks field if it is not prefetched:
     
-    # For each album object, tracks should be fetched from database
-    qs = Album.objects.all()
-    print(AlbumSerializer(qs, many=True).data)
+        class AlbumSerializer(serializers.ModelSerializer):
+            tracks = serializers.SlugRelatedField(
+                many=True,
+                read_only=True,
+                slug_field='title'
+            )
+    
+            class Meta:
+                model = Album
+                fields = ['album_name', 'artist', 'tracks']
+    
+        # For each album object, tracks should be fetched from database
+        qs = Album.objects.all()
+        print(AlbumSerializer(qs, many=True).data)
+    
+    If `AlbumSerializer` is used to serialize a fairly large queryset with `many=True` then it could be a serious performance problem. Optimizing the queryset passed to `AlbumSerializer` with:
+    
+        qs = Album.objects.prefetch_related('tracks')
+        # No additional database hits required
+        print(AlbumSerializer(qs, many=True).data)
+    
+    would solve the issue.
 
-If `AlbumSerializer` is used to serialize a fairly large queryset with `many=True` then it could be a serious performance problem. Optimizing the queryset passed to `AlbumSerializer` with:
-
-    qs = Album.objects.prefetch_related('tracks')
-    # No additional database hits required
-    print(AlbumSerializer(qs, many=True).data)
-
-would solve the issue.
-
----
-
-#### Inspecting relationships.
+## Inspecting relationships.
 
 When using the `ModelSerializer` class, serializer fields and relationships will be automatically generated for you. Inspecting these automatically generated fields can be a useful tool for determining how to customize the relationship style.
 
@@ -62,7 +56,7 @@ To do so, open the Django shell, using `python manage.py shell`, then import the
         name = CharField(allow_blank=True, max_length=100, required=False)
         owner = PrimaryKeyRelatedField(queryset=User.objects.all())
 
-# API Reference
+## API Reference
 
 In order to explain the various types of relational fields, we'll use a couple of simple models for our examples.  Our models will be for music albums, and the tracks listed on each album.
 
@@ -83,7 +77,7 @@ In order to explain the various types of relational fields, we'll use a couple o
         def __str__(self):
             return '%d: %s' % (self.order, self.title)
 
-## StringRelatedField
+### StringRelatedField
 
 `StringRelatedField` may be used to represent the target of the relationship using its `__str__` method.
 
@@ -115,7 +109,7 @@ This field is read only.
 
 * `many` - If applied to a to-many relationship, you should set this argument to `True`.
 
-## PrimaryKeyRelatedField
+### PrimaryKeyRelatedField
 
 `PrimaryKeyRelatedField` may be used to represent the target of the relationship using its primary key.
 
@@ -151,7 +145,7 @@ By default this field is read-write, although you can change this behavior using
 * `pk_field` - Set to a field to control serialization/deserialization of the primary key's value. For example, `pk_field=UUIDField(format='hex')` would serialize a UUID primary key into its compact hex representation.
 
 
-## HyperlinkedRelatedField
+### HyperlinkedRelatedField
 
 `HyperlinkedRelatedField` may be used to represent the target of the relationship using a hyperlink.
 
@@ -183,15 +177,12 @@ Would serialize to a representation like this:
 
 By default this field is read-write, although you can change this behavior using the `read_only` flag.
 
----
+!!! note
+    This field is designed for objects that map to a URL that accepts a single URL keyword argument, as set using the `lookup_field` and `lookup_url_kwarg` arguments.
 
-**Note**: This field is designed for objects that map to a URL that accepts a single URL keyword argument, as set using the `lookup_field` and `lookup_url_kwarg` arguments.
+    This is suitable for URLs that contain a single primary key or slug argument as part of the URL.
 
-This is suitable for URLs that contain a single primary key or slug argument as part of the URL.
-
-If you require more complex hyperlinked representation you'll need to customize the field, as described in the [custom hyperlinked fields](#custom-hyperlinked-fields) section, below.
-
----
+    If you require more complex hyperlinked representation you'll need to customize the field, as described in the [custom hyperlinked fields](#custom-hyperlinked-fields) section, below.
 
 **Arguments**:
 
@@ -203,7 +194,7 @@ If you require more complex hyperlinked representation you'll need to customize 
 * `lookup_url_kwarg` - The name of the keyword argument defined in the URL conf that corresponds to the lookup field. Defaults to using the same value as `lookup_field`.
 * `format` - If using format suffixes, hyperlinked fields will use the same format suffix for the target unless overridden by using the `format` argument.
 
-## SlugRelatedField
+### SlugRelatedField
 
 `SlugRelatedField` may be used to represent the target of the relationship using a field on the target.
 
@@ -244,9 +235,9 @@ When using `SlugRelatedField` as a read-write field, you will normally want to e
 * `many` - If applied to a to-many relationship, you should set this argument to `True`.
 * `allow_null` - If set to `True`, the field will accept values of `None` or the empty string for nullable relationships. Defaults to `False`.
 
-## HyperlinkedIdentityField
+### HyperlinkedIdentityField
 
-This field can be applied as an identity relationship, such as the `'url'` field on  a HyperlinkedModelSerializer.  It can also be used for an attribute on the object.  For example, the following serializer:
+This field can be applied as an identity relationship, such as the `'url'` field on a HyperlinkedModelSerializer.  It can also be used for an attribute on the object.  For example, the following serializer:
 
     class AlbumSerializer(serializers.HyperlinkedModelSerializer):
         track_listing = serializers.HyperlinkedIdentityField(view_name='track-list')
@@ -274,15 +265,15 @@ This field is always read-only.
 
 ---
 
-# Nested relationships
+## Nested relationships
 
 As opposed to previously discussed _references_ to another entity, the referred entity can instead also be embedded or _nested_
 in the representation of the object that refers to it.
-Such nested relationships can be expressed by using serializers as fields. 
+Such nested relationships can be expressed by using serializers as fields.
 
 If the field is used to represent a to-many relationship, you should add the `many=True` flag to the serializer field.
 
-## Example
+### Example
 
 For example, the following serializer:
 
@@ -300,7 +291,7 @@ For example, the following serializer:
 
 Would serialize to a nested representation like this:
 
-    >>> album = Album.objects.create(album_name="The Grey Album", artist='Danger Mouse')
+    >>> album = Album.objects.create(album_name="The Gray Album", artist='Danger Mouse')
     >>> Track.objects.create(album=album, order=1, title='Public Service Announcement', duration=245)
     <Track: Track object>
     >>> Track.objects.create(album=album, order=2, title='What More Can I Say', duration=264)
@@ -310,7 +301,7 @@ Would serialize to a nested representation like this:
     >>> serializer = AlbumSerializer(instance=album)
     >>> serializer.data
     {
-        'album_name': 'The Grey Album',
+        'album_name': 'The Gray Album',
         'artist': 'Danger Mouse',
         'tracks': [
             {'order': 1, 'title': 'Public Service Announcement', 'duration': 245},
@@ -320,7 +311,7 @@ Would serialize to a nested representation like this:
         ],
     }
 
-## Writable nested serializers
+### Writable nested serializers
 
 By default nested serializers are read-only. If you want to support write-operations to a nested serializer field you'll need to create `create()` and/or `update()` methods in order to explicitly specify how the child relationships should be saved:
 
@@ -344,7 +335,7 @@ By default nested serializers are read-only. If you want to support write-operat
             return album
 
     >>> data = {
-        'album_name': 'The Grey Album',
+        'album_name': 'The Gray Album',
         'artist': 'Danger Mouse',
         'tracks': [
             {'order': 1, 'title': 'Public Service Announcement', 'duration': 245},
@@ -360,7 +351,7 @@ By default nested serializers are read-only. If you want to support write-operat
 
 ---
 
-# Custom relational fields
+## Custom relational fields
 
 In rare cases where none of the existing relational styles fit the representation you need,
 you can implement a completely custom relational field, that describes exactly how the
@@ -372,7 +363,7 @@ If you want to implement a read-write relational field, you must also implement 
 
 To provide a dynamic queryset based on the `context`, you can also override `.get_queryset(self)` instead of specifying `.queryset` on the class or when initializing the field.
 
-## Example
+### Example
 
 For example, we could define a relational field to serialize a track to a custom string representation, using its ordering, title, and duration:
 
@@ -405,7 +396,7 @@ This custom field would then serialize to the following representation:
 
 ---
 
-# Custom hyperlinked fields
+## Custom hyperlinked fields
 
 In some cases you may need to customize the behavior of a hyperlinked field, in order to represent URLs that require more than a single lookup field.
 
@@ -426,7 +417,7 @@ The return value of this method should the object that corresponds to the matche
 
 May raise an `ObjectDoesNotExist` exception.
 
-## Example
+### Example
 
 Say we have a URL for a customer object that takes two keyword arguments, like so:
 
@@ -464,9 +455,9 @@ Generally we recommend a flat style for API representations where possible, but 
 
 ---
 
-# Further notes
+## Further notes
 
-## The `queryset` argument
+### The `queryset` argument
 
 The `queryset` argument is only ever required for *writable* relationship field, in which case it is used for performing the model instance lookup, that maps from the primitive user input, into a model instance.
 
@@ -476,7 +467,7 @@ This behavior is now replaced with *always* using an explicit `queryset` argumen
 
 Doing so reduces the amount of hidden 'magic' that `ModelSerializer` provides, makes the behavior of the field more clear, and ensures that it is trivial to move between using the `ModelSerializer` shortcut, or using fully explicit `Serializer` classes.
 
-## Customizing the HTML display
+### Customizing the HTML display
 
 The built-in `__str__` method of the model will be used to generate string representations of the objects used to populate the `choices` property. These choices are used to populate select HTML inputs in the browsable API.
 
@@ -486,7 +477,7 @@ To provide customized representations for such inputs, override `display_value()
         def display_value(self, instance):
             return 'Track: %s' % (instance.title)
 
-## Select field cutoffs
+### Select field cutoffs
 
 When rendered in the browsable API relational fields will default to only displaying a maximum of 1000 selectable items. If more items are present then a disabled option with "More than 1000 items…" will be displayed.
 
@@ -494,8 +485,8 @@ This behavior is intended to prevent a template from being unable to render in a
 
 There are two keyword arguments you can use to control this behavior:
 
-- `html_cutoff` - If set this will be the maximum number of choices that will be displayed by a HTML select drop down. Set to `None` to disable any limiting. Defaults to `1000`.
-- `html_cutoff_text` - If set this will display a textual indicator if the maximum number of items have been cutoff in an HTML select drop down. Defaults to `"More than {count} items…"`
+* `html_cutoff` - If set this will be the maximum number of choices that will be displayed by a HTML select drop down. Set to `None` to disable any limiting. Defaults to `1000`.
+* `html_cutoff_text` - If set this will display a textual indicator if the maximum number of items have been cutoff in an HTML select drop down. Defaults to `"More than {count} items…"`
 
 You can also control these globally using the settings `HTML_SELECT_CUTOFF` and `HTML_SELECT_CUTOFF_TEXT`.
 
@@ -507,7 +498,7 @@ In cases where the cutoff is being enforced you may want to instead use a plain 
        style={'base_template': 'input.html'}
     )
 
-## Reverse relations
+### Reverse relations
 
 Note that reverse relationships are not automatically included by the `ModelSerializer` and `HyperlinkedModelSerializer` classes.  To include a reverse relationship, you must explicitly add it to the fields list.  For example:
 
@@ -529,7 +520,7 @@ If you have not set a related name for the reverse relationship, you'll need to 
 
 See the Django documentation on [reverse relationships][reverse-relationships] for more details.
 
-## Generic relationships
+### Generic relationships
 
 If you want to serialize a generic foreign key, you need to define a custom field, to determine explicitly how you want to serialize the targets of the relationship.
 
@@ -603,7 +594,7 @@ Note that reverse generic keys, expressed using the `GenericRelation` field, can
 
 For more information see [the Django documentation on generic relations][generic-relations].
 
-## ManyToManyFields with a Through Model
+### ManyToManyFields with a Through Model
 
 By default, relational fields that target a ``ManyToManyField`` with a
 ``through`` model specified are set to read-only.
@@ -616,17 +607,19 @@ If you wish to represent [extra fields on a through model][django-intermediary-m
 
 ---
 
-# Third Party Packages
+## Third Party Packages
 
 The following third party packages are also available.
 
-## DRF Nested Routers
+### DRF Nested Routers
 
 The [drf-nested-routers package][drf-nested-routers] provides routers and relationship fields for working with nested resources.
 
-## Rest Framework Generic Relations
+### Rest Framework Generic Relations
 
 The [rest-framework-generic-relations][drf-nested-relations] library provides read/write serialization for generic foreign keys.
+
+The [rest-framework-gm2m-relations][drf-gm2m-relations] library provides read/write serialization for [django-gm2m][django-gm2m-field].
 
 [cite]: http://users.ece.utexas.edu/~adnan/pike.html
 [reverse-relationships]: https://docs.djangoproject.com/en/stable/topics/db/queries/#following-relationships-backward
@@ -634,6 +627,8 @@ The [rest-framework-generic-relations][drf-nested-relations] library provides re
 [generic-relations]: https://docs.djangoproject.com/en/stable/ref/contrib/contenttypes/#id1
 [drf-nested-routers]: https://github.com/alanjds/drf-nested-routers
 [drf-nested-relations]: https://github.com/Ian-Foote/rest-framework-generic-relations
+[drf-gm2m-relations]: https://github.com/mojtabaakbari221b/rest-framework-gm2m-relations
+[django-gm2m-field]: https://github.com/tkhyn/django-gm2m
 [django-intermediary-manytomany]: https://docs.djangoproject.com/en/stable/topics/db/models/#intermediary-manytomany
 [dealing-with-nested-objects]: https://www.django-rest-framework.org/api-guide/serializers/#dealing-with-nested-objects
 [to_internal_value]: https://www.django-rest-framework.org/api-guide/serializers/#to_internal_valueself-data

@@ -129,7 +129,7 @@ urlpatterns = [
 ]
 
 
-# TODO: Clean tests bellow - remove duplicates with above, better unit testing, ...
+# TODO: Clean tests below - remove duplicates with above, better unit testing, ...
 @override_settings(ROOT_URLCONF='tests.test_response')
 class RendererIntegrationTests(TestCase):
     """
@@ -267,7 +267,7 @@ class Issue807Tests(TestCase):
         """
         headers = {"HTTP_ACCEPT": RendererC.media_type}
         resp = self.client.get('/', **headers)
-        expected = "{}; charset={}".format(RendererC.media_type, RendererC.charset)
+        expected = f"{RendererC.media_type}; charset={RendererC.charset}"
         self.assertEqual(expected, resp['Content-Type'])
 
     def test_content_type_set_explicitly_on_response(self):
@@ -283,3 +283,8 @@ class Issue807Tests(TestCase):
         self.assertEqual(resp['Content-Type'], 'text/html; charset=utf-8')
         # self.assertContains(resp, 'Text comes here')
         # self.assertContains(resp, 'Text description.')
+
+
+class TestTyping(TestCase):
+    def test_response_is_subscriptable(self):
+        assert Response is Response["foo"]

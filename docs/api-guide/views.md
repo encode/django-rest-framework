@@ -4,7 +4,7 @@ source:
     - views.py
 ---
 
-# Class-based Views
+## Class-based Views
 
 > Django's class-based views are a welcome departure from the old-style views.
 >
@@ -45,70 +45,67 @@ For example:
             usernames = [user.username for user in User.objects.all()]
             return Response(usernames)
 
----
-
-**Note**: The full methods, attributes on, and relations between Django REST Framework's `APIView`, `GenericAPIView`, various `Mixins`, and `Viewsets` can be initially complex. In addition to the documentation here, the [Classy Django REST Framework][classy-drf] resource provides a browsable reference, with full methods and attributes, for each of Django REST Framework's class-based views.
-
----
+!!! note
+    The full methods, attributes on, and relations between Django REST Framework's `APIView`, `GenericAPIView`, various `Mixins`, and `Viewsets` can be initially complex. In addition to the documentation here, the [Classy Django REST Framework][classy-drf] resource provides a browsable reference, with full methods and attributes, for each of Django REST Framework's class-based views.
 
 
-## API policy attributes
+### API policy attributes
 
 The following attributes control the pluggable aspects of API views.
 
-### .renderer_classes
+#### .renderer_classes
 
-### .parser_classes
+#### .parser_classes
 
-### .authentication_classes
+#### .authentication_classes
 
-### .throttle_classes
+#### .throttle_classes
 
-### .permission_classes
+#### .permission_classes
 
-### .content_negotiation_class
+#### .content_negotiation_class
 
-## API policy instantiation methods
+### API policy instantiation methods
 
 The following methods are used by REST framework to instantiate the various pluggable API policies.  You won't typically need to override these methods.
 
-### .get_renderers(self)
+#### .get_renderers(self)
 
-### .get_parsers(self)
+#### .get_parsers(self)
 
-### .get_authenticators(self)
+#### .get_authenticators(self)
 
-### .get_throttles(self)
+#### .get_throttles(self)
 
-### .get_permissions(self)
+#### .get_permissions(self)
 
-### .get_content_negotiator(self)
+#### .get_content_negotiator(self)
 
-### .get_exception_handler(self)
+#### .get_exception_handler(self)
 
-## API policy implementation methods
+### API policy implementation methods
 
 The following methods are called before dispatching to the handler method.
 
-### .check_permissions(self, request)
+#### .check_permissions(self, request)
 
-### .check_throttles(self, request)
+#### .check_throttles(self, request)
 
-### .perform_content_negotiation(self, request, force=False)
+#### .perform_content_negotiation(self, request, force=False)
 
-## Dispatch methods
+### Dispatch methods
 
 The following methods are called directly by the view's `.dispatch()` method.
 These perform any actions that need to occur before or after calling the handler methods such as `.get()`, `.post()`, `put()`, `patch()` and `.delete()`.
 
-### .initial(self, request, \*args, **kwargs)
+#### .initial(self, request, \*args, **kwargs)
 
 Performs any actions that need to occur before the handler method gets called.
 This method is used to enforce permissions and throttling, and perform content negotiation.
 
 You won't typically need to override this method.
 
-### .handle_exception(self, exc)
+#### .handle_exception(self, exc)
 
 Any exception thrown by the handler method will be passed to this method, which either returns a `Response` instance, or re-raises the exception.
 
@@ -116,13 +113,13 @@ The default implementation handles any subclass of `rest_framework.exceptions.AP
 
 If you need to customize the error responses your API returns you should subclass this method.
 
-### .initialize_request(self, request, \*args, **kwargs)
+#### .initialize_request(self, request, \*args, **kwargs)
 
 Ensures that the request object that is passed to the handler method is an instance of `Request`, rather than the usual Django `HttpRequest`.
 
 You won't typically need to override this method.
 
-### .finalize_response(self, request, response, \*args, **kwargs)
+#### .finalize_response(self, request, response, \*args, **kwargs)
 
 Ensures that any `Response` object returned from the handler method will be rendered into the correct content type, as determined by the content negotiation.
 
@@ -130,7 +127,7 @@ You won't typically need to override this method.
 
 ---
 
-# Function Based Views
+## Function Based Views
 
 > Saying [that class-based views] is always the superior solution is a mistake.
 >
@@ -138,7 +135,7 @@ You won't typically need to override this method.
 
 REST framework also allows you to work with regular function based views.  It provides a set of simple decorators that wrap your function based views to ensure they receive an instance of `Request` (rather than the usual Django `HttpRequest`) and allows them to return a `Response` (instead of a Django `HttpResponse`), and allow you to configure how the request is processed.
 
-## @api_view()
+### @api_view()
 
 **Signature:** `@api_view(http_method_names=['GET'])`
 
@@ -153,7 +150,7 @@ The core of this functionality is the `api_view` decorator, which takes a list o
 
 This view will use the default renderers, parsers, authentication classes etc specified in the [settings].
 
-By default only `GET` methods will be accepted. Other methods will respond with "405 Method Not Allowed". To alter this behaviour, specify which methods the view allows, like so:
+By default only `GET` methods will be accepted. Other methods will respond with "405 Method Not Allowed". To alter this behavior, specify which methods the view allows, like so:
 
     @api_view(['GET', 'POST'])
     def hello_world(request):
@@ -162,7 +159,7 @@ By default only `GET` methods will be accepted. Other methods will respond with 
         return Response({"message": "Hello, world!"})
 
 
-## API policy decorators
+### API policy decorators
 
 To override the default settings, REST framework provides a set of additional decorators which can be added to your views.  These must come *after* (below) the `@api_view` decorator.  For example, to create a view that uses a [throttle][throttling] to ensure it can only be called once per day by a particular user, use the `@throttle_classes` decorator, passing a list of throttle classes:
 
@@ -186,11 +183,16 @@ The available decorators are:
 * `@authentication_classes(...)`
 * `@throttle_classes(...)`
 * `@permission_classes(...)`
+* `@content_negotiation_class(...)`
+* `@metadata_class(...)`
+* `@versioning_class(...)`
 
-Each of these decorators takes a single argument which must be a list or tuple of classes.
+Each of these decorators is equivalent to setting their respective [api policy attributes][api-policy-attributes].
+
+All decorators take a single argument. The ones that end with `_class` expect a single class while the ones ending in `_classes` expect a list or tuple of classes.
 
 
-## View schema decorator
+### View schema decorator
 
 To override the default schema generation for function based views you may use
 the `@schema` decorator. This must come *after* (below) the `@api_view`
@@ -200,7 +202,7 @@ decorator. For example:
     from rest_framework.schemas import AutoSchema
 
     class CustomAutoSchema(AutoSchema):
-        def get_link(self, path, method, base_url):
+        def get_operation(self, path, method):
             # override view introspection here...
 
     @api_view(['GET'])
@@ -208,8 +210,8 @@ decorator. For example:
     def view(request):
         return Response({"message": "Hello for today! See you tomorrow!"})
 
-This decorator takes a single `AutoSchema` instance, an `AutoSchema` subclass
-instance or `ManualSchema` instance as described in the [Schemas documentation][schemas].
+This decorator takes a single `AutoSchema` instance or an `AutoSchema` subclass
+instance as described in the [Schemas documentation][schemas].
 You may pass `None` in order to exclude the view from schema generation.
 
     @api_view(['GET'])
@@ -224,4 +226,5 @@ You may pass `None` in order to exclude the view from schema generation.
 [throttling]: throttling.md
 [schemas]: schemas.md
 [classy-drf]: http://www.cdrf.co
+[api-policy-attributes]: views.md#api-policy-attributes
 

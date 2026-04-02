@@ -1,7 +1,8 @@
-from collections import OrderedDict
+import unittest
 from functools import wraps
 
 import pytest
+from django import VERSION as DJANGO_VERSION
 from django.db import models
 from django.test import TestCase, override_settings
 from django.urls import include, path
@@ -197,6 +198,11 @@ class InitializeViewSetsTestCase(TestCase):
         assert get.view.action == 'list_action'
         assert head.view.action == 'list_action'
 
+    @unittest.skipUnless(DJANGO_VERSION >= (5, 1), 'Only for Django 5.1+')
+    def test_login_required_middleware_compat(self):
+        view = ActionViewSet.as_view(actions={'get': 'list'})
+        assert view.login_required is False
+
 
 class GetExtraActionsTests(TestCase):
 
@@ -261,11 +267,11 @@ class GetExtraActionUrlMapTests(TestCase):
         response = self.client.get('/api/actions/')
         view = response.view
 
-        expected = OrderedDict([
-            ('Custom list action', 'http://testserver/api/actions/custom_list_action/'),
-            ('List action', 'http://testserver/api/actions/list_action/'),
-            ('Wrapped list action', 'http://testserver/api/actions/wrapped_list_action/'),
-        ])
+        expected = {
+            'Custom list action': 'http://testserver/api/actions/custom_list_action/',
+            'List action': 'http://testserver/api/actions/list_action/',
+            'Wrapped list action': 'http://testserver/api/actions/wrapped_list_action/',
+        }
 
         self.assertEqual(view.get_extra_action_url_map(), expected)
 
@@ -273,28 +279,28 @@ class GetExtraActionUrlMapTests(TestCase):
         response = self.client.get('/api/actions/1/')
         view = response.view
 
-        expected = OrderedDict([
-            ('Custom detail action', 'http://testserver/api/actions/1/custom_detail_action/'),
-            ('Detail action', 'http://testserver/api/actions/1/detail_action/'),
-            ('Wrapped detail action', 'http://testserver/api/actions/1/wrapped_detail_action/'),
+        expected = {
+            'Custom detail action': 'http://testserver/api/actions/1/custom_detail_action/',
+            'Detail action': 'http://testserver/api/actions/1/detail_action/',
+            'Wrapped detail action': 'http://testserver/api/actions/1/wrapped_detail_action/',
             # "Unresolvable detail action" excluded, since it's not resolvable
-        ])
+        }
 
         self.assertEqual(view.get_extra_action_url_map(), expected)
 
     def test_uninitialized_view(self):
-        self.assertEqual(ActionViewSet().get_extra_action_url_map(), OrderedDict())
+        self.assertEqual(ActionViewSet().get_extra_action_url_map(), {})
 
     def test_action_names(self):
         # Action 'name' and 'suffix' kwargs should be respected
         response = self.client.get('/api/names/1/')
         view = response.view
 
-        expected = OrderedDict([
-            ('Custom Name', 'http://testserver/api/names/1/named_action/'),
-            ('Action Names Custom Suffix', 'http://testserver/api/names/1/suffixed_action/'),
-            ('Unnamed action', 'http://testserver/api/names/1/unnamed_action/'),
-        ])
+        expected = {
+            'Custom Name': 'http://testserver/api/names/1/named_action/',
+            'Action Names Custom Suffix': 'http://testserver/api/names/1/suffixed_action/',
+            'Unnamed action': 'http://testserver/api/names/1/unnamed_action/',
+        }
 
         self.assertEqual(view.get_extra_action_url_map(), expected)
 

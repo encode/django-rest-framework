@@ -41,7 +41,7 @@ MARKDOWN_DOCSTRING = """<h2 id="an-example-docstring">an example docstring</h2>
 </code></pre>
 <p>indented</p>
 <h2 id="hash-style-header">hash style header</h2>
-<div class="highlight"><pre><span></span><span class="p">[{</span><span class="w"></span><br /><span class="w">    </span><span class="nt">&quot;alpha&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"></span><br /><span class="w">    </span><span class="nt">&quot;beta&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;this is a string&quot;</span><span class="w"></span><br /><span class="p">}]</span><span class="w"></span><br /></pre></div>
+<div class="highlight"><pre><span></span><span class="p">[{</span><br /><span class="w">    </span><span class="nt">&quot;alpha&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><br /><span class="w">    </span><span class="nt">&quot;beta&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;this is a string&quot;</span><br /><span class="p">}]</span><br /></pre></div>
 <p><br /></p>"""
 
 

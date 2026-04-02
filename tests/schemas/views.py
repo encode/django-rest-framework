@@ -134,6 +134,11 @@ class ExampleValidatedSerializer(serializers.Serializer):
     ip4 = serializers.IPAddressField(protocol='ipv4')
     ip6 = serializers.IPAddressField(protocol='ipv6')
     ip = serializers.IPAddressField()
+    duration = serializers.DurationField(
+        validators=(
+            MinValueValidator(timedelta(seconds=10)),
+        )
+    )
 
 
 class ExampleValidatedAPIView(generics.GenericAPIView):

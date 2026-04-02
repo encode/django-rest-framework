@@ -9,6 +9,7 @@ from rest_framework.serializers import ModelSerializer
 from rest_framework.utils import json
 from rest_framework.utils.breadcrumbs import get_breadcrumbs
 from rest_framework.utils.formatting import lazy_format
+from rest_framework.utils.model_meta import FieldInfo, RelationInfo
 from rest_framework.utils.urls import remove_query_param, replace_query_param
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
@@ -267,3 +268,9 @@ class LazyFormatTests(TestCase):
         assert message.format.call_count == 1
         str(formatted)
         assert message.format.call_count == 1
+
+
+class ModelMetaNamedTupleNames(TestCase):
+    def test_named_tuple_names(self):
+        assert FieldInfo.__name__ == 'FieldInfo'
+        assert RelationInfo.__name__ == 'RelationInfo'
