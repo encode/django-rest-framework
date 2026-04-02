@@ -11,11 +11,11 @@ source:
 
 REST framework includes a few helper classes that extend Django's existing test framework, and improve support for making API requests.
 
-# APIRequestFactory
+## APIRequestFactory
 
 Extends [Django's existing `RequestFactory` class][requestfactory].
 
-## Creating test requests
+### Creating test requests
 
 The `APIRequestFactory` class supports an almost identical API to Django's standard `RequestFactory` class.  This means that the standard `.get()`, `.post()`, `.put()`, `.patch()`, `.delete()`, `.head()` and `.options()` methods are all available.
 
@@ -25,9 +25,12 @@ The `APIRequestFactory` class supports an almost identical API to Django's stand
     factory = APIRequestFactory()
     request = factory.post('/notes/', {'title': 'new idea'})
 
+    # Using the standard RequestFactory API to encode JSON data
+    request = factory.post('/notes/', {'title': 'new idea'}, content_type='application/json')
+
 #### Using the `format` argument
 
-Methods which create a request body, such as `post`, `put` and `patch`, include a `format` argument, which make it easy to generate requests using a content type other than multipart form data.  For example:
+Methods which create a request body, such as `post`, `put` and `patch`, include a `format` argument, which make it easy to generate requests using a wide set of request formats.  When using this argument, the factory will select an appropriate renderer and its configured `content_type`.  For example:
 
     # Create a JSON POST request
     factory = APIRequestFactory()
@@ -41,7 +44,7 @@ To support a wider set of request formats, or change the default format, [see th
 
 If you need to explicitly encode the request body, you can do so by setting the `content_type` flag.  For example:
 
-    request = factory.post('/notes/', json.dumps({'title': 'new idea'}), content_type='application/json')
+    request = factory.post('/notes/', yaml.dump({'title': 'new idea'}), content_type='application/yaml')
 
 #### PUT and PATCH with form data
 
@@ -62,7 +65,7 @@ Using Django's `RequestFactory`, you'd need to explicitly encode the data yourse
     content_type = 'multipart/form-data; boundary=BoUnDaRyStRiNg'
     request = factory.put('/notes/547/', content, content_type=content_type)
 
-## Forcing authentication
+### Forcing authentication
 
 When testing views directly using a request factory, it's often convenient to be able to directly authenticate the request, rather than having to construct the correct authentication credentials.
 
@@ -87,40 +90,47 @@ For example, when forcibly authenticating using a token, you might do something 
     request = factory.get('/accounts/django-superstars/')
     force_authenticate(request, user=user, token=user.auth_token)
 
----
+!!! note
+    `force_authenticate` directly sets `request.user` to the in-memory `user` instance. If you are reusing the same `user` instance across multiple tests that update the saved `user` state, you may need to call [`refresh_from_db()`][refresh_from_db_docs] between tests.
 
-**Note**: `force_authenticate` directly sets `request.user` to the in-memory `user` instance. If you are re-using the same `user` instance across multiple tests that update the saved `user` state, you may need to call [`refresh_from_db()`][refresh_from_db_docs] between tests.
+!!! note
+    When using `APIRequestFactory`, the object that is returned is Django's standard `HttpRequest`, and not REST framework's `Request` object, which is only generated once the view is called.
 
----
+    This means that setting attributes directly on the request object may not always have the effect you expect.  For example, setting `.token` directly will have no effect, and setting `.user` directly will only work if session authentication is being used.
+    
+        # Request will only authenticate if `SessionAuthentication` is in use.
+        request = factory.get('/accounts/django-superstars/')
+        request.user = user
+        response = view(request)
+    
+    If you want to test a request involving the REST framework’s 'Request' object, you’ll need to manually transform it first:
+    
+        class DummyView(APIView):
+            ...
+    
+        factory = APIRequestFactory()
+        request = factory.get('/', {'demo': 'test'})
+        drf_request = DummyView().initialize_request(request)
+        assert drf_request.query_params == {'demo': ['test']}
+    
+        request = factory.post('/', {'example': 'test'})
+        drf_request = DummyView().initialize_request(request)
+        assert drf_request.data.get('example') == 'test'
 
-**Note**: When using `APIRequestFactory`, the object that is returned is Django's standard `HttpRequest`, and not REST framework's `Request` object, which is only generated once the view is called.
-
-This means that setting attributes directly on the request object may not always have the effect you expect.  For example, setting `.token` directly will have no effect, and setting `.user` directly will only work if session authentication is being used.
-
-    # Request will only authenticate if `SessionAuthentication` is in use.
-    request = factory.get('/accounts/django-superstars/')
-    request.user = user
-    response = view(request)
-
----
-
-## Forcing CSRF validation
+### Forcing CSRF validation
 
 By default, requests created with `APIRequestFactory` will not have CSRF validation applied when passed to a REST framework view.  If you need to explicitly turn CSRF validation on, you can do so by setting the `enforce_csrf_checks` flag when instantiating the factory.
 
     factory = APIRequestFactory(enforce_csrf_checks=True)
 
----
+!!! note
+    It's worth noting that Django's standard `RequestFactory` doesn't need to include this option, because when using regular Django the CSRF validation takes place in middleware, which is not run when testing views directly.  When using REST framework, CSRF validation takes place inside the view, so the request factory needs to disable view-level CSRF checks.
 
-**Note**: It's worth noting that Django's standard `RequestFactory` doesn't need to include this option, because when using regular Django the CSRF validation takes place in middleware, which is not run when testing views directly.  When using REST framework, CSRF validation takes place inside the view, so the request factory needs to disable view-level CSRF checks.
-
----
-
-# APIClient
+## APIClient
 
 Extends [Django's existing `Client` class][client].
 
-## Making requests
+### Making requests
 
 The `APIClient` class supports the same request interface as Django's standard `Client` class.  This means that the standard `.get()`, `.post()`, `.put()`, `.patch()`, `.delete()`, `.head()` and `.options()` methods are all available.  For example:
 
@@ -131,7 +141,7 @@ The `APIClient` class supports the same request interface as Django's standard `
 
 To support a wider set of request formats, or change the default format, [see the configuration section][configuration].
 
-## Authenticating
+### Authenticating
 
 #### .login(**kwargs)
 
@@ -181,7 +191,7 @@ To unauthenticate subsequent requests, call `force_authenticate` setting the use
 
     client.force_authenticate(user=None)
 
-## CSRF validation
+### CSRF validation
 
 By default CSRF validation is not applied when using `APIClient`.  If you need to explicitly enable CSRF validation, you can do so by setting the `enforce_csrf_checks` flag when instantiating the client.
 
@@ -191,7 +201,7 @@ As usual CSRF validation will only apply to any session authenticated views.  Th
 
 ---
 
-# RequestsClient
+## RequestsClient
 
 REST framework also includes a client for interacting with your application
 using the popular Python library, `requests`. This may be useful if:
@@ -212,13 +222,13 @@ directly.
 
 Note that the requests client requires you to pass fully qualified URLs.
 
-## RequestsClient and working with the database
+### RequestsClient and working with the database
 
 The `RequestsClient` class is useful if you want to write tests that solely interact with the service interface. This is a little stricter than using the standard Django test client, as it means that all interactions should be via the API.
 
 If you're using `RequestsClient` you'll want to ensure that test setup, and results assertions are performed as regular API calls, rather than interacting with the database models directly. For example, rather than checking that `Customer.objects.count() == 3` you would list the customers endpoint, and ensure that it contains three records.
 
-## Headers & Authentication
+### Headers & Authentication
 
 Custom headers and authentication credentials can be provided in the same way
 as [when using a standard `requests.Session` instance][session_objects].
@@ -228,7 +238,7 @@ as [when using a standard `requests.Session` instance][session_objects].
     client.auth = HTTPBasicAuth('user', 'pass')
     client.headers.update({'x-test': 'true'})
 
-## CSRF
+### CSRF
 
 If you're using `SessionAuthentication` then you'll need to include a CSRF token
 for any `POST`, `PUT`, `PATCH` or `DELETE` requests.
@@ -247,18 +257,23 @@ For example...
     csrftoken = response.cookies['csrftoken']
 
     # Interact with the API.
-    response = client.post('http://testserver/organisations/', json={
+    response = client.post('http://testserver/organizations/', json={
         'name': 'MegaCorp',
         'status': 'active'
     }, headers={'X-CSRFToken': csrftoken})
     assert response.status_code == 200
 
-## Live tests
+### Live tests
 
-With careful usage both the `RequestsClient` and the `CoreAPIClient` provide
-the ability to write test cases that can run either in development, or be run
-directly against your staging server or production environment.
+With careful usage the `RequestsClient` provides the ability to write tests
+that exercise your API views in a more end-to-end fashion than `APIClient`,
+while still running entirely in-process against your local Django application.
 
+Note that `RequestsClient` mounts a WSGI adapter and does not perform real
+network I/O. It cannot be used to send HTTP requests to remote services such
+as staging or production servers. For live tests against a deployed service,
+you should instead use a plain `requests.Session` (or similar HTTP client)
+configured with the appropriate base URL and authentication.
 Using this style to create basic tests of a few core pieces of functionality is
 a powerful way to validate your live service. Doing so may require some careful
 attention to setup and teardown to ensure that the tests run in a way that they
@@ -266,38 +281,7 @@ do not directly affect customer data.
 
 ---
 
-# CoreAPIClient
-
-The CoreAPIClient allows you to interact with your API using the Python
-`coreapi` client library.
-
-    # Fetch the API schema
-    client = CoreAPIClient()
-    schema = client.get('http://testserver/schema/')
-
-    # Create a new organisation
-    params = {'name': 'MegaCorp', 'status': 'active'}
-    client.action(schema, ['organisations', 'create'], params)
-
-    # Ensure that the organisation exists in the listing
-    data = client.action(schema, ['organisations', 'list'])
-    assert(len(data) == 1)
-    assert(data == [{'name': 'MegaCorp', 'status': 'active'}])
-
-## Headers & Authentication
-
-Custom headers and authentication may be used with `CoreAPIClient` in a
-similar way as with `RequestsClient`.
-
-    from requests.auth import HTTPBasicAuth
-
-    client = CoreAPIClient()
-    client.session.auth = HTTPBasicAuth('user', 'pass')
-    client.session.headers.update({'x-test': 'true'})
-
----
-
-# API Test cases
+## API Test cases
 
 REST framework includes the following test case classes, that mirror the existing [Django's test case classes][provided_test_case_classes], but use `APIClient` instead of Django's default `Client`.
 
@@ -306,7 +290,7 @@ REST framework includes the following test case classes, that mirror the existin
 * `APITestCase`
 * `APILiveServerTestCase`
 
-## Example
+### Example
 
 You can use any of REST framework's test case classes as you would for the regular Django test case classes.  The `self.client` attribute will be an `APIClient` instance.
 
@@ -329,13 +313,14 @@ You can use any of REST framework's test case classes as you would for the regul
 
 ---
 
-# URLPatternsTestCase
+## URLPatternsTestCase
 
 REST framework also provides a test case class for isolating `urlpatterns` on a per-class basis. Note that this inherits from Django's `SimpleTestCase`, and will most likely need to be mixed with another test case class.
 
-## Example
+### Example
 
     from django.urls import include, path, reverse
+    from rest_framework import status
     from rest_framework.test import APITestCase, URLPatternsTestCase
 
 
@@ -355,9 +340,9 @@ REST framework also provides a test case class for isolating `urlpatterns` on a 
 
 ---
 
-# Testing responses
+## Testing responses
 
-## Checking the response data
+### Checking the response data
 
 When checking the validity of test responses it's often more convenient to inspect the data that the response was created with, rather than inspecting the fully rendered response.
 
@@ -371,7 +356,7 @@ Instead of inspecting the result of parsing `response.content`:
     response = self.client.get('/users/4/')
     self.assertEqual(json.loads(response.content), {'id': 4, 'username': 'lauren'})
 
-## Rendering responses
+### Rendering responses
 
 If you're testing views directly using `APIRequestFactory`, the responses that are returned will not yet be rendered, as rendering of template responses is performed by Django's internal request-response cycle.  In order to access `response.content`, you'll first need to render the response.
 
@@ -383,9 +368,9 @@ If you're testing views directly using `APIRequestFactory`, the responses that a
 
 ---
 
-# Configuration
+## Configuration
 
-## Setting the default format
+### Setting the default format
 
 The default format used to make test requests may be set using the `TEST_REQUEST_DEFAULT_FORMAT` setting key.  For example, to always use JSON for test requests by default instead of standard multipart form requests, set the following in your `settings.py` file:
 
@@ -394,7 +379,7 @@ The default format used to make test requests may be set using the `TEST_REQUEST
         'TEST_REQUEST_DEFAULT_FORMAT': 'json'
     }
 
-## Setting the available formats
+### Setting the available formats
 
 If you need to test requests using something other than multipart or json requests, you can do so by setting the `TEST_REQUEST_RENDERER_CLASSES` setting.
 
@@ -414,5 +399,5 @@ For example, to add support for using `format='html'` in test requests, you migh
 [requestfactory]: https://docs.djangoproject.com/en/stable/topics/testing/advanced/#django.test.client.RequestFactory
 [configuration]: #configuration
 [refresh_from_db_docs]: https://docs.djangoproject.com/en/stable/ref/models/instances/#django.db.models.Model.refresh_from_db
-[session_objects]: https://requests.readthedocs.io/en/master/user/advanced/#session-objects
+[session_objects]: https://requests.readthedocs.io/en/latest/user/advanced/#session-objects
 [provided_test_case_classes]: https://docs.djangoproject.com/en/stable/topics/testing/tools/#provided-test-case-classes

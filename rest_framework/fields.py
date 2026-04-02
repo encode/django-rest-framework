@@ -4,9 +4,9 @@ import datetime
 import decimal
 import functools
 import inspect
-import logging
 import re
 import uuid
+import warnings
 from collections.abc import Mapping
 from enum import Enum
 
@@ -24,7 +24,7 @@ from django.utils import timezone
 from django.utils.dateparse import (
     parse_date, parse_datetime, parse_duration, parse_time
 )
-from django.utils.duration import duration_string
+from django.utils.duration import duration_iso_string, duration_string
 from django.utils.encoding import is_protected_type, smart_str
 from django.utils.formats import localize_input, sanitize_separators
 from django.utils.ipv6 import clean_ipv6_address
@@ -35,7 +35,7 @@ try:
 except ImportError:
     pytz = None
 
-from rest_framework import ISO_8601
+from rest_framework import DJANGO_DURATION_FORMAT, ISO_8601
 from rest_framework.compat import ip_address_validators
 from rest_framework.exceptions import ErrorDetail, ValidationError
 from rest_framework.settings import api_settings
@@ -43,8 +43,6 @@ from rest_framework.utils import html, humanize_datetime, json, representation
 from rest_framework.utils.formatting import lazy_format
 from rest_framework.utils.timezone import valid_datetime
 from rest_framework.validators import ProhibitSurrogateCharactersValidator
-
-logger = logging.getLogger("rest_framework.fields")
 
 
 class empty:
@@ -113,7 +111,7 @@ def get_attribute(instance, attrs):
                 # If we raised an Attribute or KeyError here it'd get treated
                 # as an omitted field in `Field.get_attribute()`. Instead we
                 # raise a ValueError to ensure the exception is not masked.
-                raise ValueError('Exception raised in callable attribute "{}"; original exception was: {}'.format(attr, exc))
+                raise ValueError(f'Exception raised in callable attribute "{attr}"; original exception was: {exc}')
 
     return instance
 
@@ -923,6 +921,28 @@ class IntegerField(Field):
         return int(value)
 
 
+class BigIntegerField(IntegerField):
+
+    default_error_messages = {
+        'invalid': _('A valid biginteger is required.'),
+        'max_value': _('Ensure this value is less than or equal to {max_value}.'),
+        'min_value': _('Ensure this value is greater than or equal to {min_value}.'),
+        'max_string_length': _('String value too large.')
+    }
+
+    def __init__(self, coerce_to_string=None, **kwargs):
+        super().__init__(**kwargs)
+
+        if coerce_to_string is not None:
+            self.coerce_to_string = coerce_to_string
+
+    def to_representation(self, value):
+        if getattr(self, 'coerce_to_string', api_settings.COERCE_BIGINT_TO_STRING):
+            return '' if value is None else str(value)
+
+        return super().to_representation(value)
+
+
 class FloatField(Field):
     default_error_messages = {
         'invalid': _('A valid number is required.'),
@@ -988,10 +1008,10 @@ class DecimalField(Field):
         self.max_value = max_value
         self.min_value = min_value
 
-        if self.max_value is not None and not isinstance(self.max_value, decimal.Decimal):
-            logger.warning("max_value in DecimalField should be Decimal type.")
-        if self.min_value is not None and not isinstance(self.min_value, decimal.Decimal):
-            logger.warning("min_value in DecimalField should be Decimal type.")
+        if self.max_value is not None and not isinstance(self.max_value, (int, decimal.Decimal)):
+            warnings.warn("max_value should be an integer or Decimal instance.")
+        if self.min_value is not None and not isinstance(self.min_value, (int, decimal.Decimal)):
+            warnings.warn("min_value should be an integer or Decimal instance.")
 
         if self.max_digits is not None and self.decimal_places is not None:
             self.max_whole_digits = self.max_digits - self.decimal_places
@@ -1105,7 +1125,7 @@ class DecimalField(Field):
         if self.localize:
             return localize_input(quantized)
 
-        return '{:f}'.format(quantized)
+        return f'{quantized:f}'
 
     def quantize(self, value):
         """
@@ -1353,9 +1373,22 @@ class DurationField(Field):
         'overflow': _('The number of days must be between {min_days} and {max_days}.'),
     }
 
-    def __init__(self, **kwargs):
+    def __init__(self, *, format=empty, **kwargs):
         self.max_value = kwargs.pop('max_value', None)
         self.min_value = kwargs.pop('min_value', None)
+        if format is not empty:
+            if format is None or (isinstance(format, str) and format.lower() in (ISO_8601, DJANGO_DURATION_FORMAT)):
+                self.format = format
+            elif isinstance(format, str):
+                raise ValueError(
+                    f"Unknown duration format provided, got '{format}'"
+                    " while expecting 'django', 'iso-8601' or `None`."
+                )
+            else:
+                raise TypeError(
+                    "duration format must be either str or `None`,"
+                    f" not {type(format).__name__}"
+                )
         super().__init__(**kwargs)
         if self.max_value is not None:
             message = lazy_format(self.error_messages['max_value'], max_value=self.max_value)
@@ -1378,7 +1411,26 @@ class DurationField(Field):
         self.fail('invalid', format='[DD] [HH:[MM:]]ss[.uuuuuu]')
 
     def to_representation(self, value):
-        return duration_string(value)
+        output_format = getattr(self, 'format', api_settings.DURATION_FORMAT)
+
+        if output_format is None:
+            return value
+
+        if isinstance(output_format, str):
+            if output_format.lower() == ISO_8601:
+                return duration_iso_string(value)
+
+            if output_format.lower() == DJANGO_DURATION_FORMAT:
+                return duration_string(value)
+
+            raise ValueError(
+                f"Unknown duration format provided, got '{output_format}'"
+                " while expecting 'django', 'iso-8601' or `None`."
+            )
+        raise TypeError(
+            "duration format must be either str or `None`,"
+            f" not {type(output_format).__name__}"
+        )
 
 
 # Choice types...
@@ -1471,17 +1523,22 @@ class MultipleChoiceField(ChoiceField):
         if not self.allow_empty and len(data) == 0:
             self.fail('empty')
 
-        return {
-            # Arguments for super() are needed because of scoping inside
-            # comprehensions.
-            super(MultipleChoiceField, self).to_internal_value(item)
-            for item in data
-        }
+        # Arguments for super() are needed because of scoping inside
+        # comprehensions.
+        return list(
+            dict.fromkeys(
+                super(MultipleChoiceField, self).to_internal_value(item)
+                for item in data
+            )
+        )
 
     def to_representation(self, value):
-        return {
-            self.choice_strings_to_values.get(str(item), item) for item in value
-        }
+        return list(
+            dict.fromkeys(
+                self.choice_strings_to_values.get(str(item), item)
+                for item in value
+            )
+        )
 
 
 class FilePathField(ChoiceField):
@@ -1623,18 +1680,24 @@ class ListField(Field):
             self.validators.append(MinLengthValidator(self.min_length, message=message))
 
     def get_value(self, dictionary):
-        if self.field_name not in dictionary:
-            if getattr(self.root, 'partial', False):
-                return empty
         # We override the default field access in order to support
         # lists in HTML forms.
         if html.is_html_input(dictionary):
             val = dictionary.getlist(self.field_name, [])
             if len(val) > 0:
-                # Support QueryDict lists in HTML input.
+                # Support QueryDict lists and other list-like results in HTML input.
                 return val
+            # For partial updates, avoid calling parse_html_list unless indexed keys are present.
+            # This reduces unnecessary parsing overhead for omitted list fields.
+            if getattr(self.root, 'partial', False):
+                prefix = self.field_name + '['
+                if not any(key.startswith(prefix) for key in dictionary):
+                    return empty
             return html.parse_html_list(dictionary, prefix=self.field_name, default=empty)
 
+        # Non-HTML input: standard dictionary access
+        if self.field_name not in dictionary and getattr(self.root, 'partial', False):
+            return empty
         return dictionary.get(self.field_name, empty)
 
     def to_internal_value(self, data):
@@ -1863,7 +1926,7 @@ class SerializerMethodField(Field):
     def bind(self, field_name, parent):
         # The method name defaults to `get_{field_name}`.
         if self.method_name is None:
-            self.method_name = 'get_{field_name}'.format(field_name=field_name)
+            self.method_name = f'get_{field_name}'
 
         super().bind(field_name, parent)
 

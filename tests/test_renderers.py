@@ -1,22 +1,22 @@
 import re
 from collections.abc import MutableMapping
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
 import pytest
 from django.core.cache import cache
 from django.db import models
 from django.http.request import HttpRequest
-from django.template import loader
 from django.test import TestCase, override_settings
 from django.urls import include, path, re_path
 from django.utils.safestring import SafeText
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework import permissions, serializers, status
-from rest_framework.compat import coreapi
 from rest_framework.decorators import action
 from rest_framework.renderers import (
-    AdminRenderer, BaseRenderer, BrowsableAPIRenderer, DocumentationRenderer,
-    HTMLFormRenderer, JSONRenderer, SchemaJSRenderer, StaticHTMLRenderer
+    AdminRenderer, BaseRenderer, BrowsableAPIRenderer, HTMLFormRenderer,
+    JSONRenderer, StaticHTMLRenderer
 )
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -408,7 +408,7 @@ class UnicodeJSONRendererTests(TestCase):
         obj = {'should_escape': '\u2028\u2029'}
         renderer = JSONRenderer()
         content = renderer.render(obj, 'application/json')
-        self.assertEqual(content, '{"should_escape":"\\u2028\\u2029"}'.encode())
+        self.assertEqual(content, b'{"should_escape":"\\u2028\\u2029"}')
 
 
 class AsciiJSONRendererTests(TestCase):
@@ -421,7 +421,7 @@ class AsciiJSONRendererTests(TestCase):
         obj = {'countries': ['United Kingdom', 'France', 'España']}
         renderer = AsciiJSONRenderer()
         content = renderer.render(obj, 'application/json')
-        self.assertEqual(content, '{"countries":["United Kingdom","France","Espa\\u00f1a"]}'.encode())
+        self.assertEqual(content, b'{"countries":["United Kingdom","France","Espa\\u00f1a"]}')
 
 
 # Tests for caching issue, #346
@@ -486,6 +486,101 @@ class TestHiddenFieldHTMLFormRenderer(TestCase):
         field = serializer['published']
         rendered = renderer.render_field(field, {})
         assert rendered == ''
+
+
+class TestDateTimeFieldHTMLFormRender(TestCase):
+    """
+    Default USE_TZ is True.
+    Default TIME_ZONE is 'America/Chicago'.
+    """
+
+    def _assert_datetime_rendering(self, appointment, expected, datetimefield_kwargs=None):
+        datetimefield_kwargs = datetimefield_kwargs or {}
+
+        class TestSerializer(serializers.Serializer):
+            appointment = serializers.DateTimeField(**datetimefield_kwargs)
+
+        serializer = TestSerializer(data={"appointment": appointment})
+        serializer.is_valid()
+        renderer = HTMLFormRenderer()
+        field = serializer['appointment']
+        rendered = renderer.render_field(field, {})
+        expected_html = (
+            '<input name="appointment" class="form-control" '
+            f'type="datetime-local" value="{expected}">'
+        )
+
+        self.assertInHTML(expected_html, rendered)
+
+    def test_datetime_field_rendering_milliseconds(self):
+        self._assert_datetime_rendering(
+            datetime(2024, 12, 24, 0, 55, 30, 345678), "2024-12-24T00:55:30.345"
+        )
+
+    def test_datetime_field_rendering_no_seconds_and_no_milliseconds(self):
+        self._assert_datetime_rendering(
+            datetime(2024, 12, 24, 0, 55, 0, 0), "2024-12-24T00:55:00.000"
+        )
+
+    def test_datetime_field_rendering_with_format_as_none(self):
+        self._assert_datetime_rendering(
+            datetime(2024, 12, 24, 0, 55, 30, 345678),
+            "2024-12-24T00:55:30.345",
+            {"format": None}
+        )
+
+    def test_datetime_field_rendering_with_format(self):
+        self._assert_datetime_rendering(
+            datetime(2024, 12, 24, 0, 55, 30, 345678),
+            "2024-12-24T00:55:00.000",
+            {"format": "%a %d %b %Y, %I:%M%p"}
+        )
+
+    # New project templates default to 'UTC'.
+    @override_settings(TIME_ZONE='UTC')
+    def test_datetime_field_rendering_utc(self):
+        self._assert_datetime_rendering(
+            datetime(2024, 12, 24, 0, 55, 30, 345678),
+            "2024-12-24T00:55:30.345"
+        )
+
+    @override_settings(REST_FRAMEWORK={'DATETIME_FORMAT': '%a %d %b %Y, %I:%M%p'})
+    def test_datetime_field_rendering_with_custom_datetime_format(self):
+        self._assert_datetime_rendering(
+            datetime(2024, 12, 24, 0, 55, 30, 345678),
+            "2024-12-24T00:55:00.000"
+        )
+
+    @override_settings(REST_FRAMEWORK={'DATETIME_FORMAT': None})
+    def test_datetime_field_rendering_datetime_format_is_none(self):
+        self._assert_datetime_rendering(
+            datetime(2024, 12, 24, 0, 55, 30, 345678),
+            "2024-12-24T00:55:30.345"
+        )
+
+    # Enforce it in True because in Django versions under 4.2 was False by default.
+    @override_settings(USE_TZ=True)
+    def test_datetime_field_rendering_timezone_aware_datetime(self):
+        self._assert_datetime_rendering(
+            datetime(2024, 12, 24, 0, 55, 30, 345678, tzinfo=ZoneInfo('Asia/Tokyo')),  # +09:00
+            "2024-12-23T09:55:30.345"  # Rendered in -06:00
+        )
+
+    def test_datetime_field_rendering_empty_string_raises_no_error(self):
+        """
+        Regression test for #9927 (issue):
+        Ensures that an empty string value doesn't cause a ValueError
+        when the HTMLFormRenderer tries to parse it via fromisoformat.
+        """
+        self._assert_datetime_rendering("", "")
+
+    def test_datetime_field_rendering_none_value_raises_no_error(self):
+        """
+        Additional regression coverage for #9927:
+        Ensures that a None value, which is converted to an empty string
+        by as_form_field(), doesn't cause a ValueError when rendered.
+        """
+        self._assert_datetime_rendering(None, "")
 
 
 class TestHTMLFormRenderer(TestCase):
@@ -871,61 +966,3 @@ class AdminRendererTests(TestCase):
         self.assertEqual(results[1]['url'], '/example')
         self.assertEqual(results[2]['url'], None)
         self.assertNotIn('url', results[3])
-
-
-@pytest.mark.skipif(not coreapi, reason='coreapi is not installed')
-class TestDocumentationRenderer(TestCase):
-
-    def test_document_with_link_named_data(self):
-        """
-        Ref #5395: Doc's `document.data` would fail with a Link named "data".
-            As per #4972, use templatetag instead.
-        """
-        document = coreapi.Document(
-            title='Data Endpoint API',
-            url='https://api.example.org/',
-            content={
-                'data': coreapi.Link(
-                    url='/data/',
-                    action='get',
-                    fields=[],
-                    description='Return data.'
-                )
-            }
-        )
-
-        factory = APIRequestFactory()
-        request = factory.get('/')
-
-        renderer = DocumentationRenderer()
-
-        html = renderer.render(document, accepted_media_type="text/html", renderer_context={"request": request})
-        assert '<h1>Data Endpoint API</h1>' in html
-
-    def test_shell_code_example_rendering(self):
-        template = loader.get_template('rest_framework/docs/langs/shell.html')
-        context = {
-            'document': coreapi.Document(url='https://api.example.org/'),
-            'link_key': 'testcases > list',
-            'link': coreapi.Link(url='/data/', action='get', fields=[]),
-        }
-        html = template.render(context)
-        assert 'testcases list' in html
-
-
-@pytest.mark.skipif(not coreapi, reason='coreapi is not installed')
-class TestSchemaJSRenderer(TestCase):
-
-    def test_schemajs_output(self):
-        """
-        Test output of the SchemaJS renderer as per #5608. Django 2.0 on Py3 prints binary data as b'xyz' in templates,
-        and the base64 encoding used by SchemaJSRenderer outputs base64 as binary. Test fix.
-        """
-        factory = APIRequestFactory()
-        request = factory.get('/')
-
-        renderer = SchemaJSRenderer()
-
-        output = renderer.render('data', renderer_context={"request": request})
-        assert "'ImRhdGEi'" in output
-        assert "'b'ImRhdGEi''" not in output

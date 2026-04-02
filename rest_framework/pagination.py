@@ -4,20 +4,16 @@ be used for paginated responses.
 """
 
 import contextlib
-import warnings
 from base64 import b64decode, b64encode
 from collections import namedtuple
 from urllib import parse
 
 from django.core.paginator import InvalidPage
 from django.core.paginator import Paginator as DjangoPaginator
-from django.db.models import Q
 from django.template import loader
 from django.utils.encoding import force_str
 from django.utils.translation import gettext_lazy as _
 
-from rest_framework import RemovedInDRF317Warning
-from rest_framework.compat import coreapi, coreschema
 from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
@@ -151,12 +147,6 @@ class BasePagination:
 
     def get_results(self, data):
         return data['results']
-
-    def get_schema_fields(self, view):
-        assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'
-        if coreapi is not None:
-            warnings.warn('CoreAPI compatibility is deprecated and will be removed in DRF 3.17', RemovedInDRF317Warning)
-        return []
 
     def get_schema_operation_parameters(self, view):
         return []
@@ -313,36 +303,6 @@ class PageNumberPagination(BasePagination):
         template = loader.get_template(self.template)
         context = self.get_html_context()
         return template.render(context)
-
-    def get_schema_fields(self, view):
-        assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'
-        if coreapi is not None:
-            warnings.warn('CoreAPI compatibility is deprecated and will be removed in DRF 3.17', RemovedInDRF317Warning)
-        assert coreschema is not None, 'coreschema must be installed to use `get_schema_fields()`'
-        fields = [
-            coreapi.Field(
-                name=self.page_query_param,
-                required=False,
-                location='query',
-                schema=coreschema.Integer(
-                    title='Page',
-                    description=force_str(self.page_query_description)
-                )
-            )
-        ]
-        if self.page_size_query_param is not None:
-            fields.append(
-                coreapi.Field(
-                    name=self.page_size_query_param,
-                    required=False,
-                    location='query',
-                    schema=coreschema.Integer(
-                        title='Page size',
-                        description=force_str(self.page_size_query_description)
-                    )
-                )
-            )
-        return fields
 
     def get_schema_operation_parameters(self, view):
         parameters = [
@@ -531,32 +491,6 @@ class LimitOffsetPagination(BasePagination):
         except (AttributeError, TypeError):
             return len(queryset)
 
-    def get_schema_fields(self, view):
-        assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'
-        if coreapi is not None:
-            warnings.warn('CoreAPI compatibility is deprecated and will be removed in DRF 3.17', RemovedInDRF317Warning)
-        assert coreschema is not None, 'coreschema must be installed to use `get_schema_fields()`'
-        return [
-            coreapi.Field(
-                name=self.limit_query_param,
-                required=False,
-                location='query',
-                schema=coreschema.Integer(
-                    title='Limit',
-                    description=force_str(self.limit_query_description)
-                )
-            ),
-            coreapi.Field(
-                name=self.offset_query_param,
-                required=False,
-                location='query',
-                schema=coreschema.Integer(
-                    title='Offset',
-                    description=force_str(self.offset_query_description)
-                )
-            )
-        ]
-
     def get_schema_operation_parameters(self, view):
         parameters = [
             {
@@ -631,7 +565,7 @@ class CursorPagination(BasePagination):
             queryset = queryset.order_by(*self.ordering)
 
         # If we have a cursor with a fixed position then filter by that.
-        if str(current_position) != 'None':
+        if current_position is not None:
             order = self.ordering[0]
             is_reversed = order.startswith('-')
             order_attr = order.lstrip('-')
@@ -642,12 +576,7 @@ class CursorPagination(BasePagination):
             else:
                 kwargs = {order_attr + '__gt': current_position}
 
-            filter_query = Q(**kwargs)
-            # If some records contain a null for the ordering field, don't lose them.
-            # When reverse ordering, nulls will come last and need to be included.
-            if (reverse and not is_reversed) or is_reversed:
-                filter_query |= Q(**{order_attr + '__isnull': True})
-            queryset = queryset.filter(filter_query)
+            queryset = queryset.filter(**kwargs)
 
         # If we have an offset cursor then offset the entire page by that amount.
         # We also always fetch an extra item in order to determine if there is a
@@ -720,7 +649,7 @@ class CursorPagination(BasePagination):
                 # The item in this position and the item following it
                 # have different positions. We can use this position as
                 # our marker.
-                has_item_with_unique_position = position is not None
+                has_item_with_unique_position = True
                 break
 
             # The item in this position has the same position as the item
@@ -773,7 +702,7 @@ class CursorPagination(BasePagination):
                 # The item in this position and the item following it
                 # have different positions. We can use this position as
                 # our marker.
-                has_item_with_unique_position = position is not None
+                has_item_with_unique_position = True
                 break
 
             # The item in this position has the same position as the item
@@ -896,7 +825,7 @@ class CursorPagination(BasePagination):
             attr = instance[field_name]
         else:
             attr = getattr(instance, field_name)
-        return None if attr is None else str(attr)
+        return str(attr)
 
     def get_paginated_response(self, data):
         return Response({
@@ -938,36 +867,6 @@ class CursorPagination(BasePagination):
         template = loader.get_template(self.template)
         context = self.get_html_context()
         return template.render(context)
-
-    def get_schema_fields(self, view):
-        assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'
-        if coreapi is not None:
-            warnings.warn('CoreAPI compatibility is deprecated and will be removed in DRF 3.17', RemovedInDRF317Warning)
-        assert coreschema is not None, 'coreschema must be installed to use `get_schema_fields()`'
-        fields = [
-            coreapi.Field(
-                name=self.cursor_query_param,
-                required=False,
-                location='query',
-                schema=coreschema.String(
-                    title='Cursor',
-                    description=force_str(self.cursor_query_description)
-                )
-            )
-        ]
-        if self.page_size_query_param is not None:
-            fields.append(
-                coreapi.Field(
-                    name=self.page_size_query_param,
-                    required=False,
-                    location='query',
-                    schema=coreschema.Integer(
-                        title='Page size',
-                        description=force_str(self.page_size_query_description)
-                    )
-                )
-            )
-        return fields
 
     def get_schema_operation_parameters(self, view):
         parameters = [

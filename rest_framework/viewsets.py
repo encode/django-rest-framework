@@ -19,6 +19,7 @@ automatically.
 from functools import update_wrapper
 from inspect import getmembers
 
+from django import VERSION as DJANGO_VERSION
 from django.urls import NoReverseMatch
 from django.utils.decorators import classonlymethod
 from django.views.decorators.csrf import csrf_exempt
@@ -136,6 +137,12 @@ class ViewSetMixin:
         view.cls = cls
         view.initkwargs = initkwargs
         view.actions = actions
+
+        # Exempt from Django's LoginRequiredMiddleware. Users should set
+        # DEFAULT_PERMISSION_CLASSES to 'rest_framework.permissions.IsAuthenticated' instead
+        if DJANGO_VERSION >= (5, 1):
+            view.login_required = False
+
         return csrf_exempt(view)
 
     def initialize_request(self, request, *args, **kwargs):

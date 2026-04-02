@@ -35,9 +35,9 @@ The `api_settings` object will check for any user-defined settings, and otherwis
 
 ---
 
-# API Reference
+## API Reference
 
-## API policy settings
+### API policy settings
 
 *The following settings control the basic API policies, and are applied to every `APIView` class-based view, or `@api_view` function based view.*
 
@@ -105,7 +105,7 @@ Default: `'rest_framework.schemas.openapi.AutoSchema'`
 
 ---
 
-## Generic view settings
+### Generic view settings
 
 *The following settings control the behavior of the generic class-based views.*
 
@@ -129,7 +129,7 @@ The default page size to use for pagination.  If set to `None`, pagination is di
 
 Default: `None`
 
-### SEARCH_PARAM
+#### SEARCH_PARAM
 
 The name of a query parameter, which can be used to specify the search term used by `SearchFilter`.
 
@@ -143,7 +143,7 @@ Default: `ordering`
 
 ---
 
-## Versioning settings
+### Versioning settings
 
 #### DEFAULT_VERSION
 
@@ -171,7 +171,7 @@ Default: `None`
 
 ---
 
-## Authentication settings
+### Authentication settings
 
 *The following settings control the behavior of unauthenticated requests.*
 
@@ -198,7 +198,7 @@ When set to `'all'`, a comma-separated list of the challenge for all specified a
 
 ---
 
-## Test settings
+### Test settings
 
 *The following settings control the behavior of APIRequestFactory and APIClient*
 
@@ -225,7 +225,7 @@ Default:
 
 ---
 
-## Schema generation controls
+### Schema generation controls
 
 #### SCHEMA_COERCE_PATH_PK
 
@@ -247,7 +247,7 @@ Default: `{'retrieve': 'read', 'destroy': 'delete'}`
 
 ---
 
-## Content type controls
+### Content type controls
 
 #### URL_FORMAT_OVERRIDE
 
@@ -269,7 +269,7 @@ Default: `'format'`
 
 ---
 
-## Date and time formatting
+### Date and time formatting
 
 *The following settings are used to control how date and time representations may be parsed and rendered.*
 
@@ -321,9 +321,18 @@ May be a list including the string `'iso-8601'` or Python [strftime format][strf
 
 Default: `['iso-8601']`
 
+
+#### DURATION_FORMAT
+
+Indicates the default format that should be used for rendering the output of `DurationField` serializer fields.  If `None`, then `DurationField` serializer fields will return Python `timedelta` objects, and the duration encoding will be determined by the renderer.
+
+May be any of `None`, `'iso-8601'` or `'django'` (the format accepted by `django.utils.dateparse.parse_duration`).
+
+Default: `'django'`
+
 ---
 
-## Encodings
+### Encodings
 
 #### UNICODE_JSON
 
@@ -369,9 +378,17 @@ When set to `True`, the serializer `DecimalField` class will return strings inst
 
 Default: `True`
 
+#### COERCE_BIGINT_TO_STRING
+
+When returning biginteger objects in API representations that do not support numbers up to 2^64, it is best to return the value as a string. This avoids the loss of precision that occurs with biginteger implementations.
+
+When set to `True`, the serializer `BigIntegerField` class (by default) will return strings instead of `BigInteger` objects. When set to `False`, serializers will return `BigInteger` objects, which the default JSON encoder will return as numbers.
+
+Default: `False`
+
 ---
 
-## View names and descriptions
+### View names and descriptions
 
 **The following settings are used to generate the view names and descriptions, as used in responses to `OPTIONS` requests, and as used in the browsable API.**
 
@@ -412,7 +429,7 @@ If the view instance inherits `ViewSet`, it may have been initialized with sever
 
 Default: `'rest_framework.views.get_view_description'`
 
-## HTML Select Field cutoffs
+### HTML Select Field cutoffs
 
 Global settings for [select field cutoffs for rendering relational fields](relations.md#select-field-cutoffs) in the browsable API.
 
@@ -430,7 +447,7 @@ Default: `"More than {count} items..."`
 
 ---
 
-## Miscellaneous settings
+### Miscellaneous settings
 
 #### EXCEPTION_HANDLER
 
@@ -467,4 +484,4 @@ Default: `None`
 [cite]: https://www.python.org/dev/peps/pep-0020/
 [rfc4627]: https://www.ietf.org/rfc/rfc4627.txt
 [heroku-minified-json]: https://github.com/interagent/http-api-design#keep-json-minified-in-all-responses
-[strftime]: https://docs.python.org/3/library/time.html#time.strftime
+[strftime]: https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes

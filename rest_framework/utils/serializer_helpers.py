@@ -1,5 +1,4 @@
 import contextlib
-import sys
 from collections.abc import Mapping, MutableMapping
 
 from django.utils.encoding import force_str
@@ -29,21 +28,20 @@ class ReturnDict(dict):
         # but preserve the raw data.
         return (dict, (dict(self),))
 
-    if sys.version_info >= (3, 9):
-        # These are basically copied from OrderedDict, with `serializer` added.
-        def __or__(self, other):
-            if not isinstance(other, dict):
-                return NotImplemented
-            new = self.__class__(self, serializer=self.serializer)
-            new.update(other)
-            return new
+    # These are basically copied from OrderedDict, with `serializer` added.
+    def __or__(self, other):
+        if not isinstance(other, dict):
+            return NotImplemented
+        new = self.__class__(self, serializer=self.serializer)
+        new.update(other)
+        return new
 
-        def __ror__(self, other):
-            if not isinstance(other, dict):
-                return NotImplemented
-            new = self.__class__(other, serializer=self.serializer)
-            new.update(self)
-            return new
+    def __ror__(self, other):
+        if not isinstance(other, dict):
+            return NotImplemented
+        new = self.__class__(other, serializer=self.serializer)
+        new.update(self)
+        return new
 
 
 class ReturnList(list):

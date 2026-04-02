@@ -3,7 +3,6 @@
 import io
 from importlib import import_module
 
-import django
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.core.handlers.wsgi import WSGIHandler
@@ -14,7 +13,7 @@ from django.test.client import RequestFactory as DjangoRequestFactory
 from django.utils.encoding import force_bytes
 from django.utils.http import urlencode
 
-from rest_framework.compat import coreapi, requests
+from rest_framework.compat import requests
 from rest_framework.settings import api_settings
 
 
@@ -120,22 +119,6 @@ else:
         raise ImproperlyConfigured('requests must be installed in order to use RequestsClient.')
 
 
-if coreapi is not None:
-    class CoreAPIClient(coreapi.Client):
-        def __init__(self, *args, **kwargs):
-            self._session = RequestsClient()
-            kwargs['transports'] = [coreapi.transports.HTTPTransport(session=self.session)]
-            super().__init__(*args, **kwargs)
-
-        @property
-        def session(self):
-            return self._session
-
-else:
-    def CoreAPIClient(*args, **kwargs):
-        raise ImproperlyConfigured('coreapi must be installed in order to use CoreAPIClient.')
-
-
 class APIRequestFactory(DjangoRequestFactory):
     renderer_classes_list = api_settings.TEST_REQUEST_RENDERER_CLASSES
     default_format = api_settings.TEST_REQUEST_DEFAULT_FORMAT
@@ -151,15 +134,19 @@ class APIRequestFactory(DjangoRequestFactory):
         """
         Encode the data returning a two tuple of (bytes, content_type)
         """
-
         if data is None:
-            return ('', content_type)
+            return (b'', content_type)
 
         assert format is None or content_type is None, (
             'You may not set both `format` and `content_type`.'
         )
 
         if content_type:
+            try:
+                data = self._encode_json(data, content_type)
+            except AttributeError:
+                pass
+
             # Content type specified explicitly, treat data as a raw bytestring
             ret = force_bytes(data, settings.DEFAULT_CHARSET)
 
@@ -394,19 +381,7 @@ class URLPatternsTestCase(testcases.SimpleTestCase):
 
         cls._override.enable()
 
-        if django.VERSION > (4, 0):
-            cls.addClassCleanup(cls._override.disable)
-            cls.addClassCleanup(cleanup_url_patterns, cls)
+        cls.addClassCleanup(cls._override.disable)
+        cls.addClassCleanup(cleanup_url_patterns, cls)
 
         super().setUpClass()
-
-    if django.VERSION < (4, 0):
-        @classmethod
-        def tearDownClass(cls):
-            super().tearDownClass()
-            cls._override.disable()
-
-            if hasattr(cls, '_module_urlpatterns'):
-                cls._module.urlpatterns = cls._module_urlpatterns
-            else:
-                del cls._module.urlpatterns

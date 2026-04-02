@@ -2,19 +2,16 @@ import datetime
 import math
 import os
 import re
-import sys
 import uuid
+import warnings
 from decimal import ROUND_DOWN, ROUND_UP, Decimal
 from enum import auto
 from unittest.mock import patch
+from zoneinfo import ZoneInfo
 
+import django
 import pytest
-
-try:
-    import pytz
-except ImportError:
-    pytz = None
-
+import pytz
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db.models import IntegerChoices, TextChoices
 from django.http import QueryDict
@@ -27,12 +24,8 @@ from rest_framework.fields import (
     BuiltinSignatureError, DjangoImageField, SkipField, empty,
     is_simple_callable
 )
+from rest_framework.utils import json
 from tests.models import UUIDForeignKeyTarget
-
-if sys.version_info >= (3, 9):
-    from zoneinfo import ZoneInfo
-else:
-    from backports.zoneinfo import ZoneInfo
 
 utc = datetime.timezone.utc
 
@@ -340,7 +333,7 @@ class TestInitialWithCallable:
 
     def test_initial_should_accept_callable(self):
         """
-        Follows the default ``Field.initial`` behaviour where they accept a
+        Follows the default ``Field.initial`` behavior where they accept a
         callable to produce the initial value"""
         assert self.serializer.data == {
             'initial_field': 123,
@@ -583,6 +576,67 @@ class TestHTMLInput:
         assert serializer.is_valid()
         assert serializer.validated_data == {'scores': ['']}
 
+    def test_partial_update_with_indexed_keys(self):
+        """
+        Regression test for indexed HTML form keys with partial=True.
+        When data is passed as `colors[0]=#ffffff&colors[1]=#000000`
+        with partial=True, the field should parse indexed keys correctly.
+        """
+        class TestSerializer(serializers.Serializer):
+            colors = serializers.ListField(
+                allow_null=True,
+                child=serializers.CharField(max_length=7),
+                required=False
+            )
+            name = serializers.CharField(max_length=100, required=False)
+
+        serializer = TestSerializer(
+            data=QueryDict('colors[0]=#ffffff&colors[1]=#000000'),
+            partial=True
+        )
+        assert serializer.is_valid()
+        assert serializer.validated_data == {'colors': ['#ffffff', '#000000']}
+
+    def test_partial_update_omitted_list_field(self):
+        """
+        When a ListField is omitted in a partial update (and there are no
+        indexed keys for it), the field should be skipped and not included in
+        the validated data.
+        """
+        class TestSerializer(serializers.Serializer):
+            colors = serializers.ListField(
+                child=serializers.CharField(max_length=7),
+                required=False
+            )
+            name = serializers.CharField(max_length=100)
+
+        # colors is omitted, only name is provided
+        serializer = TestSerializer(
+            data=QueryDict('name=Test'),
+            partial=True
+        )
+        assert serializer.is_valid()
+        assert serializer.validated_data == {'name': 'Test'}
+        assert 'colors' not in serializer.validated_data
+
+    def test_partial_update_indexed_keys_ordering(self):
+        """
+        Indexed keys should preserve the correct order even when
+        they appear out of order in the QueryDict.
+        """
+        class TestSerializer(serializers.Serializer):
+            items = serializers.ListField(
+                child=serializers.IntegerField(),
+                required=False
+            )
+
+        serializer = TestSerializer(
+            data=QueryDict('items[2]=3&items[0]=1&items[1]=2'),
+            partial=True
+        )
+        assert serializer.is_valid()
+        assert serializer.validated_data == {'items': [1, 2, 3]}
+
 
 class TestCreateOnlyDefault:
     def setup_method(self):
@@ -640,10 +694,6 @@ class Test5087Regression:
 
 
 class TestTyping(TestCase):
-    @pytest.mark.skipif(
-        sys.version_info < (3, 7),
-        reason="subscriptable classes requires Python 3.7 or higher",
-    )
     def test_field_is_subscriptable(self):
         assert serializers.Field is serializers.Field["foo"]
 
@@ -670,7 +720,7 @@ class FieldValues:
         """
         for input_value, expected_output in get_items(self.valid_inputs):
             assert self.field.run_validation(input_value) == expected_output, \
-                'input value: {}'.format(repr(input_value))
+                f'input value: {repr(input_value)}'
 
     def test_invalid_inputs(self, *args):
         """
@@ -680,12 +730,12 @@ class FieldValues:
             with pytest.raises(serializers.ValidationError) as exc_info:
                 self.field.run_validation(input_value)
             assert exc_info.value.detail == expected_failure, \
-                'input value: {}'.format(repr(input_value))
+                f'input value: {repr(input_value)}'
 
     def test_outputs(self, *args):
         for output_value, expected_output in get_items(self.outputs):
             assert self.field.to_representation(output_value) == expected_output, \
-                'output value: {}'.format(repr(output_value))
+                f'output value: {repr(output_value)}'
 
 
 # Boolean types...
@@ -1111,6 +1161,70 @@ class TestMinMaxIntegerField(FieldValues):
     field = serializers.IntegerField(min_value=1, max_value=3)
 
 
+class TestBigIntegerField(FieldValues):
+    """
+    Valid and invalid values for `BigIntegerField`.
+    """
+    valid_inputs = {
+        '1': 1,
+        '0': 0,
+        1: 1,
+        0: 0,
+        123: 123,
+        -123: -123,
+        '999999999999999999999999999': 999999999999999999999999999,
+        -999999999999999999999999999: -999999999999999999999999999,
+        1.0: 1,
+        0.0: 0,
+        '1.0': 1
+    }
+    invalid_inputs = {
+        0.5: ['A valid biginteger is required.'],
+        'abc': ['A valid biginteger is required.'],
+        '0.5': ['A valid biginteger is required.']
+    }
+    outputs = {
+        '1': 1,
+        '0': 0,
+        1: 1,
+        0: 0,
+        1.0: 1,
+        0.0: 0,
+        '999999999999999999999999999': 999999999999999999999999999,
+        -999999999999999999999999999: -999999999999999999999999999
+    }
+    field = serializers.BigIntegerField()
+
+
+class TestMinMaxBigIntegerField(FieldValues):
+    """
+    Valid and invalid values for `BigIntegerField` with min and max limits.
+    """
+    valid_inputs = {
+        '1': 1,
+        '3': 3,
+        1: 1,
+        3: 3,
+    }
+    invalid_inputs = {
+        0: ['Ensure this value is greater than or equal to 1.'],
+        4: ['Ensure this value is less than or equal to 3.'],
+        '0': ['Ensure this value is greater than or equal to 1.'],
+        '4': ['Ensure this value is less than or equal to 3.'],
+    }
+    outputs = {}
+    field = serializers.BigIntegerField(min_value=1, max_value=3)
+
+
+class TestCoercionBigIntegerField(TestCase):
+
+    def test_force_coerce_to_string(self):
+        field = serializers.BigIntegerField(coerce_to_string=True)
+        value = field.to_representation(1)
+        assert isinstance(value, str)
+        assert value == "1"
+
+
 class TestFloatField(FieldValues):
     """
     Valid and invalid values for `FloatField`.
@@ -1244,25 +1358,29 @@ class TestMinMaxDecimalField(FieldValues):
         '20.0': Decimal('20.0'),
     }
     invalid_inputs = {
-        '9.9': ['Ensure this value is greater than or equal to 10.'],
-        '20.1': ['Ensure this value is less than or equal to 20.'],
+        '9.9': ['Ensure this value is greater than or equal to 10.0.'],
+        '20.1': ['Ensure this value is less than or equal to 20.0.'],
     }
     outputs = {}
     field = serializers.DecimalField(
         max_digits=3, decimal_places=1,
-        min_value=10, max_value=20
+        min_value=10.0, max_value=20.0
     )
 
     def test_warning_when_not_decimal_types(self, caplog):
-        import logging
-        serializers.DecimalField(
-            max_digits=3, decimal_places=1,
-            min_value=10, max_value=20
-        )
-        assert caplog.record_tuples == [
-            ("rest_framework.fields", logging.WARNING, "max_value in DecimalField should be Decimal type."),
-            ("rest_framework.fields", logging.WARNING, "min_value in DecimalField should be Decimal type.")
-        ]
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter('always')
+
+            serializers.DecimalField(
+                max_digits=3, decimal_places=1,
+                min_value=10.0, max_value=20.0
+            )
+
+            assert len(w) == 2
+            assert all(issubclass(i.category, UserWarning) for i in w)
+
+            assert 'max_value should be an integer or Decimal instance' in str(w[0].message)
+            assert 'min_value should be an integer or Decimal instance' in str(w[1].message)
 
 
 class TestAllowEmptyStrDecimalFieldWithValidators(FieldValues):
@@ -1426,7 +1544,7 @@ class TestDateField(FieldValues):
     outputs = {
         datetime.date(2001, 1, 1): '2001-01-01',
         '2001-01-01': '2001-01-01',
-        str('2016-01-10'): '2016-01-10',
+        '2016-01-10': '2016-01-10',
         None: None,
         '': None,
     }
@@ -1493,7 +1611,7 @@ class TestDateTimeField(FieldValues):
         datetime.datetime(2001, 1, 1, 13, 00): '2001-01-01T13:00:00Z',
         datetime.datetime(2001, 1, 1, 13, 00, tzinfo=utc): '2001-01-01T13:00:00Z',
         '2001-01-01T00:00:00': '2001-01-01T00:00:00',
-        str('2016-01-10T00:00:00'): '2016-01-10T00:00:00',
+        '2016-01-10T00:00:00': '2016-01-10T00:00:00',
         None: None,
         '': None,
     }
@@ -1538,7 +1656,8 @@ class TestNoOutputFormatDateTimeField(FieldValues):
     field = serializers.DateTimeField(format=None)
 
 
-class TestNaiveDateTimeField(FieldValues):
+@override_settings(TIME_ZONE='UTC', USE_TZ=False)
+class TestNaiveDateTimeField(FieldValues, TestCase):
     """
     Valid and invalid values for `DateTimeField` with naive datetimes.
     """
@@ -1627,7 +1746,10 @@ class TestCustomTimezoneForDateTimeField(TestCase):
         assert rendered_date == rendered_date_in_timezone
 
 
-@pytest.mark.skipif(pytz is None, reason="As Django 4.0 has deprecated pytz, this test should eventually be able to get removed.")
+@pytest.mark.skipif(
+    condition=django.VERSION >= (5,),
+    reason="Django 5.0 has removed pytz; this test should eventually be able to get removed.",
+)
 class TestPytzNaiveDayLightSavingTimeTimeZoneDateTimeField(FieldValues):
     """
     Invalid values for `DateTimeField` with datetime in DST shift (non-existing or ambiguous) and timezone with DST.
@@ -1641,16 +1763,15 @@ class TestPytzNaiveDayLightSavingTimeTimeZoneDateTimeField(FieldValues):
     }
     outputs = {}
 
-    if pytz:
-        class MockTimezone(pytz.BaseTzInfo):
-            @staticmethod
-            def localize(value, is_dst):
-                raise pytz.InvalidTimeError()
+    class MockTimezone(pytz.BaseTzInfo):
+        @staticmethod
+        def localize(value, is_dst):
+            raise pytz.InvalidTimeError()
 
-            def __str__(self):
-                return 'America/New_York'
+        def __str__(self):
+            return 'America/New_York'
 
-        field = serializers.DateTimeField(default_timezone=MockTimezone())
+    field = serializers.DateTimeField(default_timezone=MockTimezone())
 
 
 @patch('rest_framework.utils.timezone.datetime_ambiguous', return_value=True)
@@ -1775,9 +1896,69 @@ class TestDurationField(FieldValues):
     }
     field = serializers.DurationField()
 
+    def test_invalid_format(self):
+        with pytest.raises(ValueError) as exc_info:
+            serializers.DurationField(format='unknown')
+        assert str(exc_info.value) == (
+            "Unknown duration format provided, got 'unknown'"
+            " while expecting 'django', 'iso-8601' or `None`."
+        )
+        with pytest.raises(TypeError) as exc_info:
+            serializers.DurationField(format=123)
+        assert str(exc_info.value) == (
+            "duration format must be either str or `None`, not int"
+        )
+
+    def test_invalid_format_in_config(self):
+        field = serializers.DurationField()
+
+        with override_settings(REST_FRAMEWORK={'DURATION_FORMAT': 'unknown'}):
+            with pytest.raises(ValueError) as exc_info:
+                field.to_representation(datetime.timedelta(days=1))
+
+        assert str(exc_info.value) == (
+            "Unknown duration format provided, got 'unknown'"
+            " while expecting 'django', 'iso-8601' or `None`."
+        )
+        with override_settings(REST_FRAMEWORK={'DURATION_FORMAT': 123}):
+            with pytest.raises(TypeError) as exc_info:
+                field.to_representation(datetime.timedelta(days=1))
+        assert str(exc_info.value) == (
+            "duration format must be either str or `None`, not int"
+        )
+
+
+class TestNoOutputFormatDurationField(FieldValues):
+    """
+    Values for `DurationField` with a no output format.
+    """
+    valid_inputs = {}
+    invalid_inputs = {}
+    outputs = {
+        datetime.timedelta(1): datetime.timedelta(1)
+    }
+    field = serializers.DurationField(format=None)
+
+
+class TestISOOutputFormatDurationField(FieldValues):
+    """
+    Values for `DurationField` with a custom output format.
+    """
+    valid_inputs = {
+        '13': datetime.timedelta(seconds=13),
+        'P3DT08H32M01.000123S': datetime.timedelta(days=3, hours=8, minutes=32, seconds=1, microseconds=123),
+        'PT8H1M': datetime.timedelta(hours=8, minutes=1),
+        '-P999999999D': datetime.timedelta(days=-999999999),
+        'P999999999D': datetime.timedelta(days=999999999)
+    }
+    invalid_inputs = {}
+    outputs = {
+        datetime.timedelta(days=3, hours=8, minutes=32, seconds=1, microseconds=123): 'P3DT08H32M01.000123S'
+    }
+    field = serializers.DurationField(format='iso-8601')
+
 
 # Choice types...
-
 class TestChoiceField(FieldValues):
     """
     Valid and invalid values for `ChoiceField`.
@@ -2059,16 +2240,20 @@ class TestMultipleChoiceField(FieldValues):
     Valid and invalid values for `MultipleChoiceField`.
     """
     valid_inputs = {
-        (): set(),
-        ('aircon',): {'aircon'},
-        ('aircon', 'manual'): {'aircon', 'manual'},
+        (): list(),
+        ('aircon',): ['aircon'],
+        ('aircon', 'aircon'): ['aircon'],
+        ('aircon', 'manual'): ['aircon', 'manual'],
+        ('manual', 'aircon'): ['manual', 'aircon'],
     }
     invalid_inputs = {
         'abc': ['Expected a list of items but got type "str".'],
         ('aircon', 'incorrect'): ['"incorrect" is not a valid choice.']
     }
     outputs = [
-        (['aircon', 'manual', 'incorrect'], {'aircon', 'manual', 'incorrect'})
+        (['aircon', 'manual', 'incorrect'], ['aircon', 'manual', 'incorrect']),
+        (['manual', 'aircon', 'incorrect'], ['manual', 'aircon', 'incorrect']),
+        (['aircon', 'manual', 'aircon'], ['aircon', 'manual']),
     ]
     field = serializers.MultipleChoiceField(
         choices=[
@@ -2084,6 +2269,27 @@ class TestMultipleChoiceField(FieldValues):
         assert field.get_value(QueryDict('')) == []
         field.partial = True
         assert field.get_value(QueryDict('')) == rest_framework.fields.empty
+
+    def test_valid_inputs_is_json_serializable(self):
+        for input_value, _ in get_items(self.valid_inputs):
+            validated = self.field.run_validation(input_value)
+
+            try:
+                json.dumps(validated)
+            except TypeError as e:
+                pytest.fail(f'Validated output not JSON serializable: {repr(validated)}; Error: {e}')
+
+    def test_output_is_json_serializable(self):
+        for output_value, _ in get_items(self.outputs):
+            representation = self.field.to_representation(output_value)
+
+            try:
+                json.dumps(representation)
+            except TypeError as e:
+                pytest.fail(
+                    f'to_representation output not JSON serializable: '
+                    f'{repr(representation)}; Error: {e}'
+                )
 
 
 class TestEmptyMultipleChoiceField(FieldValues):

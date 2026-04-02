@@ -9,7 +9,6 @@ from django.db import models
 from django.utils.text import capfirst
 
 from rest_framework.compat import postgres_fields
-from rest_framework.fields import empty
 from rest_framework.validators import UniqueValidator
 
 NUMERIC_FIELD_TYPES = (
@@ -67,7 +66,7 @@ def get_unique_validators(field_name, model_field):
     """
     Returns a list of UniqueValidators that should be applied to the field.
     """
-    field_set = set([field_name])
+    field_set = {field_name}
     conditions = {
         c.condition
         for c in model_field.model._meta.constraints
@@ -122,14 +121,14 @@ def get_field_kwargs(field_name, model_field):
     if model_field.null:
         kwargs['allow_null'] = True
 
+    if model_field.choices:
+        kwargs['choices'] = model_field.choices
+
     if isinstance(model_field, models.AutoField) or not model_field.editable:
         # If this field is read-only, then return early.
         # Further keyword arguments are not valid.
         kwargs['read_only'] = True
         return kwargs
-
-    if model_field.default is not None and model_field.default != empty and not callable(model_field.default):
-        kwargs['default'] = model_field.default
 
     if model_field.has_default() or model_field.blank or model_field.null:
         kwargs['required'] = False
@@ -155,9 +154,7 @@ def get_field_kwargs(field_name, model_field):
         if model_field.allow_folders is not False:
             kwargs['allow_folders'] = model_field.allow_folders
 
-    if model_field.choices:
-        kwargs['choices'] = model_field.choices
-    else:
+    if not model_field.choices:
         # Ensure that max_value is passed explicitly as a keyword arg,
         # rather than as a validator.
         max_value = next((

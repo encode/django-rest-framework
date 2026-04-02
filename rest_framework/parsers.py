@@ -15,9 +15,9 @@ from django.http.multipartparser import ChunkIter
 from django.http.multipartparser import \
     MultiPartParser as DjangoMultiPartParser
 from django.http.multipartparser import MultiPartParserError
+from django.utils.http import parse_header_parameters
 
 from rest_framework import renderers
-from rest_framework.compat import parse_header_parameters
 from rest_framework.exceptions import ParseError
 from rest_framework.settings import api_settings
 from rest_framework.utils import json

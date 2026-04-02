@@ -65,7 +65,7 @@ class DefaultContentNegotiation(BaseContentNegotiation):
                             full_media_type = ';'.join(
                                 (renderer.media_type,) +
                                 tuple(
-                                    '{}={}'.format(key, value)
+                                    f'{key}={value}'
                                     for key, value in media_type_wrapper.params.items()
                                 )
                             )

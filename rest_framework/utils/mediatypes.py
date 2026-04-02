@@ -3,7 +3,7 @@ Handling of media types, as found in HTTP Content-Type and Accept headers.
 
 See https://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.7
 """
-from rest_framework.compat import parse_header_parameters
+from django.utils.http import parse_header_parameters
 
 
 def media_type_matches(lhs, rhs):

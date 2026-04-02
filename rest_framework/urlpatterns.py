@@ -1,10 +1,11 @@
 from django.urls import URLResolver, include, path, re_path, register_converter
+from django.urls.converters import get_converters
 from django.urls.resolvers import RoutePattern
 
 from rest_framework.settings import api_settings
 
 
-def _get_format_path_converter(suffix_kwarg, allowed):
+def _get_format_path_converter(allowed):
     if allowed:
         if len(allowed) == 1:
             allowed_pattern = allowed[0]
@@ -23,11 +24,14 @@ def _get_format_path_converter(suffix_kwarg, allowed):
         def to_url(self, value):
             return '.' + value + '/'
 
+    return FormatSuffixConverter
+
+
+def _generate_converter_name(allowed):
     converter_name = 'drf_format_suffix'
     if allowed:
         converter_name += '_' + '_'.join(allowed)
-
-    return converter_name, FormatSuffixConverter
+    return converter_name
 
 
 def apply_suffix_patterns(urlpatterns, suffix_pattern, suffix_required, suffix_route=None):
@@ -104,8 +108,10 @@ def format_suffix_patterns(urlpatterns, suffix_required=False, allowed=None):
     else:
         suffix_pattern = r'\.(?P<%s>[a-z0-9]+)/?$' % suffix_kwarg
 
-    converter_name, suffix_converter = _get_format_path_converter(suffix_kwarg, allowed)
-    register_converter(suffix_converter, converter_name)
+    converter_name = _generate_converter_name(allowed)
+    if converter_name not in get_converters():
+        suffix_converter = _get_format_path_converter(allowed)
+        register_converter(suffix_converter, converter_name)
 
     suffix_route = '<%s:%s>' % (converter_name, suffix_kwarg)
 

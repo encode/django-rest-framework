@@ -40,17 +40,14 @@ The example above would generate the following URL patterns:
 * URL pattern: `^accounts/$`  Name: `'account-list'`
 * URL pattern: `^accounts/{pk}/$`  Name: `'account-detail'`
 
----
+!!! note
+    The `basename` argument is used to specify the initial part of the view name pattern.  In the example above, that's the `user` or `account` part.
 
-**Note**: The `basename` argument is used to specify the initial part of the view name pattern.  In the example above, that's the `user` or `account` part.
+    Typically you won't *need* to specify the `basename` argument, but if you have a viewset where you've defined a custom `get_queryset` method, then the viewset may not have a `.queryset` attribute set.  If you try to register that viewset you'll see an error like this:
 
-Typically you won't *need* to specify the `basename` argument, but if you have a viewset where you've defined a custom `get_queryset` method, then the viewset may not have a `.queryset` attribute set.  If you try to register that viewset you'll see an error like this:
+        'basename' argument not specified, and could not automatically determine the name from the viewset, as it does not have a '.queryset' attribute.
 
-    'basename' argument not specified, and could not automatically determine the name from the viewset, as it does not have a '.queryset' attribute.
-
-This means you'll need to explicitly set the `basename` argument when registering the viewset, as it could not be automatically determined from the model name.
-
----
+    This means you'll need to explicitly set the `basename` argument when registering the viewset, as it could not be automatically determined from the model name.
 
 ### Using `include` with routers
 
@@ -91,16 +88,13 @@ Or both an application and instance namespace:
 
 See Django's [URL namespaces docs][url-namespace-docs] and the [`include` API reference][include-api-reference] for more details.
 
----
-
-**Note**: If using namespacing with hyperlinked serializers you'll also need to ensure that any `view_name` parameters
-on the serializers correctly reflect the namespace. In the examples above you'd need to include a parameter such as
-`view_name='app_name:user-detail'` for serializer fields hyperlinked to the user detail view.
-
-The automatic `view_name` generation uses a pattern like `%(model_name)-detail`. Unless your models names actually clash
-you may be better off **not** namespacing your Django REST Framework views when using hyperlinked serializers.
-
----
+!!! note
+    If using namespacing with hyperlinked serializers you'll also need to ensure that any `view_name` parameters
+    on the serializers correctly reflect the namespace. In the examples above you'd need to include a parameter such as
+    `view_name='app_name:user-detail'` for serializer fields hyperlinked to the user detail view.
+    
+    The automatic `view_name` generation uses a pattern like `%(model_name)-detail`. Unless your models names actually clash
+    you may be better off **not** namespacing your Django REST Framework views when using hyperlinked serializers.
 
 ### Routing for extra actions
 
@@ -142,9 +136,27 @@ The above example would now generate the following URL pattern:
 * URL path: `^users/{pk}/change-password/$`
 * URL name: `'user-change_password'`
 
-# API Guide
+### Using Django `path()` with routers
 
-## SimpleRouter
+By default, the URLs created by routers use regular expressions. This behavior can be modified by setting the `use_regex_path` argument to `False` when instantiating the router, in this case [path converters][path-converters-topic-reference] are used. For example:
+
+    router = SimpleRouter(use_regex_path=False)
+
+The router will match lookup values containing any characters except slashes and period characters.  For a more restrictive (or lenient) lookup pattern, set the `lookup_value_regex` attribute on the viewset or `lookup_value_converter` if using path converters.  For example, you can limit the lookup to valid UUIDs:
+
+    class MyModelViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+        lookup_field = 'my_model_id'
+        lookup_value_regex = '[0-9a-f]{32}'
+
+    class MyPathModelViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+        lookup_field = 'my_model_uuid'
+        lookup_value_converter = 'uuid'
+
+Note that path converters will be used on all URLs registered in the router, including viewset actions.
+
+## API Guide
+
+### SimpleRouter
 
 This router includes routes for the standard set of `list`, `create`, `retrieve`, `update`, `partial_update` and `destroy` actions.  The viewset can also mark additional methods to be routed, using the `@action` decorator.
 
@@ -160,31 +172,14 @@ This router includes routes for the standard set of `list`, `create`, `retrieve`
     <tr><td>{prefix}/{lookup}/{url_path}/</td><td>GET, or as specified by `methods` argument</td><td>`@action(detail=True)` decorated method</td><td>{basename}-{url_name}</td></tr>
 </table>
 
-By default the URLs created by `SimpleRouter` are appended with a trailing slash.
+By default, the URLs created by `SimpleRouter` are appended with a trailing slash.
 This behavior can be modified by setting the `trailing_slash` argument to `False` when instantiating the router.  For example:
 
     router = SimpleRouter(trailing_slash=False)
 
 Trailing slashes are conventional in Django, but are not used by default in some other frameworks such as Rails.  Which style you choose to use is largely a matter of preference, although some javascript frameworks may expect a particular routing style.
 
-By default the URLs created by `SimpleRouter` use regular expressions. This behavior can be modified by setting the `use_regex_path` argument to `False` when instantiating the router, in this case [path converters][path-converters-topic-reference] are used. For example:
-
-    router = SimpleRouter(use_regex_path=False)
-
-**Note**: `use_regex_path=False` only works with Django 2.x or above, since this feature was introduced in 2.0.0. See [release note][simplified-routing-release-note]
-
-
-The router will match lookup values containing any characters except slashes and period characters.  For a more restrictive (or lenient) lookup pattern, set the `lookup_value_regex` attribute on the viewset or `lookup_value_converter` if using path converters.  For example, you can limit the lookup to valid UUIDs:
-
-    class MyModelViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
-        lookup_field = 'my_model_id'
-        lookup_value_regex = '[0-9a-f]{32}'
-
-    class MyPathModelViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
-        lookup_field = 'my_model_uuid'
-        lookup_value_converter = 'uuid'
-
-## DefaultRouter
+### DefaultRouter
 
 This router is similar to `SimpleRouter` as above, but additionally includes a default API root view, that returns a response containing hyperlinks to all the list views.  It also generates routes for optional `.json` style format suffixes.
 
@@ -205,7 +200,7 @@ As with `SimpleRouter` the trailing slashes on the URL routes can be removed by 
 
     router = DefaultRouter(trailing_slash=False)
 
-# Custom Routers
+## Custom Routers
 
 Implementing a custom router isn't something you'd need to do very often, but it can be useful if you have specific requirements about how the URLs for your API are structured.  Doing so allows you to encapsulate the URL structure in a reusable way that ensures you don't have to write your URL patterns explicitly for each new view.
 
@@ -227,7 +222,7 @@ The arguments to the `Route` named tuple are:
 
 **initkwargs**: A dictionary of any additional arguments that should be passed when instantiating the view.  Note that the `detail`, `basename`, and `suffix` arguments are reserved for viewset introspection and are also used by the browsable API to generate the view name and breadcrumb links.
 
-## Customizing dynamic routes
+### Customizing dynamic routes
 
 You can also customize how the `@action` decorator is routed. Include the `DynamicRoute` named tuple in the `.routes` list, setting the `detail` argument as appropriate for the list-based and detail-based routes. In addition to `detail`, the arguments to `DynamicRoute` are:
 
@@ -240,7 +235,7 @@ You can also customize how the `@action` decorator is routed. Include the `Dynam
 
 **initkwargs**: A dictionary of any additional arguments that should be passed when instantiating the view.
 
-## Example
+### Example
 
 The following example will only route to the `list` and `retrieve` actions, and does not use the trailing slash convention.
 
@@ -312,21 +307,21 @@ The following mappings would be generated...
 
 For another example of setting the `.routes` attribute, see the source code for the `SimpleRouter` class.
 
-## Advanced custom routers
+### Advanced custom routers
 
 If you want to provide totally custom behavior, you can override `BaseRouter` and override the `get_urls(self)` method.  The method should inspect the registered viewsets and return a list of URL patterns.  The registered prefix, viewset and basename tuples may be inspected by accessing the `self.registry` attribute.
 
 You may also want to override the `get_default_basename(self, viewset)` method, or else always explicitly set the `basename` argument when registering your viewsets with the router.
 
-# Third Party Packages
+## Third Party Packages
 
 The following third party packages are also available.
 
-## DRF Nested Routers
+### DRF Nested Routers
 
 The [drf-nested-routers package][drf-nested-routers] provides routers and relationship fields for working with nested resources.
 
-## ModelRouter (wq.db.rest)
+### ModelRouter (wq.db.rest)
 
 The [wq.db package][wq.db] provides an advanced [ModelRouter][wq.db-router] class (and singleton instance) that extends `DefaultRouter` with a `register_model()` API. Much like Django's `admin.site.register`, the only required argument to `rest.router.register_model` is a model class.  Reasonable defaults for a url prefix, serializer, and viewset will be inferred from the model and global configuration.
 
@@ -335,7 +330,7 @@ The [wq.db package][wq.db] provides an advanced [ModelRouter][wq.db-router] clas
 
     rest.router.register_model(MyModel)
 
-## DRF-extensions
+### DRF-extensions
 
 The [`DRF-extensions` package][drf-extensions] provides [routers][drf-extensions-routers] for creating [nested viewsets][drf-extensions-nested-viewsets], [collection level controllers][drf-extensions-collection-level-controllers] with [customizable endpoint names][drf-extensions-customizable-endpoint-names].
 
@@ -349,7 +344,6 @@ The [`DRF-extensions` package][drf-extensions] provides [routers][drf-extensions
 [drf-extensions-nested-viewsets]: https://chibisov.github.io/drf-extensions/docs/#nested-routes
 [drf-extensions-collection-level-controllers]: https://chibisov.github.io/drf-extensions/docs/#collection-level-controllers
 [drf-extensions-customizable-endpoint-names]: https://chibisov.github.io/drf-extensions/docs/#controller-endpoint-name
-[url-namespace-docs]: https://docs.djangoproject.com/en/4.0/topics/http/urls/#url-namespaces
-[include-api-reference]: https://docs.djangoproject.com/en/4.0/ref/urls/#include
-[simplified-routing-release-note]: https://docs.djangoproject.com/en/2.0/releases/2.0/#simplified-url-routing-syntax
-[path-converters-topic-reference]: https://docs.djangoproject.com/en/2.0/topics/http/urls/#path-converters
+[url-namespace-docs]: https://docs.djangoproject.com/en/stable/topics/http/urls/#url-namespaces
+[include-api-reference]: https://docs.djangoproject.com/en/stable/ref/urls/#include
+[path-converters-topic-reference]: https://docs.djangoproject.com/en/stable/topics/http/urls/#path-converters

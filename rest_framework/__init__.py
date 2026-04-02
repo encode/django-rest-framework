@@ -7,12 +7,10 @@ ______ _____ _____ _____    __
 \_| \_\____/\____/  \_/   |_| |_|  \__,_|_| |_| |_|\___| \_/\_/ \___/|_|  |_|\_|
 """
 
-import django
-
 __title__ = 'Django REST framework'
-__version__ = '3.14.0'
+__version__ = '3.17.1'
 __author__ = 'Tom Christie'
-__license__ = 'BSD 3-Clause'
+__license__ = 'BSD-3-Clause'
 __copyright__ = 'Copyright 2011-2023 Encode OSS Ltd'
 
 # Version synonym
@@ -23,15 +21,4 @@ HTTP_HEADER_ENCODING = 'iso-8859-1'
 
 # Default datetime input and output formats
 ISO_8601 = 'iso-8601'
-
-
-if django.VERSION < (3, 2):
-    default_app_config = 'rest_framework.apps.RestFrameworkConfig'
-
-
-class RemovedInDRF315Warning(DeprecationWarning):
-    pass
-
-
-class RemovedInDRF317Warning(PendingDeprecationWarning):
-    pass
+DJANGO_DURATION_FORMAT = 'django'
