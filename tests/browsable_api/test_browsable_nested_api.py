@@ -28,7 +28,7 @@ urlpatterns = [
 
 
 class DropdownWithAuthTests(TestCase):
-    """Tests correct dropdown behaviour with Auth views enabled."""
+    """Tests correct dropdown behavior with Auth views enabled."""
 
     @override_settings(ROOT_URLCONF='tests.browsable_api.test_browsable_nested_api')
     def test_login(self):

@@ -1,7 +1,7 @@
 """
 Basic building blocks for generic class based views.
 
-We don't bind behaviour to http method handlers yet,
+We don't bind behavior to http method handlers yet,
 which allows mixin classes to be composed in interesting ways.
 """
 from rest_framework import status

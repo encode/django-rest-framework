@@ -104,7 +104,7 @@ msgstr "服务器出现了错误。"
 
 #: exceptions.py:142
 msgid "Invalid input."
-msgstr ""
+msgstr "无效的输入。"
 
 #: exceptions.py:161
 msgid "Malformed request."
@@ -142,17 +142,17 @@ msgstr "不支持请求中的媒体类型 “{media_type}”。"
 
 #: exceptions.py:223
 msgid "Request was throttled."
-msgstr "请求超过了限速。"
+msgstr "请求已被限流。"
 
 #: exceptions.py:224
 #, python-brace-format
 msgid "Expected available in {wait} second."
-msgstr ""
+msgstr "预计 {wait} 秒后可用。"
 
 #: exceptions.py:225
 #, python-brace-format
 msgid "Expected available in {wait} seconds."
-msgstr ""
+msgstr "预计 {wait} 秒后可用。"
 
 #: fields.py:316 relations.py:245 relations.py:279 validators.py:90
 #: validators.py:183
@@ -165,11 +165,11 @@ msgstr "该字段不能为 null。"
 
 #: fields.py:701
 msgid "Must be a valid boolean."
-msgstr ""
+msgstr "必须是有效的布尔值。"
 
 #: fields.py:766
 msgid "Not a valid string."
-msgstr ""
+msgstr "不是有效的字符串。"
 
 #: fields.py:767
 msgid "This field may not be blank."
@@ -203,7 +203,7 @@ msgstr "请输入合法的“短语“，只能包含字母，数字，下划线
 msgid ""
 "Enter a valid \"slug\" consisting of Unicode letters, numbers, underscores, "
 "or hyphens."
-msgstr ""
+msgstr "请输入有效的“slug”，由 Unicode 字母、数字、下划线或连字符组成。"
 
 #: fields.py:854
 msgid "Enter a valid URL."
@@ -211,7 +211,7 @@ msgstr "请输入合法的URL。"
 
 #: fields.py:867
 msgid "Must be a valid UUID."
-msgstr ""
+msgstr "必须是有效的 UUID。"
 
 #: fields.py:903
 msgid "Enter a valid IPv4 or IPv6 address."
@@ -269,11 +269,11 @@ msgstr "期望为日期时间，获得的是日期。"
 #: fields.py:1150
 #, python-brace-format
 msgid "Invalid datetime for the timezone \"{timezone}\"."
-msgstr ""
+msgstr "时区“{timezone}”的时间格式无效。"
 
 #: fields.py:1151
 msgid "Datetime value out of range."
-msgstr ""
+msgstr "时间数值超出有效范围。"
 
 #: fields.py:1236
 #, python-brace-format
@@ -354,12 +354,12 @@ msgstr "列表不能为空。"
 #: fields.py:1605
 #, python-brace-format
 msgid "Ensure this field has at least {min_length} elements."
-msgstr ""
+msgstr "该字段必须包含至少 {min_length} 个元素。"
 
 #: fields.py:1606
 #, python-brace-format
 msgid "Ensure this field has no more than {max_length} elements."
-msgstr ""
+msgstr "该字段不能超过 {max_length} 个元素。"
 
 #: fields.py:1682
 #, python-brace-format
@@ -368,7 +368,7 @@ msgstr "期望是包含类目的字典，得到类型为 “{input_type}”。"
 
 #: fields.py:1683
 msgid "This dictionary may not be empty."
-msgstr ""
+msgstr "该字典不能为空。"
 
 #: fields.py:1755
 msgid "Value must be valid JSON."
@@ -380,7 +380,7 @@ msgstr " 搜索"
 
 #: filters.py:50
 msgid "A search term."
-msgstr ""
+msgstr "搜索关键词。"
 
 #: filters.py:180 templates/rest_framework/filters/ordering.html:3
 msgid "Ordering"
@@ -388,7 +388,7 @@ msgstr "排序"
 
 #: filters.py:181
 msgid "Which field to use when ordering the results."
-msgstr ""
+msgstr "用于排序结果的字段。"
 
 #: filters.py:287
 msgid "ascending"
@@ -400,11 +400,11 @@ msgstr "倒排序"
 
 #: pagination.py:174
 msgid "A page number within the paginated result set."
-msgstr ""
+msgstr "分页结果集中的页码。"
 
 #: pagination.py:179 pagination.py:372 pagination.py:590
 msgid "Number of results to return per page."
-msgstr ""
+msgstr "每页返回的结果数量。"
 
 #: pagination.py:189
 msgid "Invalid page."
@@ -412,11 +412,11 @@ msgstr "无效页面。"
 
 #: pagination.py:374
 msgid "The initial index from which to return the results."
-msgstr ""
+msgstr "返回结果的起始索引位置。"
 
 #: pagination.py:581
 msgid "The pagination cursor value."
-msgstr ""
+msgstr "分页游标值"
 
 #: pagination.py:583
 msgid "Invalid cursor"
@@ -460,20 +460,20 @@ msgstr "无效值。"
 
 #: schemas/utils.py:32
 msgid "unique integer value"
-msgstr ""
+msgstr "唯一整数值"
 
 #: schemas/utils.py:34
 msgid "UUID string"
-msgstr ""
+msgstr "UUID 字符串"
 
 #: schemas/utils.py:36
 msgid "unique value"
-msgstr ""
+msgstr "唯一值"
 
 #: schemas/utils.py:38
 #, python-brace-format
 msgid "A {value_type} identifying this {name}."
-msgstr ""
+msgstr "标识此 {name} 的 {value_type}。"
 
 #: serializers.py:337
 #, python-brace-format
@@ -483,7 +483,7 @@ msgstr "无效数据。期待为字典类型，得到的是 {datatype} 。"
 #: templates/rest_framework/admin.html:116
 #: templates/rest_framework/base.html:136
 msgid "Extra Actions"
-msgstr ""
+msgstr "扩展操作"
 
 #: templates/rest_framework/admin.html:130
 #: templates/rest_framework/base.html:150
@@ -492,27 +492,27 @@ msgstr "过滤器"
 
 #: templates/rest_framework/base.html:37
 msgid "navbar"
-msgstr ""
+msgstr "导航栏"
 
 #: templates/rest_framework/base.html:75
 msgid "content"
-msgstr ""
+msgstr "内容主体"
 
 #: templates/rest_framework/base.html:78
 msgid "request form"
-msgstr ""
+msgstr "请求表单"
 
 #: templates/rest_framework/base.html:157
 msgid "main content"
-msgstr ""
+msgstr "主要内容区"
 
 #: templates/rest_framework/base.html:173
 msgid "request info"
-msgstr ""
+msgstr "请求信息"
 
 #: templates/rest_framework/base.html:177
 msgid "response info"
-msgstr ""
+msgstr "响应信息"
 
 #: templates/rest_framework/horizontal/radio.html:4
 #: templates/rest_framework/inline/radio.html:3
@@ -538,7 +538,7 @@ msgstr "字段 {field_names} 必须能构成唯一集合。"
 #: validators.py:171
 #, python-brace-format
 msgid "Surrogate characters are not allowed: U+{code_point:X}."
-msgstr ""
+msgstr "不允许使用代理字符: U+{code_point:X}。"
 
 #: validators.py:243
 #, python-brace-format
