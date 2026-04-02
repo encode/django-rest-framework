@@ -25,6 +25,7 @@ from django.test import TestCase
 
 from rest_framework import serializers
 from rest_framework.compat import postgres_fields
+from rest_framework.fields import ChoiceField
 
 from .models import NestedForeignKeySource
 
@@ -95,6 +96,7 @@ class FieldOptionsModel(models.Model):
 
 class ChoicesModel(models.Model):
     choices_field_with_nonstandard_args = models.DecimalField(max_digits=3, decimal_places=1, choices=DECIMAL_CHOICES, verbose_name='A label')
+    non_editable_choice_field = models.CharField(choices=COLOR_CHOICES, default=COLOR_CHOICES[0][0], editable=False, max_length=5)
 
 
 class Issue3674ParentModel(models.Model):
@@ -360,7 +362,23 @@ class TestRegularFieldMappings(TestCase):
                 model = ChoicesModel
                 fields = '__all__'
 
-        ExampleSerializer()
+        serializer = ExampleSerializer()
+        choices_field_with_nonstandard_args = serializer.get_fields()['choices_field_with_nonstandard_args']
+        assert isinstance(choices_field_with_nonstandard_args, ChoiceField)
+        assert choices_field_with_nonstandard_args.choices
+        assert choices_field_with_nonstandard_args.read_only is False
+
+    def test_non_editable_choice_field(self):
+        class ExampleSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = ChoicesModel
+                fields = '__all__'
+
+        serializer = ExampleSerializer()
+        non_editable_choice_field = serializer.get_fields()['non_editable_choice_field']
+        assert isinstance(non_editable_choice_field, ChoiceField)
+        assert non_editable_choice_field.read_only is True
+        assert non_editable_choice_field.choices
 
 
 class TestDurationFieldMapping(TestCase):
