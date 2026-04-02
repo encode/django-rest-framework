@@ -774,7 +774,7 @@ class TestUniqueConstraintValidation(TestCase):
         ids_in_qs = {frozenset(v.queryset.values_list(flat=True)) for v in validators if hasattr(v, "queryset")}
         assert ids_in_qs == {frozenset([1]), frozenset([3])}
 
-    def test_blank_uqnique_constraint_fields_are_not_required(self):
+    def test_blank_unique_constraint_fields_are_not_required(self):
         serializer = UniqueConstraintBlankSerializer(data={'age': 25})
         self.assertTrue(serializer.is_valid(), serializer.errors)
         result = serializer.save()
