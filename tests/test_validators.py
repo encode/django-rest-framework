@@ -638,7 +638,7 @@ class UniqueConstraintBlankModel(models.Model):
 
     class Meta:
         constraints = [
-            # Unique constraint on 2 blank fields
+            # Unique constraint on one required field (age) and one blank field (tag)
             models.UniqueConstraint(name='unique_constraint', fields=('age', 'tag'), condition=~models.Q(models.Q(title='') & models.Q(tag='True')))
         ]
 
