@@ -24,6 +24,7 @@ from rest_framework.fields import (
     BuiltinSignatureError, DjangoImageField, SkipField, empty,
     is_simple_callable
 )
+from rest_framework.utils import json
 from tests.models import UUIDForeignKeyTarget
 
 utc = datetime.timezone.utc
@@ -574,6 +575,67 @@ class TestHTMLInput:
         serializer = TestSerializer(data=QueryDict('scores=&'))
         assert serializer.is_valid()
         assert serializer.validated_data == {'scores': ['']}
+
+    def test_partial_update_with_indexed_keys(self):
+        """
+        Regression test for indexed HTML form keys with partial=True.
+        When data is passed as `colors[0]=#ffffff&colors[1]=#000000`
+        with partial=True, the field should parse indexed keys correctly.
+        """
+        class TestSerializer(serializers.Serializer):
+            colors = serializers.ListField(
+                allow_null=True,
+                child=serializers.CharField(max_length=7),
+                required=False
+            )
+            name = serializers.CharField(max_length=100, required=False)
+
+        serializer = TestSerializer(
+            data=QueryDict('colors[0]=#ffffff&colors[1]=#000000'),
+            partial=True
+        )
+        assert serializer.is_valid()
+        assert serializer.validated_data == {'colors': ['#ffffff', '#000000']}
+
+    def test_partial_update_omitted_list_field(self):
+        """
+        When a ListField is omitted in a partial update (and there are no
+        indexed keys for it), the field should be skipped and not included in
+        the validated data.
+        """
+        class TestSerializer(serializers.Serializer):
+            colors = serializers.ListField(
+                child=serializers.CharField(max_length=7),
+                required=False
+            )
+            name = serializers.CharField(max_length=100)
+
+        # colors is omitted, only name is provided
+        serializer = TestSerializer(
+            data=QueryDict('name=Test'),
+            partial=True
+        )
+        assert serializer.is_valid()
+        assert serializer.validated_data == {'name': 'Test'}
+        assert 'colors' not in serializer.validated_data
+
+    def test_partial_update_indexed_keys_ordering(self):
+        """
+        Indexed keys should preserve the correct order even when
+        they appear out of order in the QueryDict.
+        """
+        class TestSerializer(serializers.Serializer):
+            items = serializers.ListField(
+                child=serializers.IntegerField(),
+                required=False
+            )
+
+        serializer = TestSerializer(
+            data=QueryDict('items[2]=3&items[0]=1&items[1]=2'),
+            partial=True
+        )
+        assert serializer.is_valid()
+        assert serializer.validated_data == {'items': [1, 2, 3]}
 
 
 class TestCreateOnlyDefault:
@@ -2178,16 +2240,20 @@ class TestMultipleChoiceField(FieldValues):
     Valid and invalid values for `MultipleChoiceField`.
     """
     valid_inputs = {
-        (): set(),
-        ('aircon',): {'aircon'},
-        ('aircon', 'manual'): {'aircon', 'manual'},
+        (): list(),
+        ('aircon',): ['aircon'],
+        ('aircon', 'aircon'): ['aircon'],
+        ('aircon', 'manual'): ['aircon', 'manual'],
+        ('manual', 'aircon'): ['manual', 'aircon'],
     }
     invalid_inputs = {
         'abc': ['Expected a list of items but got type "str".'],
         ('aircon', 'incorrect'): ['"incorrect" is not a valid choice.']
     }
     outputs = [
-        (['aircon', 'manual', 'incorrect'], {'aircon', 'manual', 'incorrect'})
+        (['aircon', 'manual', 'incorrect'], ['aircon', 'manual', 'incorrect']),
+        (['manual', 'aircon', 'incorrect'], ['manual', 'aircon', 'incorrect']),
+        (['aircon', 'manual', 'aircon'], ['aircon', 'manual']),
     ]
     field = serializers.MultipleChoiceField(
         choices=[
@@ -2203,6 +2269,27 @@ class TestMultipleChoiceField(FieldValues):
         assert field.get_value(QueryDict('')) == []
         field.partial = True
         assert field.get_value(QueryDict('')) == rest_framework.fields.empty
+
+    def test_valid_inputs_is_json_serializable(self):
+        for input_value, _ in get_items(self.valid_inputs):
+            validated = self.field.run_validation(input_value)
+
+            try:
+                json.dumps(validated)
+            except TypeError as e:
+                pytest.fail(f'Validated output not JSON serializable: {repr(validated)}; Error: {e}')
+
+    def test_output_is_json_serializable(self):
+        for output_value, _ in get_items(self.outputs):
+            representation = self.field.to_representation(output_value)
+
+            try:
+                json.dumps(representation)
+            except TypeError as e:
+                pytest.fail(
+                    f'to_representation output not JSON serializable: '
+                    f'{repr(representation)}; Error: {e}'
+                )
 
 
 class TestEmptyMultipleChoiceField(FieldValues):

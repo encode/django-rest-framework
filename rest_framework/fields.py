@@ -1523,17 +1523,22 @@ class MultipleChoiceField(ChoiceField):
         if not self.allow_empty and len(data) == 0:
             self.fail('empty')
 
-        return {
-            # Arguments for super() are needed because of scoping inside
-            # comprehensions.
-            super(MultipleChoiceField, self).to_internal_value(item)
-            for item in data
-        }
+        # Arguments for super() are needed because of scoping inside
+        # comprehensions.
+        return list(
+            dict.fromkeys(
+                super(MultipleChoiceField, self).to_internal_value(item)
+                for item in data
+            )
+        )
 
     def to_representation(self, value):
-        return {
-            self.choice_strings_to_values.get(str(item), item) for item in value
-        }
+        return list(
+            dict.fromkeys(
+                self.choice_strings_to_values.get(str(item), item)
+                for item in value
+            )
+        )
 
 
 class FilePathField(ChoiceField):
@@ -1675,18 +1680,24 @@ class ListField(Field):
             self.validators.append(MinLengthValidator(self.min_length, message=message))
 
     def get_value(self, dictionary):
-        if self.field_name not in dictionary:
-            if getattr(self.root, 'partial', False):
-                return empty
         # We override the default field access in order to support
         # lists in HTML forms.
         if html.is_html_input(dictionary):
             val = dictionary.getlist(self.field_name, [])
             if len(val) > 0:
-                # Support QueryDict lists in HTML input.
+                # Support QueryDict lists and other list-like results in HTML input.
                 return val
+            # For partial updates, avoid calling parse_html_list unless indexed keys are present.
+            # This reduces unnecessary parsing overhead for omitted list fields.
+            if getattr(self.root, 'partial', False):
+                prefix = self.field_name + '['
+                if not any(key.startswith(prefix) for key in dictionary):
+                    return empty
             return html.parse_html_list(dictionary, prefix=self.field_name, default=empty)
 
+        # Non-HTML input: standard dictionary access
+        if self.field_name not in dictionary and getattr(self.root, 'partial', False):
+            return empty
         return dictionary.get(self.field_name, empty)
 
     def to_internal_value(self, data):

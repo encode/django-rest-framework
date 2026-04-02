@@ -1,3 +1,8 @@
+---
+hide:
+  - navigation
+---
+
 <style>
 .promo li a {
     float: left;
@@ -17,7 +22,7 @@
 }
 </style>
 
-<p class="badges" height=20px>
+<div class="badges">
     <iframe src="https://ghbtns.com/github-btn.html?user=encode&amp;repo=django-rest-framework&amp;type=watch&amp;count=true" class="github-star-button" allowtransparency="true" frameborder="0" scrolling="0" width="110px" height="20px"></iframe>
 
     <a href="https://github.com/encode/django-rest-framework/actions/workflows/main.yml">
@@ -27,11 +32,10 @@
     <a href="https://pypi.org/project/djangorestframework/">
         <img src="https://img.shields.io/pypi/v/djangorestframework.svg" class="status-badge">
     </a>
-</p>
+</div>
 
 ---
 
-<p>
 <h1 style="position: absolute;
     width: 1px;
     height: 1px;
@@ -41,8 +45,8 @@
     clip: rect(0,0,0,0);
     border: 0;">Django REST Framework</h1>
 
-<img alt="Django REST Framework" title="Logo by Jake 'Sid' Smith" src="img/logo.png" width="600px" style="display: block; margin: 0 auto 0 auto">
-</p>
+![Django REST Framework](img/logo-light.png#only-light)
+![Django REST Framework](img/logo-dark.png#only-dark)
 
 Django REST framework is a powerful and flexible toolkit for building Web APIs.
 
@@ -61,7 +65,7 @@ Some reasons you might want to use REST framework:
 
 REST framework requires the following:
 
-* Django (4.2, 5.0, 5.1, 5.2)
+* Django (4.2, 5.0, 5.1, 5.2, 6.0)
 * Python (3.10, 3.11, 3.12, 3.13, 3.14)
 
 We **highly recommend** and only officially support the latest patch release of
@@ -69,7 +73,7 @@ each Python and Django series.
 
 The following packages are optional:
 
-* [PyYAML][pyyaml], [uritemplate][uriteemplate] (5.1+, 3.0.0+) - Schema generation support.
+* [PyYAML][pyyaml], [uritemplate][uritemplate] (5.1+, 3.0.0+) - Schema generation support.
 * [Markdown][markdown] (3.3.0+) - Markdown support for the browsable API.
 * [Pygments][pygments] (2.7.0+) - Add syntax highlighting to Markdown processing.
 * [django-filter][django-filter] (1.0.1+) - Filtering support.
@@ -79,27 +83,35 @@ The following packages are optional:
 
 Install using `pip`, including any optional packages you want...
 
-    pip install djangorestframework
-    pip install markdown       # Markdown support for the browsable API.
-    pip install django-filter  # Filtering support
+```bash
+pip install djangorestframework
+pip install markdown       # Markdown support for the browsable API.
+pip install django-filter  # Filtering support
+```
 
 ...or clone the project from github.
 
-    git clone https://github.com/encode/django-rest-framework
+```bash
+git clone https://github.com/encode/django-rest-framework
+```
 
 Add `'rest_framework'` to your `INSTALLED_APPS` setting.
 
-    INSTALLED_APPS = [
-        ...
-        'rest_framework',
-    ]
+```python
+INSTALLED_APPS = [
+    # ...
+    "rest_framework",
+]
+```
 
 If you're intending to use the browsable API you'll probably also want to add REST framework's login and logout views.  Add the following to your root `urls.py` file.
 
-    urlpatterns = [
-        ...
-        path('api-auth/', include('rest_framework.urls'))
-    ]
+```python
+urlpatterns = [
+    # ...
+    path("api-auth/", include("rest_framework.urls"))
+]
+```
 
 Note that the URL path can be whatever you want.
 
@@ -111,44 +123,51 @@ We'll create a read-write API for accessing information on the users of our proj
 
 Any global settings for a REST framework API are kept in a single configuration dictionary named `REST_FRAMEWORK`.  Start off by adding the following to your `settings.py` module:
 
-    REST_FRAMEWORK = {
-        # Use Django's standard `django.contrib.auth` permissions,
-        # or allow read-only access for unauthenticated users.
-        'DEFAULT_PERMISSION_CLASSES': [
-            'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
-        ]
-    }
+```python
+REST_FRAMEWORK = {
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly"
+    ]
+}
+```
 
 Don't forget to make sure you've also added `rest_framework` to your `INSTALLED_APPS`.
 
 We're ready to create our API now.
 Here's our project's root `urls.py` module:
 
-    from django.urls import path, include
-    from django.contrib.auth.models import User
-    from rest_framework import routers, serializers, viewsets
+```python
+from django.urls import path, include
+from django.contrib.auth.models import User
+from rest_framework import routers, serializers, viewsets
 
-    # Serializers define the API representation.
-    class UserSerializer(serializers.HyperlinkedModelSerializer):
-        class Meta:
-            model = User
-            fields = ['url', 'username', 'email', 'is_staff']
 
-    # ViewSets define the view behavior.
-    class UserViewSet(viewsets.ModelViewSet):
-        queryset = User.objects.all()
-        serializer_class = UserSerializer
+# Serializers define the API representation.
+class UserSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = User
+        fields = ["url", "username", "email", "is_staff"]
 
-    # Routers provide an easy way of automatically determining the URL conf.
-    router = routers.DefaultRouter()
-    router.register(r'users', UserViewSet)
 
-    # Wire up our API using automatic URL routing.
-    # Additionally, we include login URLs for the browsable API.
-    urlpatterns = [
-        path('', include(router.urls)),
-        path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))
-    ]
+# ViewSets define the view behavior.
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+
+# Routers provide an easy way of automatically determining the URL conf.
+router = routers.DefaultRouter()
+router.register(r"users", UserViewSet)
+
+# Wire up our API using automatic URL routing.
+# Additionally, we include login URLs for the browsable API.
+urlpatterns = [
+    path("", include(router.urls)),
+    path("api-auth/", include("rest_framework.urls", namespace="rest_framework")),
+]
+```
 
 You can now open the API in your browser at [http://127.0.0.1:8000/](http://127.0.0.1:8000/), and view your new 'users' API. If you use the login control in the top right corner you'll also be able to add, create and delete users from the system.
 
@@ -207,7 +226,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [heroku]: https://www.heroku.com/
 [eventbrite]: https://www.eventbrite.co.uk/about/
 [pyyaml]: https://pypi.org/project/PyYAML/
-[uriteemplate]: https://pypi.org/project/uritemplate/
+[uritemplate]: https://pypi.org/project/uritemplate/
 [markdown]: https://pypi.org/project/Markdown/
 [pygments]: https://pypi.org/project/Pygments/
 [django-filter]: https://pypi.org/project/django-filter/
