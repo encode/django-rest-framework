@@ -44,7 +44,7 @@ dev = [
   { include-group = "test" },
 ]
 test = [
-  "importlib-metadata<9.0",
+  "importlib-metadata<10.0",
   # Pytest for running the tests.
   "pytest==9.*",
   "pytest-cov==7.*",
@@ -56,7 +56,7 @@ test = [
 docs = [
   # MkDocs to build our documentation.
   "mkdocs==1.6.1",
-  "mkdocs-material[imaging]==9.7.5",
+  "mkdocs-material[imaging]==9.7.6",
   # pylinkvalidator to check for broken links in documentation.
   "pylinkvalidator==0.3",
 ]
