@@ -11,6 +11,7 @@ from django.db import DataError
 from django.db.models import Exists
 from django.utils.translation import gettext_lazy as _
 
+from rest_framework.compat import get_referenced_base_fields_from_q
 from rest_framework.exceptions import ValidationError
 from rest_framework.utils.representation import smart_repr
 
@@ -52,10 +53,11 @@ class UniqueValidator:
     message = _('This field must be unique.')
     requires_context = True
 
-    def __init__(self, queryset, message=None, lookup='exact'):
+    def __init__(self, queryset, message=None, lookup='exact', condition=None):
         self.queryset = queryset
         self.message = message or self.message
         self.lookup = lookup
+        self.condition = condition
 
     def filter_queryset(self, value, queryset, field_name):
         """
@@ -79,6 +81,29 @@ class UniqueValidator:
         field_name = serializer_field.source_attrs[-1]
         # Determine the existing instance, if this is an update operation.
         instance = getattr(serializer_field.parent, 'instance', None)
+
+        # For create operations with a conditional unique constraint, check
+        # whether the condition applies to the new object. If the condition
+        # references other fields (e.g. Q(global_id__gte=3)), and the new
+        # object's values don't satisfy it, the constraint does not apply.
+        if self.condition is not None and instance is None:
+            parent = serializer_field.parent
+            if hasattr(parent, 'initial_data'):
+                condition_source_fields = get_referenced_base_fields_from_q(self.condition)
+                against = {}
+                for f in parent._writable_fields:
+                    if f.source in condition_source_fields:
+                        raw_val = parent.initial_data.get(f.field_name)
+                        if raw_val is not None:
+                            try:
+                                against[f.source] = f.to_internal_value(raw_val)
+                            except Exception:
+                                against[f.source] = raw_val
+                try:
+                    if not self.condition.check(against):
+                        return
+                except Exception:
+                    pass
 
         queryset = self.queryset
         queryset = self.filter_queryset(value, queryset, field_name)

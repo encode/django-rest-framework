@@ -81,7 +81,8 @@ def get_unique_validators(field_name, model_field):
     for condition in conditions:
         yield UniqueValidator(
             queryset=queryset if condition is None else queryset.filter(condition),
-            message=unique_error_message
+            message=unique_error_message,
+            condition=condition,
         )
 
 
