@@ -70,6 +70,9 @@ jobs:
     - name: Install dependencies
       run: python -m pip install --upgrade tox
 
+    - name: Create unaccent extension
+      run: PGPASSWORD=postgres psql -h localhost -U postgres -d postgres -c 'CREATE EXTENSION IF NOT EXISTS unaccent;'
+
     - name: Run tox targets for ${{ matrix.python-version }}
       run: tox run -f py$(echo ${{ matrix.python-version }} | tr -d . | cut -f 1 -d '-')
 
