@@ -262,6 +262,28 @@ class PrimaryKeyRelatedField(RelatedField):
         except (TypeError, ValueError):
             self.fail('incorrect_type', data_type=type(data).__name__)
 
+    def many_to_internal_value(self, data):
+        pks = []
+        for item in data:
+            if self.pk_field is not None:
+                item = self.pk_field.to_internal_value(item)
+            if isinstance(item, bool):
+                self.fail('incorrect_type', data_type=type(item).__name__)
+            pks.append(item)
+        queryset = self.get_queryset()
+        try:
+            objs = {str(obj.pk): obj for obj in queryset.filter(pk__in=pks)}
+        except (ValueError, TypeError):
+            # Fall back to per-item validation to surface correct error messages
+            return [self.to_internal_value(pk) for pk in pks]
+        result = []
+        for pk in pks:
+            obj = objs.get(str(pk))
+            if obj is None:
+                self.fail('does_not_exist', pk_value=pk)
+            result.append(obj)
+        return result
+
     def to_representation(self, value):
         if self.pk_field is not None:
             return self.pk_field.to_representation(value.pk)
@@ -523,6 +545,9 @@ class ManyRelatedField(Field):
             self.fail('not_a_list', input_type=type(data).__name__)
         if not self.allow_empty and len(data) == 0:
             self.fail('empty')
+
+        if hasattr(self.child_relation, 'many_to_internal_value'):
+            return self.child_relation.many_to_internal_value(data)
 
         return [
             self.child_relation.to_internal_value(item)
