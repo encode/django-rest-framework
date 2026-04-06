@@ -746,6 +746,20 @@ class CharField(Field):
         self.validators.append(ProhibitNullCharactersValidator())
         self.validators.append(ProhibitSurrogateCharactersValidator())
 
+    def validate_empty_values(self, data):
+        # When a CharField has allow_blank=True and no explicit default, treat
+        # a missing field (empty) the same as an empty string so that
+        # validators (e.g. UniqueTogetherValidator) see '' in attrs rather than
+        # raising a spurious "required" error.  Only applies to creates
+        # (instance is None) and non-partial requests; updates should leave
+        # omitted fields unchanged.
+        if (data is empty and self.allow_blank and not self.required
+                and self.default is empty
+                and not getattr(self.root, 'partial', False)
+                and getattr(self.root, 'instance', None) is None):
+            return (True, '')
+        return super().validate_empty_values(data)
+
     def run_validation(self, data=empty):
         # Test for the empty string here so that it does not get validated,
         # and so that subclasses do not need to handle it explicitly
