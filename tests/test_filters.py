@@ -45,7 +45,7 @@ class BaseFilterTests(TestCase):
 
 
 class SearchFilterModel(models.Model):
-    title = models.CharField(max_length=20)
+    title = models.CharField(max_length=22)
     text = models.CharField(max_length=100)
 
 
