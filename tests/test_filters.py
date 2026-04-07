@@ -45,7 +45,7 @@ class BaseFilterTests(TestCase):
 
 
 class SearchFilterModel(models.Model):
-    title = models.CharField(max_length=20)
+    title = models.CharField(max_length=22)
     text = models.CharField(max_length=100)
 
 
@@ -64,6 +64,7 @@ class SearchFilterTests(TestCase):
         # zz  bcd
         # zzz cde
         # ...
+        cls.objects_by_title = {}
         for idx in range(10):
             title = 'z' * (idx + 1)
             text = (
@@ -71,10 +72,11 @@ class SearchFilterTests(TestCase):
                 chr(idx + ord('b')) +
                 chr(idx + ord('c'))
             )
-            SearchFilterModel(title=title, text=text).save()
+            obj = SearchFilterModel.objects.create(title=title, text=text)
+            cls.objects_by_title[title] = obj
 
-        SearchFilterModel(title='A title', text='The long text').save()
-        SearchFilterModel(title='The title', text='The "text').save()
+        cls.obj_a_title = SearchFilterModel.objects.create(title='A title', text='The long text')
+        cls.obj_the_title = SearchFilterModel.objects.create(title='The title', text='The "text')
 
     def test_search(self):
         class SearchListView(generics.ListAPIView):
@@ -87,8 +89,8 @@ class SearchFilterTests(TestCase):
         request = factory.get('/', {'search': 'b'})
         response = view(request)
         assert response.data == [
-            {'id': 1, 'title': 'z', 'text': 'abc'},
-            {'id': 2, 'title': 'zz', 'text': 'bcd'}
+            {'id': self.objects_by_title['z'].pk, 'title': 'z', 'text': 'abc'},
+            {'id': self.objects_by_title['zz'].pk, 'title': 'zz', 'text': 'bcd'}
         ]
 
     def test_search_returns_same_queryset_if_no_search_fields_or_terms_provided(self):
@@ -115,7 +117,7 @@ class SearchFilterTests(TestCase):
         request = factory.get('/', {'search': 'zzz'})
         response = view(request)
         assert response.data == [
-            {'id': 3, 'title': 'zzz', 'text': 'cde'}
+            {'id': self.objects_by_title['zzz'].pk, 'title': 'zzz', 'text': 'cde'}
         ]
 
     def test_startswith_search(self):
@@ -129,7 +131,7 @@ class SearchFilterTests(TestCase):
         request = factory.get('/', {'search': 'b'})
         response = view(request)
         assert response.data == [
-            {'id': 2, 'title': 'zz', 'text': 'bcd'}
+            {'id': self.objects_by_title['zz'].pk, 'title': 'zz', 'text': 'bcd'}
         ]
 
     def test_regexp_search(self):
@@ -143,7 +145,7 @@ class SearchFilterTests(TestCase):
         request = factory.get('/', {'search': 'z{2} ^b'})
         response = view(request)
         assert response.data == [
-            {'id': 2, 'title': 'zz', 'text': 'bcd'}
+            {'id': self.objects_by_title['zz'].pk, 'title': 'zz', 'text': 'bcd'}
         ]
 
     def test_search_with_nonstandard_search_param(self):
@@ -160,8 +162,8 @@ class SearchFilterTests(TestCase):
             request = factory.get('/', {'query': 'b'})
             response = view(request)
             assert response.data == [
-                {'id': 1, 'title': 'z', 'text': 'abc'},
-                {'id': 2, 'title': 'zz', 'text': 'bcd'}
+                {'id': self.objects_by_title['z'].pk, 'title': 'z', 'text': 'abc'},
+                {'id': self.objects_by_title['zz'].pk, 'title': 'zz', 'text': 'bcd'}
             ]
 
         reload_module(filters)
@@ -188,7 +190,7 @@ class SearchFilterTests(TestCase):
         request = factory.get('/', {'search': r'^\w{3}$', 'title_only': 'true'})
         response = view(request)
         assert response.data == [
-            {'id': 3, 'title': 'zzz', 'text': 'cde'}
+            {'id': self.objects_by_title['zzz'].pk, 'title': 'zzz', 'text': 'cde'}
         ]
 
     def test_search_field_with_null_characters(self):
@@ -209,7 +211,7 @@ class SearchFilterTests(TestCase):
         request = factory.get('/', {'search': 'c'})
         response = view(request)
         assert response.data == [
-            {'id': 1, 'title': 'z', 'text': 'abc'},
+            {'id': self.objects_by_title['z'].pk, 'title': 'z', 'text': 'abc'},
         ]
 
     def test_search_field_with_additional_transforms(self):
@@ -243,8 +245,8 @@ class SearchFilterTests(TestCase):
             request = factory.get('/', {'search': 'bc'})
             response = view(request)
             assert response.data == [
-                {'id': 1, 'title': 'z', 'text': 'abc'},
-                {'id': 2, 'title': 'zz', 'text': 'bcd'},
+                {'id': self.objects_by_title['z'].pk, 'title': 'z', 'text': 'abc'},
+                {'id': self.objects_by_title['zz'].pk, 'title': 'zz', 'text': 'bcd'},
             ]
 
     def test_search_field_with_multiple_words(self):
@@ -274,7 +276,7 @@ class SearchFilterTests(TestCase):
         request = factory.get('/', {'search': '"\\\"text"'})
         response = view(request)
         assert response.data == [
-            {'id': 12, 'title': 'The title', 'text': 'The "text'},
+            {'id': self.obj_the_title.pk, 'title': 'The title', 'text': 'The "text'},
         ]
 
     def test_search_field_with_quotes(self):
@@ -287,7 +289,7 @@ class SearchFilterTests(TestCase):
         request = factory.get('/', {'search': '"long text"'})
         response = view(request)
         assert response.data == [
-            {'id': 11, 'title': 'A title', 'text': 'The long text'},
+            {'id': self.obj_a_title.pk, 'title': 'A title', 'text': 'The long text'},
         ]
 
 
@@ -463,13 +465,14 @@ class SearchFilterM2MTests(TestCase):
     def setUp(self):
         # Sequence of title/text/attributes is:
         #
-        # z   abc [1, 2, 3]
-        # zz  bcd [1, 2, 3]
-        # zzz cde [1, 2, 3]
+        # z   abc [attr1, attr2, attr3]
+        # zz  bcd [attr1, attr2, attr3]
+        # zzz cde [attr1, attr2, attr3]
         # ...
+        self.attributes = []
         for idx in range(3):
             label = 'w' * (idx + 1)
-            AttributeModel.objects.create(label=label)
+            self.attributes.append(AttributeModel.objects.create(label=label))
 
         for idx in range(10):
             title = 'z' * (idx + 1)
@@ -479,7 +482,7 @@ class SearchFilterM2MTests(TestCase):
                 chr(idx + ord('c'))
             )
             SearchFilterModelM2M(title=title, text=text).save()
-        SearchFilterModelM2M.objects.get(title='zz').attributes.add(1, 2, 3)
+        SearchFilterModelM2M.objects.get(title='zz').attributes.add(*self.attributes)
 
     def test_m2m_search(self):
         class SearchListView(generics.ListAPIView):
@@ -664,6 +667,7 @@ class OrderingFilterTests(TestCase):
         # zyx abc
         # yxw bcd
         # xwv cde
+        self.objects_by_title = {}
         for idx in range(3):
             title = (
                 chr(ord('z') - idx) +
@@ -675,7 +679,8 @@ class OrderingFilterTests(TestCase):
                 chr(idx + ord('b')) +
                 chr(idx + ord('c'))
             )
-            OrderingFilterModel(title=title, text=text).save()
+            obj = OrderingFilterModel.objects.create(title=title, text=text)
+            self.objects_by_title[title] = obj
 
     def test_ordering(self):
         class OrderingListView(generics.ListAPIView):
@@ -689,9 +694,9 @@ class OrderingFilterTests(TestCase):
         request = factory.get('/', {'ordering': 'text'})
         response = view(request)
         assert response.data == [
-            {'id': 1, 'title': 'zyx', 'text': 'abc'},
-            {'id': 2, 'title': 'yxw', 'text': 'bcd'},
-            {'id': 3, 'title': 'xwv', 'text': 'cde'},
+            {'id': self.objects_by_title['zyx'].pk, 'title': 'zyx', 'text': 'abc'},
+            {'id': self.objects_by_title['yxw'].pk, 'title': 'yxw', 'text': 'bcd'},
+            {'id': self.objects_by_title['xwv'].pk, 'title': 'xwv', 'text': 'cde'},
         ]
 
     def test_reverse_ordering(self):
@@ -706,9 +711,9 @@ class OrderingFilterTests(TestCase):
         request = factory.get('/', {'ordering': '-text'})
         response = view(request)
         assert response.data == [
-            {'id': 3, 'title': 'xwv', 'text': 'cde'},
-            {'id': 2, 'title': 'yxw', 'text': 'bcd'},
-            {'id': 1, 'title': 'zyx', 'text': 'abc'},
+            {'id': self.objects_by_title['xwv'].pk, 'title': 'xwv', 'text': 'cde'},
+            {'id': self.objects_by_title['yxw'].pk, 'title': 'yxw', 'text': 'bcd'},
+            {'id': self.objects_by_title['zyx'].pk, 'title': 'zyx', 'text': 'abc'},
         ]
 
     def test_incorrecturl_extrahyphens_ordering(self):
@@ -723,9 +728,9 @@ class OrderingFilterTests(TestCase):
         request = factory.get('/', {'ordering': '--text'})
         response = view(request)
         assert response.data == [
-            {'id': 3, 'title': 'xwv', 'text': 'cde'},
-            {'id': 2, 'title': 'yxw', 'text': 'bcd'},
-            {'id': 1, 'title': 'zyx', 'text': 'abc'},
+            {'id': self.objects_by_title['xwv'].pk, 'title': 'xwv', 'text': 'cde'},
+            {'id': self.objects_by_title['yxw'].pk, 'title': 'yxw', 'text': 'bcd'},
+            {'id': self.objects_by_title['zyx'].pk, 'title': 'zyx', 'text': 'abc'},
         ]
 
     def test_incorrectfield_ordering(self):
@@ -740,9 +745,9 @@ class OrderingFilterTests(TestCase):
         request = factory.get('/', {'ordering': 'foobar'})
         response = view(request)
         assert response.data == [
-            {'id': 3, 'title': 'xwv', 'text': 'cde'},
-            {'id': 2, 'title': 'yxw', 'text': 'bcd'},
-            {'id': 1, 'title': 'zyx', 'text': 'abc'},
+            {'id': self.objects_by_title['xwv'].pk, 'title': 'xwv', 'text': 'cde'},
+            {'id': self.objects_by_title['yxw'].pk, 'title': 'yxw', 'text': 'bcd'},
+            {'id': self.objects_by_title['zyx'].pk, 'title': 'zyx', 'text': 'abc'},
         ]
 
     def test_ordering_without_ordering_fields(self):
@@ -758,27 +763,27 @@ class OrderingFilterTests(TestCase):
         request = factory.get('/', {'ordering': 'text'})
         response = view(request)
         assert response.data == [
-            {'id': 1, 'title': 'zyx', 'text': 'abc', 'description': 'zyx: abc'},
-            {'id': 2, 'title': 'yxw', 'text': 'bcd', 'description': 'yxw: bcd'},
-            {'id': 3, 'title': 'xwv', 'text': 'cde', 'description': 'xwv: cde'},
+            {'id': self.objects_by_title['zyx'].pk, 'title': 'zyx', 'text': 'abc', 'description': 'zyx: abc'},
+            {'id': self.objects_by_title['yxw'].pk, 'title': 'yxw', 'text': 'bcd', 'description': 'yxw: bcd'},
+            {'id': self.objects_by_title['xwv'].pk, 'title': 'xwv', 'text': 'cde', 'description': 'xwv: cde'},
         ]
 
         # `incorrectfield` ordering works fine.
         request = factory.get('/', {'ordering': 'foobar'})
         response = view(request)
         assert response.data == [
-            {'id': 3, 'title': 'xwv', 'text': 'cde', 'description': 'xwv: cde'},
-            {'id': 2, 'title': 'yxw', 'text': 'bcd', 'description': 'yxw: bcd'},
-            {'id': 1, 'title': 'zyx', 'text': 'abc', 'description': 'zyx: abc'},
+            {'id': self.objects_by_title['xwv'].pk, 'title': 'xwv', 'text': 'cde', 'description': 'xwv: cde'},
+            {'id': self.objects_by_title['yxw'].pk, 'title': 'yxw', 'text': 'bcd', 'description': 'yxw: bcd'},
+            {'id': self.objects_by_title['zyx'].pk, 'title': 'zyx', 'text': 'abc', 'description': 'zyx: abc'},
         ]
 
         # `description` is a Model property, which should be ignored.
         request = factory.get('/', {'ordering': 'description'})
         response = view(request)
         assert response.data == [
-            {'id': 3, 'title': 'xwv', 'text': 'cde', 'description': 'xwv: cde'},
-            {'id': 2, 'title': 'yxw', 'text': 'bcd', 'description': 'yxw: bcd'},
-            {'id': 1, 'title': 'zyx', 'text': 'abc', 'description': 'zyx: abc'},
+            {'id': self.objects_by_title['xwv'].pk, 'title': 'xwv', 'text': 'cde', 'description': 'xwv: cde'},
+            {'id': self.objects_by_title['yxw'].pk, 'title': 'yxw', 'text': 'bcd', 'description': 'yxw: bcd'},
+            {'id': self.objects_by_title['zyx'].pk, 'title': 'zyx', 'text': 'abc', 'description': 'zyx: abc'},
         ]
 
     def test_default_ordering(self):
@@ -793,9 +798,9 @@ class OrderingFilterTests(TestCase):
         request = factory.get('')
         response = view(request)
         assert response.data == [
-            {'id': 3, 'title': 'xwv', 'text': 'cde'},
-            {'id': 2, 'title': 'yxw', 'text': 'bcd'},
-            {'id': 1, 'title': 'zyx', 'text': 'abc'},
+            {'id': self.objects_by_title['xwv'].pk, 'title': 'xwv', 'text': 'cde'},
+            {'id': self.objects_by_title['yxw'].pk, 'title': 'yxw', 'text': 'bcd'},
+            {'id': self.objects_by_title['zyx'].pk, 'title': 'zyx', 'text': 'abc'},
         ]
 
     def test_default_ordering_using_string(self):
@@ -810,9 +815,9 @@ class OrderingFilterTests(TestCase):
         request = factory.get('')
         response = view(request)
         assert response.data == [
-            {'id': 3, 'title': 'xwv', 'text': 'cde'},
-            {'id': 2, 'title': 'yxw', 'text': 'bcd'},
-            {'id': 1, 'title': 'zyx', 'text': 'abc'},
+            {'id': self.objects_by_title['xwv'].pk, 'title': 'xwv', 'text': 'cde'},
+            {'id': self.objects_by_title['yxw'].pk, 'title': 'yxw', 'text': 'bcd'},
+            {'id': self.objects_by_title['zyx'].pk, 'title': 'zyx', 'text': 'abc'},
         ]
 
     def test_ordering_by_aggregate_field(self):
@@ -838,9 +843,9 @@ class OrderingFilterTests(TestCase):
         request = factory.get('/', {'ordering': 'related__count'})
         response = view(request)
         assert response.data == [
-            {'id': 1, 'title': 'zyx', 'text': 'abc'},
-            {'id': 3, 'title': 'xwv', 'text': 'cde'},
-            {'id': 2, 'title': 'yxw', 'text': 'bcd'},
+            {'id': self.objects_by_title['zyx'].pk, 'title': 'zyx', 'text': 'abc'},
+            {'id': self.objects_by_title['xwv'].pk, 'title': 'xwv', 'text': 'cde'},
+            {'id': self.objects_by_title['yxw'].pk, 'title': 'yxw', 'text': 'bcd'},
         ]
 
     def test_ordering_by_dotted_source(self):
@@ -888,9 +893,9 @@ class OrderingFilterTests(TestCase):
             request = factory.get('/', {'order': 'text'})
             response = view(request)
             assert response.data == [
-                {'id': 1, 'title': 'zyx', 'text': 'abc'},
-                {'id': 2, 'title': 'yxw', 'text': 'bcd'},
-                {'id': 3, 'title': 'xwv', 'text': 'cde'},
+                {'id': self.objects_by_title['zyx'].pk, 'title': 'zyx', 'text': 'abc'},
+                {'id': self.objects_by_title['yxw'].pk, 'title': 'yxw', 'text': 'bcd'},
+                {'id': self.objects_by_title['xwv'].pk, 'title': 'xwv', 'text': 'cde'},
             ]
 
         reload_module(filters)
@@ -923,9 +928,9 @@ class OrderingFilterTests(TestCase):
         request = factory.get('/', {'ordering': 'text'})
         response = view(request)
         assert response.data == [
-            {'id': 1, 'title': 'zyx', 'text': 'abc'},
-            {'id': 2, 'title': 'yxw', 'text': 'bcd'},
-            {'id': 3, 'title': 'xwv', 'text': 'cde'},
+            {'id': self.objects_by_title['zyx'].pk, 'title': 'zyx', 'text': 'abc'},
+            {'id': self.objects_by_title['yxw'].pk, 'title': 'yxw', 'text': 'bcd'},
+            {'id': self.objects_by_title['xwv'].pk, 'title': 'xwv', 'text': 'cde'},
         ]
 
     def test_ordering_with_improper_configuration(self):
@@ -976,10 +981,12 @@ class SensitiveDataSerializer3(serializers.ModelSerializer):
 
 class SensitiveOrderingFilterTests(TestCase):
     def setUp(self):
+        self.objects_by_username = {}
         for idx in range(3):
             username = {0: 'userA', 1: 'userB', 2: 'userC'}[idx]
             password = {0: 'passA', 1: 'passC', 2: 'passB'}[idx]
-            SensitiveOrderingFilterModel(username=username, password=password).save()
+            obj = SensitiveOrderingFilterModel.objects.create(username=username, password=password)
+            self.objects_by_username[username] = obj
 
     def test_order_by_serializer_fields(self):
         for serializer_cls in [
@@ -1003,9 +1010,9 @@ class SensitiveOrderingFilterTests(TestCase):
 
             # Note: Inverse username ordering correctly applied.
             assert response.data == [
-                {'id': 3, username_field: 'userC'},
-                {'id': 2, username_field: 'userB'},
-                {'id': 1, username_field: 'userA'},
+                {'id': self.objects_by_username['userC'].pk, username_field: 'userC'},
+                {'id': self.objects_by_username['userB'].pk, username_field: 'userB'},
+                {'id': self.objects_by_username['userA'].pk, username_field: 'userA'},
             ]
 
     def test_cannot_order_by_non_serializer_fields(self):
@@ -1030,7 +1037,7 @@ class SensitiveOrderingFilterTests(TestCase):
 
             # Note: The passwords are not in order.  Default ordering is used.
             assert response.data == [
-                {'id': 1, username_field: 'userA'},  # PassB
-                {'id': 2, username_field: 'userB'},  # PassC
-                {'id': 3, username_field: 'userC'},  # PassA
+                {'id': self.objects_by_username['userA'].pk, username_field: 'userA'},  # PassB
+                {'id': self.objects_by_username['userB'].pk, username_field: 'userB'},  # PassC
+                {'id': self.objects_by_username['userC'].pk, username_field: 'userC'},  # PassA
             ]

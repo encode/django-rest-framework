@@ -6,6 +6,8 @@ from importlib import import_module
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.core.handlers.wsgi import WSGIHandler
+from django.core.signals import request_finished, request_started
+from django.db import close_old_connections
 from django.test import override_settings, testcases
 from django.test.client import Client as DjangoClient
 from django.test.client import ClientHandler
@@ -89,8 +91,17 @@ if requests is not None:
                 raw_kwargs['original_response'] = MockOriginalResponse(wsgi_headers)
 
             # Make the outgoing request via WSGI.
+            # Disconnect close_old_connections to prevent closing the
+            # database connection during tests, matching the behavior
+            # of Django's ClientHandler.
             environ = self.get_environ(request)
-            wsgi_response = self.app(environ, start_response)
+            request_started.disconnect(close_old_connections)
+            request_finished.disconnect(close_old_connections)
+            try:
+                wsgi_response = self.app(environ, start_response)
+            finally:
+                request_started.connect(close_old_connections)
+                request_finished.connect(close_old_connections)
 
             # Build the underlying urllib3.HTTPResponse
             raw_kwargs['body'] = io.BytesIO(b''.join(wsgi_response))

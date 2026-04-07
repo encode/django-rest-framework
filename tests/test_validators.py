@@ -4,7 +4,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 from django import VERSION as django_version
-from django.db import DataError, models
+from django.db import DataError, connection, models
 from django.test import TestCase
 
 from rest_framework import serializers
@@ -662,13 +662,13 @@ class TestUniqueConstraintValidation(TestCase):
             global_id=1,
             fancy_conditions=1
         )
-        UniqueConstraintModel.objects.create(
+        self.instance2 = UniqueConstraintModel.objects.create(
             race_name='example',
             position=2,
             global_id=2,
             fancy_conditions=1
         )
-        UniqueConstraintModel.objects.create(
+        self.instance3 = UniqueConstraintModel.objects.create(
             race_name='other',
             position=1,
             global_id=3,
@@ -742,8 +742,11 @@ class TestUniqueConstraintValidation(TestCase):
         UniqueConstraint with single field must be transformed into
         field's UniqueValidator
         """
-        # Django 5 includes Max and Min values validators for IntegerField
-        extra_validators_qty = 2 if django_version[0] >= 5 else 0
+        # Backends like PostgreSQL add Min/Max validators for IntegerField;
+        # SQLite does not because it has no fixed integer range.
+        has_int_range = connection.ops.integer_field_range('IntegerField')[0] is not None
+        extra_validators_qty = 2 if has_int_range else 0
+
         serializer = UniqueConstraintSerializer()
         assert len(serializer.validators) == 2
         validators = serializer.fields['global_id'].validators
@@ -753,7 +756,7 @@ class TestUniqueConstraintValidation(TestCase):
         validators = serializer.fields['fancy_conditions'].validators
         assert len(validators) == 2 + extra_validators_qty
         ids_in_qs = {frozenset(v.queryset.values_list('id', flat=True)) for v in validators if hasattr(v, "queryset")}
-        assert ids_in_qs == {frozenset([1]), frozenset([3])}
+        assert ids_in_qs == {frozenset([self.instance.pk]), frozenset([self.instance3.pk])}
 
     def test_nullable_unique_constraint_fields_are_not_required(self):
         serializer = UniqueConstraintNullableSerializer(data={'title': 'Bob'})

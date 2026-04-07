@@ -760,7 +760,7 @@ class DisplayValueModel(models.Model):
 
 class TestRelationalFieldDisplayValue(TestCase):
     def setUp(self):
-        DisplayValueTargetModel.objects.bulk_create([
+        self.targets = DisplayValueTargetModel.objects.bulk_create([
             DisplayValueTargetModel(name='Red'),
             DisplayValueTargetModel(name='Yellow'),
             DisplayValueTargetModel(name='Green'),
@@ -773,7 +773,7 @@ class TestRelationalFieldDisplayValue(TestCase):
                 fields = '__all__'
 
         serializer = TestSerializer()
-        expected = {1: 'Red Color', 2: 'Yellow Color', 3: 'Green Color'}
+        expected = {t.pk: '%s Color' % t.name for t in self.targets}
         self.assertEqual(serializer.fields['color'].choices, expected)
 
     def test_custom_display_value(self):
@@ -789,7 +789,7 @@ class TestRelationalFieldDisplayValue(TestCase):
                 fields = '__all__'
 
         serializer = TestSerializer()
-        expected = {1: 'My Red Color', 2: 'My Yellow Color', 3: 'My Green Color'}
+        expected = {t.pk: 'My %s Color' % t.name for t in self.targets}
         self.assertEqual(serializer.fields['color'].choices, expected)
 
 
@@ -1278,10 +1278,10 @@ class Issue3674Test(TestCase):
         parent_serializer = TestParentModelSerializer(parent)
         child_serializer = TestChildModelSerializer(child)
 
-        parent_expected = {'children': ['def'], 'id': 1, 'title': 'abc'}
+        parent_expected = {'children': ['def'], 'id': parent.pk, 'title': 'abc'}
         self.assertEqual(parent_serializer.data, parent_expected)
 
-        child_expected = {'parent': 1, 'value': 'def'}
+        child_expected = {'parent': parent.pk, 'value': 'def'}
         self.assertEqual(child_serializer.data, child_expected)
 
 

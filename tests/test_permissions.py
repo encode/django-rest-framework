@@ -92,12 +92,12 @@ class ModelPermissionsIntegrationTests(TestCase):
         self.disallowed_credentials = basic_auth_header('disallowed', 'password')
         self.updateonly_credentials = basic_auth_header('updateonly', 'password')
 
-        BasicModel(text='foo').save()
+        self.instance = BasicModel.objects.create(text='foo')
 
     def test_has_create_permissions(self):
         request = factory.post('/', {'text': 'foobar'}, format='json',
                                HTTP_AUTHORIZATION=self.permitted_credentials)
-        response = root_view(request, pk=1)
+        response = root_view(request, pk=self.instance.pk)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_api_root_view_discard_default_django_model_permission(self):
@@ -136,35 +136,35 @@ class ModelPermissionsIntegrationTests(TestCase):
     def test_get_queryset_has_create_permissions(self):
         request = factory.post('/', {'text': 'foobar'}, format='json',
                                HTTP_AUTHORIZATION=self.permitted_credentials)
-        response = get_queryset_list_view(request, pk=1)
+        response = get_queryset_list_view(request, pk=self.instance.pk)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_has_put_permissions(self):
-        request = factory.put('/1', {'text': 'foobar'}, format='json',
+        request = factory.put('/%d' % self.instance.pk, {'text': 'foobar'}, format='json',
                               HTTP_AUTHORIZATION=self.permitted_credentials)
-        response = instance_view(request, pk='1')
+        response = instance_view(request, pk=self.instance.pk)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_has_delete_permissions(self):
-        request = factory.delete('/1', HTTP_AUTHORIZATION=self.permitted_credentials)
-        response = instance_view(request, pk=1)
+        request = factory.delete('/%d' % self.instance.pk, HTTP_AUTHORIZATION=self.permitted_credentials)
+        response = instance_view(request, pk=self.instance.pk)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
     def test_does_not_have_create_permissions(self):
         request = factory.post('/', {'text': 'foobar'}, format='json',
                                HTTP_AUTHORIZATION=self.disallowed_credentials)
-        response = root_view(request, pk=1)
+        response = root_view(request, pk=self.instance.pk)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_does_not_have_put_permissions(self):
-        request = factory.put('/1', {'text': 'foobar'}, format='json',
+        request = factory.put('/%d' % self.instance.pk, {'text': 'foobar'}, format='json',
                               HTTP_AUTHORIZATION=self.disallowed_credentials)
-        response = instance_view(request, pk='1')
+        response = instance_view(request, pk=self.instance.pk)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_does_not_have_delete_permissions(self):
-        request = factory.delete('/1', HTTP_AUTHORIZATION=self.disallowed_credentials)
-        response = instance_view(request, pk=1)
+        request = factory.delete('/%d' % self.instance.pk, HTTP_AUTHORIZATION=self.disallowed_credentials)
+        response = instance_view(request, pk=self.instance.pk)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_options_permitted(self):
@@ -172,16 +172,16 @@ class ModelPermissionsIntegrationTests(TestCase):
             '/',
             HTTP_AUTHORIZATION=self.permitted_credentials
         )
-        response = root_view(request, pk='1')
+        response = root_view(request, pk=self.instance.pk)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn('actions', response.data)
         self.assertEqual(list(response.data['actions']), ['POST'])
 
         request = factory.options(
-            '/1',
+            '/%d' % self.instance.pk,
             HTTP_AUTHORIZATION=self.permitted_credentials
         )
-        response = instance_view(request, pk='1')
+        response = instance_view(request, pk=self.instance.pk)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn('actions', response.data)
         self.assertEqual(list(response.data['actions']), ['PUT'])
@@ -191,15 +191,15 @@ class ModelPermissionsIntegrationTests(TestCase):
             '/',
             HTTP_AUTHORIZATION=self.disallowed_credentials
         )
-        response = root_view(request, pk='1')
+        response = root_view(request, pk=self.instance.pk)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertNotIn('actions', response.data)
 
         request = factory.options(
-            '/1',
+            '/%d' % self.instance.pk,
             HTTP_AUTHORIZATION=self.disallowed_credentials
         )
-        response = instance_view(request, pk='1')
+        response = instance_view(request, pk=self.instance.pk)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertNotIn('actions', response.data)
 
@@ -208,22 +208,22 @@ class ModelPermissionsIntegrationTests(TestCase):
             '/',
             HTTP_AUTHORIZATION=self.updateonly_credentials
         )
-        response = root_view(request, pk='1')
+        response = root_view(request, pk=self.instance.pk)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertNotIn('actions', response.data)
 
         request = factory.options(
-            '/1',
+            '/%d' % self.instance.pk,
             HTTP_AUTHORIZATION=self.updateonly_credentials
         )
-        response = instance_view(request, pk='1')
+        response = instance_view(request, pk=self.instance.pk)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn('actions', response.data)
         self.assertEqual(list(response.data['actions']), ['PUT'])
 
     def test_empty_view_does_not_assert(self):
-        request = factory.get('/1', HTTP_AUTHORIZATION=self.permitted_credentials)
-        response = empty_list_view(request, pk=1)
+        request = factory.get('/%d' % self.instance.pk, HTTP_AUTHORIZATION=self.permitted_credentials)
+        response = empty_list_view(request, pk=self.instance.pk)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_calling_method_not_allowed(self):
@@ -231,8 +231,8 @@ class ModelPermissionsIntegrationTests(TestCase):
         response = root_view(request)
         self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
-        request = factory.generic('METHOD_NOT_ALLOWED', '/1', HTTP_AUTHORIZATION=self.permitted_credentials)
-        response = instance_view(request, pk='1')
+        request = factory.generic('METHOD_NOT_ALLOWED', '/%d' % self.instance.pk, HTTP_AUTHORIZATION=self.permitted_credentials)
+        response = instance_view(request, pk=self.instance.pk)
         self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
     def test_check_auth_before_queryset_call(self):
@@ -362,11 +362,11 @@ class ObjectPermissionsIntegrationTests(TestCase):
         writers = Group.objects.create(name='writers')
         deleters = Group.objects.create(name='deleters')
 
-        model = BasicPermModel.objects.create(text='foo')
+        self.model = BasicPermModel.objects.create(text='foo')
 
-        assign_perm(perms['view'], readers, model)
-        assign_perm(perms['change'], writers, model)
-        assign_perm(perms['delete'], deleters, model)
+        assign_perm(perms['view'], readers, self.model)
+        assign_perm(perms['change'], writers, self.model)
+        assign_perm(perms['delete'], deleters, self.model)
 
         readers.user_set.add(users['fullaccess'], users['readonly'])
         writers.user_set.add(users['fullaccess'], users['writeonly'])
@@ -378,50 +378,50 @@ class ObjectPermissionsIntegrationTests(TestCase):
 
     # Delete
     def test_can_delete_permissions(self):
-        request = factory.delete('/1', HTTP_AUTHORIZATION=self.credentials['deleteonly'])
-        response = object_permissions_view(request, pk='1')
+        request = factory.delete('/%d' % self.model.pk, HTTP_AUTHORIZATION=self.credentials['deleteonly'])
+        response = object_permissions_view(request, pk=self.model.pk)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
     def test_cannot_delete_permissions(self):
-        request = factory.delete('/1', HTTP_AUTHORIZATION=self.credentials['readonly'])
-        response = object_permissions_view(request, pk='1')
+        request = factory.delete('/%d' % self.model.pk, HTTP_AUTHORIZATION=self.credentials['readonly'])
+        response = object_permissions_view(request, pk=self.model.pk)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     # Update
     def test_can_update_permissions(self):
         request = factory.patch(
-            '/1', {'text': 'foobar'}, format='json',
+            '/%d' % self.model.pk, {'text': 'foobar'}, format='json',
             HTTP_AUTHORIZATION=self.credentials['writeonly']
         )
-        response = object_permissions_view(request, pk='1')
+        response = object_permissions_view(request, pk=self.model.pk)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data.get('text'), 'foobar')
 
     def test_cannot_update_permissions(self):
         request = factory.patch(
-            '/1', {'text': 'foobar'}, format='json',
+            '/%d' % self.model.pk, {'text': 'foobar'}, format='json',
             HTTP_AUTHORIZATION=self.credentials['deleteonly']
         )
-        response = object_permissions_view(request, pk='1')
+        response = object_permissions_view(request, pk=self.model.pk)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_cannot_update_permissions_non_existing(self):
         request = factory.patch(
-            '/999', {'text': 'foobar'}, format='json',
+            '/999999', {'text': 'foobar'}, format='json',
             HTTP_AUTHORIZATION=self.credentials['deleteonly']
         )
-        response = object_permissions_view(request, pk='999')
+        response = object_permissions_view(request, pk='999999')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     # Read
     def test_can_read_permissions(self):
-        request = factory.get('/1', HTTP_AUTHORIZATION=self.credentials['readonly'])
-        response = object_permissions_view(request, pk='1')
+        request = factory.get('/%d' % self.model.pk, HTTP_AUTHORIZATION=self.credentials['readonly'])
+        response = object_permissions_view(request, pk=self.model.pk)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_cannot_read_permissions(self):
-        request = factory.get('/1', HTTP_AUTHORIZATION=self.credentials['writeonly'])
-        response = object_permissions_view(request, pk='1')
+        request = factory.get('/%d' % self.model.pk, HTTP_AUTHORIZATION=self.credentials['writeonly'])
+        response = object_permissions_view(request, pk=self.model.pk)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_can_read_get_queryset_permissions(self):
@@ -429,8 +429,8 @@ class ObjectPermissionsIntegrationTests(TestCase):
         same as ``test_can_read_permissions`` but with a view
         that rely on ``.get_queryset()`` instead of ``.queryset``.
         """
-        request = factory.get('/1', HTTP_AUTHORIZATION=self.credentials['readonly'])
-        response = get_queryset_object_permissions_view(request, pk='1')
+        request = factory.get('/%d' % self.model.pk, HTTP_AUTHORIZATION=self.credentials['readonly'])
+        response = get_queryset_object_permissions_view(request, pk=self.model.pk)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     # Read list
@@ -440,7 +440,7 @@ class ObjectPermissionsIntegrationTests(TestCase):
         request = factory.get('/', HTTP_AUTHORIZATION=self.credentials['readonly'])
         response = object_permissions_list_view(request)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data[0].get('id'), 1)
+        self.assertEqual(response.data[0].get('id'), self.model.pk)
 
     def test_cannot_method_not_allowed(self):
         request = factory.generic('METHOD_NOT_ALLOWED', '/', HTTP_AUTHORIZATION=self.credentials['readonly'])
@@ -506,36 +506,36 @@ denied_object_view_with_detail = DeniedObjectViewWithDetail.as_view()
 
 class CustomPermissionsTests(TestCase):
     def setUp(self):
-        BasicModel(text='foo').save()
+        self.instance = BasicModel.objects.create(text='foo')
         User.objects.create_user('username', 'username@example.com', 'password')
         credentials = basic_auth_header('username', 'password')
-        self.request = factory.get('/1', format='json', HTTP_AUTHORIZATION=credentials)
+        self.request = factory.get('/%d' % self.instance.pk, format='json', HTTP_AUTHORIZATION=credentials)
         self.custom_message = 'Custom: You cannot access this resource'
         self.custom_code = 'permission_denied_custom'
 
     def test_permission_denied(self):
-        response = denied_view(self.request, pk=1)
+        response = denied_view(self.request, pk=self.instance.pk)
         detail = response.data.get('detail')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertNotEqual(detail, self.custom_message)
         self.assertNotEqual(detail.code, self.custom_code)
 
     def test_permission_denied_with_custom_detail(self):
-        response = denied_view_with_detail(self.request, pk=1)
+        response = denied_view_with_detail(self.request, pk=self.instance.pk)
         detail = response.data.get('detail')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(detail, self.custom_message)
         self.assertEqual(detail.code, self.custom_code)
 
     def test_permission_denied_for_object(self):
-        response = denied_object_view(self.request, pk=1)
+        response = denied_object_view(self.request, pk=self.instance.pk)
         detail = response.data.get('detail')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertNotEqual(detail, self.custom_message)
         self.assertNotEqual(detail.code, self.custom_code)
 
     def test_permission_denied_for_object_with_custom_detail(self):
-        response = denied_object_view_with_detail(self.request, pk=1)
+        response = denied_object_view_with_detail(self.request, pk=self.instance.pk)
         detail = response.data.get('detail')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(detail, self.custom_message)

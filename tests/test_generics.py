@@ -119,9 +119,8 @@ class TestRootView(TestCase):
         with self.assertNumQueries(1):
             response = self.view(request).render()
         assert response.status_code == status.HTTP_201_CREATED
-        assert response.data == {'id': 4, 'text': 'foobar'}
-        created = self.objects.get(id=4)
-        assert created.text == 'foobar'
+        created = self.objects.get(text='foobar')
+        assert response.data == {'id': created.pk, 'text': 'foobar'}
 
     def test_put_root_view(self):
         """
@@ -153,9 +152,8 @@ class TestRootView(TestCase):
         with self.assertNumQueries(1):
             response = self.view(request).render()
         assert response.status_code == status.HTTP_201_CREATED
-        assert response.data == {'id': 4, 'text': 'foobar'}
-        created = self.objects.get(id=4)
-        assert created.text == 'foobar'
+        created = self.objects.get(text='foobar')
+        assert response.data == {'id': created.pk, 'text': 'foobar'}
 
     def test_post_error_root_view(self):
         """
@@ -177,8 +175,11 @@ class TestInstanceView(TestCase):
         Create 3 BasicModel instances.
         """
         items = ['foo', 'bar', 'baz', 'filtered out']
+        self.created_items = []
         for item in items:
-            BasicModel(text=item).save()
+            obj = BasicModel.objects.create(text=item)
+            if item != 'filtered out':
+                self.created_items.append(obj)
         self.objects = BasicModel.objects.exclude(text='filtered out')
         self.data = [
             {'id': obj.id, 'text': obj.text}
@@ -191,9 +192,10 @@ class TestInstanceView(TestCase):
         """
         GET requests to RetrieveUpdateDestroyAPIView should return a single object.
         """
-        request = factory.get('/1')
+        pk = self.created_items[0].pk
+        request = factory.get(f'/{pk}')
         with self.assertNumQueries(1):
-            response = self.view(request, pk=1).render()
+            response = self.view(request, pk=pk).render()
         assert response.status_code == status.HTTP_200_OK
         assert response.data == self.data[0]
 
@@ -212,40 +214,43 @@ class TestInstanceView(TestCase):
         """
         PUT requests to RetrieveUpdateDestroyAPIView should update an object.
         """
+        pk = self.created_items[0].pk
         data = {'text': 'foobar'}
-        request = factory.put('/1', data, format='json')
+        request = factory.put(f'/{pk}', data, format='json')
         with self.assertNumQueries(EXPECTED_QUERIES_FOR_PUT):
-            response = self.view(request, pk='1').render()
+            response = self.view(request, pk=str(pk)).render()
         assert response.status_code == status.HTTP_200_OK
-        assert dict(response.data) == {'id': 1, 'text': 'foobar'}
-        updated = self.objects.get(id=1)
+        assert dict(response.data) == {'id': pk, 'text': 'foobar'}
+        updated = self.objects.get(id=pk)
         assert updated.text == 'foobar'
 
     def test_patch_instance_view(self):
         """
         PATCH requests to RetrieveUpdateDestroyAPIView should update an object.
         """
+        pk = self.created_items[0].pk
         data = {'text': 'foobar'}
-        request = factory.patch('/1', data, format='json')
+        request = factory.patch(f'/{pk}', data, format='json')
 
         with self.assertNumQueries(EXPECTED_QUERIES_FOR_PUT):
-            response = self.view(request, pk=1).render()
+            response = self.view(request, pk=pk).render()
         assert response.status_code == status.HTTP_200_OK
-        assert response.data == {'id': 1, 'text': 'foobar'}
-        updated = self.objects.get(id=1)
+        assert response.data == {'id': pk, 'text': 'foobar'}
+        updated = self.objects.get(id=pk)
         assert updated.text == 'foobar'
 
     def test_delete_instance_view(self):
         """
         DELETE requests to RetrieveUpdateDestroyAPIView should delete an object.
         """
-        request = factory.delete('/1')
+        pk = self.created_items[0].pk
+        request = factory.delete(f'/{pk}')
         with self.assertNumQueries(2):
-            response = self.view(request, pk=1).render()
+            response = self.view(request, pk=pk).render()
         assert response.status_code == status.HTTP_204_NO_CONTENT
         assert response.content == b''
         ids = [obj.id for obj in self.objects.all()]
-        assert ids == [2, 3]
+        assert ids == [self.created_items[1].pk, self.created_items[2].pk]
 
     def test_get_instance_view_incorrect_arg(self):
         """
@@ -261,13 +266,14 @@ class TestInstanceView(TestCase):
         """
         PUT requests to create a new object should not be able to set the id.
         """
+        pk = self.created_items[0].pk
         data = {'id': 999, 'text': 'foobar'}
-        request = factory.put('/1', data, format='json')
+        request = factory.put(f'/{pk}', data, format='json')
         with self.assertNumQueries(EXPECTED_QUERIES_FOR_PUT):
-            response = self.view(request, pk=1).render()
+            response = self.view(request, pk=pk).render()
         assert response.status_code == status.HTTP_200_OK
-        assert response.data == {'id': 1, 'text': 'foobar'}
-        updated = self.objects.get(id=1)
+        assert response.data == {'id': pk, 'text': 'foobar'}
+        updated = self.objects.get(id=pk)
         assert updated.text == 'foobar'
 
     def test_put_to_deleted_instance(self):
@@ -275,11 +281,12 @@ class TestInstanceView(TestCase):
         PUT requests to RetrieveUpdateDestroyAPIView should return 404 if
         an object does not currently exist.
         """
-        self.objects.get(id=1).delete()
+        pk = self.created_items[0].pk
+        self.objects.get(id=pk).delete()
         data = {'text': 'foobar'}
-        request = factory.put('/1', data, format='json')
+        request = factory.put(f'/{pk}', data, format='json')
         with self.assertNumQueries(1):
-            response = self.view(request, pk=1).render()
+            response = self.view(request, pk=pk).render()
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
     def test_put_to_filtered_out_instance(self):
@@ -298,19 +305,21 @@ class TestInstanceView(TestCase):
         PATCH requests should not be able to create objects.
         """
         data = {'text': 'foobar'}
-        request = factory.patch('/999', data, format='json')
+        non_existent_pk = 999999
+        request = factory.patch(f'/{non_existent_pk}', data, format='json')
         with self.assertNumQueries(1):
-            response = self.view(request, pk=999).render()
+            response = self.view(request, pk=non_existent_pk).render()
         assert response.status_code == status.HTTP_404_NOT_FOUND
-        assert not self.objects.filter(id=999).exists()
+        assert not self.objects.filter(id=non_existent_pk).exists()
 
     def test_put_error_instance_view(self):
         """
         Incorrect PUT requests in HTML should include a form error.
         """
+        pk = self.created_items[0].pk
         data = {'text': 'foobar' * 100}
         request = factory.put('/', data, HTTP_ACCEPT='text/html')
-        response = self.view(request, pk=1).render()
+        response = self.view(request, pk=pk).render()
         expected_error = '<span class="help-block">Ensure this field has no more than 100 characters.</span>'
         assert expected_error in response.rendered_content.decode()
 
@@ -345,8 +354,10 @@ class TestOverriddenGetObject(TestCase):
         Create 3 BasicModel instances.
         """
         items = ['foo', 'bar', 'baz']
+        self.created_items = []
         for item in items:
-            BasicModel(text=item).save()
+            obj = BasicModel.objects.create(text=item)
+            self.created_items.append(obj)
         self.objects = BasicModel.objects
         self.data = [
             {'id': obj.id, 'text': obj.text}
@@ -369,9 +380,10 @@ class TestOverriddenGetObject(TestCase):
         """
         GET requests to RetrieveUpdateDestroyAPIView should return a single object.
         """
-        request = factory.get('/1')
+        pk = self.created_items[0].pk
+        request = factory.get(f'/{pk}')
         with self.assertNumQueries(1):
-            response = self.view(request, pk=1).render()
+            response = self.view(request, pk=pk).render()
         assert response.status_code == status.HTTP_200_OK
         assert response.data == self.data[0]
 
@@ -404,7 +416,7 @@ class TestCreateModelWithAutoNowAddField(TestCase):
         request = factory.post('/', data, format='json')
         response = self.view(request).render()
         assert response.status_code == status.HTTP_201_CREATED
-        created = self.objects.get(id=1)
+        created = self.objects.get(content='foobar')
         assert created.content == 'foobar'
 
 
@@ -483,8 +495,10 @@ class TestFilterBackendAppliedToViews(TestCase):
         Create 3 BasicModel instances to filter on.
         """
         items = ['foo', 'bar', 'baz']
+        self.created_items = []
         for item in items:
-            BasicModel(text=item).save()
+            obj = BasicModel.objects.create(text=item)
+            self.created_items.append(obj)
         self.objects = BasicModel.objects
         self.data = [
             {'id': obj.id, 'text': obj.text}
@@ -500,7 +514,8 @@ class TestFilterBackendAppliedToViews(TestCase):
         response = root_view(request).render()
         assert response.status_code == status.HTTP_200_OK
         assert len(response.data) == 1
-        assert response.data == [{'id': 1, 'text': 'foo'}]
+        foo_obj = self.created_items[0]
+        assert response.data == [{'id': foo_obj.pk, 'text': 'foo'}]
 
     def test_get_root_view_filters_out_all_models_with_exclusive_filter_backend(self):
         """
@@ -516,9 +531,10 @@ class TestFilterBackendAppliedToViews(TestCase):
         """
         GET requests to RetrieveUpdateDestroyAPIView should raise 404 when model filtered out.
         """
+        pk = self.created_items[0].pk
         instance_view = InstanceView.as_view(filter_backends=(ExclusiveFilterBackend,))
-        request = factory.get('/1')
-        response = instance_view(request, pk=1).render()
+        request = factory.get(f'/{pk}')
+        response = instance_view(request, pk=pk).render()
         assert response.status_code == status.HTTP_404_NOT_FOUND
         assert response.data == {
             'detail': ErrorDetail(
@@ -531,11 +547,12 @@ class TestFilterBackendAppliedToViews(TestCase):
         """
         GET requests to RetrieveUpdateDestroyAPIView should return a single object when not excluded
         """
+        foo_obj = self.created_items[0]
         instance_view = InstanceView.as_view(filter_backends=(InclusiveFilterBackend,))
-        request = factory.get('/1')
-        response = instance_view(request, pk=1).render()
+        request = factory.get(f'/{foo_obj.pk}')
+        response = instance_view(request, pk=foo_obj.pk).render()
         assert response.status_code == status.HTTP_200_OK
-        assert response.data == {'id': 1, 'text': 'foo'}
+        assert response.data == {'id': foo_obj.pk, 'text': 'foo'}
 
     def test_dynamic_serializer_form_in_browsable_api(self):
         """
