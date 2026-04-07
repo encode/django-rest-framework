@@ -1526,18 +1526,22 @@ class ModelSerializer(Serializer):
             else:
                 default = empty
 
+            
             if unique_constraint_name in model_fields:
-                # The corresponding field is present in the serializer
                 if default is empty:
-                    uniqueness_extra_kwargs[unique_constraint_name] = {'required': True}
+                    if getattr(unique_constraint_field, "blank", False):
+                        uniqueness_extra_kwargs[unique_constraint_name] = {
+                            "required": False,
+                            "allow_blank": True,
+                        }
+                    else:
+                        uniqueness_extra_kwargs[unique_constraint_name] = {"required": True}
                 else:
-                    uniqueness_extra_kwargs[unique_constraint_name] = {'default': default}
-            elif default is not empty:
-                # The corresponding field is not present in the
-                # serializer. We have a default to use for it, so
-                # add in a hidden field that populates it.
-                hidden_fields[unique_constraint_name] = HiddenField(default=default)
+                    uniqueness_extra_kwargs[unique_constraint_name] = {"default": default}
 
+            elif default is not empty:
+                hidden_fields[unique_constraint_name] = HiddenField(default=default)
+            
         # Update `extra_kwargs` with any new options.
         for key, value in uniqueness_extra_kwargs.items():
             if key in extra_kwargs:
