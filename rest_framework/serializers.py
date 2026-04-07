@@ -1526,7 +1526,6 @@ class ModelSerializer(Serializer):
             else:
                 default = empty
 
-            
             if unique_constraint_name in model_fields:
                 if default is empty:
                     if getattr(unique_constraint_field, "blank", False):
@@ -1542,7 +1541,6 @@ class ModelSerializer(Serializer):
             elif default is not empty:
                 hidden_fields[unique_constraint_name] = HiddenField(default=default)
             
-        # Update `extra_kwargs` with any new options.
         for key, value in uniqueness_extra_kwargs.items():
             if key in extra_kwargs:
                 value.update(extra_kwargs[key])
