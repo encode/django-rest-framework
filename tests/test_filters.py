@@ -247,6 +247,26 @@ class SearchFilterTests(TestCase):
                 {'id': 2, 'title': 'zz', 'text': 'bcd'},
             ]
 
+    @pytest.mark.requires_postgres
+    def test_search_field_with_unaccent(self):
+        SearchFilterModel.objects.create(title='Jeremy', text='jeremy')
+        SearchFilterModel.objects.create(title='Jérémy', text='jérémy')
+        SearchFilterModel.objects.create(title='Jérémie', text='jérémie')
+        SearchFilterModel.objects.create(title='Jeremie', text='jeremie')
+
+        class SearchListView(generics.ListAPIView):
+            queryset = SearchFilterModel.objects.all()
+            serializer_class = SearchFilterSerializer
+            filter_backends = (filters.SearchFilter,)
+            search_fields = ('&title',)
+
+        view = SearchListView.as_view()
+
+        request = factory.get('/', {'search': 'Jerem'})
+        response = view(request)
+        assert len(response.data) == 4
+        assert {item['title'] for item in response.data} == {'Jeremy', 'Jérémy', 'Jérémie', 'Jeremie'}
+
     def test_search_field_with_multiple_words(self):
         class SearchListView(generics.ListAPIView):
             queryset = SearchFilterModel.objects.all()
