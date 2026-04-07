@@ -667,28 +667,32 @@ class ListSerializer(BaseSerializer):
         if not hasattr(self.child, 'instance'):
             return self.child.run_validation(data)
 
+        if not (
+            hasattr(self, '_list_serializer_instance_map') and
+            isinstance(data, Mapping)
+        ):
+            return self.child.run_validation(data)
+
+        lookup_field = getattr(getattr(self.child, 'Meta', None), 'lookup_field', None)
+        data_pk = data.get(lookup_field)
+        if data_pk is None:
+            data_pk = data.get('id')
+        if data_pk is None:
+            data_pk = data.get('pk')
+
+        if data_pk is None:
+            return self.child.run_validation(data)
+
+        child_instance = self._list_serializer_instance_map.get(str(data_pk))
+        if child_instance is None:
+            return self.child.run_validation(data)
+
         original_instance = self.child.instance
-        had_initial_data = hasattr(self.child, 'initial_data')
-        original_initial_data = getattr(self.child, 'initial_data', None)
-
         try:
-            if (
-                hasattr(self, '_list_serializer_instance_map') and
-                isinstance(data, Mapping)
-            ):
-                data_pk = data.get('id') or data.get('pk')
-                self.child.instance = (self._list_serializer_instance_map.get(str(data_pk))
-                                       if data_pk is not None else None)
-
-            self.child.initial_data = data
+            self.child.instance = child_instance
             return self.child.run_validation(data)
         finally:
             self.child.instance = original_instance
-            if had_initial_data:
-                self.child.initial_data = original_initial_data
-            else:
-                if hasattr(self.child, 'initial_data'):
-                    del self.child.initial_data
 
     def to_internal_value(self, data):
         """
@@ -731,20 +735,30 @@ class ListSerializer(BaseSerializer):
         errors = []
 
         # Build a primary key lookup for instance matching in many=True updates.
-        instance_map = {}
+        instance_map = None
         if self.instance is not None:
             if isinstance(self.instance, Mapping):
                 instance_map = {str(k): v for k, v in self.instance.items()}
             elif isinstance(self.instance, (list, tuple, models.query.QuerySet)):
+                instance_map = {}
+                lookup_field = getattr(getattr(self.child, 'Meta', None), 'lookup_field', None)
+
                 for obj in self.instance:
-                    pk = getattr(obj, 'pk', getattr(obj, 'id', None))
+                    if lookup_field is not None:
+                        pk = getattr(obj, lookup_field, None)
+                    else:
+                        pk = getattr(obj, 'pk', None)
+                        if pk is None:
+                            pk = getattr(obj, 'id', None)
+
                     if pk is not None:
                         key = str(pk)
                         # If duplicate keys are present, keep the last value,
                         # matching standard mapping assignment behavior.
                         instance_map[key] = obj
 
-        self._list_serializer_instance_map = instance_map
+        if instance_map is not None:
+            self._list_serializer_instance_map = instance_map
 
         try:
             for item in data:
