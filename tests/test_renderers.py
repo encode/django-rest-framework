@@ -731,9 +731,34 @@ class BrowsableAPIRendererTests(URLPatternsTestCase):
     class SimpleSerializer(serializers.Serializer):
         name = serializers.CharField()
 
+    class CrashOnObjectPermission(permissions.BasePermission):
+        def has_permission(self, request, view):
+            return True
+
+        def has_object_permission(self, request, view, obj):
+            return obj.user.is_staff
+
+    class Issue6855Serializer(serializers.Serializer):
+        name = serializers.CharField()
+
+    class Issue6855Object:
+        def __init__(self, name):
+            self.name = name
+
+    class Issue6855ViewSet(ViewSet):
+        @action(detail=True)
+        def extra_action(self, request, pk=None):
+            serializer = BrowsableAPIRendererTests.Issue6855Serializer(
+                BrowsableAPIRendererTests.Issue6855Object(name='demo')
+            )
+            return Response(serializer.data)
+
+    Issue6855ViewSet.permission_classes = [CrashOnObjectPermission]
+
     router = SimpleRouter()
     router.register('examples', ExampleViewSet, basename='example')
     router.register('auth-examples', AuthExampleViewSet, basename='auth-example')
+    router.register('issue-6855', Issue6855ViewSet, basename='issue-6855')
     urlpatterns = [path('api/', include(router.urls))]
 
     def setUp(self):
@@ -819,6 +844,34 @@ class BrowsableAPIRendererTests(URLPatternsTestCase):
         assert 'id="extra-actions-menu"' not in resp.content.decode()
         assert '/api/examples/list_action/' not in resp.content.decode()
         assert '>Extra list action<' not in resp.content.decode()
+
+    def test_options_form_does_not_check_object_permissions_for_extra_action(self):
+        resp = self.client.get('/api/issue-6855/1/extra_action/', HTTP_ACCEPT='text/html')
+        assert resp.status_code == status.HTTP_200_OK
+
+    def test_delete_form_still_checks_object_permissions(self):
+        class ObjectPermissionDenied(permissions.BasePermission):
+            def has_permission(self, request, view):
+                return True
+
+            def has_object_permission(self, request, view, obj):
+                return False
+
+        class DummyObject:
+            name = 'Name'
+
+        class DummyDeleteView(APIView):
+            permission_classes = [ObjectPermissionDenied]
+
+            def delete(self, request):
+                return Response()
+
+        request = Request(APIRequestFactory().get('/'))
+        serializer = BrowsableAPIRendererTests.SimpleSerializer(instance=DummyObject())
+        delete_form = self.renderer.get_rendered_html_form(
+            serializer.data, DummyDeleteView(), 'DELETE', request
+        )
+        assert delete_form is None
 
 
 class AdminRendererTests(TestCase):
