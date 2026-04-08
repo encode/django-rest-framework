@@ -664,7 +664,35 @@ class ListSerializer(BaseSerializer):
         self.child.initial_data = data
         return super().run_child_validation(data)
         """
-        return self.child.run_validation(data)
+        if not hasattr(self.child, 'instance'):
+            return self.child.run_validation(data)
+
+        if not (
+            hasattr(self, '_list_serializer_instance_map') and
+            isinstance(data, Mapping)
+        ):
+            return self.child.run_validation(data)
+
+        lookup_field = getattr(getattr(self.child, 'Meta', None), 'lookup_field', None)
+        data_pk = data.get(lookup_field)
+        if data_pk is None:
+            data_pk = data.get('id')
+        if data_pk is None:
+            data_pk = data.get('pk')
+
+        if data_pk is None:
+            return self.child.run_validation(data)
+
+        child_instance = self._list_serializer_instance_map.get(str(data_pk))
+        if child_instance is None:
+            return self.child.run_validation(data)
+
+        original_instance = self.child.instance
+        try:
+            self.child.instance = child_instance
+            return self.child.run_validation(data)
+        finally:
+            self.child.instance = original_instance
 
     def to_internal_value(self, data):
         """
@@ -674,12 +702,16 @@ class ListSerializer(BaseSerializer):
             data = html.parse_html_list(data, default=[])
 
         if not isinstance(data, list):
-            message = self.error_messages['not_a_list'].format(
-                input_type=type(data).__name__
-            )
             raise ValidationError({
-                api_settings.NON_FIELD_ERRORS_KEY: [message]
-            }, code='not_a_list')
+                api_settings.NON_FIELD_ERRORS_KEY: [
+                    ErrorDetail(
+                        self.error_messages['not_a_list'].format(
+                            input_type=type(data).__name__
+                        ),
+                        code='not_a_list'
+                    )
+                ]
+            })
 
         if not self.allow_empty and len(data) == 0:
             message = self.error_messages['empty']
@@ -702,19 +734,49 @@ class ListSerializer(BaseSerializer):
         ret = []
         errors = []
 
-        for item in data:
-            try:
-                validated = self.run_child_validation(item)
-            except ValidationError as exc:
-                errors.append(exc.detail)
-            else:
-                ret.append(validated)
-                errors.append({})
+        # Build a primary key lookup for instance matching in many=True updates.
+        instance_map = None
+        if self.instance is not None:
+            if isinstance(self.instance, Mapping):
+                instance_map = {str(k): v for k, v in self.instance.items()}
+            elif isinstance(self.instance, (list, tuple, models.query.QuerySet)):
+                instance_map = {}
+                lookup_field = getattr(getattr(self.child, 'Meta', None), 'lookup_field', None)
 
-        if any(errors):
-            raise ValidationError(errors)
+                for obj in self.instance:
+                    if lookup_field is not None:
+                        pk = getattr(obj, lookup_field, None)
+                    else:
+                        pk = getattr(obj, 'pk', None)
+                        if pk is None:
+                            pk = getattr(obj, 'id', None)
 
-        return ret
+                    if pk is not None:
+                        key = str(pk)
+                        # If duplicate keys are present, keep the last value,
+                        # matching standard mapping assignment behavior.
+                        instance_map[key] = obj
+
+        if instance_map is not None:
+            self._list_serializer_instance_map = instance_map
+
+        try:
+            for item in data:
+                try:
+                    validated = self.run_child_validation(item)
+                except ValidationError as exc:
+                    errors.append(exc.detail)
+                else:
+                    ret.append(validated)
+                    errors.append({})
+
+            if any(errors):
+                raise ValidationError(errors)
+
+            return ret
+        finally:
+            if hasattr(self, '_list_serializer_instance_map'):
+                delattr(self, '_list_serializer_instance_map')
 
     def to_representation(self, data):
         """
@@ -749,6 +811,13 @@ class ListSerializer(BaseSerializer):
         """
         Save and return a list of object instances.
         """
+        assert hasattr(self, '_errors'), (
+            'You must call `.is_valid()` before calling `.save()`.'
+        )
+        assert not self.errors, (
+            'You cannot call `.save()` on a serializer with invalid data.'
+        )
+
         # Guard against incorrect use of `serializer.save(commit=False)`
         assert 'commit' not in kwargs, (
             "'commit' is not a valid keyword argument to the 'save()' method. "
@@ -756,9 +825,13 @@ class ListSerializer(BaseSerializer):
             "inspect 'serializer.validated_data' instead. "
             "You can also pass additional keyword arguments to 'save()' if you "
             "need to set extra attributes on the saved model instance. "
-            "For example: 'serializer.save(owner=request.user)'.'"
+            "For example: 'serializer.save(owner=request.user)'."
         )
-
+        assert not hasattr(self, '_data'), (
+            "You cannot call `.save()` after accessing `serializer.data`."
+            "If you need to access data before committing to the database then "
+            "inspect 'serializer.validated_data' instead. "
+        )
         validated_data = [
             {**attrs, **kwargs} for attrs in self.validated_data
         ]
