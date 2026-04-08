@@ -1523,6 +1523,11 @@ class ModelSerializer(Serializer):
                 default = unique_constraint_field.default
             elif unique_constraint_field.null:
                 default = None
+            elif unique_constraint_field.blank:
+                if isinstance(unique_constraint_field, (models.CharField, models.TextField)):
+                    default = ''
+                else:
+                    default = empty
             else:
                 default = empty
 
