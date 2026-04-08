@@ -190,6 +190,19 @@ class InitializeViewSetsTestCase(TestCase):
         assert get.view.action == 'list'
         assert head.view.action == 'list'
 
+    def test_actions_dict_not_mutated(self):
+        """
+        The original actions dict passed to as_view() should not be mutated.
+        Regression test for #9747.
+        """
+        actions = {'get': 'list'}
+        view = ActionViewSet.as_view(actions=actions)
+
+        assert 'head' not in actions
+        view(factory.get('/'))
+        assert 'head' not in actions
+        assert view.actions == {'get': 'list'}
+
     def test_viewset_action_attr_for_extra_action(self):
         view = ActionViewSet.as_view(actions=dict(ActionViewSet.list_action.mapping))
 
