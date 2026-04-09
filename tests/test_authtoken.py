@@ -1,5 +1,6 @@
 import importlib
 from io import StringIO
+from unittest.mock import patch
 
 import pytest
 from django.contrib.admin import site
@@ -11,7 +12,7 @@ from django.test import TestCase, modify_settings
 from rest_framework.authtoken.admin import TokenAdmin
 from rest_framework.authtoken.management.commands.drf_create_token import \
     Command as AuthTokenCommand
-from rest_framework.authtoken.models import Token
+from rest_framework.authtoken.models import Token, TokenProxy
 from rest_framework.authtoken.serializers import AuthTokenSerializer
 from rest_framework.exceptions import ValidationError
 
@@ -35,6 +36,29 @@ class AuthTokenTests(TestCase):
         mock_request = object()
         token_admin = TokenAdmin(self.token, self.site)
         assert token_admin.get_fields(mock_request) == ('user',)
+
+    @patch('django.contrib.admin.site.register')  # avoid duplicate registrations
+    def test_model_admin__username_field(self, mock_register):
+        import rest_framework.authtoken.admin as authtoken_admin_m
+
+        class EmailUser(User):
+            USERNAME_FIELD = 'email'
+            username = None
+
+        for user_model in (User, EmailUser):
+            with (
+                self.subTest(user_model=user_model),
+                patch('django.contrib.auth.get_user_model', return_value=user_model) as get_user_model
+            ):
+                importlib.reload(authtoken_admin_m)  # reload after patching
+                assert get_user_model.call_count == 1
+
+                mock_request = object()
+                token_admin = authtoken_admin_m.TokenAdmin(TokenProxy, self.site)
+                assert token_admin.get_search_fields(mock_request) == (f'user__{user_model.USERNAME_FIELD}',)
+                assert token_admin.get_ordering(mock_request) == (f'user__{user_model.USERNAME_FIELD}',)
+
+        importlib.reload(authtoken_admin_m)  # restore after testing
 
     def test_token_string_representation(self):
         assert str(self.token) == 'test token'

@@ -82,8 +82,8 @@ def get_user_list(request):
 ```
 
 
-**NOTE:** The [`cache_page`][page] decorator only caches the
-`GET` and `HEAD` responses with status 200.
+!!! note
+    The [`cache_page`][page] decorator only caches the `GET` and `HEAD` responses with status 200.
 
 [page]: https://docs.djangoproject.com/en/stable/topics/cache/#the-per-view-cache
 [cookie]: https://docs.djangoproject.com/en/stable/topics/http/decorators/#django.views.decorators.vary.vary_on_cookie
