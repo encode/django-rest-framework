@@ -203,6 +203,155 @@ class TestListSerializerContainingNestedSerializer:
         assert updated_instances == expected_output
 
 
+class TestListSerializerInstanceMatching:
+    def test_matching_with_id(self):
+        seen_instances = []
+
+        class TestSerializer(serializers.Serializer):
+            id = serializers.IntegerField()
+
+            def validate(self, attrs):
+                seen_instances.append(self.instance)
+                return attrs
+
+        instance = [
+            BasicObject(id=1),
+            BasicObject(id=2),
+        ]
+        input_data = [
+            {'id': 1},
+            {'id': 2},
+        ]
+
+        serializer = TestSerializer(instance, data=input_data, many=True)
+        assert serializer.is_valid()
+        assert seen_instances == instance
+
+    def test_matching_with_pk(self):
+        seen_instances = []
+
+        class TestSerializer(serializers.Serializer):
+            pk = serializers.IntegerField()
+
+            def validate(self, attrs):
+                seen_instances.append(self.instance)
+                return attrs
+
+        instance = [
+            BasicObject(pk=1),
+            BasicObject(pk=2),
+        ]
+        input_data = [
+            {'pk': 1},
+            {'pk': 2},
+        ]
+
+        serializer = TestSerializer(instance, data=input_data, many=True)
+        assert serializer.is_valid()
+        assert seen_instances == instance
+
+    def test_matching_with_id_against_object_with_pk_only(self):
+        seen_instances = []
+
+        class TestSerializer(serializers.Serializer):
+            id = serializers.IntegerField()
+
+            def validate(self, attrs):
+                seen_instances.append(self.instance)
+                return attrs
+
+        instance = [BasicObject(pk=1)]
+        input_data = [{'id': 1}]
+
+        serializer = TestSerializer(instance, data=input_data, many=True)
+        assert serializer.is_valid()
+        assert seen_instances == instance
+
+    def test_mapping_instance_matching(self):
+        seen_instances = []
+
+        class TestSerializer(serializers.Serializer):
+            id = serializers.IntegerField()
+
+            def validate(self, attrs):
+                seen_instances.append(self.instance)
+                return attrs
+
+        obj1 = BasicObject(id=1)
+        obj2 = BasicObject(id=2)
+        instance = {
+            '1': obj1,
+            '2': obj2,
+        }
+        input_data = [
+            {'id': 1},
+            {'id': 2},
+        ]
+
+        serializer = TestSerializer(instance, data=input_data, many=True)
+        assert serializer.is_valid()
+        assert seen_instances == [obj1, obj2]
+
+    def test_unsupported_instance_type_preserves_original_behavior(self):
+        seen_instances = []
+
+        class TestSerializer(serializers.Serializer):
+            id = serializers.IntegerField()
+
+            def validate(self, attrs):
+                seen_instances.append(self.instance)
+                return attrs
+
+        serializer = TestSerializer(instance=123, data=[{'id': 1}], many=True)
+        assert serializer.is_valid()
+        assert seen_instances == [123]
+
+    def test_missing_lookup_field_in_data_does_not_assign_instance(self):
+        seen_instances = []
+
+        class TestSerializer(serializers.Serializer):
+            id = serializers.IntegerField(required=False)
+
+            class Meta:
+                lookup_field = 'uuid'
+
+            def validate(self, attrs):
+                seen_instances.append(self.instance)
+                return attrs
+
+        class TestListSerializer(serializers.ListSerializer):
+            child = TestSerializer()
+
+        serializer = TestListSerializer(
+            instance=[BasicObject(id=1, uuid='uuid-1')],
+            data=[{'id': 1}],
+        )
+        assert serializer.is_valid()
+        assert seen_instances == [None]
+
+    def test_matching_with_configurable_lookup_field(self):
+        seen_instances = []
+
+        class TestSerializer(serializers.Serializer):
+            id = serializers.IntegerField(required=False)
+            uuid = serializers.CharField()
+
+            class Meta:
+                lookup_field = 'uuid'
+
+            def validate(self, attrs):
+                seen_instances.append(self.instance)
+                return attrs
+
+        obj1 = BasicObject(id=1, uuid='uuid-1')
+        obj2 = BasicObject(id=2, uuid='uuid-2')
+        input_data = [{'id': 1, 'uuid': 'uuid-2'}]
+
+        serializer = TestSerializer([obj1, obj2], data=input_data, many=True)
+        assert serializer.is_valid()
+        assert seen_instances == [obj2]
+
+
 class TestNestedListSerializer:
     """
     Tests for using a ListSerializer as a field.
@@ -883,3 +1032,32 @@ class TestToRepresentationManagerCheck:
         queryset = NullableOneToOneSource.objects.all()
         serializer = self.serializer(queryset, many=True)
         assert serializer.data
+
+
+def test_many_true_instance_level_validation_uses_matched_instance():
+    class Obj:
+        def __init__(self, id, valid):
+            self.id = id
+            self.valid = valid
+
+    class TestSerializer(serializers.Serializer):
+        id = serializers.IntegerField()
+        status = serializers.CharField()
+
+        def validate_status(self, value):
+            if self.instance is None:
+                raise serializers.ValidationError("Instance not matched")
+            if not self.instance.valid:
+                raise serializers.ValidationError("Invalid instance")
+            return value
+
+    objs = [Obj(1, True), Obj(2, False)]
+    serializer = TestSerializer(
+        instance=objs,
+        data=[{"id": 1, "status": "ok"}, {"id": 2, "status": "fail"}],
+        many=True,
+        partial=True,
+    )
+
+    assert not serializer.is_valid()
+    assert serializer.errors == [{}, {'status': ['Invalid instance']}]
