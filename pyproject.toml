@@ -44,6 +44,7 @@ dev = [
   { include-group = "test" },
 ]
 test = [
+  "dj-database-url>=3.1.0",
   "importlib-metadata<10.0",
   # Pytest for running the tests.
   "pytest==9.*",
@@ -68,7 +69,7 @@ optional = [
   "legacy-cgi; python_version>='3.13'",
   "markdown>=3.3.7",
   "psycopg[binary]>=3.1.8",
-  "pygments>=2.17,<2.20",
+  "pygments>=2.17,<2.21",
   "pyyaml>=5.3.1,<6.1",
   "requests",
   "uritemplate",
@@ -116,6 +117,9 @@ keep_full_version = true
 [tool.pytest.ini_options]
 addopts = "--tb=short --strict-markers -ra"
 testpaths = [ "tests" ]
+markers = [
+  "requires_postgres: marks tests as requiring a PostgreSQL database backend",
+]
 filterwarnings = [
   "ignore:'cgi' is deprecated:DeprecationWarning",
 ]
