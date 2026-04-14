@@ -1776,7 +1776,7 @@ class DictField(Field):
         """
         if html.is_html_input(data):
             # Coerce HTML form inputs (e.g. QueryDict/MultiValueDict) to a plain dict.
-            # Use `.dict()` when available to preserve existing behaviour of taking
+            # Use `.dict()` when available to preserve existing behavior of taking
             # the first value for each key, otherwise fall back to `dict()`.
             if hasattr(data, 'dict'):
                 data = data.dict()
