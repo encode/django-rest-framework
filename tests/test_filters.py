@@ -10,7 +10,6 @@ from django.test import SimpleTestCase, TestCase
 from django.test.utils import override_settings
 
 from rest_framework import filters, generics, serializers
-from rest_framework.compat import coreschema
 from rest_framework.exceptions import ValidationError
 from rest_framework.test import APIRequestFactory
 
@@ -38,24 +37,11 @@ class SearchSplitTests(SimpleTestCase):
 
 class BaseFilterTests(TestCase):
     def setUp(self):
-        self.original_coreapi = filters.coreapi
-        filters.coreapi = True  # mock it, because not None value needed
         self.filter_backend = filters.BaseFilterBackend()
-
-    def tearDown(self):
-        filters.coreapi = self.original_coreapi
 
     def test_filter_queryset_raises_error(self):
         with pytest.raises(NotImplementedError):
             self.filter_backend.filter_queryset(None, None, None)
-
-    @pytest.mark.skipif(not coreschema, reason='coreschema is not installed')
-    def test_get_schema_fields_checks_for_coreapi(self):
-        filters.coreapi = None
-        with pytest.raises(AssertionError):
-            self.filter_backend.get_schema_fields({})
-        filters.coreapi = True
-        assert self.filter_backend.get_schema_fields({}) == []
 
 
 class SearchFilterModel(models.Model):
@@ -305,6 +291,109 @@ class SearchFilterTests(TestCase):
         ]
 
 
+@pytest.mark.requires_postgres
+class SearchFilterFullTextTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        SearchFilterModel.objects.create(title='The quick brown fox', text='jumps over the lazy dog')
+        SearchFilterModel.objects.create(title='The slow brown turtle', text='crawls under the fence')
+        SearchFilterModel.objects.create(title='A bright sunny day', text='in the park with friends')
+
+    def test_full_text_search_single_term(self):
+        class SearchListView(generics.ListAPIView):
+            queryset = SearchFilterModel.objects.all()
+            serializer_class = SearchFilterSerializer
+            filter_backends = (filters.SearchFilter,)
+            search_fields = ('@title',)
+
+        view = SearchListView.as_view()
+        request = factory.get('/', {'search': 'fox'})
+        response = view(request)
+        assert len(response.data) == 1
+        assert response.data[0]['title'] == 'The quick brown fox'
+
+    def test_full_text_search_multiple_results(self):
+        class SearchListView(generics.ListAPIView):
+            queryset = SearchFilterModel.objects.all()
+            serializer_class = SearchFilterSerializer
+            filter_backends = (filters.SearchFilter,)
+            search_fields = ('@title',)
+
+        view = SearchListView.as_view()
+        request = factory.get('/', {'search': 'brown'})
+        response = view(request)
+        assert len(response.data) == 2
+        titles = {item['title'] for item in response.data}
+        assert titles == {'The quick brown fox', 'The slow brown turtle'}
+
+    def test_full_text_search_no_results(self):
+        class SearchListView(generics.ListAPIView):
+            queryset = SearchFilterModel.objects.all()
+            serializer_class = SearchFilterSerializer
+            filter_backends = (filters.SearchFilter,)
+            search_fields = ('@title',)
+
+        view = SearchListView.as_view()
+        request = factory.get('/', {'search': 'elephant'})
+        response = view(request)
+        assert len(response.data) == 0
+
+    def test_full_text_search_multiple_fields(self):
+        class SearchListView(generics.ListAPIView):
+            queryset = SearchFilterModel.objects.all()
+            serializer_class = SearchFilterSerializer
+            filter_backends = (filters.SearchFilter,)
+            search_fields = ('@title', '@text')
+
+        view = SearchListView.as_view()
+        request = factory.get('/', {'search': 'lazy'})
+        response = view(request)
+        assert len(response.data) == 1
+        assert response.data[0]['title'] == 'The quick brown fox'
+
+    def test_full_text_search_stemming(self):
+        """Full text search should match stemmed words (e.g. 'jumping' matches 'jumps')."""
+        class SearchListView(generics.ListAPIView):
+            queryset = SearchFilterModel.objects.all()
+            serializer_class = SearchFilterSerializer
+            filter_backends = (filters.SearchFilter,)
+            search_fields = ('@text',)
+
+        view = SearchListView.as_view()
+        request = factory.get('/', {'search': 'jumping'})
+        response = view(request)
+        assert len(response.data) == 1
+        assert response.data[0]['text'] == 'jumps over the lazy dog'
+
+    def test_full_text_search_multiple_terms(self):
+        """Each search term must match (AND semantics across terms)."""
+        class SearchListView(generics.ListAPIView):
+            queryset = SearchFilterModel.objects.all()
+            serializer_class = SearchFilterSerializer
+            filter_backends = (filters.SearchFilter,)
+            search_fields = ('@title', '@text')
+
+        view = SearchListView.as_view()
+        request = factory.get('/', {'search': 'brown lazy'})
+        response = view(request)
+        assert len(response.data) == 1
+        assert response.data[0]['title'] == 'The quick brown fox'
+
+    def test_full_text_search_mixed_with_icontains(self):
+        """Full text search fields can be mixed with regular icontains fields."""
+        class SearchListView(generics.ListAPIView):
+            queryset = SearchFilterModel.objects.all()
+            serializer_class = SearchFilterSerializer
+            filter_backends = (filters.SearchFilter,)
+            search_fields = ('@title', 'text')
+
+        view = SearchListView.as_view()
+        request = factory.get('/', {'search': 'park'})
+        response = view(request)
+        assert len(response.data) == 1
+        assert response.data[0]['title'] == 'A bright sunny day'
+
+
 class AttributeModel(models.Model):
     label = models.CharField(max_length=32)
 
@@ -352,6 +441,10 @@ class SearchFilterFkTests(TestCase):
         filter_ = filters.SearchFilter()
         assert 'attribute__label__icontains' == filter_.construct_search('attribute__label', SearchFilterModelFk._meta)
         assert 'attribute__label__iendswith' == filter_.construct_search('attribute__label__iendswith', SearchFilterModelFk._meta)
+
+    def test_construct_search_with_at_prefix(self):
+        filter_ = filters.SearchFilter()
+        assert 'title__search' == filter_.construct_search('@title', SearchFilterModelFk._meta)
 
 
 class SearchFilterModelM2M(models.Model):

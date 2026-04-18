@@ -66,15 +66,15 @@ Or, if you're using the `@api_view` decorator with function based views.
 
 ---
 
-# API Reference
+## API Reference
 
-## JSONParser
+### JSONParser
 
 Parses `JSON` request content. `request.data` will be populated with a dictionary of data.
 
 **.media_type**: `application/json`
 
-## FormParser
+### FormParser
 
 Parses HTML form content.  `request.data` will be populated with a `QueryDict` of data.
 
@@ -82,7 +82,7 @@ You will typically want to use both `FormParser` and `MultiPartParser` together 
 
 **.media_type**: `application/x-www-form-urlencoded`
 
-## MultiPartParser
+### MultiPartParser
 
 Parses multipart HTML form content, which supports file uploads. `request.data` and `request.FILES` will be populated with a `QueryDict` and `MultiValueDict` respectively.
 
@@ -90,7 +90,7 @@ You will typically want to use both `FormParser` and `MultiPartParser` together 
 
 **.media_type**: `multipart/form-data`
 
-## FileUploadParser
+### FileUploadParser
 
 Parses raw file upload content.  The `request.data` property will be a dictionary with a single key `'file'` containing the uploaded file.
 
@@ -100,13 +100,13 @@ If it is called without a `filename` URL keyword argument, then the client must 
 
 **.media_type**: `*/*`
 
-##### Notes:
+!!! note
 
-* The `FileUploadParser` is for usage with native clients that can upload the file as a raw data request.  For web-based uploads, or for native clients with multipart upload support, you should use the `MultiPartParser` instead.
-* Since this parser's `media_type` matches any content type, `FileUploadParser` should generally be the only parser set on an API view.
-* `FileUploadParser` respects Django's standard `FILE_UPLOAD_HANDLERS` setting, and the `request.upload_handlers` attribute.  See the [Django documentation][upload-handlers] for more details.
+    * The `FileUploadParser` is for usage with native clients that can upload the file as a raw data request.  For web-based uploads, or for native clients with multipart upload support, you should use the `MultiPartParser` instead.
+    * Since this parser's `media_type` matches any content type, `FileUploadParser` should generally be the only parser set on an API view.
+    * `FileUploadParser` respects Django's standard `FILE_UPLOAD_HANDLERS` setting, and the `request.upload_handlers` attribute.  See the [Django documentation][upload-handlers] for more details.
 
-##### Basic usage example:
+#### Basic usage example
 
     # views.py
     class FileUploadView(views.APIView):
@@ -127,7 +127,7 @@ If it is called without a `filename` URL keyword argument, then the client must 
 
 ---
 
-# Custom parsers
+## Custom parsers
 
 To implement a custom parser, you should override `BaseParser`, set the `.media_type` property, and implement the `.parse(self, stream, media_type, parser_context)` method.
 
@@ -151,7 +151,7 @@ Optional.  If supplied, this argument will be a dictionary containing any additi
 
 By default this will include the following keys: `view`, `request`, `args`, `kwargs`.
 
-## Example
+### Example
 
 The following is an example plaintext parser that will populate the `request.data` property with a string representing the body of the request.
 
@@ -169,11 +169,11 @@ The following is an example plaintext parser that will populate the `request.dat
 
 ---
 
-# Third party packages
+## Third party packages
 
 The following third party packages are also available.
 
-## YAML
+### YAML
 
 [REST framework YAML][rest-framework-yaml] provides [YAML][yaml] parsing and rendering support. It was previously included directly in the REST framework package, and is now instead supported as a third-party package.
 
@@ -194,7 +194,7 @@ Modify your REST framework settings.
         ],
     }
 
-## XML
+### XML
 
 [REST Framework XML][rest-framework-xml] provides a simple informal XML format. It was previously included directly in the REST framework package, and is now instead supported as a third-party package.
 
@@ -215,11 +215,11 @@ Modify your REST framework settings.
         ],
     }
 
-## MessagePack
+### MessagePack
 
 [MessagePack][messagepack] is a fast, efficient binary serialization format.  [Juan Riaza][juanriaza] maintains the [djangorestframework-msgpack][djangorestframework-msgpack] package which provides MessagePack renderer and parser support for REST framework.
 
-## CamelCase JSON
+### CamelCase JSON
 
 [djangorestframework-camel-case] provides camel case JSON renderers and parsers for REST framework.  This allows serializers to use Python-style underscored field names, but be exposed in the API as Javascript-style camel case field names.  It is maintained by [Vitaly Babiy][vbabiy].
 
