@@ -157,7 +157,7 @@ By default this exception results in a response with the HTTP status code "400 B
 
 Raised when an incoming request includes incorrect authentication.
 
-By default this exception results in a response with the HTTP status code "401 Unauthenticated", but it may also result in a "403 Forbidden" response, depending on the authentication scheme in use.  See the [authentication documentation][authentication] for more details.
+By default this exception results in a response with the HTTP status code "401 Unauthorized", but it may also result in a "403 Forbidden" response, depending on the authentication scheme in use.  See the [authentication documentation][authentication] for more details.
 
 ### NotAuthenticated
 
@@ -165,7 +165,7 @@ By default this exception results in a response with the HTTP status code "401 U
 
 Raised when an unauthenticated request fails the permission checks.
 
-By default this exception results in a response with the HTTP status code "401 Unauthenticated", but it may also result in a "403 Forbidden" response, depending on the authentication scheme in use.  See the [authentication documentation][authentication] for more details.
+By default this exception results in a response with the HTTP status code "401 Unauthorized", but it may also result in a "403 Forbidden" response, depending on the authentication scheme in use.  See the [authentication documentation][authentication] for more details.
 
 ### PermissionDenied
 
