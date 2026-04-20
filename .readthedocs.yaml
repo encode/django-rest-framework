@@ -12,7 +12,7 @@ build:
   jobs:
     install:
       - pip install --upgrade pip
-      - pip install -e . --group docs
+      - pip install --group docs
 
 # Build documentation with Mkdocs
 mkdocs:
