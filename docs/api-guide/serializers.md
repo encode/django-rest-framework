@@ -214,6 +214,26 @@ To do any other validation that requires access to multiple fields, add a method
                 raise serializers.ValidationError("finish must occur after start")
             return data
 
+!!! note
+    **Object-Level Validation and Partial Updates**
+
+    When performing a **partial update** (`PATCH`), the `data` dictionary passed to the `validate()` method will **only contain the fields** provided in the request. If your validation logic depends on multiple fields, you must account for cases where some fields are missing from `data`.
+
+    To access fields not included in the partial update, you should retrieve them from the existing object instance using `self.instance`:
+
+    ```python
+    def validate(self, data):
+        # Check if 'status' is being updated, or use the existing value
+        status = data.get('status', self.instance.status)
+        
+        # Check if 'price' is being updated, or use the existing value
+        price = data.get('price', self.instance.price)
+
+        if status == 'active' and price <= 0:
+            raise serializers.ValidationError("Active products must have a price.")
+        return data
+    ```
+
 #### Validators
 
 Individual fields on a serializer can include validators, by declaring them on the field instance, for example:
