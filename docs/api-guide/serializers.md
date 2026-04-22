@@ -225,7 +225,7 @@ To do any other validation that requires access to multiple fields, add a method
     def validate(self, data):
         # Check if 'status' is being updated, or use the existing value
         status = data.get('status', self.instance.status)
-        
+
         # Check if 'price' is being updated, or use the existing value
         price = data.get('price', self.instance.price)
 
