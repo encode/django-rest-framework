@@ -182,6 +182,7 @@ The available decorators are:
 * `@parser_classes(...)`
 * `@authentication_classes(...)`
 * `@throttle_classes(...)`
+* `@throttle_scope(...)`
 * `@permission_classes(...)`
 * `@content_negotiation_class(...)`
 * `@metadata_class(...)`
