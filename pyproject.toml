@@ -69,7 +69,7 @@ optional = [
   "legacy-cgi; python_version>='3.13'",
   "markdown>=3.3.7",
   "psycopg[binary]>=3.1.8",
-  "pygments>=2.17,<2.20",
+  "pygments>=2.17,<2.21",
   "pyyaml>=5.3.1,<6.1",
   "requests",
   "uritemplate",
