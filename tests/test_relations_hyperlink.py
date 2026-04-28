@@ -1,6 +1,4 @@
 import pytest
-from django.core.management.color import no_style
-from django.db import connection
 from django.test import TestCase, override_settings
 from django.urls import path
 
@@ -71,25 +69,9 @@ class NullableOneToOneTargetSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('url', 'name', 'nullable_source')
 
 
-def _reset_sequences(*models):
-    """Reset database sequences for the given models so PKs start from 1.
-
-    PostgreSQL sequence operations are non-transactional, so this works
-    even inside TestCase's transaction wrapper.  No-op on SQLite.
-    """
-    if connection.vendor != 'postgresql':
-        return
-    sql_list = connection.ops.sequence_reset_sql(no_style(), models)
-    if sql_list:
-        with connection.cursor() as cursor:
-            for sql in sql_list:
-                cursor.execute(sql)
-
-
 @override_settings(ROOT_URLCONF='tests.test_relations_hyperlink')
 class HyperlinkedManyToManyTests(TestCase):
     def setUp(self):
-        _reset_sequences(ManyToManySource, ManyToManyTarget)
         for idx in range(1, 4):
             target = ManyToManyTarget(name='target-%d' % idx)
             target.save()
@@ -224,7 +206,6 @@ class HyperlinkedManyToManyTests(TestCase):
 @override_settings(ROOT_URLCONF='tests.test_relations_hyperlink')
 class HyperlinkedForeignKeyTests(TestCase):
     def setUp(self):
-        _reset_sequences(ForeignKeySource, ForeignKeyTarget)
         target = ForeignKeyTarget(name='target-1')
         target.save()
         new_target = ForeignKeyTarget(name='target-2')
@@ -354,7 +335,6 @@ class HyperlinkedForeignKeyTests(TestCase):
 @override_settings(ROOT_URLCONF='tests.test_relations_hyperlink')
 class HyperlinkedNullableForeignKeyTests(TestCase):
     def setUp(self):
-        _reset_sequences(NullableForeignKeySource, ForeignKeyTarget)
         target = ForeignKeyTarget(name='target-1')
         target.save()
         for idx in range(1, 4):
@@ -461,7 +441,6 @@ class HyperlinkedNullableForeignKeyTests(TestCase):
 @override_settings(ROOT_URLCONF='tests.test_relations_hyperlink')
 class HyperlinkedNullableOneToOneTests(TestCase):
     def setUp(self):
-        _reset_sequences(OneToOneTarget, NullableOneToOneSource)
         target = OneToOneTarget(name='target-1')
         target.save()
         new_target = OneToOneTarget(name='target-2')

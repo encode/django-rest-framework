@@ -34,7 +34,7 @@ class TestPrefetchRelatedUpdates(TestCase):
         expected = {
             'id': pk,
             'username': 'new',
-            'groups': [groups_pk],
+            'groups': [1],
             'email': 'tom@example.com'
         }
         assert response.data == expected
@@ -52,7 +52,7 @@ class TestPrefetchRelatedUpdates(TestCase):
         expected = {
             'id': pk,
             'username': 'exclude',
-            'groups': [groups_pk],
+            'groups': [1],
             'email': 'tom@example.com'
         }
         assert response.data == expected
