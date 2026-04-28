@@ -14,8 +14,6 @@ classifiers = [
   "Development Status :: 5 - Production/Stable",
   "Environment :: Web Environment",
   "Framework :: Django",
-  "Framework :: Django :: 5.0",
-  "Framework :: Django :: 5.1",
   "Framework :: Django :: 5.2",
   "Framework :: Django :: 6.0",
   "Intended Audience :: Developers",
@@ -30,7 +28,7 @@ classifiers = [
   "Topic :: Internet :: WWW/HTTP",
 ]
 dynamic = [ "version" ]
-dependencies = [ "django>=5.0" ]
+dependencies = [ "django>=5.2" ]
 urls.Changelog = "https://www.django-rest-framework.org/community/release-notes/"
 urls.Funding = "https://fund.django-rest-framework.org/topics/funding/"
 urls.Homepage = "https://www.django-rest-framework.org"
@@ -71,8 +69,6 @@ optional = [
   "requests",
   "uritemplate",
 ]
-django50 = [ "django>=5.0,<5.1" ]
-django51 = [ "django>=5.1,<5.2" ]
 django52 = [ "django>=5.2,<6.0" ]
 django60 = [ "django>=6.0,<6.1" ]
 djangomain = [ "django @ https://github.com/django/django/archive/main.tar.gz" ]
