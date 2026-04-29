@@ -1,6 +1,7 @@
 # Note that we import as `DjangoRequestFactory` and `DjangoClient` in order
 # to make it harder for the user to import the wrong thing without realizing.
 import io
+from contextlib import contextmanager
 from importlib import import_module
 
 from django.conf import settings
@@ -22,6 +23,21 @@ from rest_framework.settings import api_settings
 def force_authenticate(request, user=None, token=None):
     request._force_auth_user = user
     request._force_auth_token = token
+
+
+@contextmanager
+def _keep_connections_open():
+    """
+    Prevent Django from closing the database connection while a request
+    is dispatched, matching the behavior of Django's ClientHandler.
+    """
+    request_started.disconnect(close_old_connections)
+    request_finished.disconnect(close_old_connections)
+    try:
+        yield
+    finally:
+        request_started.connect(close_old_connections)
+        request_finished.connect(close_old_connections)
 
 
 if requests is not None:
@@ -91,17 +107,9 @@ if requests is not None:
                 raw_kwargs['original_response'] = MockOriginalResponse(wsgi_headers)
 
             # Make the outgoing request via WSGI.
-            # Disconnect close_old_connections to prevent closing the
-            # database connection during tests, matching the behavior
-            # of Django's ClientHandler.
             environ = self.get_environ(request)
-            request_started.disconnect(close_old_connections)
-            request_finished.disconnect(close_old_connections)
-            try:
+            with _keep_connections_open():
                 wsgi_response = self.app(environ, start_response)
-            finally:
-                request_started.connect(close_old_connections)
-                request_finished.connect(close_old_connections)
 
             # Build the underlying urllib3.HTTPResponse
             raw_kwargs['body'] = io.BytesIO(b''.join(wsgi_response))
