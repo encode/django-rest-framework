@@ -95,6 +95,7 @@ class OneToOnePKSourceSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+@pytest.mark.usefixtures("reset_sequences")
 class PKManyToManyTests(TestCase):
     def setUp(self):
         for idx in range(1, 4):
@@ -226,6 +227,7 @@ class PKManyToManyTests(TestCase):
             serializer.data
 
 
+@pytest.mark.usefixtures("reset_sequences")
 class PKForeignKeyTests(TestCase):
     def setUp(self):
         target = ForeignKeyTarget(name='target-1')
@@ -415,6 +417,7 @@ class PKForeignKeyTests(TestCase):
         assert len(queryset) == 1
 
 
+@pytest.mark.usefixtures("reset_sequences")
 class PKRelationTests(TestCase):
 
     def setUp(self):
@@ -443,6 +446,7 @@ class PKRelationTests(TestCase):
             self.assertEqual(serializer.data, expected)
 
 
+@pytest.mark.usefixtures("reset_sequences")
 class PKNullableForeignKeyTests(TestCase):
     def setUp(self):
         target = ForeignKeyTarget(name='target-1')
@@ -559,6 +563,7 @@ class PKNullableForeignKeyTests(TestCase):
         assert serializer.is_valid(), serializer.errors
 
 
+@pytest.mark.usefixtures("reset_sequences")
 class PKNullableOneToOneTests(TestCase):
     def setUp(self):
         target = OneToOneTarget(name='target-1')

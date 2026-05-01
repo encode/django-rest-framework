@@ -459,6 +459,7 @@ class SearchFilterM2MSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+@pytest.mark.usefixtures("reset_sequences")
 class SearchFilterM2MTests(TestCase):
     def setUp(self):
         # Sequence of title/text/attributes is:
@@ -657,6 +658,7 @@ class DjangoFilterOrderingSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+@pytest.mark.usefixtures("reset_sequences")
 class OrderingFilterTests(TestCase):
     def setUp(self):
         # Sequence of title/text is:
@@ -974,6 +976,7 @@ class SensitiveDataSerializer3(serializers.ModelSerializer):
         fields = ('id', 'user')
 
 
+@pytest.mark.usefixtures("reset_sequences")
 class SensitiveOrderingFilterTests(TestCase):
     def setUp(self):
         for idx in range(3):

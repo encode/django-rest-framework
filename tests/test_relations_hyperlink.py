@@ -69,6 +69,7 @@ class NullableOneToOneTargetSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('url', 'name', 'nullable_source')
 
 
+@pytest.mark.usefixtures("reset_sequences")
 @override_settings(ROOT_URLCONF='tests.test_relations_hyperlink')
 class HyperlinkedManyToManyTests(TestCase):
     def setUp(self):
@@ -203,6 +204,7 @@ class HyperlinkedManyToManyTests(TestCase):
             serializer.data
 
 
+@pytest.mark.usefixtures("reset_sequences")
 @override_settings(ROOT_URLCONF='tests.test_relations_hyperlink')
 class HyperlinkedForeignKeyTests(TestCase):
     def setUp(self):
@@ -332,6 +334,7 @@ class HyperlinkedForeignKeyTests(TestCase):
         assert serializer.errors == {'target': ['This field may not be null.']}
 
 
+@pytest.mark.usefixtures("reset_sequences")
 @override_settings(ROOT_URLCONF='tests.test_relations_hyperlink')
 class HyperlinkedNullableForeignKeyTests(TestCase):
     def setUp(self):

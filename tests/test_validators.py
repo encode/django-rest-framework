@@ -654,6 +654,7 @@ class UniqueConstraintCustomMessageCodeSerializer(serializers.ModelSerializer):
         fields = ('username', 'company_id', 'role')
 
 
+@pytest.mark.usefixtures("reset_sequences")
 class TestUniqueConstraintValidation(TestCase):
     def setUp(self):
         self.instance = UniqueConstraintModel.objects.create(

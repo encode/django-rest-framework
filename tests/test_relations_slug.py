@@ -1,3 +1,4 @@
+import pytest
 from django.test import TestCase
 
 from rest_framework import serializers
@@ -42,6 +43,7 @@ class NullableForeignKeySourceSerializer(serializers.ModelSerializer):
 
 
 # TODO: M2M Tests, FKTests (Non-nullable), One2One
+@pytest.mark.usefixtures("reset_sequences")
 class SlugForeignKeyTests(TestCase):
     def setUp(self):
         target = ForeignKeyTarget(name='target-1')
@@ -182,6 +184,7 @@ class SlugForeignKeyTests(TestCase):
         assert serializer.errors == {'target': ['This field may not be null.']}
 
 
+@pytest.mark.usefixtures("reset_sequences")
 class SlugNullableForeignKeyTests(TestCase):
     def setUp(self):
         target = ForeignKeyTarget(name='target-1')
