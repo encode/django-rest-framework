@@ -674,11 +674,12 @@ class ListSerializer(BaseSerializer):
             return self.child.run_validation(data)
 
         lookup_field = getattr(getattr(self.child, 'Meta', None), 'lookup_field', None)
-        data_pk = data.get(lookup_field)
-        if data_pk is None:
+        if lookup_field is not None:
+            data_pk = data.get(lookup_field)
+        else:
             data_pk = data.get('id')
-        if data_pk is None:
-            data_pk = data.get('pk')
+            if data_pk is None:
+                data_pk = data.get('pk')
 
         if data_pk is None:
             return self.child.run_validation(data)
