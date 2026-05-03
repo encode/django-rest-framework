@@ -79,13 +79,20 @@ def _flatten_errors(detail, parent_path=None):
     - message: The error message
     - code: The error code
     
+    Object-level errors (under NON_FIELD_ERRORS_KEY) are mapped to the parent
+    object's path, not including the non_field_errors key. This allows frontends
+    to display these errors directly on the corresponding object/section.
+    
     Example:
-    Input: {'nested': {'field': ['error1', 'error2']}}
+    Input: {'nested': {'field': ['error1', 'error2'], 'non_field_errors': ['object error']}}
     Output: [
         {'field_path': 'nested.field', 'message': 'error1', 'code': 'invalid'},
-        {'field_path': 'nested.field', 'message': 'error2', 'code': 'invalid'}
+        {'field_path': 'nested.field', 'message': 'error2', 'code': 'invalid'},
+        {'field_path': 'nested', 'message': 'object error', 'code': 'invalid'}
     ]
     """
+    from rest_framework.settings import api_settings
+    
     if parent_path is None:
         parent_path = []
     
@@ -109,7 +116,12 @@ def _flatten_errors(detail, parent_path=None):
                 })
     elif isinstance(detail, dict):
         for key, value in detail.items():
-            errors.extend(_flatten_errors(value, parent_path + [key]))
+            # For non-field errors, use the parent path (pointing to the object itself)
+            # instead of appending 'non_field_errors' to the path
+            if key == api_settings.NON_FIELD_ERRORS_KEY:
+                errors.extend(_flatten_errors(value, parent_path))
+            else:
+                errors.extend(_flatten_errors(value, parent_path + [key]))
     elif isinstance(detail, ErrorDetail):
         errors.append({
             'field_path': _get_field_path(parent_path),
