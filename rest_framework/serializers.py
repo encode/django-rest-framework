@@ -29,7 +29,9 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework.compat import (
     get_referenced_base_fields_from_q, postgres_fields
 )
-from rest_framework.exceptions import ErrorDetail, ValidationError
+from rest_framework.exceptions import (
+    ErrorDetail, ValidationError, _flatten_errors, _get_errors_with_field_paths
+)
 from rest_framework.fields import get_error_detail
 from rest_framework.settings import api_settings
 from rest_framework.utils import html, model_meta, representation
@@ -595,6 +597,36 @@ class Serializer(BaseSerializer, metaclass=SerializerMetaclass):
             ret = {api_settings.NON_FIELD_ERRORS_KEY: [detail]}
         return ReturnDict(ret, serializer=self)
 
+    def get_flattened_errors(self):
+        """
+        Return a flat list of errors with field paths, messages, and codes.
+
+        This is useful for frontend applications that need to display errors
+        for specific fields, especially in complex nested structures.
+
+        Example:
+        [
+            {'field_path': 'nested.field', 'message': 'This field is required.', 'code': 'required'},
+            {'field_path': 'items.0.name', 'message': 'Ensure this field has no more than 10 characters.', 'code': 'max_length'}
+        ]
+        """
+        return _flatten_errors(self.errors)
+
+    def get_errors_with_field_paths(self):
+        """
+        Return a dictionary mapping field paths to lists of error details.
+
+        This is useful for frontend applications that need to look up errors
+        by field path.
+
+        Example:
+        {
+            'nested.field': [{'message': 'This field is required.', 'code': 'required'}],
+            'items.0.name': [{'message': 'Ensure this field has no more than 10 characters.', 'code': 'max_length'}]
+        }
+        """
+        return _get_errors_with_field_paths(self.errors)
+
 
 # There's some replication of `ListField` here,
 # but that's probably better than obfuscating the call hierarchy.
@@ -820,6 +852,36 @@ class ListSerializer(BaseSerializer):
         if isinstance(ret, dict):
             return ReturnDict(ret, serializer=self)
         return ReturnList(ret, serializer=self)
+
+    def get_flattened_errors(self):
+        """
+        Return a flat list of errors with field paths, messages, and codes.
+
+        This is useful for frontend applications that need to display errors
+        for specific fields, especially in complex nested structures.
+
+        Example:
+        [
+            {'field_path': '0.name', 'message': 'This field is required.', 'code': 'required'},
+            {'field_path': '1.email', 'message': 'Enter a valid email address.', 'code': 'invalid'}
+        ]
+        """
+        return _flatten_errors(self.errors)
+
+    def get_errors_with_field_paths(self):
+        """
+        Return a dictionary mapping field paths to lists of error details.
+
+        This is useful for frontend applications that need to look up errors
+        by field path.
+
+        Example:
+        {
+            '0.name': [{'message': 'This field is required.', 'code': 'required'}],
+            '1.email': [{'message': 'Enter a valid email address.', 'code': 'invalid'}]
+        }
+        """
+        return _get_errors_with_field_paths(self.errors)
 
 
 # ModelSerializer & HyperlinkedModelSerializer

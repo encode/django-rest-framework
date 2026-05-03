@@ -60,15 +60,111 @@ def _get_full_details(detail):
     }
 
 
+def _get_field_path(parts):
+    """
+    Build a field path from a list of parts.
+    
+    Example: ['nested', 'field'] -> 'nested.field'
+             ['items', 0, 'name'] -> 'items.0.name'
+    """
+    return '.'.join(str(part) for part in parts)
+
+
+def _flatten_errors(detail, parent_path=None):
+    """
+    Flatten nested error structure into a list of errors with field paths.
+    
+    Returns a list of dictionaries containing:
+    - field_path: The full path to the field (e.g., 'nested.0.name')
+    - message: The error message
+    - code: The error code
+    
+    Example:
+    Input: {'nested': {'field': ['error1', 'error2']}}
+    Output: [
+        {'field_path': 'nested.field', 'message': 'error1', 'code': 'invalid'},
+        {'field_path': 'nested.field', 'message': 'error2', 'code': 'invalid'}
+    ]
+    """
+    if parent_path is None:
+        parent_path = []
+    
+    errors = []
+    
+    if isinstance(detail, list):
+        for index, item in enumerate(detail):
+            if isinstance(item, (dict, list)):
+                errors.extend(_flatten_errors(item, parent_path + [index]))
+            elif isinstance(item, ErrorDetail):
+                errors.append({
+                    'field_path': _get_field_path(parent_path),
+                    'message': str(item),
+                    'code': item.code
+                })
+            else:
+                errors.append({
+                    'field_path': _get_field_path(parent_path),
+                    'message': str(item),
+                    'code': 'invalid'
+                })
+    elif isinstance(detail, dict):
+        for key, value in detail.items():
+            errors.extend(_flatten_errors(value, parent_path + [key]))
+    elif isinstance(detail, ErrorDetail):
+        errors.append({
+            'field_path': _get_field_path(parent_path),
+            'message': str(detail),
+            'code': detail.code
+        })
+    else:
+        errors.append({
+            'field_path': _get_field_path(parent_path),
+            'message': str(detail),
+            'code': 'invalid'
+        })
+    
+    return errors
+
+
+def _get_errors_with_field_paths(detail):
+    """
+    Return a dictionary mapping field paths to lists of error details.
+    
+    Example:
+    Input: {'nested': {'field': ['error1', 'error2']}}
+    Output: {
+        'nested.field': [
+            {'message': 'error1', 'code': 'invalid'},
+            {'message': 'error2', 'code': 'invalid'}
+        ]
+    }
+    """
+    flattened = _flatten_errors(detail)
+    result = {}
+    
+    for error in flattened:
+        field_path = error['field_path']
+        if field_path not in result:
+            result[field_path] = []
+        result[field_path].append({
+            'message': error['message'],
+            'code': error['code']
+        })
+    
+    return result
+
+
 class ErrorDetail(str):
     """
-    A string-like object that can additionally have a code.
+    A string-like object that can additionally have a code and field_path.
     """
     code = None
+    field_path = None
 
-    def __new__(cls, string, code=None):
+    def __new__(cls, string, code=None, field_path=None):
         self = super().__new__(cls, string)
         self.code = code
+        self.field_path = field_path
         return self
 
     def __eq__(self, other):
@@ -76,7 +172,7 @@ class ErrorDetail(str):
         if result is NotImplemented:
             return NotImplemented
         try:
-            return result and self.code == other.code
+            return result and self.code == other.code and self.field_path == other.field_path
         except AttributeError:
             return result
 
@@ -87,9 +183,10 @@ class ErrorDetail(str):
         return not result
 
     def __repr__(self):
-        return 'ErrorDetail(string=%r, code=%r)' % (
+        return 'ErrorDetail(string=%r, code=%r, field_path=%r)' % (
             str(self),
             self.code,
+            self.field_path,
         )
 
     def __hash__(self):
@@ -131,6 +228,36 @@ class APIException(Exception):
         Eg. {"name": [{"message": "This field is required.", "code": "required"}]}
         """
         return _get_full_details(self.detail)
+
+    def get_flattened_errors(self):
+        """
+        Return a flat list of errors with field paths, messages, and codes.
+
+        This is useful for frontend applications that need to display errors
+        for specific fields, especially in complex nested structures.
+
+        Example:
+        [
+            {'field_path': 'nested.field', 'message': 'This field is required.', 'code': 'required'},
+            {'field_path': 'items.0.name', 'message': 'Ensure this field has no more than 10 characters.', 'code': 'max_length'}
+        ]
+        """
+        return _flatten_errors(self.detail)
+
+    def get_errors_with_field_paths(self):
+        """
+        Return a dictionary mapping field paths to lists of error details.
+
+        This is useful for frontend applications that need to look up errors
+        by field path.
+
+        Example:
+        {
+            'nested.field': [{'message': 'This field is required.', 'code': 'required'}],
+            'items.0.name': [{'message': 'Ensure this field has no more than 10 characters.', 'code': 'max_length'}]
+        }
+        """
+        return _get_errors_with_field_paths(self.detail)
 
 
 # The recommended style for using `ValidationError` is to keep it namespaced
