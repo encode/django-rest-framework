@@ -1,6 +1,7 @@
 import sys
 
 import pytest
+from django.core.exceptions import ImproperlyConfigured
 from django.test import TestCase
 
 from rest_framework import status
@@ -162,21 +163,40 @@ class DecoratorTestCase(TestCase):
         @api_view(['GET'])
         @throttle_classes([OncePerDayScopedThrottle])
         @throttle_scope(scope)
-        def view_1(request):
+        def scoped_view_1(request):
             return Response({})
 
         @api_view(['GET'])
         @throttle_classes([OncePerDayScopedThrottle])
         @throttle_scope(scope)
-        def view_2(request):
+        def scoped_view_2(request):
+            return Response({})
+
+        @api_view(['GET'])
+        @throttle_classes([OncePerDayScopedThrottle])
+        @throttle_scope(None)
+        def unscoped_view(request):
+            return Response({})
+
+        @api_view(['GET'])
+        @throttle_classes([OncePerDayScopedThrottle])
+        @throttle_scope("invalid scope")
+        def invalid_scope_view(request):
             return Response({})
 
         request = self.factory.get('/')
-        response = view_1(request)
+
+        response = scoped_view_1(request)
         assert response.status_code == status.HTTP_200_OK
 
-        response = view_2(request)
+        response = scoped_view_2(request)
         assert response.status_code == status.HTTP_429_TOO_MANY_REQUESTS
+
+        response = unscoped_view(request)
+        assert response.status_code == status.HTTP_200_OK
+
+        with pytest.raises(ImproperlyConfigured):
+            invalid_scope_view(request)
 
     def test_versioning_class(self):
         @api_view(["GET"])
