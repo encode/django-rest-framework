@@ -1,6 +1,8 @@
 import os
 
+import dj_database_url
 import django
+import pytest
 from django.core import management
 
 
@@ -13,10 +15,13 @@ def pytest_addoption(parser):
 def pytest_configure(config):
     from django.conf import settings
 
-    settings.configure(
-        DEBUG_PROPAGATE_EXCEPTIONS=True,
-        DEFAULT_AUTO_FIELD="django.db.models.AutoField",
-        DATABASES={
+    if os.getenv('DATABASE_URL'):
+        databases = {
+            'default': dj_database_url.config(),
+            'secondary': dj_database_url.config(),
+        }
+    else:
+        databases = {
             'default': {
                 'ENGINE': 'django.db.backends.sqlite3',
                 'NAME': ':memory:'
@@ -24,8 +29,13 @@ def pytest_configure(config):
             'secondary': {
                 'ENGINE': 'django.db.backends.sqlite3',
                 'NAME': ':memory:'
-            }
-        },
+            },
+        }
+
+    settings.configure(
+        DEBUG_PROPAGATE_EXCEPTIONS=True,
+        DEFAULT_AUTO_FIELD="django.db.models.AutoField",
+        DATABASES=databases,
         SITE_ID=1,
         SECRET_KEY='not very secret in tests',
         USE_I18N=True,
@@ -65,6 +75,12 @@ def pytest_configure(config):
         ),
     )
 
+    # Add django.contrib.postgres when using a PostgreSQL database
+    if settings.DATABASES['default']['ENGINE'] == 'django.db.backends.postgresql':
+        settings.INSTALLED_APPS += (
+            'django.contrib.postgres',
+        )
+
     # guardian is optional
     try:
         import guardian  # NOQA
@@ -91,3 +107,13 @@ def pytest_configure(config):
 
     if config.getoption('--staticfiles'):
         management.call_command('collectstatic', verbosity=0, interactive=False)
+
+
+def pytest_collection_modifyitems(config, items):
+    from django.conf import settings
+
+    if settings.DATABASES['default']['ENGINE'] != 'django.db.backends.postgresql':
+        skip_postgres = pytest.mark.skip(reason='Requires PostgreSQL database backend')
+        for item in items:
+            if 'requires_postgres' in item.keywords:
+                item.add_marker(skip_postgres)
