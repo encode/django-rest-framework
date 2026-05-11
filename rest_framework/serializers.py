@@ -1533,6 +1533,8 @@ class ModelSerializer(Serializer):
                             "required": False,
                             "allow_blank": True,
                         }
+                        if getattr(unique_constraint_field, 'empty_strings_allowed', False):
+                            uniqueness_extra_kwargs[unique_constraint_name]["default"] = CreateOnlyDefault('')
                     else:
                         uniqueness_extra_kwargs[unique_constraint_name] = {"required": True}
                 else:
