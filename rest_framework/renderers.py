@@ -496,6 +496,17 @@ class BrowsableAPIRenderer(BaseRenderer):
             existing_serializer = None
 
         with override_method(view, request, method) as request:
+            if method == 'OPTIONS':
+                # The browsable API only needs a placeholder for OPTIONS, so
+                # avoid object-level permission checks against serializer.instance.
+                if method not in view.allowed_methods:
+                    return
+                try:
+                    view.check_permissions(request)
+                except exceptions.APIException:
+                    return
+                return True
+
             if not self.show_form_for_method(view, method, request, instance):
                 return
 
