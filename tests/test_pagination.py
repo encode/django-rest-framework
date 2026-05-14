@@ -1045,6 +1045,7 @@ class CursorPaginationModel(models.Model):
     created = models.IntegerField()
 
 
+@pytest.mark.usefixtures("reset_sequences")
 class TestCursorPaginationWithValueQueryset(CursorPaginationTestsMixin, TestCase):
     """
     Unit tests for `pagination.CursorPagination` for value querysets.
