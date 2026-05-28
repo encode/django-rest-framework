@@ -708,12 +708,13 @@ class BooleanField(Field):
         self.fail("invalid", input=data)
 
     def to_representation(self, value):
-        if self._lower_if_str(value) in self.TRUE_VALUES:
-            return True
-        elif self._lower_if_str(value) in self.FALSE_VALUES:
-            return False
-        if self._lower_if_str(value) in self.NULL_VALUES and self.allow_null:
-            return None
+        with contextlib.suppress(TypeError):
+            if self._lower_if_str(value) in self.TRUE_VALUES:
+                return True
+            elif self._lower_if_str(value) in self.FALSE_VALUES:
+                return False
+            if self._lower_if_str(value) in self.NULL_VALUES and self.allow_null:
+                return None
         return bool(value)
 
 
