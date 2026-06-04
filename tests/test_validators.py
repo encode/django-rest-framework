@@ -865,7 +865,6 @@ class TestUniqueConstraintValidation(TestCase):
         assert serializer.is_valid(), serializer.errors
 
 
-
 # Tests for `UniqueForDateValidator`
 # ----------------------------------
 
