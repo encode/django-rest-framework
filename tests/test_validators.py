@@ -832,6 +832,39 @@ class TestUniqueConstraintValidation(TestCase):
         assert serializer.errors == {"non_field_errors": [expected_message]}
         assert serializer.errors["non_field_errors"][0].code == UniqueTogetherValidator.code
 
+    def test_unique_constraint_with_many_true_does_not_crash(self):
+        """
+        UniqueConstraint validators must not crash with AttributeError when
+        a queryset is passed as the instance argument together with many=True.
+
+        When run_child_validation is not overridden the child serializer has
+        no per-object instance, so uniqueness checks operate as if all items
+        are new creates.  The important thing is that the code path no longer
+        raises AttributeError by trying to call .pk on the queryset.
+
+        Refs: https://github.com/encode/django-rest-framework/issues/9484
+        """
+        instances = UniqueConstraintModel.objects.all()
+        # Use global_id values that don't exist yet so uniqueness checks pass.
+        data = [
+            {
+                'race_name': 'new_race',
+                'position': 10,
+                'global_id': 100,
+                'fancy_conditions': 100,
+            },
+            {
+                'race_name': 'other_race',
+                'position': 20,
+                'global_id': 200,
+                'fancy_conditions': 200,
+            },
+        ]
+        serializer = UniqueConstraintSerializer(instances, data=data, many=True)
+        # Before the fix this raised: AttributeError: 'QuerySet' object has no attribute 'pk'
+        assert serializer.is_valid(), serializer.errors
+
+
 
 # Tests for `UniqueForDateValidator`
 # ----------------------------------

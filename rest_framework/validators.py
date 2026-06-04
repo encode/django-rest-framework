@@ -8,7 +8,7 @@ object creation, and makes it possible to switch between using the implicit
 """
 from django.core.exceptions import FieldError
 from django.db import DataError
-from django.db.models import Exists
+from django.db.models import Exists, Model
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework.exceptions import ValidationError
@@ -69,7 +69,7 @@ class UniqueValidator:
         If an instance is being updated, then do not include
         that instance itself as a uniqueness conflict.
         """
-        if instance is not None:
+        if instance is not None and isinstance(instance, Model):
             return queryset.exclude(pk=instance.pk)
         return queryset
 
@@ -149,10 +149,11 @@ class UniqueTogetherValidator:
 
         # If this is an update, then any unprovided field should
         # have it's value set based on the existing instance attribute.
-        if serializer.instance is not None:
+        instance = serializer.instance if isinstance(serializer.instance, Model) else None
+        if instance is not None:
             for source in sources:
                 if source not in attrs:
-                    attrs[source] = getattr(serializer.instance, source)
+                    attrs[source] = getattr(instance, source)
 
         # Determine the filter keyword arguments and filter the queryset.
         filter_kwargs = {
@@ -166,35 +167,41 @@ class UniqueTogetherValidator:
         If an instance is being updated, then do not include
         that instance itself as a uniqueness conflict.
         """
-        if instance is not None:
+        if instance is not None and isinstance(instance, Model):
             return queryset.exclude(pk=instance.pk)
         return queryset
 
     def __call__(self, attrs, serializer):
+        # When many=True is used, the parent ListSerializer's queryset is
+        # propagated as the child's instance.  Treat that as a create so that
+        # per-object uniqueness checks don't try to call .pk / field attrs on
+        # the queryset.
+        instance = serializer.instance if isinstance(serializer.instance, Model) else None
+
         self.enforce_required_fields(attrs, serializer)
         queryset = self.queryset
         queryset = self.filter_queryset(attrs, queryset, serializer)
-        queryset = self.exclude_current_instance(attrs, queryset, serializer.instance)
+        queryset = self.exclude_current_instance(attrs, queryset, instance)
 
         checked_names = [
             serializer.fields[field_name].source for field_name in self.fields
         ]
         # Ignore validation if any field is None
-        if serializer.instance is None:
+        if instance is None:
             checked_values = [attrs[field_name] for field_name in checked_names]
         else:
             # Ignore validation if all field values are unchanged
             checked_values = [
                 attrs[field_name]
                 for field_name in checked_names
-                if attrs[field_name] != getattr(serializer.instance, field_name)
+                if attrs[field_name] != getattr(instance, field_name)
             ]
 
         condition_sources = (serializer.fields[field_name].source for field_name in self.condition_fields)
         condition_kwargs = {
             source: attrs[source]
             if source in attrs
-            else getattr(serializer.instance, source)
+            else getattr(instance, source)
             for source in condition_sources
         }
         if checked_values and None not in checked_values and qs_exists_with_condition(queryset, self.condition, condition_kwargs):
@@ -273,7 +280,7 @@ class BaseUniqueForValidator:
         If an instance is being updated, then do not include
         that instance itself as a uniqueness conflict.
         """
-        if instance is not None:
+        if instance is not None and isinstance(instance, Model):
             return queryset.exclude(pk=instance.pk)
         return queryset
 
