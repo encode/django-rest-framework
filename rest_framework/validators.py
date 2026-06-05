@@ -137,19 +137,16 @@ class UniqueTogetherValidator:
         if missing_items:
             raise ValidationError(missing_items, code='required')
 
-    def filter_queryset(self, attrs, queryset, serializer):
+    def filter_queryset(self, attrs, queryset, instance):
         """
         Filter the queryset to all instances matching the given attributes.
         """
-        # field names => field sources
-        sources = [
-            serializer.fields[field_name].source
-            for field_name in self.fields
-        ]
+        # field names => field sources; resolved by __call__ when available,
+        # otherwise fall back to self.fields for direct callers.
+        sources = getattr(self, '_sources', None) or list(self.fields)
 
         # If this is an update, then any unprovided field should
         # have it's value set based on the existing instance attribute.
-        instance = serializer.instance if isinstance(serializer.instance, Model) else None
         if instance is not None:
             for source in sources:
                 if source not in attrs:
@@ -177,10 +174,14 @@ class UniqueTogetherValidator:
         # per-object uniqueness checks don't try to call .pk / field attrs on
         # the queryset.
         instance = serializer.instance if isinstance(serializer.instance, Model) else None
+        self._sources = [
+            serializer.fields[field_name].source
+            for field_name in self.fields
+        ]
 
         self.enforce_required_fields(attrs, serializer)
         queryset = self.queryset
-        queryset = self.filter_queryset(attrs, queryset, serializer)
+        queryset = self.filter_queryset(attrs, queryset, instance)
         queryset = self.exclude_current_instance(attrs, queryset, instance)
 
         checked_names = [

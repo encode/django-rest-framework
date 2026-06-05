@@ -513,7 +513,7 @@ class TestUniquenessTogetherValidation(TestCase):
         serializer = UniquenessTogetherSerializer(instance=self.instance)
         validator = UniqueTogetherValidator(queryset, fields=('race_name',
                                                               'position'))
-        validator.filter_queryset(attrs=data, queryset=queryset, serializer=serializer)
+        validator.filter_queryset(attrs=data, queryset=queryset, instance=self.instance)
         assert queryset.called_with == {'race_name': 'bar', 'position': 1}
 
     def test_uniq_together_validation_uses_model_fields_method_field(self):
@@ -861,7 +861,6 @@ class TestUniqueConstraintValidation(TestCase):
             },
         ]
         serializer = UniqueConstraintSerializer(instances, data=data, many=True)
-        # Before the fix this raised: AttributeError: 'QuerySet' object has no attribute 'pk'
         assert serializer.is_valid(), serializer.errors
 
 
