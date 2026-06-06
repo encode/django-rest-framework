@@ -510,7 +510,6 @@ class TestUniquenessTogetherValidation(TestCase):
 
         data = {'race_name': 'bar'}
         queryset = MockQueryset()
-        serializer = UniquenessTogetherSerializer(instance=self.instance)
         validator = UniqueTogetherValidator(queryset, fields=('race_name',
                                                               'position'))
         validator.filter_queryset(attrs=data, queryset=queryset, instance=self.instance)
@@ -865,9 +864,10 @@ class TestUniqueConstraintValidation(TestCase):
 
         # Also cover partial updates: field-level required checks are skipped,
         # but uniqueness validators should still fail cleanly (no KeyError / AttributeError).
+        # Use global_id values that already exist in the DB so the UniqueValidator fires.
         partial_data = [
-            {'global_id': 101},
-            {'global_id': 202},
+            {'global_id': 1},
+            {'global_id': 2},
         ]
         serializer = UniqueConstraintSerializer(instances, data=partial_data, many=True, partial=True)
         assert not serializer.is_valid()
@@ -875,6 +875,7 @@ class TestUniqueConstraintValidation(TestCase):
 
 # Tests for `UniqueForDateValidator`
 # ----------------------------------
+
 
 class UniqueForDateModel(models.Model):
     slug = models.CharField(max_length=100, unique_for_date='published')

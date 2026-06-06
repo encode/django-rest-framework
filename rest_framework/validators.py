@@ -180,6 +180,17 @@ class UniqueTogetherValidator:
         ]
 
         self.enforce_required_fields(attrs, serializer)
+
+        # When many=True is used, instance is normalized to None above. If the
+        # serializer is also partial, some unique-together fields may be absent
+        # from attrs; a uniqueness check is not meaningful in that case.
+        if instance is None and serializer.partial:
+            if any(
+                serializer.fields[field_name].source not in attrs
+                for field_name in self.fields
+            ):
+                return
+
         queryset = self.queryset
         queryset = self.filter_queryset(attrs, queryset, instance)
         queryset = self.exclude_current_instance(attrs, queryset, instance)
