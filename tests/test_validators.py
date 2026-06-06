@@ -863,6 +863,15 @@ class TestUniqueConstraintValidation(TestCase):
         serializer = UniqueConstraintSerializer(instances, data=data, many=True)
         assert serializer.is_valid(), serializer.errors
 
+        # Also cover partial updates: field-level required checks are skipped,
+        # but uniqueness validators should still fail cleanly (no KeyError / AttributeError).
+        partial_data = [
+            {'global_id': 101},
+            {'global_id': 202},
+        ]
+        serializer = UniqueConstraintSerializer(instances, data=partial_data, many=True, partial=True)
+        assert not serializer.is_valid()
+        assert isinstance(serializer.errors, list)
 
 # Tests for `UniqueForDateValidator`
 # ----------------------------------
