@@ -267,6 +267,23 @@ class TestListSerializerInstanceMatching:
         assert serializer.is_valid()
         assert seen_instances == instance
 
+    def test_matching_prefers_id_when_id_and_pk_differ(self):
+        seen_instances = []
+
+        class TestSerializer(serializers.Serializer):
+            id = serializers.IntegerField()
+
+            def validate(self, attrs):
+                seen_instances.append(self.instance)
+                return attrs
+
+        instance = [BasicObject(id=1, pk=2)]
+        input_data = [{'id': 1}]
+
+        serializer = TestSerializer(instance, data=input_data, many=True)
+        assert serializer.is_valid()
+        assert seen_instances == instance
+
     def test_mapping_instance_matching(self):
         seen_instances = []
 
@@ -350,6 +367,18 @@ class TestListSerializerInstanceMatching:
         serializer = TestSerializer([obj1, obj2], data=input_data, many=True)
         assert serializer.is_valid()
         assert seen_instances == [obj2]
+
+    def test_existing_instance_map_is_restored_after_validation(self):
+        class TestSerializer(serializers.Serializer):
+            id = serializers.IntegerField()
+
+        instance = [BasicObject(id=1)]
+        original_instance_map = {'sentinel': BasicObject(id=2)}
+        serializer = TestSerializer(instance, data=[{'id': 1}], many=True)
+        serializer._list_serializer_instance_map = original_instance_map
+
+        assert serializer.is_valid()
+        assert serializer._list_serializer_instance_map is original_instance_map
 
 
 class TestNestedListSerializer:

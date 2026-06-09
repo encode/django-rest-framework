@@ -748,15 +748,19 @@ class ListSerializer(BaseSerializer):
                     if lookup_field is not None:
                         pk = getattr(obj, lookup_field, None)
                     else:
-                        pk = getattr(obj, 'pk', None)
+                        pk = getattr(obj, 'id', None)
                         if pk is None:
-                            pk = getattr(obj, 'id', None)
+                            pk = getattr(obj, 'pk', None)
 
                     if pk is not None:
                         key = str(pk)
                         # If duplicate keys are present, keep the last value,
                         # matching standard mapping assignment behavior.
                         instance_map[key] = obj
+
+        has_instance_map = hasattr(self, '_list_serializer_instance_map')
+        if has_instance_map:
+            original_instance_map = self._list_serializer_instance_map
 
         if instance_map is not None:
             self._list_serializer_instance_map = instance_map
@@ -776,7 +780,9 @@ class ListSerializer(BaseSerializer):
 
             return ret
         finally:
-            if hasattr(self, '_list_serializer_instance_map'):
+            if instance_map is not None and has_instance_map:
+                self._list_serializer_instance_map = original_instance_map
+            elif instance_map is not None and hasattr(self, '_list_serializer_instance_map'):
                 delattr(self, '_list_serializer_instance_map')
 
     def to_representation(self, data):
