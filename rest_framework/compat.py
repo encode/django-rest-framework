@@ -189,6 +189,19 @@ else:
         }
 
 
+if django.VERSION >= (6, 1):
+    # `split_header_value` was added in Django 6.2 (backported to 6.1b1+),
+    # replacing the `cc_delim_re` regular expression.
+    # https://github.com/django/django/commit/526b1b414d8e215bf627b5722df12a09346dbf6b
+    from django.utils.http import split_header_value
+else:
+
+    def split_header_value(value, sep=","):
+        for part in value.split(sep):
+            if stripped := part.strip():
+                yield stripped
+
+
 # `separators` argument to `json.dumps()` differs between 2.x and 3.x
 # See: https://bugs.python.org/issue22767
 SHORT_SEPARATORS = (',', ':')
