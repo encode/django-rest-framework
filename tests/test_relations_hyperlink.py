@@ -69,6 +69,7 @@ class NullableOneToOneTargetSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('url', 'name', 'nullable_source')
 
 
+@pytest.mark.usefixtures("reset_sequences")
 @override_settings(ROOT_URLCONF='tests.test_relations_hyperlink')
 class HyperlinkedManyToManyTests(TestCase):
     def setUp(self):
@@ -81,7 +82,7 @@ class HyperlinkedManyToManyTests(TestCase):
                 source.targets.add(target)
 
     def test_relative_hyperlinks(self):
-        queryset = ManyToManySource.objects.all()
+        queryset = ManyToManySource.objects.order_by('pk')
         serializer = ManyToManySourceSerializer(queryset, many=True, context={'request': None})
         expected = [
             {'url': '/manytomanysource/1/', 'name': 'source-1', 'targets': ['/manytomanytarget/1/']},
@@ -92,7 +93,7 @@ class HyperlinkedManyToManyTests(TestCase):
             assert serializer.data == expected
 
     def test_many_to_many_retrieve(self):
-        queryset = ManyToManySource.objects.all()
+        queryset = ManyToManySource.objects.order_by('pk')
         serializer = ManyToManySourceSerializer(queryset, many=True, context={'request': request})
         expected = [
             {'url': 'http://testserver/manytomanysource/1/', 'name': 'source-1', 'targets': ['http://testserver/manytomanytarget/1/']},
@@ -109,7 +110,7 @@ class HyperlinkedManyToManyTests(TestCase):
             serializer.data
 
     def test_reverse_many_to_many_retrieve(self):
-        queryset = ManyToManyTarget.objects.all()
+        queryset = ManyToManyTarget.objects.order_by('pk')
         serializer = ManyToManyTargetSerializer(queryset, many=True, context={'request': request})
         expected = [
             {'url': 'http://testserver/manytomanytarget/1/', 'name': 'target-1', 'sources': ['http://testserver/manytomanysource/1/', 'http://testserver/manytomanysource/2/', 'http://testserver/manytomanysource/3/']},
@@ -128,7 +129,7 @@ class HyperlinkedManyToManyTests(TestCase):
         assert serializer.data == data
 
         # Ensure source 1 is updated, and everything else is as expected
-        queryset = ManyToManySource.objects.all()
+        queryset = ManyToManySource.objects.order_by('pk')
         serializer = ManyToManySourceSerializer(queryset, many=True, context={'request': request})
         expected = [
             {'url': 'http://testserver/manytomanysource/1/', 'name': 'source-1', 'targets': ['http://testserver/manytomanytarget/1/', 'http://testserver/manytomanytarget/2/', 'http://testserver/manytomanytarget/3/']},
@@ -145,7 +146,7 @@ class HyperlinkedManyToManyTests(TestCase):
         serializer.save()
         assert serializer.data == data
         # Ensure target 1 is updated, and everything else is as expected
-        queryset = ManyToManyTarget.objects.all()
+        queryset = ManyToManyTarget.objects.order_by('pk')
         serializer = ManyToManyTargetSerializer(queryset, many=True, context={'request': request})
         expected = [
             {'url': 'http://testserver/manytomanytarget/1/', 'name': 'target-1', 'sources': ['http://testserver/manytomanysource/1/']},
@@ -164,7 +165,7 @@ class HyperlinkedManyToManyTests(TestCase):
         assert obj.name == 'source-4'
 
         # Ensure source 4 is added, and everything else is as expected
-        queryset = ManyToManySource.objects.all()
+        queryset = ManyToManySource.objects.order_by('pk')
         serializer = ManyToManySourceSerializer(queryset, many=True, context={'request': request})
         expected = [
             {'url': 'http://testserver/manytomanysource/1/', 'name': 'source-1', 'targets': ['http://testserver/manytomanytarget/1/']},
@@ -183,7 +184,7 @@ class HyperlinkedManyToManyTests(TestCase):
         assert obj.name == 'target-4'
 
         # Ensure target 4 is added, and everything else is as expected
-        queryset = ManyToManyTarget.objects.all()
+        queryset = ManyToManyTarget.objects.order_by('pk')
         serializer = ManyToManyTargetSerializer(queryset, many=True, context={'request': request})
         expected = [
             {'url': 'http://testserver/manytomanytarget/1/', 'name': 'target-1', 'sources': ['http://testserver/manytomanysource/1/', 'http://testserver/manytomanysource/2/', 'http://testserver/manytomanysource/3/']},
@@ -203,6 +204,7 @@ class HyperlinkedManyToManyTests(TestCase):
             serializer.data
 
 
+@pytest.mark.usefixtures("reset_sequences")
 @override_settings(ROOT_URLCONF='tests.test_relations_hyperlink')
 class HyperlinkedForeignKeyTests(TestCase):
     def setUp(self):
@@ -215,7 +217,7 @@ class HyperlinkedForeignKeyTests(TestCase):
             source.save()
 
     def test_foreign_key_retrieve(self):
-        queryset = ForeignKeySource.objects.all()
+        queryset = ForeignKeySource.objects.order_by('pk')
         serializer = ForeignKeySourceSerializer(queryset, many=True, context={'request': request})
         expected = [
             {'url': 'http://testserver/foreignkeysource/1/', 'name': 'source-1', 'target': 'http://testserver/foreignkeytarget/1/'},
@@ -226,7 +228,7 @@ class HyperlinkedForeignKeyTests(TestCase):
             assert serializer.data == expected
 
     def test_reverse_foreign_key_retrieve(self):
-        queryset = ForeignKeyTarget.objects.all()
+        queryset = ForeignKeyTarget.objects.order_by('pk')
         serializer = ForeignKeyTargetSerializer(queryset, many=True, context={'request': request})
         expected = [
             {'url': 'http://testserver/foreignkeytarget/1/', 'name': 'target-1', 'sources': ['http://testserver/foreignkeysource/1/', 'http://testserver/foreignkeysource/2/', 'http://testserver/foreignkeysource/3/']},
@@ -244,7 +246,7 @@ class HyperlinkedForeignKeyTests(TestCase):
         assert serializer.data == data
 
         # Ensure source 1 is updated, and everything else is as expected
-        queryset = ForeignKeySource.objects.all()
+        queryset = ForeignKeySource.objects.order_by('pk')
         serializer = ForeignKeySourceSerializer(queryset, many=True, context={'request': request})
         expected = [
             {'url': 'http://testserver/foreignkeysource/1/', 'name': 'source-1', 'target': 'http://testserver/foreignkeytarget/2/'},
@@ -267,7 +269,7 @@ class HyperlinkedForeignKeyTests(TestCase):
         assert serializer.is_valid()
         # We shouldn't have saved anything to the db yet since save
         # hasn't been called.
-        queryset = ForeignKeyTarget.objects.all()
+        queryset = ForeignKeyTarget.objects.order_by('pk')
         new_serializer = ForeignKeyTargetSerializer(queryset, many=True, context={'request': request})
         expected = [
             {'url': 'http://testserver/foreignkeytarget/1/', 'name': 'target-1', 'sources': ['http://testserver/foreignkeysource/1/', 'http://testserver/foreignkeysource/2/', 'http://testserver/foreignkeysource/3/']},
@@ -279,7 +281,7 @@ class HyperlinkedForeignKeyTests(TestCase):
         assert serializer.data == data
 
         # Ensure target 2 is update, and everything else is as expected
-        queryset = ForeignKeyTarget.objects.all()
+        queryset = ForeignKeyTarget.objects.order_by('pk')
         serializer = ForeignKeyTargetSerializer(queryset, many=True, context={'request': request})
         expected = [
             {'url': 'http://testserver/foreignkeytarget/1/', 'name': 'target-1', 'sources': ['http://testserver/foreignkeysource/2/']},
@@ -296,7 +298,7 @@ class HyperlinkedForeignKeyTests(TestCase):
         assert obj.name == 'source-4'
 
         # Ensure source 1 is updated, and everything else is as expected
-        queryset = ForeignKeySource.objects.all()
+        queryset = ForeignKeySource.objects.order_by('pk')
         serializer = ForeignKeySourceSerializer(queryset, many=True, context={'request': request})
         expected = [
             {'url': 'http://testserver/foreignkeysource/1/', 'name': 'source-1', 'target': 'http://testserver/foreignkeytarget/1/'},
@@ -315,7 +317,7 @@ class HyperlinkedForeignKeyTests(TestCase):
         assert obj.name == 'target-3'
 
         # Ensure target 4 is added, and everything else is as expected
-        queryset = ForeignKeyTarget.objects.all()
+        queryset = ForeignKeyTarget.objects.order_by('pk')
         serializer = ForeignKeyTargetSerializer(queryset, many=True, context={'request': request})
         expected = [
             {'url': 'http://testserver/foreignkeytarget/1/', 'name': 'target-1', 'sources': ['http://testserver/foreignkeysource/2/']},
@@ -332,6 +334,7 @@ class HyperlinkedForeignKeyTests(TestCase):
         assert serializer.errors == {'target': ['This field may not be null.']}
 
 
+@pytest.mark.usefixtures("reset_sequences")
 @override_settings(ROOT_URLCONF='tests.test_relations_hyperlink')
 class HyperlinkedNullableForeignKeyTests(TestCase):
     def setUp(self):
@@ -344,7 +347,7 @@ class HyperlinkedNullableForeignKeyTests(TestCase):
             source.save()
 
     def test_foreign_key_retrieve_with_null(self):
-        queryset = NullableForeignKeySource.objects.all()
+        queryset = NullableForeignKeySource.objects.order_by('pk')
         serializer = NullableForeignKeySourceSerializer(queryset, many=True, context={'request': request})
         expected = [
             {'url': 'http://testserver/nullableforeignkeysource/1/', 'name': 'source-1', 'target': 'http://testserver/foreignkeytarget/1/'},
@@ -362,7 +365,7 @@ class HyperlinkedNullableForeignKeyTests(TestCase):
         assert obj.name == 'source-4'
 
         # Ensure source 4 is created, and everything else is as expected
-        queryset = NullableForeignKeySource.objects.all()
+        queryset = NullableForeignKeySource.objects.order_by('pk')
         serializer = NullableForeignKeySourceSerializer(queryset, many=True, context={'request': request})
         expected = [
             {'url': 'http://testserver/nullableforeignkeysource/1/', 'name': 'source-1', 'target': 'http://testserver/foreignkeytarget/1/'},
@@ -386,7 +389,7 @@ class HyperlinkedNullableForeignKeyTests(TestCase):
         assert obj.name == 'source-4'
 
         # Ensure source 4 is created, and everything else is as expected
-        queryset = NullableForeignKeySource.objects.all()
+        queryset = NullableForeignKeySource.objects.order_by('pk')
         serializer = NullableForeignKeySourceSerializer(queryset, many=True, context={'request': request})
         expected = [
             {'url': 'http://testserver/nullableforeignkeysource/1/', 'name': 'source-1', 'target': 'http://testserver/foreignkeytarget/1/'},
@@ -405,7 +408,7 @@ class HyperlinkedNullableForeignKeyTests(TestCase):
         assert serializer.data == data
 
         # Ensure source 1 is updated, and everything else is as expected
-        queryset = NullableForeignKeySource.objects.all()
+        queryset = NullableForeignKeySource.objects.order_by('pk')
         serializer = NullableForeignKeySourceSerializer(queryset, many=True, context={'request': request})
         expected = [
             {'url': 'http://testserver/nullableforeignkeysource/1/', 'name': 'source-1', 'target': None},
@@ -428,7 +431,7 @@ class HyperlinkedNullableForeignKeyTests(TestCase):
         assert serializer.data == expected_data
 
         # Ensure source 1 is updated, and everything else is as expected
-        queryset = NullableForeignKeySource.objects.all()
+        queryset = NullableForeignKeySource.objects.order_by('pk')
         serializer = NullableForeignKeySourceSerializer(queryset, many=True, context={'request': request})
         expected = [
             {'url': 'http://testserver/nullableforeignkeysource/1/', 'name': 'source-1', 'target': None},
@@ -449,7 +452,7 @@ class HyperlinkedNullableOneToOneTests(TestCase):
         source.save()
 
     def test_reverse_foreign_key_retrieve_with_null(self):
-        queryset = OneToOneTarget.objects.all()
+        queryset = OneToOneTarget.objects.order_by('pk')
         serializer = NullableOneToOneTargetSerializer(queryset, many=True, context={'request': request})
         expected = [
             {'url': 'http://testserver/onetoonetarget/1/', 'name': 'target-1', 'nullable_source': 'http://testserver/nullableonetoonesource/1/'},

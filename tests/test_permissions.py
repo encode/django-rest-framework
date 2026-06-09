@@ -2,6 +2,7 @@ import base64
 import unittest
 from unittest import mock
 
+import pytest
 from django.conf import settings
 from django.contrib.auth.models import AnonymousUser, Group, Permission, User
 from django.db import models
@@ -73,6 +74,7 @@ def basic_auth_header(username, password):
     return 'Basic %s' % base64_credentials
 
 
+@pytest.mark.usefixtures("reset_sequences")
 class ModelPermissionsIntegrationTests(TestCase):
     def setUp(self):
         User.objects.create_user('disallowed', 'disallowed@example.com', 'password')
@@ -325,6 +327,7 @@ class GetQuerysetObjectPermissionInstanceView(generics.RetrieveUpdateDestroyAPIV
 get_queryset_object_permissions_view = GetQuerysetObjectPermissionInstanceView.as_view()
 
 
+@pytest.mark.usefixtures("reset_sequences")
 @unittest.skipUnless('guardian' in settings.INSTALLED_APPS, 'django-guardian not installed')
 class ObjectPermissionsIntegrationTests(TestCase):
     """
@@ -504,6 +507,7 @@ denied_object_view = DeniedObjectView.as_view()
 denied_object_view_with_detail = DeniedObjectViewWithDetail.as_view()
 
 
+@pytest.mark.usefixtures("reset_sequences")
 class CustomPermissionsTests(TestCase):
     def setUp(self):
         BasicModel(text='foo').save()
