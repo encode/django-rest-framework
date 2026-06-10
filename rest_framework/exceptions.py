@@ -112,6 +112,7 @@ class APIException(Exception):
             code = self.default_code
 
         self.detail = _get_error_details(detail, code)
+        super().__init__(self.detail)
 
     def __str__(self):
         return str(self.detail)
@@ -159,6 +160,7 @@ class ValidationError(APIException):
             detail = [detail]
 
         self.detail = _get_error_details(detail, code)
+        super().__init__(self.detail, code)
 
 
 class ParseError(APIException):
