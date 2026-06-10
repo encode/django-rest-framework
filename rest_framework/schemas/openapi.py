@@ -508,9 +508,9 @@ class AutoSchema(ViewInspector):
         return {'type': FIELD_CLASS_SCHEMA_TYPE.get(field.__class__, 'string')}
 
     def _map_min_max(self, field, content):
-        if field.max_value:
+        if field.max_value is not None:
             content['maximum'] = field.max_value
-        if field.min_value:
+        if field.min_value is not None:
             content['minimum'] = field.min_value
 
     def map_serializer(self, serializer):
