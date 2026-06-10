@@ -248,6 +248,36 @@ class TestUniquenessTogetherValidation(TestCase):
             'position': 1
         }
 
+    def test_many_update_requires_child_instance(self):
+        class ListUpdateSerializer(serializers.ListSerializer):
+            def update(self, instance, validated_data):
+                return instance
+
+        class Serializer(UniquenessTogetherSerializer):
+            id = serializers.IntegerField()
+
+            class Meta(UniquenessTogetherSerializer.Meta):
+                list_serializer_class = ListUpdateSerializer
+
+        serializer = Serializer(
+            instance=UniquenessTogetherModel.objects.all(),
+            data=[{
+                'id': self.instance.pk,
+                'race_name': self.instance.race_name,
+                'position': self.instance.position,
+            }],
+            many=True,
+        )
+        message = (
+            '`UniqueTogetherValidator` cannot determine the current instance '
+            'during a multiple update. Override '
+            '`ListSerializer.run_child_validation()` to set `child.instance` '
+            'before validation.'
+        )
+
+        with pytest.raises(RuntimeError, match=re.escape(message)):
+            serializer.is_valid()
+
     def test_unique_together_is_required(self):
         """
         In a unique together validation, all fields are required.
