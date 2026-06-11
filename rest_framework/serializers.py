@@ -684,11 +684,20 @@ class ListSerializer(BaseSerializer):
             return self.child.run_validation(data)
 
         original_instance = self.child.instance
+        has_initial_data = hasattr(self.child, 'initial_data')
+        if has_initial_data:
+            original_initial_data = self.child.initial_data
+
         try:
             self.child.instance = child_instance
+            self.child.initial_data = data
             return self.child.run_validation(data)
         finally:
             self.child.instance = original_instance
+            if has_initial_data:
+                self.child.initial_data = original_initial_data
+            elif hasattr(self.child, 'initial_data'):
+                delattr(self.child, 'initial_data')
 
     def to_internal_value(self, data):
         """

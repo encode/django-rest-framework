@@ -227,6 +227,61 @@ class TestListSerializerInstanceMatching:
         assert serializer.is_valid()
         assert seen_instances == instance
 
+    def test_field_validation_receives_item_initial_data(self):
+        seen_initial_data = []
+
+        class TestSerializer(serializers.Serializer):
+            pk = serializers.IntegerField()
+
+            def validate_pk(self, value):
+                seen_initial_data.append(self.initial_data)
+                return value
+
+        instance = [BasicObject(pk=1), BasicObject(pk=2)]
+        input_data = [{'pk': 1}, {'pk': 2}]
+
+        serializer = TestSerializer(instance, data=input_data, many=True)
+        assert serializer.is_valid()
+        assert seen_initial_data == input_data
+
+    def test_object_validation_receives_item_initial_data(self):
+        seen_initial_data = []
+
+        class TestSerializer(serializers.Serializer):
+            pk = serializers.IntegerField()
+
+            def validate(self, attrs):
+                seen_initial_data.append(self.initial_data)
+                return attrs
+
+        instance = [BasicObject(pk=1), BasicObject(pk=2)]
+        input_data = [{'pk': 1}, {'pk': 2}]
+
+        serializer = TestSerializer(instance, data=input_data, many=True)
+        assert serializer.is_valid()
+        assert seen_initial_data == input_data
+
+    def test_child_initial_data_state_is_restored_after_validation(self):
+        class TestSerializer(serializers.Serializer):
+            pk = serializers.IntegerField()
+
+        instance = [BasicObject(pk=1)]
+        input_data = [{'pk': 1}]
+        serializer = TestSerializer(instance, data=input_data, many=True)
+        original_initial_data = serializer.child.initial_data
+
+        assert serializer.is_valid()
+        assert serializer.child.initial_data is original_initial_data
+
+        child = TestSerializer()
+        serializer = serializers.ListSerializer(
+            child=child, instance=instance, data=input_data
+        )
+
+        assert not hasattr(child, 'initial_data')
+        assert serializer.is_valid()
+        assert not hasattr(child, 'initial_data')
+
     def test_mapping_instance_matching(self):
         seen_instances = []
 
