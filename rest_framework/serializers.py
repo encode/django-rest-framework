@@ -673,13 +673,8 @@ class ListSerializer(BaseSerializer):
         ):
             return self.child.run_validation(data)
 
-        lookup_field = getattr(getattr(self.child, 'Meta', None), 'lookup_field', None)
-        if lookup_field is not None:
-            data_pk = data.get(lookup_field)
-        else:
-            data_pk = data.get('id')
-            if data_pk is None:
-                data_pk = data.get('pk')
+        lookup_field = getattr(getattr(self.child, 'Meta', None), 'lookup_field', 'pk')
+        data_pk = data.get(lookup_field)
 
         if data_pk is None:
             return self.child.run_validation(data)
@@ -738,15 +733,10 @@ class ListSerializer(BaseSerializer):
                 instance_map = {str(k): v for k, v in self.instance.items()}
             elif isinstance(self.instance, (list, tuple, models.query.QuerySet)):
                 instance_map = {}
-                lookup_field = getattr(getattr(self.child, 'Meta', None), 'lookup_field', None)
+                lookup_field = getattr(getattr(self.child, 'Meta', None), 'lookup_field', 'pk')
 
                 for obj in self.instance:
-                    if lookup_field is not None:
-                        pk = getattr(obj, lookup_field, None)
-                    else:
-                        pk = getattr(obj, 'id', None)
-                        if pk is None:
-                            pk = getattr(obj, 'pk', None)
+                    pk = getattr(obj, lookup_field, None)
 
                     if pk is not None:
                         key = str(pk)
@@ -831,7 +821,7 @@ class ListSerializer(BaseSerializer):
             "For example: 'serializer.save(owner=request.user)'."
         )
         assert not hasattr(self, '_data'), (
-            "You cannot call `.save()` after accessing `serializer.data`."
+            "You cannot call `.save()` after accessing `serializer.data`. "
             "If you need to access data before committing to the database then "
             "inspect 'serializer.validated_data' instead. "
         )

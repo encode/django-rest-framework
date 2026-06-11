@@ -204,30 +204,7 @@ class TestListSerializerContainingNestedSerializer:
 
 
 class TestListSerializerInstanceMatching:
-    def test_matching_with_id(self):
-        seen_instances = []
-
-        class TestSerializer(serializers.Serializer):
-            id = serializers.IntegerField()
-
-            def validate(self, attrs):
-                seen_instances.append(self.instance)
-                return attrs
-
-        instance = [
-            BasicObject(id=1),
-            BasicObject(id=2),
-        ]
-        input_data = [
-            {'id': 1},
-            {'id': 2},
-        ]
-
-        serializer = TestSerializer(instance, data=input_data, many=True)
-        assert serializer.is_valid()
-        assert seen_instances == instance
-
-    def test_matching_with_pk(self):
+    def test_matching_with_default_lookup_field(self):
         seen_instances = []
 
         class TestSerializer(serializers.Serializer):
@@ -250,59 +227,25 @@ class TestListSerializerInstanceMatching:
         assert serializer.is_valid()
         assert seen_instances == instance
 
-    def test_matching_with_id_against_object_with_pk_only(self):
-        seen_instances = []
-
-        class TestSerializer(serializers.Serializer):
-            id = serializers.IntegerField()
-
-            def validate(self, attrs):
-                seen_instances.append(self.instance)
-                return attrs
-
-        instance = [BasicObject(pk=1)]
-        input_data = [{'id': 1}]
-
-        serializer = TestSerializer(instance, data=input_data, many=True)
-        assert serializer.is_valid()
-        assert seen_instances == instance
-
-    def test_matching_prefers_id_when_id_and_pk_differ(self):
-        seen_instances = []
-
-        class TestSerializer(serializers.Serializer):
-            id = serializers.IntegerField()
-
-            def validate(self, attrs):
-                seen_instances.append(self.instance)
-                return attrs
-
-        instance = [BasicObject(id=1, pk=2)]
-        input_data = [{'id': 1}]
-
-        serializer = TestSerializer(instance, data=input_data, many=True)
-        assert serializer.is_valid()
-        assert seen_instances == instance
-
     def test_mapping_instance_matching(self):
         seen_instances = []
 
         class TestSerializer(serializers.Serializer):
-            id = serializers.IntegerField()
+            pk = serializers.IntegerField()
 
             def validate(self, attrs):
                 seen_instances.append(self.instance)
                 return attrs
 
-        obj1 = BasicObject(id=1)
-        obj2 = BasicObject(id=2)
+        obj1 = BasicObject(pk=1)
+        obj2 = BasicObject(pk=2)
         instance = {
             '1': obj1,
             '2': obj2,
         }
         input_data = [
-            {'id': 1},
-            {'id': 2},
+            {'pk': 1},
+            {'pk': 2},
         ]
 
         serializer = TestSerializer(instance, data=input_data, many=True)
@@ -313,13 +256,13 @@ class TestListSerializerInstanceMatching:
         seen_instances = []
 
         class TestSerializer(serializers.Serializer):
-            id = serializers.IntegerField()
+            pk = serializers.IntegerField()
 
             def validate(self, attrs):
                 seen_instances.append(self.instance)
                 return attrs
 
-        serializer = TestSerializer(instance=123, data=[{'id': 1}], many=True)
+        serializer = TestSerializer(instance=123, data=[{'pk': 1}], many=True)
         assert serializer.is_valid()
         assert seen_instances == [123]
 
@@ -370,11 +313,11 @@ class TestListSerializerInstanceMatching:
 
     def test_existing_instance_map_is_restored_after_validation(self):
         class TestSerializer(serializers.Serializer):
-            id = serializers.IntegerField()
+            pk = serializers.IntegerField()
 
-        instance = [BasicObject(id=1)]
-        original_instance_map = {'sentinel': BasicObject(id=2)}
-        serializer = TestSerializer(instance, data=[{'id': 1}], many=True)
+        instance = [BasicObject(pk=1)]
+        original_instance_map = {'sentinel': BasicObject(pk=2)}
+        serializer = TestSerializer(instance, data=[{'pk': 1}], many=True)
         serializer._list_serializer_instance_map = original_instance_map
 
         assert serializer.is_valid()
@@ -1072,6 +1015,9 @@ def test_many_true_instance_level_validation_uses_matched_instance():
     class TestSerializer(serializers.Serializer):
         id = serializers.IntegerField()
         status = serializers.CharField()
+
+        class Meta:
+            lookup_field = 'id'
 
         def validate_status(self, value):
             if self.instance is None:
