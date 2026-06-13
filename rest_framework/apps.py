@@ -8,3 +8,4 @@ class RestFrameworkConfig(AppConfig):
     def ready(self):
         # Add System checks
         from .checks import pagination_system_check  # NOQA
+        from .checks import www_authenticate_behavior_setting_check  # NOQA
