@@ -272,19 +272,28 @@ class PrimaryKeyRelatedField(RelatedField):
         # Resolve every pk with a single query instead of one `get()` per item.
         # Per-item error semantics (incorrect_type / does_not_exist), input
         # ordering, and duplicates are all preserved.
+        queryset = self.get_queryset()
+        model_pk = queryset.model._meta.pk
         pks = []
         for item in data:
             value = item
             if self.pk_field is not None:
                 value = self.pk_field.to_internal_value(value)
-            if isinstance(value, bool):
+            try:
+                if isinstance(value, bool):
+                    raise TypeError
+                # Coerce to the pk's Python type (e.g. "1" -> 1) so the lookup
+                # below matches the keys returned by `in_bulk()`, exactly as
+                # `queryset.get(pk=value)` would have.
+                value = model_pk.get_prep_value(value)
+            except (TypeError, ValueError):
                 self.fail('incorrect_type', data_type=type(item).__name__)
             pks.append(value)
         try:
-            objects = self.get_queryset().in_bulk(pks)
+            objects = queryset.in_bulk(pks)
         except (TypeError, ValueError):
-            # A pk had a type the backend can't compare; fall back so the
-            # offending item raises the same per-item error as before.
+            # queryset doesn't support in_bulk (e.g. distinct/sliced); fall
+            # back to the per-item path so behaviour is unchanged.
             return [self.to_internal_value(item) for item in data]
         result = []
         for pk in pks:

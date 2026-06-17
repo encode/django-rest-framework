@@ -232,29 +232,40 @@ class PKManyRelatedFieldBulkValidationTests(TestCase):
     query rather than one query per item (regression test for #9607)."""
 
     def setUp(self):
-        for idx in range(1, 6):
-            ManyToManyTarget(name='target-%d' % idx).save()
+        self.pks = [
+            ManyToManyTarget.objects.create(name='target-%d' % idx).pk
+            for idx in range(1, 6)
+        ]
 
-    def _field(self):
-        field = serializers.PrimaryKeyRelatedField(
-            queryset=ManyToManyTarget.objects.all(), many=True)
+    def _field(self, queryset=None):
+        if queryset is None:
+            queryset = ManyToManyTarget.objects.all()
+        field = serializers.PrimaryKeyRelatedField(queryset=queryset, many=True)
         field.bind('targets', serializers.Serializer())
         return field
 
     def test_validation_uses_single_query(self):
         field = self._field()
         with self.assertNumQueries(1):
-            field.run_validation([1, 2, 3, 4, 5])
+            field.run_validation(self.pks)
 
     def test_order_and_duplicates_preserved(self):
         field = self._field()
-        result = field.run_validation([3, 1, 1, 2])
-        assert [obj.pk for obj in result] == [3, 1, 1, 2]
+        order = [self.pks[2], self.pks[0], self.pks[0], self.pks[1]]
+        result = field.run_validation(order)
+        assert [obj.pk for obj in result] == order
+
+    def test_string_pks_are_accepted(self):
+        # HTML form input arrives as strings; must match int pks (#9607).
+        field = self._field()
+        result = field.run_validation([str(pk) for pk in self.pks])
+        assert [obj.pk for obj in result] == self.pks
 
     def test_does_not_exist_error(self):
         field = self._field()
+        missing = max(self.pks) + 1000
         with pytest.raises(serializers.ValidationError) as exc_info:
-            field.run_validation([1, 99])
+            field.run_validation([self.pks[0], missing])
         assert exc_info.value.detail[0].code == 'does_not_exist'
 
     def test_incorrect_type_error(self):
@@ -264,11 +275,9 @@ class PKManyRelatedFieldBulkValidationTests(TestCase):
         assert exc_info.value.detail[0].code == 'incorrect_type'
 
     def test_queryset_filtering_is_respected(self):
-        field = serializers.PrimaryKeyRelatedField(
-            queryset=ManyToManyTarget.objects.exclude(pk=2), many=True)
-        field.bind('targets', serializers.Serializer())
+        field = self._field(ManyToManyTarget.objects.exclude(pk=self.pks[1]))
         with pytest.raises(serializers.ValidationError) as exc_info:
-            field.run_validation([1, 2])
+            field.run_validation([self.pks[0], self.pks[1]])
         assert exc_info.value.detail[0].code == 'does_not_exist'
 
     def test_pk_field_transform_is_applied(self):
@@ -276,8 +285,8 @@ class PKManyRelatedFieldBulkValidationTests(TestCase):
             queryset=ManyToManyTarget.objects.all(), many=True,
             pk_field=serializers.IntegerField())
         field.bind('targets', serializers.Serializer())
-        result = field.run_validation(['1', '2'])
-        assert [obj.pk for obj in result] == [1, 2]
+        result = field.run_validation([str(self.pks[0]), str(self.pks[1])])
+        assert [obj.pk for obj in result] == [self.pks[0], self.pks[1]]
 
 
 @pytest.mark.usefixtures("reset_sequences")
