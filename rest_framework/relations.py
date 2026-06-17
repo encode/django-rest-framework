@@ -293,7 +293,7 @@ class PrimaryKeyRelatedField(RelatedField):
             objects = queryset.in_bulk(pks)
         except (TypeError, ValueError):
             # queryset doesn't support in_bulk (e.g. distinct/sliced); fall
-            # back to the per-item path so behaviour is unchanged.
+            # back to the per-item path so behavior is unchanged.
             return [self.to_internal_value(item) for item in data]
         result = []
         for pk in pks:
