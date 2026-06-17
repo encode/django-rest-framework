@@ -227,6 +227,59 @@ class PKManyToManyTests(TestCase):
             serializer.data
 
 
+class PKManyRelatedFieldBulkValidationTests(TestCase):
+    """`PrimaryKeyRelatedField(many=True)` should resolve all pks in a single
+    query rather than one query per item (regression test for #9607)."""
+
+    def setUp(self):
+        for idx in range(1, 6):
+            ManyToManyTarget(name='target-%d' % idx).save()
+
+    def _field(self):
+        field = serializers.PrimaryKeyRelatedField(
+            queryset=ManyToManyTarget.objects.all(), many=True)
+        field.bind('targets', serializers.Serializer())
+        return field
+
+    def test_validation_uses_single_query(self):
+        field = self._field()
+        with self.assertNumQueries(1):
+            field.run_validation([1, 2, 3, 4, 5])
+
+    def test_order_and_duplicates_preserved(self):
+        field = self._field()
+        result = field.run_validation([3, 1, 1, 2])
+        assert [obj.pk for obj in result] == [3, 1, 1, 2]
+
+    def test_does_not_exist_error(self):
+        field = self._field()
+        with pytest.raises(serializers.ValidationError) as exc_info:
+            field.run_validation([1, 99])
+        assert exc_info.value.detail[0].code == 'does_not_exist'
+
+    def test_incorrect_type_error(self):
+        field = self._field()
+        with pytest.raises(serializers.ValidationError) as exc_info:
+            field.run_validation(['not-a-pk'])
+        assert exc_info.value.detail[0].code == 'incorrect_type'
+
+    def test_queryset_filtering_is_respected(self):
+        field = serializers.PrimaryKeyRelatedField(
+            queryset=ManyToManyTarget.objects.exclude(pk=2), many=True)
+        field.bind('targets', serializers.Serializer())
+        with pytest.raises(serializers.ValidationError) as exc_info:
+            field.run_validation([1, 2])
+        assert exc_info.value.detail[0].code == 'does_not_exist'
+
+    def test_pk_field_transform_is_applied(self):
+        field = serializers.PrimaryKeyRelatedField(
+            queryset=ManyToManyTarget.objects.all(), many=True,
+            pk_field=serializers.IntegerField())
+        field.bind('targets', serializers.Serializer())
+        result = field.run_validation(['1', '2'])
+        assert [obj.pk for obj in result] == [1, 2]
+
+
 @pytest.mark.usefixtures("reset_sequences")
 class PKForeignKeyTests(TestCase):
     def setUp(self):

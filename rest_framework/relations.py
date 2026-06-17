@@ -169,6 +169,12 @@ class RelatedField(Field):
     def use_pk_only_optimization(self):
         return False
 
+    def to_internal_value_bulk(self, data):
+        # Default (un-optimized) bulk conversion: delegate to per-item
+        # `to_internal_value`. Subclasses may override to batch DB access.
+        # Used by `ManyRelatedField` to avoid N+1 queries.
+        return [self.to_internal_value(item) for item in data]
+
     def get_attribute(self, instance):
         if self.use_pk_only_optimization() and self.source_attrs:
             # Optimized case, return a mock object only containing the pk attribute.
@@ -261,6 +267,31 @@ class PrimaryKeyRelatedField(RelatedField):
             self.fail('does_not_exist', pk_value=data)
         except (TypeError, ValueError):
             self.fail('incorrect_type', data_type=type(data).__name__)
+
+    def to_internal_value_bulk(self, data):
+        # Resolve every pk with a single query instead of one `get()` per item.
+        # Per-item error semantics (incorrect_type / does_not_exist), input
+        # ordering, and duplicates are all preserved.
+        pks = []
+        for item in data:
+            value = item
+            if self.pk_field is not None:
+                value = self.pk_field.to_internal_value(value)
+            if isinstance(value, bool):
+                self.fail('incorrect_type', data_type=type(item).__name__)
+            pks.append(value)
+        try:
+            objects = self.get_queryset().in_bulk(pks)
+        except (TypeError, ValueError):
+            # A pk had a type the backend can't compare; fall back so the
+            # offending item raises the same per-item error as before.
+            return [self.to_internal_value(item) for item in data]
+        result = []
+        for pk in pks:
+            if pk not in objects:
+                self.fail('does_not_exist', pk_value=pk)
+            result.append(objects[pk])
+        return result
 
     def to_representation(self, value):
         if self.pk_field is not None:
@@ -524,10 +555,7 @@ class ManyRelatedField(Field):
         if not self.allow_empty and len(data) == 0:
             self.fail('empty')
 
-        return [
-            self.child_relation.to_internal_value(item)
-            for item in data
-        ]
+        return self.child_relation.to_internal_value_bulk(data)
 
     def get_attribute(self, instance):
         # Can't have any relationships if not created
