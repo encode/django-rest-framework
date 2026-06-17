@@ -274,7 +274,10 @@ class PrimaryKeyRelatedField(RelatedField):
         # ordering, and duplicates are all preserved.
         queryset = self.get_queryset()
         model_pk = queryset.model._meta.pk
-        pks = []
+        # Each entry is (lookup_key, value): `value` mirrors the per-item path
+        # (post-`pk_field`) and is used for error details, while `lookup_key`
+        # is the pk-typed value used to match `in_bulk()` results.
+        entries = []
         for item in data:
             value = item
             if self.pk_field is not None:
@@ -285,21 +288,21 @@ class PrimaryKeyRelatedField(RelatedField):
                 # Coerce to the pk's Python type (e.g. "1" -> 1) so the lookup
                 # below matches the keys returned by `in_bulk()`, exactly as
                 # `queryset.get(pk=value)` would have.
-                value = model_pk.get_prep_value(value)
+                lookup_key = model_pk.get_prep_value(value)
             except (TypeError, ValueError):
-                self.fail('incorrect_type', data_type=type(item).__name__)
-            pks.append(value)
+                self.fail('incorrect_type', data_type=type(value).__name__)
+            entries.append((lookup_key, value))
         try:
-            objects = queryset.in_bulk(pks)
+            objects = queryset.in_bulk([lookup_key for lookup_key, _ in entries])
         except (TypeError, ValueError):
             # queryset doesn't support in_bulk (e.g. distinct/sliced); fall
             # back to the per-item path so behavior is unchanged.
             return [self.to_internal_value(item) for item in data]
         result = []
-        for pk in pks:
-            if pk not in objects:
-                self.fail('does_not_exist', pk_value=pk)
-            result.append(objects[pk])
+        for lookup_key, value in entries:
+            if lookup_key not in objects:
+                self.fail('does_not_exist', pk_value=value)
+            result.append(objects[lookup_key])
         return result
 
     def to_representation(self, value):
@@ -564,7 +567,15 @@ class ManyRelatedField(Field):
         if not self.allow_empty and len(data) == 0:
             self.fail('empty')
 
-        return self.child_relation.to_internal_value_bulk(data)
+        # `to_internal_value_bulk` is defined on `RelatedField`; fall back to
+        # the per-item loop for any other child field type.
+        bulk = getattr(self.child_relation, 'to_internal_value_bulk', None)
+        if bulk is not None:
+            return bulk(data)
+        return [
+            self.child_relation.to_internal_value(item)
+            for item in data
+        ]
 
     def get_attribute(self, instance):
         # Can't have any relationships if not created

@@ -288,6 +288,28 @@ class PKManyRelatedFieldBulkValidationTests(TestCase):
         result = field.run_validation([str(self.pks[0]), str(self.pks[1])])
         assert [obj.pk for obj in result] == [self.pks[0], self.pks[1]]
 
+    def test_error_details_match_per_item_with_pk_field(self):
+        # The bulk path must report the same incorrect_type detail as the
+        # per-item path, i.e. the type *after* pk_field transformation.
+        child = serializers.PrimaryKeyRelatedField(
+            queryset=ManyToManyTarget.objects.all(),
+            pk_field=serializers.BooleanField())
+        child.bind('targets', serializers.Serializer())
+        with pytest.raises(serializers.ValidationError) as per_item:
+            child.to_internal_value('true')
+        with pytest.raises(serializers.ValidationError) as bulk:
+            child.to_internal_value_bulk(['true'])
+        assert str(bulk.value.detail[0]) == str(per_item.value.detail[0])
+        assert 'bool' in str(bulk.value.detail[0])
+
+    def test_many_related_field_with_non_related_child(self):
+        # ManyRelatedField may wrap a plain field that has no
+        # `to_internal_value_bulk`; it must fall back to per-item conversion.
+        field = serializers.ManyRelatedField(
+            child_relation=serializers.IntegerField())
+        field.bind('values', serializers.Serializer())
+        assert field.to_internal_value([1, 2, 3]) == [1, 2, 3]
+
 
 @pytest.mark.usefixtures("reset_sequences")
 class PKForeignKeyTests(TestCase):
