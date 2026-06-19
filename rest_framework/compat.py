@@ -137,10 +137,6 @@ else:
         return False
 
 
-def get_referenced_base_fields_from_q(q):
-    return q.referenced_base_fields
-
-
 if django.VERSION >= (6, 1):
     # `split_header_value` was added in Django 6.2 (backported to 6.1b1+),
     # replacing the `cc_delim_re` regular expression.
