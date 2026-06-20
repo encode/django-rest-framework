@@ -490,9 +490,22 @@ class APIView(View):
     # be overridden.
     def dispatch(self, request, *args, **kwargs):
         """
-        `.dispatch()` is pretty much the same as Django's regular dispatch,
-        but with extra hooks for startup, finalize, and exception handling.
+        Dispatch the incoming request to the appropriate handler method.
+
+        This method implements the core request/response lifecycle for
+        Django REST Framework views:
+
+        1. Wraps the incoming Django HttpRequest in a REST framework Request.
+        2. Performs content negotiation, authentication, permission, and
+            throttling checks.
+        3. Resolves and calls the appropriate HTTP method handler
+            (e.g. get(), post(), put()).
+        4. Handles any exceptions raised during processing and converts
+            them into appropriate Response objects.
+        5. Finalizes and returns the response with proper rendering
+            and headers applied.
         """
+
         self.args = args
         self.kwargs = kwargs
         request = self.initialize_request(request, *args, **kwargs)
