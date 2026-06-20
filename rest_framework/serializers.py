@@ -609,7 +609,7 @@ class ListSerializer(BaseSerializer):
         'max_length': _('Ensure this field has no more than {max_length} elements.'),
         'min_length': _('Ensure this field has at least {min_length} elements.')
     }
-
+    
     def __init__(self, *args, **kwargs):
         self.child = kwargs.pop('child', copy.deepcopy(self.child))
         self.allow_empty = kwargs.pop('allow_empty', True)
@@ -621,10 +621,16 @@ class ListSerializer(BaseSerializer):
         self.child.bind(field_name='', parent=self)
 
     def get_initial(self):
+        """
+        Return a list of initial values, one for each item in `initial_data`,
+        or an empty list if no input data was provided.
+        """
         if hasattr(self, 'initial_data'):
-            return self.to_representation(self.initial_data)
+            if isinstance(self.initial_data, list):
+                return [self.child.get_initial() for _ in self.initial_data]
+            return []
         return []
-
+        
     def get_value(self, dictionary):
         """
         Given the input dictionary, return the field value.
