@@ -1,6 +1,7 @@
 from django.urls import URLResolver, include, path, re_path, register_converter
 from django.urls.converters import get_converters
 from django.urls.resolvers import RoutePattern
+import re
 
 from rest_framework.settings import api_settings
 
