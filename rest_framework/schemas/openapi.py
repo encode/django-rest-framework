@@ -487,13 +487,13 @@ class AutoSchema(ViewInspector):
                 'type': 'integer'
             }
             self._map_min_max(field, content)
-            # 2147483647 is max for int32_size, so we use int64 for format
+            # Use int64 format when the value range exceeds signed int32 bounds.
             maximum = content.get('maximum')
             minimum = content.get('minimum')
             if (
-                (maximum is not None and maximum > 2147483647) or
+                (maximum is not None and int(maximum) > 2147483647) or
                 (minimum is not None and (
-                    minimum > 2147483647 or minimum < -2147483648
+                    int(minimum) > 2147483647 or int(minimum) < -2147483648
                 ))
             ):
                 content['format'] = 'int64'
