@@ -805,7 +805,8 @@ Here's an example of how you might choose to implement multiple updates:
         def update(self, instance, validated_data):
             # Maps for id->instance and id->data item.
             book_mapping = {book.id: book for book in instance}
-            data_mapping = {item['id']: item for item in validated_data}
+            data_mapping = {item['id']: item for item in validated_data if 'id' in item}
+            new_items = [item for item in validated_data if 'id' not in item]
 
             # Perform creations and updates.
             ret = []
@@ -815,6 +816,9 @@ Here's an example of how you might choose to implement multiple updates:
                     ret.append(self.child.create(data))
                 else:
                     ret.append(self.child.update(book, data))
+
+            for data in new_items:
+                ret.append(self.child.create(data))
 
             # Perform deletions.
             for book_id, book in book_mapping.items():
@@ -826,7 +830,8 @@ Here's an example of how you might choose to implement multiple updates:
     class BookSerializer(serializers.Serializer):
         # We need to identify elements in the list using their primary key,
         # so use a writable field here, rather than the default which would be read-only.
-        id = serializers.IntegerField()
+        # The id is optional so that new items (without an id) can be created.
+        id = serializers.IntegerField(required=False)
         ...
 
         class Meta:
