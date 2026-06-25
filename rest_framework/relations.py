@@ -199,7 +199,7 @@ class RelatedField(Field):
             queryset = queryset[:cutoff]
 
         return {
-            self.to_representation(item): self.display_value(item) for item in queryset
+            str(self.to_representation(item)): self.display_value(item) for item in queryset
         }
 
     @property
