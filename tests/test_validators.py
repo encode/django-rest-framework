@@ -510,10 +510,9 @@ class TestUniquenessTogetherValidation(TestCase):
 
         data = {'race_name': 'bar'}
         queryset = MockQueryset()
-        serializer = UniquenessTogetherSerializer(instance=self.instance)
         validator = UniqueTogetherValidator(queryset, fields=('race_name',
                                                               'position'))
-        validator.filter_queryset(attrs=data, queryset=queryset, serializer=serializer)
+        validator.filter_queryset(attrs=data, queryset=queryset, instance=self.instance)
         assert queryset.called_with == {'race_name': 'bar', 'position': 1}
 
     def test_uniq_together_validation_uses_model_fields_method_field(self):
@@ -832,9 +831,51 @@ class TestUniqueConstraintValidation(TestCase):
         assert serializer.errors == {"non_field_errors": [expected_message]}
         assert serializer.errors["non_field_errors"][0].code == UniqueTogetherValidator.code
 
+    def test_unique_constraint_with_many_true_does_not_crash(self):
+        """
+        UniqueConstraint validators must not crash with AttributeError when
+        a queryset is passed as the instance argument together with many=True.
+
+        When run_child_validation is not overridden the child serializer has
+        no per-object instance, so uniqueness checks operate as if all items
+        are new creates.  The important thing is that the code path no longer
+        raises AttributeError by trying to call .pk on the queryset.
+
+        Refs: https://github.com/encode/django-rest-framework/issues/9484
+        """
+        instances = UniqueConstraintModel.objects.all()
+        # Use global_id values that don't exist yet so uniqueness checks pass.
+        data = [
+            {
+                'race_name': 'new_race',
+                'position': 10,
+                'global_id': 100,
+                'fancy_conditions': 100,
+            },
+            {
+                'race_name': 'other_race',
+                'position': 20,
+                'global_id': 200,
+                'fancy_conditions': 200,
+            },
+        ]
+        serializer = UniqueConstraintSerializer(instances, data=data, many=True)
+        assert serializer.is_valid(), serializer.errors
+
+        # Also cover partial updates: field-level required checks are skipped,
+        # but uniqueness validators should still fail cleanly (no KeyError / AttributeError).
+        # Use global_id values that already exist in the DB so the UniqueValidator fires.
+        partial_data = [
+            {'global_id': 1},
+            {'global_id': 2},
+        ]
+        serializer = UniqueConstraintSerializer(instances, data=partial_data, many=True, partial=True)
+        assert not serializer.is_valid()
+        assert isinstance(serializer.errors, list)
 
 # Tests for `UniqueForDateValidator`
 # ----------------------------------
+
 
 class UniqueForDateModel(models.Model):
     slug = models.CharField(max_length=100, unique_for_date='published')
