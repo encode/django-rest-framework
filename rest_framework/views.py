@@ -7,12 +7,13 @@ from django.core.exceptions import PermissionDenied
 from django.db import connections, models
 from django.http import Http404
 from django.http.response import HttpResponseBase
-from django.utils.cache import cc_delim_re, patch_vary_headers
+from django.utils.cache import patch_vary_headers
 from django.utils.encoding import smart_str
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View
 
 from rest_framework import exceptions, status
+from rest_framework.compat import split_header_value
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.schemas import DefaultSchema
@@ -444,7 +445,7 @@ class APIView(View):
         # Add new vary headers to the response instead of overwriting.
         vary_headers = self.headers.pop('Vary', None)
         if vary_headers is not None:
-            patch_vary_headers(response, cc_delim_re.split(vary_headers))
+            patch_vary_headers(response, list(split_header_value(vary_headers)))
 
         for key, value in self.headers.items():
             response[key] = value
