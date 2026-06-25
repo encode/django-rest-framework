@@ -13,6 +13,7 @@
 /env/
 MANIFEST
 coverage.*
+venv/
 .coverage
 .cache/
 
