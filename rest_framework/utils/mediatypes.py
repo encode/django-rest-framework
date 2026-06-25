@@ -26,7 +26,8 @@ def media_type_matches(lhs, rhs):
 
 def order_by_precedence(media_type_lst):
     """
-    Returns a list of sets of media type strings, ordered by precedence.
+    Returns a list of sets of media type strings, ordered by quality and
+    precedence. Quality is determined by the q parameter and defaults to 1.
     Precedence is determined by how specific a media type is:
 
     3. 'type/subtype; param=val'
@@ -34,11 +35,20 @@ def order_by_precedence(media_type_lst):
     1. 'type/*'
     0. '*/*'
     """
-    ret = [set(), set(), set(), set()]
+    ret = {}
     for media_type in media_type_lst:
-        precedence = _MediaType(media_type).precedence
-        ret[3 - precedence].add(media_type)
-    return [media_types for media_types in ret if media_types]
+        media_type = _MediaType(media_type)
+        if media_type.quality <= 0:
+            continue
+        precedence = media_type.precedence
+        ret.setdefault(media_type.quality, [set(), set(), set(), set()])
+        ret[media_type.quality][3 - precedence].add(media_type.orig)
+    return [
+        media_types
+        for quality in sorted(ret, reverse=True)
+        for media_types in ret[quality]
+        if media_types
+    ]
 
 
 class _MediaType:
@@ -79,3 +89,13 @@ class _MediaType:
         for key, val in self.params.items():
             ret += "; %s=%s" % (key, val)
         return ret
+
+    @property
+    def quality(self):
+        try:
+            quality = float(self.params.get('q', 1))
+        except ValueError:
+            return 1
+        if not 0 <= quality <= 1:
+            return 1
+        return quality
