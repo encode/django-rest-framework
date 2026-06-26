@@ -113,13 +113,14 @@ class UniqueTogetherValidator:
     requires_context = True
     code = 'unique'
 
-    def __init__(self, queryset, fields, message=None, condition_fields=None, condition=None, code=None):
+    def __init__(self, queryset, fields, message=None, condition_fields=None, condition=None, code=None, nulls_distinct=None):
         self.queryset = queryset
         self.fields = fields
         self.message = message or self.message
         self.condition_fields = [] if condition_fields is None else condition_fields
         self.condition = condition
         self.code = code or self.code
+        self.nulls_distinct = nulls_distinct
 
     def enforce_required_fields(self, attrs, serializer):
         """
@@ -197,17 +198,21 @@ class UniqueTogetherValidator:
             else getattr(serializer.instance, source)
             for source in condition_sources
         }
-        if checked_values and None not in checked_values and qs_exists_with_condition(queryset, self.condition, condition_kwargs):
-            field_names = ', '.join(self.fields)
-            message = self.message.format(field_names=field_names)
-            raise ValidationError(message, code=self.code)
+        if checked_values:
+            # Skip validation for None values unless nulls_distinct is False
+            if self.nulls_distinct is not False and None in checked_values:
+                return
+            if qs_exists_with_condition(queryset, self.condition, condition_kwargs):
+                field_names = ', '.join(self.fields)
+                message = self.message.format(field_names=field_names)
+                raise ValidationError(message, code=self.code)
 
     def __repr__(self):
         return '<{}({})>'.format(
             self.__class__.__name__,
             ', '.join(
                 f'{attr}={smart_repr(getattr(self, attr))}'
-                for attr in ('queryset', 'fields', 'condition')
+                for attr in ('queryset', 'fields', 'condition', 'nulls_distinct')
                 if getattr(self, attr) is not None)
         )
 
@@ -220,6 +225,7 @@ class UniqueTogetherValidator:
                 and self.queryset == other.queryset
                 and self.fields == other.fields
                 and self.code == other.code
+                and self.nulls_distinct == other.nulls_distinct
                 )
 
 
