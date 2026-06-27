@@ -1172,15 +1172,12 @@ class DateTimeField(Field):
                     return value.astimezone(field_timezone)
                 except OverflowError:
                     self.fail('overflow')
-            try:
-                dt = timezone.make_aware(value, field_timezone)
-                # When the resulting datetime is a ZoneInfo instance, it won't necessarily
-                # throw given an invalid datetime, so we need to specifically check.
-                if not valid_datetime(dt):
-                    self.fail('make_aware', timezone=field_timezone)
-                return dt
-            except Exception as e:
-                raise e
+            dt = timezone.make_aware(value, field_timezone)
+            # When the resulting datetime is a ZoneInfo instance, it won't necessarily
+            # throw given an invalid datetime, so we need to specifically check.
+            if not valid_datetime(dt):
+                self.fail('make_aware', timezone=field_timezone)
+            return dt
         elif (field_timezone is None) and timezone.is_aware(value):
             return timezone.make_naive(value, datetime.timezone.utc)
         return value
