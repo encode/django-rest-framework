@@ -3,6 +3,7 @@ import unittest
 
 from django import VERSION as DJANGO_VERSION
 from django.test import TestCase
+from django.views.decorators.vary import vary_on_headers
 
 from rest_framework import status
 from rest_framework.decorators import api_view
@@ -82,6 +83,42 @@ class ClassBasedViewIntegrationTests(TestCase):
         }
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert sanitise_json_error(response.data) == expected
+
+
+@api_view(['GET'])
+@vary_on_headers('X-Some-Header,X-Other-Header')
+def vary_headers_with_default_view(request):
+    return Response({'method': 'GET'})
+
+
+class CustomVaryHeadersView(APIView):
+    def get(self, request, *args, **kwargs):
+        # These will be merged with the Vary header in the response.
+        self.headers["Vary"] = "  X-Some-Header, X-Other-Header  , Cookie  "
+        return Response(
+            {'method': 'GET'},
+            headers={'Vary': 'X-Foo-Header,X-Bar-Header'},
+        )
+
+
+class VaryHeaderTests(TestCase):
+    def test_default_vary_headers_merge_not_overwrite(self):
+        response = vary_headers_with_default_view(factory.get('/'))
+        vary = response['Vary'].split(', ')
+        # "Accept" added, as JSON and Browsable renderers are enabled by default.
+        assert sorted(vary) == ['Accept', 'X-Other-Header', 'X-Some-Header']
+
+    def test_custom_vary_headers_merge_not_overwrite(self):
+        view = CustomVaryHeadersView.as_view()
+        response = view(factory.get('/'))
+        vary = response['Vary'].split(', ')
+        assert sorted(vary) == [
+            'Cookie',
+            'X-Bar-Header',
+            'X-Foo-Header',
+            'X-Other-Header',
+            'X-Some-Header',
+        ]
 
 
 class FunctionBasedViewIntegrationTests(TestCase):
