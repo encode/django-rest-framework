@@ -239,7 +239,7 @@ By default, the search parameter is named `'search'`, but this may be overridden
 
 #### Accent-insensitive search
 
-The `UnaccentedSearchFilter` subclass performs accent-insensitive matching, so that a search for `Jeremy` also matches `Jérémy`. It behaves exactly like `SearchFilter`, except every lookup is wrapped with the `unaccent` transform (e.g. the default lookup becomes `unaccent__icontains`, `^` becomes `unaccent__istartswith`, and so on).
+The `UnaccentedSearchFilter` subclass performs accent-insensitive matching, so that a search for `Jeremy` also matches `Jérémy`. It behaves like `SearchFilter`, except the lookups are wrapped with the `unaccent` transform: the default lookup becomes `unaccent__icontains`, `^` becomes `unaccent__istartswith`, `=` becomes `unaccent__iexact`, and `$` becomes `unaccent__iregex`. The `@` (full-text search) prefix is left unchanged, as the `unaccent` transform cannot be combined with a full-text search lookup.
 
     from rest_framework import filters
 

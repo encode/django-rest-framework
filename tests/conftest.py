@@ -9,21 +9,18 @@ from django.core.management.color import no_style
 from django.db import connection
 
 
-@pytest.fixture(scope='session')
-def django_db_setup(django_db_setup, django_db_blocker):
+@pytest.fixture
+def unaccent_extension(db):
     """
-    Ensure the PostgreSQL extensions required by some tests exist in the
-    *test* database.
+    Enable the PostgreSQL ``unaccent`` extension for a single test.
 
-    pytest-django's ``django_db_setup`` creates the test database; we then add
-    the ``unaccent`` extension that the accent-insensitive search tests rely on.
-    Creating it on the server's default database is not enough, as the test
-    database is created separately. No-op on non-PostgreSQL backends.
+    Opt in with ``@pytest.mark.usefixtures("unaccent_extension")`` so only
+    tests that need it have it. No-op on non-PostgreSQL backends.
     """
-    if connection.vendor == 'postgresql':
-        with django_db_blocker.unblock(), connection.cursor() as cursor:
-            cursor.execute('CREATE EXTENSION IF NOT EXISTS unaccent')
-    yield
+    if connection.vendor != 'postgresql':
+        return
+    with connection.cursor() as cursor:
+        cursor.execute('CREATE EXTENSION IF NOT EXISTS unaccent')
 
 
 @pytest.fixture

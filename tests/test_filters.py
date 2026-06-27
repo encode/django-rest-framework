@@ -248,45 +248,31 @@ class SearchFilterTests(TestCase):
             ]
 
     @pytest.mark.requires_postgres
-    def test_unaccented_search_default_lookup(self):
-        SearchFilterModel.objects.create(title='Jeremy', text='jeremy')
-        SearchFilterModel.objects.create(title='Jérémy', text='jérémy')
-        SearchFilterModel.objects.create(title='Jérémie', text='jérémie')
-        SearchFilterModel.objects.create(title='Jeremie', text='jeremie')
+    @pytest.mark.usefixtures("unaccent_extension")
+    def test_unaccented_search_lookups(self):
+        for title in ('Jérémy', 'Jeremy', 'Jérémie', 'Amélie'):
+            SearchFilterModel.objects.create(title=title, text=title.lower())
 
-        class SearchListView(generics.ListAPIView):
-            queryset = SearchFilterModel.objects.all()
-            serializer_class = SearchFilterSerializer
-            filter_backends = (filters.UnaccentedSearchFilter,)
-            search_fields = ('title',)
+        # (search field, term, expected titles) for each prefix. All but '@'
+        # are accent-insensitive, so an unaccented term matches accented titles.
+        cases = [
+            ('title', 'rem', {'Jérémy', 'Jeremy', 'Jérémie'}),       # unaccent__icontains
+            ('^title', 'jer', {'Jérémy', 'Jeremy', 'Jérémie'}),      # unaccent__istartswith
+            ('=title', 'jeremy', {'Jérémy', 'Jeremy'}),              # unaccent__iexact
+            ('$title', 'jerem.+', {'Jérémy', 'Jeremy', 'Jérémie'}),  # unaccent__iregex
+            ('@title', 'Jeremy', {'Jeremy'}),                        # search (accent-sensitive)
+        ]
 
-        view = SearchListView.as_view()
+        for search_field, term, expected in cases:
+            with self.subTest(search_field=search_field):
+                class SearchListView(generics.ListAPIView):
+                    queryset = SearchFilterModel.objects.all()
+                    serializer_class = SearchFilterSerializer
+                    filter_backends = (filters.UnaccentedSearchFilter,)
+                    search_fields = (search_field,)
 
-        request = factory.get('/', {'search': 'Jerem'})
-        response = view(request)
-        assert len(response.data) == 4
-        assert {item['title'] for item in response.data} == {'Jeremy', 'Jérémy', 'Jérémie', 'Jeremie'}
-
-    @pytest.mark.requires_postgres
-    def test_unaccented_search_with_prefix_lookup(self):
-        SearchFilterModel.objects.create(title='Jeremy', text='jeremy')
-        SearchFilterModel.objects.create(title='Jérémy', text='jérémy')
-        SearchFilterModel.objects.create(title='Jérémie', text='jérémie')
-        SearchFilterModel.objects.create(title='Jeremie', text='jeremie')
-
-        class SearchListView(generics.ListAPIView):
-            queryset = SearchFilterModel.objects.all()
-            serializer_class = SearchFilterSerializer
-            filter_backends = (filters.UnaccentedSearchFilter,)
-            # '=' maps to 'unaccent__iexact' on UnaccentedSearchFilter
-            search_fields = ('=title',)
-
-        view = SearchListView.as_view()
-
-        request = factory.get('/', {'search': 'Jeremy'})
-        response = view(request)
-        assert len(response.data) == 2
-        assert {item['title'] for item in response.data} == {'Jeremy', 'Jérémy'}
+                response = SearchListView.as_view()(factory.get('/', {'search': term}))
+                assert {item['title'] for item in response.data} == expected
 
     def test_search_field_with_multiple_words(self):
         class SearchListView(generics.ListAPIView):

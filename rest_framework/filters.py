@@ -202,7 +202,9 @@ class UnaccentedSearchFilter(SearchFilter):
     lookup_prefixes = {
         '^': 'unaccent__istartswith',
         '=': 'unaccent__iexact',
-        '@': 'unaccent__search',
+        # '@' stays accent-sensitive: unaccent can't be applied to full-text
+        # search.
+        '@': 'search',
         '$': 'unaccent__iregex',
     }
     default_lookup = 'unaccent__icontains'
