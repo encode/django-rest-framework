@@ -16,7 +16,7 @@ from django.core.exceptions import ValidationError as DjangoValidationError
 from django.core.validators import (
     EmailValidator, MaxLengthValidator, MaxValueValidator, MinLengthValidator,
     MinValueValidator, ProhibitNullCharactersValidator, RegexValidator,
-    URLValidator
+    URLValidator, ip_address_validators
 )
 from django.forms import FilePathField as DjangoFilePathField
 from django.forms import ImageField as DjangoImageField
@@ -30,13 +30,7 @@ from django.utils.formats import localize_input, sanitize_separators
 from django.utils.ipv6 import clean_ipv6_address
 from django.utils.translation import gettext_lazy as _
 
-try:
-    import pytz
-except ImportError:
-    pytz = None
-
 from rest_framework import DJANGO_DURATION_FORMAT, ISO_8601
-from rest_framework.compat import ip_address_validators
 from rest_framework.exceptions import ErrorDetail, ValidationError
 from rest_framework.settings import api_settings
 from rest_framework.utils import html, humanize_datetime, json, representation
@@ -1178,17 +1172,12 @@ class DateTimeField(Field):
                     return value.astimezone(field_timezone)
                 except OverflowError:
                     self.fail('overflow')
-            try:
-                dt = timezone.make_aware(value, field_timezone)
-                # When the resulting datetime is a ZoneInfo instance, it won't necessarily
-                # throw given an invalid datetime, so we need to specifically check.
-                if not valid_datetime(dt):
-                    self.fail('make_aware', timezone=field_timezone)
-                return dt
-            except Exception as e:
-                if pytz and isinstance(e, pytz.exceptions.InvalidTimeError):
-                    self.fail('make_aware', timezone=field_timezone)
-                raise e
+            dt = timezone.make_aware(value, field_timezone)
+            # When the resulting datetime is a ZoneInfo instance, it won't necessarily
+            # throw given an invalid datetime, so we need to specifically check.
+            if not valid_datetime(dt):
+                self.fail('make_aware', timezone=field_timezone)
+            return dt
         elif (field_timezone is None) and timezone.is_aware(value):
             return timezone.make_naive(value, datetime.timezone.utc)
         return value
