@@ -10,6 +10,20 @@ from django.db import connection
 
 
 @pytest.fixture
+def unaccent_extension(db):
+    """
+    Enable the PostgreSQL ``unaccent`` extension for a single test.
+
+    Opt in with ``@pytest.mark.usefixtures("unaccent_extension")`` so only
+    tests that need it have it. No-op on non-PostgreSQL backends.
+    """
+    if connection.vendor != 'postgresql':
+        return
+    with connection.cursor() as cursor:
+        cursor.execute('CREATE EXTENSION IF NOT EXISTS unaccent')
+
+
+@pytest.fixture
 def reset_sequences():
     """
     Reset all database sequences so PKs start from 1.
