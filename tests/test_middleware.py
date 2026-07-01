@@ -1,6 +1,3 @@
-import unittest
-
-import django
 from django.contrib.auth.models import User
 from django.http import HttpRequest
 from django.test import override_settings
@@ -113,7 +110,6 @@ class TestMiddleware(APITestCase):
         assert response.status_code == 200
 
 
-@unittest.skipUnless(django.VERSION >= (5, 1), 'Only for Django 5.1+')
 @override_settings(
     ROOT_URLCONF='tests.test_middleware',
     MIDDLEWARE=(
