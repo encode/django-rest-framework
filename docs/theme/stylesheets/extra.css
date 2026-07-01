@@ -83,6 +83,6 @@ body::before {
 
 
 a.md-nav__link.md-nav__link--active {
-  font-weight: 700 !important;
-  color: var(--md-accent-fg-color) !important;
+  font-weight: 700;
+  color: var(--md-accent-fg-color);
 }
