@@ -664,7 +664,40 @@ class ListSerializer(BaseSerializer):
         self.child.initial_data = data
         return super().run_child_validation(data)
         """
-        return self.child.run_validation(data)
+        if not hasattr(self.child, 'instance'):
+            return self.child.run_validation(data)
+
+        if not (
+            hasattr(self, '_list_serializer_instance_map') and
+            isinstance(data, Mapping)
+        ):
+            return self.child.run_validation(data)
+
+        lookup_field = getattr(getattr(self.child, 'Meta', None), 'lookup_field', 'pk')
+        data_pk = data.get(lookup_field)
+
+        if data_pk is None:
+            return self.child.run_validation(data)
+
+        child_instance = self._list_serializer_instance_map.get(str(data_pk))
+        if child_instance is None:
+            return self.child.run_validation(data)
+
+        original_instance = self.child.instance
+        has_initial_data = hasattr(self.child, 'initial_data')
+        if has_initial_data:
+            original_initial_data = self.child.initial_data
+
+        try:
+            self.child.instance = child_instance
+            self.child.initial_data = data
+            return self.child.run_validation(data)
+        finally:
+            self.child.instance = original_instance
+            if has_initial_data:
+                self.child.initial_data = original_initial_data
+            elif hasattr(self.child, 'initial_data'):
+                delattr(self.child, 'initial_data')
 
     def to_internal_value(self, data):
         """
@@ -702,19 +735,50 @@ class ListSerializer(BaseSerializer):
         ret = []
         errors = []
 
-        for item in data:
-            try:
-                validated = self.run_child_validation(item)
-            except ValidationError as exc:
-                errors.append(exc.detail)
-            else:
-                ret.append(validated)
-                errors.append({})
+        # Build a primary key lookup for instance matching in many=True updates.
+        instance_map = None
+        if self.instance is not None:
+            if isinstance(self.instance, Mapping):
+                instance_map = {str(k): v for k, v in self.instance.items()}
+            elif isinstance(self.instance, (list, tuple, models.query.QuerySet)):
+                instance_map = {}
+                lookup_field = getattr(getattr(self.child, 'Meta', None), 'lookup_field', 'pk')
 
-        if any(errors):
-            raise ValidationError(errors)
+                for obj in self.instance:
+                    pk = getattr(obj, lookup_field, None)
 
-        return ret
+                    if pk is not None:
+                        key = str(pk)
+                        # If duplicate keys are present, keep the last value,
+                        # matching standard mapping assignment behavior.
+                        instance_map[key] = obj
+
+        has_instance_map = hasattr(self, '_list_serializer_instance_map')
+        if has_instance_map:
+            original_instance_map = self._list_serializer_instance_map
+
+        if instance_map is not None:
+            self._list_serializer_instance_map = instance_map
+
+        try:
+            for item in data:
+                try:
+                    validated = self.run_child_validation(item)
+                except ValidationError as exc:
+                    errors.append(exc.detail)
+                else:
+                    ret.append(validated)
+                    errors.append({})
+
+            if any(errors):
+                raise ValidationError(errors)
+
+            return ret
+        finally:
+            if instance_map is not None and has_instance_map:
+                self._list_serializer_instance_map = original_instance_map
+            elif instance_map is not None and hasattr(self, '_list_serializer_instance_map'):
+                delattr(self, '_list_serializer_instance_map')
 
     def to_representation(self, data):
         """
@@ -749,6 +813,13 @@ class ListSerializer(BaseSerializer):
         """
         Save and return a list of object instances.
         """
+        assert hasattr(self, '_errors'), (
+            'You must call `.is_valid()` before calling `.save()`.'
+        )
+        assert not self.errors, (
+            'You cannot call `.save()` on a serializer with invalid data.'
+        )
+
         # Guard against incorrect use of `serializer.save(commit=False)`
         assert 'commit' not in kwargs, (
             "'commit' is not a valid keyword argument to the 'save()' method. "
@@ -756,9 +827,13 @@ class ListSerializer(BaseSerializer):
             "inspect 'serializer.validated_data' instead. "
             "You can also pass additional keyword arguments to 'save()' if you "
             "need to set extra attributes on the saved model instance. "
-            "For example: 'serializer.save(owner=request.user)'.'"
+            "For example: 'serializer.save(owner=request.user)'."
         )
-
+        assert not hasattr(self, '_data'), (
+            "You cannot call `.save()` after accessing `serializer.data`. "
+            "If you need to access data before committing to the database then "
+            "inspect 'serializer.validated_data' instead. "
+        )
         validated_data = [
             {**attrs, **kwargs} for attrs in self.validated_data
         ]

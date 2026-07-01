@@ -799,6 +799,8 @@ To support multiple updates you'll need to do so explicitly. When writing your m
 
 You will need to add an explicit `id` field to the instance serializer. The default implicitly-generated `id` field is marked as `read_only`. This causes it to be removed on updates. Once you declare it explicitly, it will be available in the list serializer's `update` method.
 
+During validation, `ListSerializer` matches each input item to an existing instance using `pk` by default. To use another identifier, such as `id` or `uuid`, set `lookup_field` on the child serializer's `Meta` class.
+
 Here's an example of how you might choose to implement multiple updates:
 
     class BookListSerializer(serializers.ListSerializer):
@@ -831,6 +833,7 @@ Here's an example of how you might choose to implement multiple updates:
 
         class Meta:
             list_serializer_class = BookListSerializer
+            lookup_field = 'id'
 
 ### Customizing ListSerializer initialization
 
