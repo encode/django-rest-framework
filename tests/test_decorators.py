@@ -1,6 +1,7 @@
 import sys
 
 import pytest
+from django.core.exceptions import ImproperlyConfigured
 from django.test import TestCase
 
 from rest_framework import status
@@ -8,7 +9,7 @@ from rest_framework.authentication import BasicAuthentication
 from rest_framework.decorators import (
     action, api_view, authentication_classes, content_negotiation_class,
     metadata_class, parser_classes, permission_classes, renderer_classes,
-    schema, throttle_classes, versioning_class
+    schema, throttle_classes, throttle_scope, versioning_class
 )
 from rest_framework.negotiation import BaseContentNegotiation
 from rest_framework.parsers import JSONParser
@@ -17,7 +18,7 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from rest_framework.schemas import AutoSchema
 from rest_framework.test import APIRequestFactory
-from rest_framework.throttling import UserRateThrottle
+from rest_framework.throttling import ScopedRateThrottle, UserRateThrottle
 from rest_framework.versioning import QueryParameterVersioning
 from rest_framework.views import APIView
 
@@ -152,6 +153,50 @@ class DecoratorTestCase(TestCase):
 
         response = view(request)
         assert response.status_code == status.HTTP_429_TOO_MANY_REQUESTS
+
+    def test_throttle_scope(self):
+        scope = "x"
+
+        class OncePerDayScopedThrottle(ScopedRateThrottle):
+            THROTTLE_RATES = {scope: "1/day"}
+
+        @api_view(['GET'])
+        @throttle_classes([OncePerDayScopedThrottle])
+        @throttle_scope(scope)
+        def scoped_view_1(request):
+            return Response({})
+
+        @api_view(['GET'])
+        @throttle_classes([OncePerDayScopedThrottle])
+        @throttle_scope(scope)
+        def scoped_view_2(request):
+            return Response({})
+
+        @api_view(['GET'])
+        @throttle_classes([OncePerDayScopedThrottle])
+        @throttle_scope(None)
+        def unscoped_view(request):
+            return Response({})
+
+        @api_view(['GET'])
+        @throttle_classes([OncePerDayScopedThrottle])
+        @throttle_scope("invalid scope")
+        def invalid_scope_view(request):
+            return Response({})
+
+        request = self.factory.get('/')
+
+        response = scoped_view_1(request)
+        assert response.status_code == status.HTTP_200_OK
+
+        response = scoped_view_2(request)
+        assert response.status_code == status.HTTP_429_TOO_MANY_REQUESTS
+
+        response = unscoped_view(request)
+        assert response.status_code == status.HTTP_200_OK
+
+        with pytest.raises(ImproperlyConfigured):
+            invalid_scope_view(request)
 
     def test_versioning_class(self):
         @api_view(["GET"])
