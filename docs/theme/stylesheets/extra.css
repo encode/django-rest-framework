@@ -81,7 +81,6 @@ body::before {
     z-index: -1;
 }
 
-
 a.md-nav__link.md-nav__link--active {
   font-weight: 700;
   color: var(--md-accent-fg-color);
