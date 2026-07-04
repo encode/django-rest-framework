@@ -11,6 +11,7 @@ import json  # noqa
 import re
 import sys
 import tempfile
+import uuid
 
 import pytest
 from django.core.exceptions import ImproperlyConfigured
@@ -246,6 +247,53 @@ class TestRegularFieldMappings(TestCase):
         serializer = TestSerializer(instance, data={'value_limit_field': 6}, partial=True)
         assert serializer.is_valid(), serializer.errors
         assert serializer.validated_data == {'value_limit_field': 6}
+
+    def test_callable_default_executed_on_validation(self):
+        """
+        Callable model defaults (e.g. `uuid.uuid4`) should be propagated as
+        callables and evaluated each time the field is omitted from the input.
+        """
+        class CallableDefaultModel(models.Model):
+            uuid_field = models.UUIDField(default=uuid.uuid4)
+            name = models.CharField(max_length=10)
+
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = CallableDefaultModel
+                fields = ('uuid_field', 'name')
+
+        assert TestSerializer().fields['uuid_field'].default is uuid.uuid4
+
+        first = TestSerializer(data={'name': 'foo'})
+        assert first.is_valid(), first.errors
+        assert isinstance(first.validated_data['uuid_field'], uuid.UUID)
+
+        second = TestSerializer(data={'name': 'bar'})
+        assert second.is_valid(), second.errors
+        assert second.validated_data['uuid_field'] != first.validated_data['uuid_field']
+
+    def test_choices_field_with_default(self):
+        """
+        A choices field with a model default should fall back to that default
+        and still validate against the choices when omitted (#7469).
+        """
+        class ChoicesDefaultModel(models.Model):
+            color = models.CharField(max_length=10, choices=COLOR_CHOICES, default='red')
+
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = ChoicesDefaultModel
+                fields = ('color',)
+
+        assert isinstance(TestSerializer().fields['color'], ChoiceField)
+
+        serializer = TestSerializer(data={})
+        assert serializer.is_valid(), serializer.errors
+        assert serializer.validated_data == {'color': 'red'}
+
+        serializer = TestSerializer(data={'color': 'blue'})
+        assert serializer.is_valid(), serializer.errors
+        assert serializer.validated_data == {'color': 'blue'}
 
     def test_nullable_boolean_field_choices(self):
         class NullableBooleanChoicesModel(models.Model):
