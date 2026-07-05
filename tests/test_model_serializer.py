@@ -248,6 +248,19 @@ class TestRegularFieldMappings(TestCase):
         assert serializer.is_valid(), serializer.errors
         assert serializer.validated_data == {'value_limit_field': 6}
 
+    def test_default_value_used_on_full_update(self):
+        """
+        Propagated model defaults should be applied on non-partial updates.
+        """
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = FieldOptionsModel
+                fields = ('value_limit_field', 'default_field')
+
+        instance = FieldOptionsModel(value_limit_field=5, default_field=10)
+        serializer = TestSerializer(instance, data={'value_limit_field': 6})
+        assert serializer.is_valid(), serializer.errors
+        assert serializer.validated_data == {'value_limit_field': 6, 'default_field': 0}
     def test_callable_default_executed_on_validation(self):
         """
         Callable model defaults (e.g. `uuid.uuid4`) should be propagated as
