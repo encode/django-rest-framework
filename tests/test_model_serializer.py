@@ -261,6 +261,31 @@ class TestRegularFieldMappings(TestCase):
         serializer = TestSerializer(instance, data={'value_limit_field': 6})
         assert serializer.is_valid(), serializer.errors
         assert serializer.validated_data == {'value_limit_field': 6, 'default_field': 0}
+
+    def test_relational_field_default_not_propagated(self):
+        """
+        Model defaults on relational fields are not propagated, since a
+        serializer field default is used as-is in `validated_data` while a
+        foreign key model default is expressed as a primary key value
+        rather than a model instance.
+        """
+        class RelationalDefaultTargetModel(models.Model):
+            name = models.CharField(max_length=10)
+
+        class RelationalDefaultSourceModel(models.Model):
+            target = models.ForeignKey(
+                RelationalDefaultTargetModel, on_delete=models.CASCADE, default=1
+            )
+
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = RelationalDefaultSourceModel
+                fields = ('target',)
+
+        field = TestSerializer().fields['target']
+        assert field.default is serializers.empty
+        assert field.required is False
+
     def test_callable_default_executed_on_validation(self):
         """
         Callable model defaults (e.g. `uuid.uuid4`) should be propagated as
