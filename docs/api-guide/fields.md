@@ -47,7 +47,7 @@ If set, this gives the default value that will be used for the field if no input
 
 The `default` is not applied during partial update operations. In the partial update case only fields that are provided in the incoming data will have a validated value returned.
 
-If you're using [Model Serializer](https://www.django-rest-framework.org/api-guide/serializers/#modelserializer) and the corresponding `Model` field declares a `default`, it will be used as the serializer field default.
+If you're using [Model Serializer](https://www.django-rest-framework.org/api-guide/serializers/#modelserializer) and the corresponding `Model` field declares a `default`, it will be used as the serializer field default. This does not apply to relational fields such as `ForeignKey`: a model default on a relational field is expressed as a primary key value rather than a model instance, so it is not propagated and only causes the generated serializer field to be not required.
 
 May be set to a function or other callable, in which case the value will be evaluated each time it is used. When called, it will receive no arguments. If the callable has a `requires_context = True` attribute, then the serializer field will be passed as an argument.
 
