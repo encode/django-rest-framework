@@ -509,6 +509,41 @@ class TestManyRelatedField(APISimpleTestCase):
         assert empty == self.field.get_value(mvd)
 
 
+class TestRelatedFieldGetChoicesUnhashable(APISimpleTestCase):
+    def test_get_choices_with_unhashable_to_representation(self):
+        """get_choices() should not raise TypeError when to_representation returns an unhashable type."""
+        queryset = MockQueryset([
+            MockObject(pk=1, name='foo'),
+            MockObject(pk=2, name='bar'),
+        ])
+
+        class DictRelatedField(serializers.RelatedField):
+            def to_representation(self, obj):
+                return {'id': obj.pk, 'name': obj.name}
+
+            def to_internal_value(self, data):
+                pass
+
+        field = DictRelatedField(read_only=True)
+        field.queryset = queryset
+        choices = field.get_choices()
+        assert choices == {
+            "{'id': 1, 'name': 'foo'}": 'MockObject name=foo, pk=1',
+            "{'id': 2, 'name': 'bar'}": 'MockObject name=bar, pk=2',
+        }
+
+    def test_get_choices_with_hashable_to_representation_unchanged(self):
+        """get_choices() should return original type keys when to_representation returns a hashable."""
+        queryset = MockQueryset([
+            MockObject(pk=1, name='foo'),
+            MockObject(pk=2, name='bar'),
+        ])
+        field = serializers.PrimaryKeyRelatedField(queryset=queryset)
+        choices = field.get_choices()
+        # Keys should remain ints (not stringified), preserving existing behavior
+        assert list(choices.keys()) == [1, 2]
+
+
 class TestHyperlink:
     def setup_method(self):
         self.default_hyperlink = serializers.Hyperlink('http://example.com', 'test')
