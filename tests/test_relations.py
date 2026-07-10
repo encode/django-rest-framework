@@ -528,8 +528,8 @@ class TestRelatedFieldGetChoicesUnhashable(APISimpleTestCase):
         field.queryset = queryset
         choices = field.get_choices()
         assert choices == {
-            "{'id': 1, 'name': 'foo'}": 'MockObject name=foo, pk=1',
-            "{'id': 2, 'name': 'bar'}": 'MockObject name=bar, pk=2',
+            "{'id': 1, 'name': 'foo'}": '<MockObject name=foo, pk=1>',
+            "{'id': 2, 'name': 'bar'}": '<MockObject name=bar, pk=2>',
         }
 
     def test_get_choices_with_hashable_to_representation_unchanged(self):
