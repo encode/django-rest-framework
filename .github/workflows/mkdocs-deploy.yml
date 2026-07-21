@@ -22,7 +22,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7.0.0
       - run: git fetch --no-tags --prune --depth=1 origin gh-pages
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@v6.3.0
         with:
           python-version: 3.x
       - run: pip install --group docs
