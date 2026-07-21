@@ -8,7 +8,7 @@ object creation, and makes it possible to switch between using the implicit
 """
 from django.core.exceptions import FieldError
 from django.db import DataError
-from django.db.models import Exists
+from django.db.models import Exists, QuerySet
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework.exceptions import ValidationError
@@ -43,6 +43,26 @@ def qs_filter(queryset, **kwargs):
         return queryset.none()
 
 
+def _is_single_instance(instance):
+    """
+    Return True if `instance` is a saved model instance (i.e. not None,
+    not a QuerySet, not a list/tuple), and has a `.pk` attribute.
+
+    When a serializer is used with many=True and a queryset is passed as
+    `instance` (e.g. for ListSerializer bulk-create), the child serializer
+    inherits that queryset as its `.instance`. Calling `.pk` on a QuerySet
+    raises AttributeError, crashing the UniqueConstraint validators.
+
+    This helper guards against that case so validators can treat a queryset
+    or list `instance` as a create operation rather than an update.
+    """
+    if instance is None:
+        return False
+    if isinstance(instance, (QuerySet, list, tuple)):
+        return False
+    return hasattr(instance, 'pk')
+
+
 class UniqueValidator:
     """
     Validator that corresponds to `unique=True` on a model field.
@@ -68,8 +88,12 @@ class UniqueValidator:
         """
         If an instance is being updated, then do not include
         that instance itself as a uniqueness conflict.
+
+        When `instance` is a QuerySet or list (e.g. when the serializer is
+        used inside a ListSerializer with many=True), treat this as a create
+        operation and do not attempt to exclude by pk.
         """
-        if instance is not None:
+        if _is_single_instance(instance):
             return queryset.exclude(pk=instance.pk)
         return queryset
 
@@ -149,7 +173,7 @@ class UniqueTogetherValidator:
 
         # If this is an update, then any unprovided field should
         # have it's value set based on the existing instance attribute.
-        if serializer.instance is not None:
+        if _is_single_instance(serializer.instance):
             for source in sources:
                 if source not in attrs:
                     attrs[source] = getattr(serializer.instance, source)
@@ -165,8 +189,12 @@ class UniqueTogetherValidator:
         """
         If an instance is being updated, then do not include
         that instance itself as a uniqueness conflict.
+
+        When `instance` is a QuerySet or list (e.g. when the serializer is
+        used inside a ListSerializer with many=True), treat this as a create
+        operation and do not attempt to exclude by pk.
         """
-        if instance is not None:
+        if _is_single_instance(instance):
             return queryset.exclude(pk=instance.pk)
         return queryset
 
@@ -180,7 +208,7 @@ class UniqueTogetherValidator:
             serializer.fields[field_name].source for field_name in self.fields
         ]
         # Ignore validation if any field is None
-        if serializer.instance is None:
+        if not _is_single_instance(serializer.instance):
             checked_values = [attrs[field_name] for field_name in checked_names]
         else:
             # Ignore validation if all field values are unchanged
@@ -272,8 +300,12 @@ class BaseUniqueForValidator:
         """
         If an instance is being updated, then do not include
         that instance itself as a uniqueness conflict.
+
+        When `instance` is a QuerySet or list (e.g. when the serializer is
+        used inside a ListSerializer with many=True), treat this as a create
+        operation and do not attempt to exclude by pk.
         """
-        if instance is not None:
+        if _is_single_instance(instance):
             return queryset.exclude(pk=instance.pk)
         return queryset
 
