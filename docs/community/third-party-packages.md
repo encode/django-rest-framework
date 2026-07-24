@@ -164,6 +164,7 @@ To submit new content, [create a pull request][drf-create-pr].
 * [drf-standardized-errors][drf-standardized-errors] - DRF exception handler to standardize error responses for all API endpoints.
 * [drf-api-action][drf-api-action] - uses the power of DRF also as a library functions
 * [apitally] - A simple API monitoring, analytics, and request logging tool using middleware. For DRF-specific setup guide, [click here](https://docs.apitally.io/frameworks/django-rest-framework).
+* [drf-api-logger][drf-api-logger] - Provides configurable request and response logging for Django REST Framework, with data masking, optional profiling, and Django admin views.
 * [wireup][wireup] - Dependency injection container with Django integration support. For integration docs, [click here][wireup-django-docs].
 
 ### Customization
@@ -271,6 +272,7 @@ To submit new content, [create a pull request][drf-create-pr].
 [drf-material]: https://github.com/youzarsiph/drf-material
 [django-pyoidc]: https://github.com/makinacorpus/django_pyoidc
 [apitally]: https://github.com/apitally/apitally-py
+[drf-api-logger]: https://github.com/vishalanandl177/DRF-API-Logger
 [drf-shapeless-serializers]: https://github.com/khaledsukkar2/drf-shapeless-serializers
 [django-lisan]: https://github.com/Nabute/django-lisan
 [axioms-drf-py]: https://github.com/abhishektiwari/axioms-drf-py
