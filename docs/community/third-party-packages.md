@@ -143,6 +143,7 @@ To submit new content, [create a pull request][drf-create-pr].
 * [drf-extensions][drf-extensions] - A collection of custom extensions
 * [ember-django-adapter][ember-django-adapter] - An adapter for working with Ember.js
 * [django-versatileimagefield][django-versatileimagefield] - Provides a drop-in replacement for Django's stock `ImageField` that makes it easy to serve images in multiple sizes/renditions from a single field. For DRF-specific implementation docs, [click here][django-versatileimagefield-drf-docs].
+* [drf-api-logger][drf-api-logger] - Provides configurable request and response logging for Django REST Framework, with data masking, optional profiling, and Django admin views.
 * [drf-tracking][drf-tracking] - Utilities to track requests to DRF API views.
 * [drf_tweaks][drf_tweaks] - Serializers with one-step validation (and more), pagination without counts and other tweaks.
 * [django-rest-framework-braces][django-rest-framework-braces] - Collection of utilities for working with Django Rest Framework. The most notable ones are [FormSerializer](https://django-rest-framework-braces.readthedocs.io/en/latest/overview.html#formserializer) and [SerializerForm](https://django-rest-framework-braces.readthedocs.io/en/latest/overview.html#serializerform), which are adapters between DRF serializers and Django forms.
@@ -164,7 +165,6 @@ To submit new content, [create a pull request][drf-create-pr].
 * [drf-standardized-errors][drf-standardized-errors] - DRF exception handler to standardize error responses for all API endpoints.
 * [drf-api-action][drf-api-action] - uses the power of DRF also as a library functions
 * [apitally] - A simple API monitoring, analytics, and request logging tool using middleware. For DRF-specific setup guide, [click here](https://docs.apitally.io/frameworks/django-rest-framework).
-* [drf-api-logger][drf-api-logger] - Provides configurable request and response logging for Django REST Framework, with data masking, optional profiling, and Django admin views.
 * [wireup][wireup] - Dependency injection container with Django integration support. For integration docs, [click here][wireup-django-docs].
 
 ### Customization
@@ -223,6 +223,7 @@ To submit new content, [create a pull request][drf-create-pr].
 [dj-rest-auth]: https://github.com/iMerica/dj-rest-auth
 [django-versatileimagefield]: https://github.com/WGBH/django-versatileimagefield
 [django-versatileimagefield-drf-docs]:https://django-versatileimagefield.readthedocs.io/en/latest/drf_integration.html
+[drf-api-logger]: https://github.com/vishalanandl177/DRF-API-Logger
 [drf-tracking]: https://github.com/aschn/drf-tracking
 [django-rest-framework-braces]: https://github.com/dealertrack/django-rest-framework-braces
 [dry-rest-permissions]: https://github.com/FJNR-inc/dry-rest-permissions
@@ -272,7 +273,6 @@ To submit new content, [create a pull request][drf-create-pr].
 [drf-material]: https://github.com/youzarsiph/drf-material
 [django-pyoidc]: https://github.com/makinacorpus/django_pyoidc
 [apitally]: https://github.com/apitally/apitally-py
-[drf-api-logger]: https://github.com/vishalanandl177/DRF-API-Logger
 [drf-shapeless-serializers]: https://github.com/khaledsukkar2/drf-shapeless-serializers
 [django-lisan]: https://github.com/Nabute/django-lisan
 [axioms-drf-py]: https://github.com/abhishektiwari/axioms-drf-py
