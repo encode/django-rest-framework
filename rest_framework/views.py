@@ -504,7 +504,6 @@ class APIView(View):
         5. Finalizes and returns the response with proper rendering
             and headers applied.
         """
-
         self.args = args
         self.kwargs = kwargs
         request = self.initialize_request(request, *args, **kwargs)
