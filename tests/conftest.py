@@ -3,7 +3,31 @@ import os
 import dj_database_url
 import django
 import pytest
+from django.apps import apps
 from django.core import management
+from django.core.management.color import no_style
+from django.db import connection
+
+
+@pytest.fixture
+def reset_sequences():
+    """
+    Reset all database sequences so PKs start from 1.
+
+    PostgreSQL sequences are non-transactional and persist across
+    TestCase's transaction rollbacks. Apply this fixture to test
+    classes that rely on hardcoded PKs to keep them predictable
+    regardless of execution order. No-op on SQLite.
+    """
+    if connection.vendor != 'postgresql':
+        return
+    table_names = set(connection.introspection.table_names())
+    models = [m for m in apps.get_models() if m._meta.db_table in table_names]
+    sql_list = connection.ops.sequence_reset_sql(no_style(), models)
+    if sql_list:
+        with connection.cursor() as cursor:
+            for sql in sql_list:
+                cursor.execute(sql)
 
 
 def pytest_addoption(parser):

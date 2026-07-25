@@ -76,6 +76,7 @@ class SlugBasedInstanceView(InstanceView):
 
 
 # Tests
+@pytest.mark.usefixtures("reset_sequences")
 class TestRootView(TestCase):
     def setUp(self):
         """
@@ -171,6 +172,7 @@ class TestRootView(TestCase):
 EXPECTED_QUERIES_FOR_PUT = 2
 
 
+@pytest.mark.usefixtures("reset_sequences")
 class TestInstanceView(TestCase):
     def setUp(self):
         """
@@ -334,6 +336,7 @@ class TestFKInstanceView(TestCase):
         self.view = FKInstanceView.as_view()
 
 
+@pytest.mark.usefixtures("reset_sequences")
 class TestOverriddenGetObject(TestCase):
     """
     Test cases for a RetrieveUpdateDestroyAPIView that does NOT use the
@@ -477,6 +480,7 @@ class DynamicSerializerView(generics.ListCreateAPIView):
         return DynamicSerializer
 
 
+@pytest.mark.usefixtures("reset_sequences")
 class TestFilterBackendAppliedToViews(TestCase):
     def setUp(self):
         """
