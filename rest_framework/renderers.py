@@ -10,6 +10,7 @@ REST framework also provides an HTML renderer that renders the browsable API.
 import contextlib
 import datetime
 import sys
+import warnings
 
 from django import forms
 from django.conf import settings
@@ -24,6 +25,7 @@ from rest_framework import ISO_8601, VERSION, exceptions, serializers, status
 from rest_framework.compat import (
     INDENT_SEPARATORS, LONG_SEPARATORS, SHORT_SEPARATORS, pygments_css, yaml
 )
+from rest_framework.deprecation import RemovedInDRF320Warning
 from rest_framework.exceptions import ParseError
 from rest_framework.request import is_form_media_type, override_method
 from rest_framework.settings import api_settings
@@ -107,6 +109,29 @@ class JSONRenderer(BaseRenderer):
         return ret.encode()
 
 
+class _ResultDetailsFallback(dict):
+    """Backwards compatibility dict subclass to """
+    def __getitem__(self, item):
+        if item == 'details':
+            warnings.warn(
+                'The "detail" key is deprecated, update your templates to use "results" instead.',
+                RemovedInDRF320Warning,
+                stacklevel=2,
+            )
+            return super().__getitem__('results')
+        return super().__getitem__(item)
+
+    def __contains__(self, item):
+        if item == 'details':
+            warnings.warn(
+                'The "detail" key is deprecated, update your templates to use "results" instead.',
+                RemovedInDRF320Warning,
+                stacklevel=2,
+            )
+            return super().__contains__('results')
+        return super().__contains__(item)
+
+
 class TemplateHTMLRenderer(BaseRenderer):
     """
     An HTML renderer for use with templates.
@@ -172,7 +197,7 @@ class TemplateHTMLRenderer(BaseRenderer):
         # is raised; wrap it in a dict so Django's template engine can accept it.
         # Use 'results' to stay consistent with paginated response conventions.
         if isinstance(data, list):
-            return {'results': data, 'status_code': response.status_code}
+            return _ResultDetailsFallback(results=data, status_code=response.status_code)
         if response.exception:
             data['status_code'] = response.status_code
         return data

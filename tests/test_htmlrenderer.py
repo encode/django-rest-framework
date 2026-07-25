@@ -137,7 +137,10 @@ class TemplateHTMLRendererTests(TestCase):
         )
         self.assertIn('results', context)
         self.assertEqual(context['results'], [{'name': 'foo'}])
-        self.assertNotIn('details', context)
+
+        # Backwards compatibility until DRF 3.20
+        self.assertIn('details', context)
+        self.assertEqual(context['details'], [{'name': 'foo'}])
 
     # 2 tests below are based on order of if statements in corresponding method
     # of TemplateHTMLRenderer
