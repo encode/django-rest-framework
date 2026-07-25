@@ -26,9 +26,7 @@ from django.utils import timezone
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 
-from rest_framework.compat import (
-    get_referenced_base_fields_from_q, postgres_fields
-)
+from rest_framework.compat import postgres_fields
 from rest_framework.exceptions import ErrorDetail, ValidationError
 from rest_framework.fields import get_error_detail
 from rest_framework.settings import api_settings
@@ -1466,7 +1464,7 @@ class ModelSerializer(Serializer):
                     if constraint.condition is None:
                         condition_fields = []
                     else:
-                        condition_fields = list(get_referenced_base_fields_from_q(constraint.condition))
+                        condition_fields = list(constraint.condition.referenced_base_fields)
                     yield (constraint.fields, model._default_manager, condition_fields, constraint.condition)
 
     def get_uniqueness_extra_kwargs(self, field_names, declared_fields, extra_kwargs):
