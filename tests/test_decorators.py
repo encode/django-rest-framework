@@ -178,7 +178,7 @@ class DecoratorTestCase(TestCase):
     def test_content_negotiation(self):
         class CustomContentNegotiation(BaseContentNegotiation):
             def select_renderer(self, request, renderers, format_suffix):
-                assert request.META['HTTP_ACCEPT'] == 'custom/type'
+                assert request.headers['accept'] == 'custom/type'
                 return (renderers[0], renderers[0].media_type)
 
         @api_view(["GET"])
