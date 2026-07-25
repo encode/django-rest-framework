@@ -45,7 +45,7 @@ class BaseFilterTests(TestCase):
 
 
 class SearchFilterModel(models.Model):
-    title = models.CharField(max_length=20)
+    title = models.CharField(max_length=25)
     text = models.CharField(max_length=100)
 
 
@@ -246,6 +246,33 @@ class SearchFilterTests(TestCase):
                 {'id': 1, 'title': 'z', 'text': 'abc'},
                 {'id': 2, 'title': 'zz', 'text': 'bcd'},
             ]
+
+    @pytest.mark.requires_postgres
+    @pytest.mark.usefixtures("unaccent_extension")
+    def test_unaccented_search_lookups(self):
+        for title in ('Jérémy', 'Jeremy', 'Jérémie', 'Amélie'):
+            SearchFilterModel.objects.create(title=title, text=title.lower())
+
+        # (search field, term, expected titles) for each prefix. All but '@'
+        # are accent-insensitive, so an unaccented term matches accented titles.
+        cases = [
+            ('title', 'rem', {'Jérémy', 'Jeremy', 'Jérémie'}),       # unaccent__icontains
+            ('^title', 'jer', {'Jérémy', 'Jeremy', 'Jérémie'}),      # unaccent__istartswith
+            ('=title', 'jeremy', {'Jérémy', 'Jeremy'}),              # unaccent__iexact
+            ('$title', 'jerem.+', {'Jérémy', 'Jeremy', 'Jérémie'}),  # unaccent__iregex
+            ('@title', 'Jeremy', {'Jeremy'}),                        # search (accent-sensitive)
+        ]
+
+        for search_field, term, expected in cases:
+            with self.subTest(search_field=search_field):
+                class SearchListView(generics.ListAPIView):
+                    queryset = SearchFilterModel.objects.all()
+                    serializer_class = SearchFilterSerializer
+                    filter_backends = (filters.UnaccentedSearchFilter,)
+                    search_fields = (search_field,)
+
+                response = SearchListView.as_view()(factory.get('/', {'search': term}))
+                assert {item['title'] for item in response.data} == expected
 
     def test_search_field_with_multiple_words(self):
         class SearchListView(generics.ListAPIView):
@@ -459,6 +486,7 @@ class SearchFilterM2MSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+@pytest.mark.usefixtures("reset_sequences")
 class SearchFilterM2MTests(TestCase):
     def setUp(self):
         # Sequence of title/text/attributes is:
@@ -657,6 +685,7 @@ class DjangoFilterOrderingSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+@pytest.mark.usefixtures("reset_sequences")
 class OrderingFilterTests(TestCase):
     def setUp(self):
         # Sequence of title/text is:
@@ -974,6 +1003,7 @@ class SensitiveDataSerializer3(serializers.ModelSerializer):
         fields = ('id', 'user')
 
 
+@pytest.mark.usefixtures("reset_sequences")
 class SensitiveOrderingFilterTests(TestCase):
     def setUp(self):
         for idx in range(3):
