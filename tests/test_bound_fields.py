@@ -1,6 +1,7 @@
 from django.http import QueryDict
 
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 
 
 class TestSimpleBoundField:
@@ -210,6 +211,28 @@ class TestNestedBoundField:
 
             rendered_packed = ''.join(rendered.split())
             assert rendered_packed == expected_packed
+
+    def test_child_bound_field_after_parent_validation_error(self):
+        class ChildSerializer(serializers.Serializer):
+            value = serializers.CharField()
+
+        class ParentSerializer(serializers.Serializer):
+            nested = ChildSerializer()
+
+            def validate_nested(self, nested):
+                # Raise parent-level (non-field) validation error
+                raise ValidationError(["parent-level nested error"])
+
+        serializer = ParentSerializer(data={"nested": {"value": "ignored"}})
+        assert not serializer.is_valid()
+
+        # Parent-level error is a list (current problematic case)
+        assert serializer.errors["nested"] == ["parent-level nested error"]
+        parent_bound = serializer["nested"]
+        child_bound = parent_bound["value"]
+        assert child_bound.errors is None
+        assert child_bound.value == "ignored"
+        assert child_bound.name == "nested.value"
 
 
 class TestJSONBoundField:

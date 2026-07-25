@@ -116,6 +116,7 @@ DEFAULTS = {
     'COMPACT_JSON': True,
     'STRICT_JSON': True,
     'COERCE_DECIMAL_TO_STRING': True,
+    'COERCE_BIGINT_TO_STRING': False,
     'UPLOADED_FILES_USE_URL': True,
 
     # Browsable API

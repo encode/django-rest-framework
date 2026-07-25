@@ -6,20 +6,28 @@ This tutorial will cover creating a simple pastebin code highlighting Web API.  
 
 The tutorial is fairly in-depth, so you should probably get a cookie and a cup of your favorite brew before getting started.  If you just want a quick overview, you should head over to the [quickstart] documentation instead.
 
----
-
-**Note**: The code for this tutorial is available in the [encode/rest-framework-tutorial][repo] repository on GitHub. Feel free to clone the repository and see the code in action.
-
----
+!!! note
+    The code for this tutorial is available in the [encode/rest-framework-tutorial][repo] repository on GitHub. Feel free to clone the repository and see the code in action.
 
 ## Setting up a new environment
 
-Before we do anything else we'll create a new virtual environment, using [venv]. This will make sure our package configuration is kept nicely isolated from any other projects we're working on.
+Before we do anything else we'll create a new virtual environment called `.venv`, using [venv]. This will make sure our package configuration is kept nicely isolated from any other projects we're working on.
 
-```bash
-python3 -m venv env
-source env/bin/activate
-```
+=== ":fontawesome-brands-linux: Linux, :fontawesome-brands-apple: macOS"
+
+    ```bash
+    python3 -m venv .venv
+    source .venv/bin/activate
+    ```
+
+=== ":fontawesome-brands-windows: Windows"
+
+    If you use Bash for Windows
+
+    ```bash
+    python3 -m venv .venv
+    source .venv\Scripts\activate
+    ```
 
 Now that we're inside a virtual environment, we can install our package requirements.
 
@@ -29,7 +37,8 @@ pip install djangorestframework
 pip install pygments  # We'll be using this for the code highlighting
 ```
 
-**Note:** To exit the virtual environment at any time, just type `deactivate`.  For more information see the [venv documentation][venv].
+!!! tip
+    To exit the virtual environment at any time, just type `deactivate`.  For more information see the [venv documentation][venv].
 
 ## Getting started
 
@@ -219,6 +228,10 @@ Let's look at refactoring our serializer using the `ModelSerializer` class.
 Open the file `snippets/serializers.py` again, and replace the `SnippetSerializer` class with the following.
 
 ```python
+from rest_framework import serializers
+from snippets.models import Snippet
+
+
 class SnippetSerializer(serializers.ModelSerializer):
     class Meta:
         model = Snippet
@@ -364,9 +377,9 @@ Quit the server with CONTROL-C.
 
 In another terminal window, we can test the server.
 
-We can test our API using [curl][curl] or [httpie][httpie]. Httpie is a user friendly http client that's written in Python. Let's install that.
+We can test our API using [curl][curl] or [HTTPie][HTTPie]. HTTPie is a user-friendly http client that's written in Python. Let's install that.
 
-You can install httpie using pip:
+You can install HTTPie using pip:
 
 ```bash
 pip install httpie
@@ -438,5 +451,5 @@ We'll see how we can start to improve things in [part 2 of the tutorial][tut-2].
 [repo]: https://github.com/encode/rest-framework-tutorial
 [venv]: https://docs.python.org/3/library/venv.html
 [tut-2]: 2-requests-and-responses.md
-[httpie]: https://github.com/httpie/httpie#installation
+[HTTPie]: https://github.com/httpie/httpie#installation
 [curl]: https://curl.haxx.se/
