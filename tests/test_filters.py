@@ -45,7 +45,7 @@ class BaseFilterTests(TestCase):
 
 
 class SearchFilterModel(models.Model):
-    title = models.CharField(max_length=20)
+    title = models.CharField(max_length=25)
     text = models.CharField(max_length=100)
 
 
@@ -459,6 +459,7 @@ class SearchFilterM2MSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+@pytest.mark.usefixtures("reset_sequences")
 class SearchFilterM2MTests(TestCase):
     def setUp(self):
         # Sequence of title/text/attributes is:
@@ -657,6 +658,7 @@ class DjangoFilterOrderingSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+@pytest.mark.usefixtures("reset_sequences")
 class OrderingFilterTests(TestCase):
     def setUp(self):
         # Sequence of title/text is:
@@ -974,6 +976,7 @@ class SensitiveDataSerializer3(serializers.ModelSerializer):
         fields = ('id', 'user')
 
 
+@pytest.mark.usefixtures("reset_sequences")
 class SensitiveOrderingFilterTests(TestCase):
     def setUp(self):
         for idx in range(3):
