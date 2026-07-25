@@ -237,6 +237,18 @@ For example:
 
 By default, the search parameter is named `'search'`, but this may be overridden with the `SEARCH_PARAM` setting in the `REST_FRAMEWORK` configuration.
 
+#### Accent-insensitive search
+
+The `UnaccentedSearchFilter` subclass performs accent-insensitive matching, so that a search for `Jeremy` also matches `Jérémy`. It behaves like `SearchFilter`, except the lookups are wrapped with the `unaccent` transform: the default lookup becomes `unaccent__icontains`, `^` becomes `unaccent__istartswith`, `=` becomes `unaccent__iexact`, and `$` becomes `unaccent__iregex`. The `@` (full-text search) prefix is left unchanged, as the `unaccent` transform cannot be combined with a full-text search lookup.
+
+    from rest_framework import filters
+
+    class MyView(generics.ListAPIView):
+        filter_backends = [filters.UnaccentedSearchFilter]
+        search_fields = ['name']
+
+This is currently only supported on Django's [PostgreSQL backend][postgres-lookups], and requires the `unaccent` extension to be installed and `django.contrib.postgres` to be present in `INSTALLED_APPS`.
+
 To dynamically change search fields based on request content, it's possible to subclass the `SearchFilter` and override the `get_search_fields()` function. For example, the following subclass will only search on `title` if the query parameter `title_only` is in the request:
 
     from rest_framework import filters
@@ -370,3 +382,4 @@ The [djangorestframework-word-filter][django-rest-framework-word-search-filter] 
 [HStoreField]: https://docs.djangoproject.com/en/stable/ref/contrib/postgres/fields/#hstorefield
 [JSONField]: https://docs.djangoproject.com/en/stable/ref/models/fields/#django.db.models.JSONField
 [postgres-search]: https://docs.djangoproject.com/en/stable/ref/contrib/postgres/search/
+[postgres-lookups]: https://docs.djangoproject.com/en/stable/ref/contrib/postgres/lookups/#unaccent
