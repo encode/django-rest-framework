@@ -46,5 +46,3 @@ repos:
   rev: 1.24.0
   hooks:
   - id: django-upgrade
-    # test_urlpatterns.py deliberately exercises re_path() handling
-    exclude: ^tests/test_urlpatterns\.py$
