@@ -440,40 +440,68 @@ class TestGenericIPAddressFieldValidation(TestCase):
                          '{}'.format(s.errors))
 
     def test_ip_address_validation_with_protocol_ipv4(self):
-        class IPAddressFieldModel(models.Model):
+        class IPv4AddressFieldModel(models.Model):
             address = models.GenericIPAddressField(protocol='IPv4')
 
-            class Meta:
-                app_label = 'test_model_serializer'
-
         class TestSerializer(serializers.ModelSerializer):
             class Meta:
-                model = IPAddressFieldModel
+                model = IPv4AddressFieldModel
                 fields = '__all__'
+
+        expected = dedent("""
+            TestSerializer():
+                id = IntegerField(label='ID', read_only=True)
+                address = IPAddressField(protocol='IPv4')
+        """)
+        self.assertEqual(repr(TestSerializer()), expected)
 
         s = TestSerializer(data={'address': 'not an ip address'})
         self.assertFalse(s.is_valid())
         self.assertEqual(1, len(s.errors['address']),
                          'Unexpected number of validation errors: '
                          '{}'.format(s.errors))
+
+        # An IPv6 address is not valid for an IPv4-only field.
+        s = TestSerializer(data={'address': '2001:db8::1'})
+        self.assertFalse(s.is_valid())
+        self.assertEqual(1, len(s.errors['address']),
+                         'Unexpected number of validation errors: '
+                         '{}'.format(s.errors))
+
+        s = TestSerializer(data={'address': '192.0.2.1'})
+        self.assertTrue(s.is_valid(), s.errors)
 
     def test_ip_address_validation_with_protocol_ipv6(self):
-        class IPAddressFieldModel(models.Model):
+        class IPv6AddressFieldModel(models.Model):
             address = models.GenericIPAddressField(protocol='IPv6')
-
-            class Meta:
-                app_label = 'test_model_serializer'
 
         class TestSerializer(serializers.ModelSerializer):
             class Meta:
-                model = IPAddressFieldModel
+                model = IPv6AddressFieldModel
                 fields = '__all__'
+
+        expected = dedent("""
+            TestSerializer():
+                id = IntegerField(label='ID', read_only=True)
+                address = IPAddressField(protocol='IPv6')
+        """)
+        self.assertEqual(repr(TestSerializer()), expected)
 
         s = TestSerializer(data={'address': 'not an ip address'})
         self.assertFalse(s.is_valid())
         self.assertEqual(1, len(s.errors['address']),
                          'Unexpected number of validation errors: '
                          '{}'.format(s.errors))
+
+        # An IPv4 address is not valid for an IPv6-only field.
+        s = TestSerializer(data={'address': '192.0.2.1'})
+        self.assertFalse(s.is_valid())
+        self.assertEqual(1, len(s.errors['address']),
+                         'Unexpected number of validation errors: '
+                         '{}'.format(s.errors))
+
+        s = TestSerializer(data={'address': '2001:db8::1'})
+        self.assertTrue(s.is_valid(), s.errors)
 
 
 @pytest.mark.skipif('not postgres_fields')
