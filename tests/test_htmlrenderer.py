@@ -8,6 +8,7 @@ from django.urls import path
 
 from rest_framework import status
 from rest_framework.decorators import api_view, renderer_classes
+from rest_framework.deprecation import RemovedInDRF320Warning
 from rest_framework.exceptions import ValidationError
 from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
@@ -48,12 +49,20 @@ def list_view(request):
     return Response(data, template_name='list.html')
 
 
+@api_view(('GET',))
+@renderer_classes((TemplateHTMLRenderer,))
+def deprecated_list_view(request):
+    data = [{'name': 'foo'}, {'name': 'bar'}]
+    return Response(data, template_name='deprecated_list.html')
+
+
 urlpatterns = [
     path('', example),
     path('permission_denied', permission_denied),
     path('not_found', not_found),
     path('validation_error', validation_error),
     path('list', list_view),
+    path('deprecated_list', deprecated_list_view),
 ]
 
 
@@ -70,6 +79,7 @@ class TemplateHTMLRendererTests(TestCase):
         Monkeypatch get_template
         """
         self.get_template = django.template.loader.get_template
+        self.select_template = django.template.loader.select_template
 
         def get_template(template_name, dirs=None):
             if template_name == 'example.html':
@@ -83,6 +93,10 @@ class TemplateHTMLRendererTests(TestCase):
                 return engines['django'].from_string(
                     "{% for item in results %}{{ item.name }}{% endfor %}"
                 )
+            if template_name_list == ['deprecated_list.html']:
+                return engines['django'].from_string(
+                    "{% for item in details %}{{ item.name }}{% endfor %}"
+                )
             raise TemplateDoesNotExist(template_name_list[0])
 
         django.template.loader.get_template = get_template
@@ -93,6 +107,7 @@ class TemplateHTMLRendererTests(TestCase):
         Revert monkeypatching
         """
         django.template.loader.get_template = self.get_template
+        django.template.loader.select_template = self.select_template
 
     def test_simple_html_view(self):
         response = self.client.get('/')
@@ -124,6 +139,13 @@ class TemplateHTMLRendererTests(TestCase):
         self.assertContains(response, 'bar')
         self.assertEqual(response['Content-Type'], 'text/html; charset=utf-8')
 
+    def test_list_view_with_deprecated_details_variable(self):
+        with pytest.warns(RemovedInDRF320Warning, match='use "results" instead'):
+            response = self.client.get('/deprecated_list')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertContains(response, 'foo')
+        self.assertContains(response, 'bar')
+
     def test_get_template_context_wraps_list_under_results_key(self):
         renderer = TemplateHTMLRenderer()
 
@@ -135,12 +157,12 @@ class TemplateHTMLRendererTests(TestCase):
         context = renderer.get_template_context(
             [{'name': 'foo'}], {'response': MockResponse()}
         )
-        self.assertIn('results', context)
-        self.assertEqual(context['results'], [{'name': 'foo'}])
+        assert context['results'] == [{'name': 'foo'}]
+        assert context['status_code'] == 200
 
-        # Backwards compatibility until DRF 3.20
-        self.assertIn('details', context)
-        self.assertEqual(context['details'], [{'name': 'foo'}])
+        # Deprecated alias for 'results', removed in DRF 3.20
+        with pytest.warns(RemovedInDRF320Warning, match='use "results" instead'):
+            assert list(context['details']) == [{'name': 'foo'}]
 
     # 2 tests below are based on order of if statements in corresponding method
     # of TemplateHTMLRenderer

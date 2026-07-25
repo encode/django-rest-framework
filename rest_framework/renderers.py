@@ -109,27 +109,44 @@ class JSONRenderer(BaseRenderer):
         return ret.encode()
 
 
-class _ResultDetailsFallback(dict):
-    """Backwards compatibility dict subclass to """
-    def __getitem__(self, item):
-        if item == 'details':
+class _DeprecatedResultsList(list):
+    """
+    The list exposed under the legacy `details` template variable, warning on
+    first use to point users at `results` instead.
+
+    The deprecation lives on the value rather than on the context dict, because
+    Django copies the context dict into a plain `dict` when building the
+    `RequestContext`, which would drop any `dict` subclass behavior.
+
+    See `TemplateHTMLRenderer.get_template_context()`.
+    """
+    _warned = False
+
+    def _warn(self):
+        if not self._warned:
+            self._warned = True
             warnings.warn(
-                'The "detail" key is deprecated, update your templates to use "results" instead.',
+                'The "details" template variable is deprecated, '
+                'update your templates to use "results" instead.',
                 RemovedInDRF320Warning,
-                stacklevel=2,
+                stacklevel=3,
             )
-            return super().__getitem__('results')
+
+    def __iter__(self):
+        self._warn()
+        return super().__iter__()
+
+    def __len__(self):
+        self._warn()
+        return super().__len__()
+
+    def __getitem__(self, item):
+        self._warn()
         return super().__getitem__(item)
 
-    def __contains__(self, item):
-        if item == 'details':
-            warnings.warn(
-                'The "detail" key is deprecated, update your templates to use "results" instead.',
-                RemovedInDRF320Warning,
-                stacklevel=2,
-            )
-            return super().__contains__('results')
-        return super().__contains__(item)
+    def __repr__(self):
+        self._warn()
+        return super().__repr__()
 
 
 class TemplateHTMLRenderer(BaseRenderer):
@@ -197,7 +214,12 @@ class TemplateHTMLRenderer(BaseRenderer):
         # is raised; wrap it in a dict so Django's template engine can accept it.
         # Use 'results' to stay consistent with paginated response conventions.
         if isinstance(data, list):
-            return _ResultDetailsFallback(results=data, status_code=response.status_code)
+            return {
+                'results': data,
+                # Deprecated alias for 'results', kept until DRF 3.20.
+                'details': _DeprecatedResultsList(data),
+                'status_code': response.status_code,
+            }
         if response.exception:
             data['status_code'] = response.status_code
         return data
