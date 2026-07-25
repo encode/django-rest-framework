@@ -15,14 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7.0.0
-        with:
-          fetch-depth: 0
-
-      - uses: actions/setup-python@v6.3.0
-        with:
-          python-version: "3.10"
-
-      - uses: pre-commit/action@v3.0.1
+      - uses: j178/prek-action@v2.0.6
 
   tests:
     name: Python ${{ matrix.python-version }}
