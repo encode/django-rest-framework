@@ -4781,6 +4781,23 @@ class EventSerializer(serializers.Serializer):
             raise serializers.ValidationError(&quot;finish must occur after start&quot;)
         return data
 </code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>Object-Level Validation and Partial Updates</strong></p>
+<p>When performing a <strong>partial update</strong> (<code>PATCH</code>), the <code>data</code> dictionary passed to the <code>validate()</code> method will <strong>only contain the fields</strong> provided in the request. If your validation logic depends on multiple fields, you must account for cases where some fields are missing from <code>data</code>.</p>
+<p>To access fields not included in the partial update, you should retrieve them from the existing object instance using <code>self.instance</code>:</p>
+<div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+    <span class="c1"># Check if &quot;status&quot; is being updated, or use the existing value</span>
+    <span class="n">status</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;status&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="o">.</span><span class="n">status</span><span class="p">)</span>
+
+    <span class="c1"># Check if &quot;price&quot; is being updated, or use the existing value</span>
+    <span class="n">price</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;price&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="o">.</span><span class="n">price</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">status</span> <span class="o">==</span> <span class="s2">&quot;active&quot;</span> <span class="ow">and</span> <span class="n">price</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">serializers</span><span class="o">.</span><span class="n">ValidationError</span><span class="p">(</span><span class="s2">&quot;Active products must have a price.&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">data</span>
+</code></pre></div>
+</div>
 <h4 id="validators">Validators<a class="headerlink" href="#validators" title="Permanent link">&para;</a></h4>
 <p>Individual fields on a serializer can include validators, by declaring them on the field instance, for example:</p>
 <div class="language-text highlight"><pre><span></span><code>def multiple_of_ten(value):
