@@ -1347,6 +1347,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="SearchFilter">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#accent-insensitive-search" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Accent-insensitive search
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
           <li class="md-nav__item">
@@ -2972,6 +2989,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="SearchFilter">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#accent-insensitive-search" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Accent-insensitive search
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
           <li class="md-nav__item">
@@ -3394,6 +3428,15 @@ class UserListView(generics.ListAPIView):
 <div class="language-text highlight"><pre><span></span><code>search_fields = [&#39;=username&#39;, &#39;=email&#39;]
 </code></pre></div>
 <p>By default, the search parameter is named <code>'search'</code>, but this may be overridden with the <code>SEARCH_PARAM</code> setting in the <code>REST_FRAMEWORK</code> configuration.</p>
+<h4 id="accent-insensitive-search">Accent-insensitive search<a class="headerlink" href="#accent-insensitive-search" title="Permanent link">&para;</a></h4>
+<p>The <code>UnaccentedSearchFilter</code> subclass performs accent-insensitive matching, so that a search for <code>Jeremy</code> also matches <code>Jérémy</code>. It behaves like <code>SearchFilter</code>, except the lookups are wrapped with the <code>unaccent</code> transform: the default lookup becomes <code>unaccent__icontains</code>, <code>^</code> becomes <code>unaccent__istartswith</code>, <code>=</code> becomes <code>unaccent__iexact</code>, and <code>$</code> becomes <code>unaccent__iregex</code>. The <code>@</code> (full-text search) prefix is left unchanged, as the <code>unaccent</code> transform cannot be combined with a full-text search lookup.</p>
+<div class="language-text highlight"><pre><span></span><code>from rest_framework import filters
+
+class MyView(generics.ListAPIView):
+    filter_backends = [filters.UnaccentedSearchFilter]
+    search_fields = [&#39;name&#39;]
+</code></pre></div>
+<p>This is currently only supported on Django's <a href="https://docs.djangoproject.com/en/stable/ref/contrib/postgres/lookups/#unaccent">PostgreSQL backend</a>, and requires the <code>unaccent</code> extension to be installed and <code>django.contrib.postgres</code> to be present in <code>INSTALLED_APPS</code>.</p>
 <p>To dynamically change search fields based on request content, it's possible to subclass the <code>SearchFilter</code> and override the <code>get_search_fields()</code> function. For example, the following subclass will only search on <code>title</code> if the query parameter <code>title_only</code> is in the request:</p>
 <div class="language-text highlight"><pre><span></span><code>from rest_framework import filters
 
