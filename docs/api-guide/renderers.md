@@ -104,9 +104,12 @@ Unlike other renderers, the data passed to the `Response` does not need to be se
 The TemplateHTMLRenderer will create a `RequestContext`, using the `response.data` as the context dict, and determine a template name to use to render the context.
 
 !!! note
-    When used with a view that makes use of a serializer the `Response` sent for rendering may not be a dictionary and will need to be wrapped in a dict before returning to allow the `TemplateHTMLRenderer` to render it. For example:
+    When used with a view that makes use of a serializer, the `Response` sent for rendering may be a list rather than a dictionary, for example with a list view. Lists are automatically wrapped in a dict and made available to the template under the `results` key, alongside a `status_code` key:
 
-        response.data = {'results': response.data}
+        {% for item in results %}{{ item }}{% endfor %}
+
+!!! warning
+    Up to version 3.17, lists were wrapped under a `details` key instead. `details` still works but is deprecated, and will be removed in 3.20. Update your templates to use `results`.
 
 The template name is determined by (in order of preference):
 
@@ -376,7 +379,7 @@ Exceptions raised and handled by an HTML renderer will attempt to render using o
 * Load and render a template named `api_exception.html`.
 * Render the HTTP status code and text, for example "404 Not Found".
 
-Templates will render with a `RequestContext` which includes the `status_code` and `details` keys.
+Templates will render with a `RequestContext` which includes the `status_code` key alongside the error data, typically under a `detail` key. When the error data is a list, as is the case for a `ValidationError`, it is available under the `results` key instead.
 
 !!! note
     If `DEBUG=True`, Django's standard traceback error page will be displayed instead of rendering the HTTP status code and text.
