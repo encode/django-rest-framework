@@ -95,6 +95,7 @@ class OneToOnePKSourceSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+@pytest.mark.usefixtures("reset_sequences")
 class PKManyToManyTests(TestCase):
     def setUp(self):
         for idx in range(1, 4):
@@ -106,7 +107,7 @@ class PKManyToManyTests(TestCase):
                 source.targets.add(target)
 
     def test_many_to_many_retrieve(self):
-        queryset = ManyToManySource.objects.all()
+        queryset = ManyToManySource.objects.order_by('pk')
         serializer = ManyToManySourceSerializer(queryset, many=True)
         expected = [
             {'id': 1, 'name': 'source-1', 'targets': [1]},
@@ -123,7 +124,7 @@ class PKManyToManyTests(TestCase):
             serializer.data
 
     def test_reverse_many_to_many_retrieve(self):
-        queryset = ManyToManyTarget.objects.all()
+        queryset = ManyToManyTarget.objects.order_by('pk')
         serializer = ManyToManyTargetSerializer(queryset, many=True)
         expected = [
             {'id': 1, 'name': 'target-1', 'sources': [1, 2, 3]},
@@ -142,7 +143,7 @@ class PKManyToManyTests(TestCase):
         assert serializer.data == data
 
         # Ensure source 1 is updated, and everything else is as expected
-        queryset = ManyToManySource.objects.all()
+        queryset = ManyToManySource.objects.order_by('pk')
         serializer = ManyToManySourceSerializer(queryset, many=True)
         expected = [
             {'id': 1, 'name': 'source-1', 'targets': [1, 2, 3]},
@@ -160,7 +161,7 @@ class PKManyToManyTests(TestCase):
         assert serializer.data == data
 
         # Ensure target 1 is updated, and everything else is as expected
-        queryset = ManyToManyTarget.objects.all()
+        queryset = ManyToManyTarget.objects.order_by('pk')
         serializer = ManyToManyTargetSerializer(queryset, many=True)
         expected = [
             {'id': 1, 'name': 'target-1', 'sources': [1]},
@@ -178,7 +179,7 @@ class PKManyToManyTests(TestCase):
         assert obj.name == 'source-4'
 
         # Ensure source 4 is added, and everything else is as expected
-        queryset = ManyToManySource.objects.all()
+        queryset = ManyToManySource.objects.order_by('pk')
         serializer = ManyToManySourceSerializer(queryset, many=True)
         expected = [
             {'id': 1, 'name': 'source-1', 'targets': [1]},
@@ -207,7 +208,7 @@ class PKManyToManyTests(TestCase):
         assert obj.name == 'target-4'
 
         # Ensure target 4 is added, and everything else is as expected
-        queryset = ManyToManyTarget.objects.all()
+        queryset = ManyToManyTarget.objects.order_by('pk')
         serializer = ManyToManyTargetSerializer(queryset, many=True)
         expected = [
             {'id': 1, 'name': 'target-1', 'sources': [1, 2, 3]},
@@ -226,6 +227,7 @@ class PKManyToManyTests(TestCase):
             serializer.data
 
 
+@pytest.mark.usefixtures("reset_sequences")
 class PKForeignKeyTests(TestCase):
     def setUp(self):
         target = ForeignKeyTarget(name='target-1')
@@ -237,7 +239,7 @@ class PKForeignKeyTests(TestCase):
             source.save()
 
     def test_foreign_key_retrieve(self):
-        queryset = ForeignKeySource.objects.all()
+        queryset = ForeignKeySource.objects.order_by('pk')
         serializer = ForeignKeySourceSerializer(queryset, many=True)
         expected = [
             {'id': 1, 'name': 'source-1', 'target': 1},
@@ -248,7 +250,7 @@ class PKForeignKeyTests(TestCase):
             assert serializer.data == expected
 
     def test_reverse_foreign_key_retrieve(self):
-        queryset = ForeignKeyTarget.objects.all()
+        queryset = ForeignKeyTarget.objects.order_by('pk')
         serializer = ForeignKeyTargetSerializer(queryset, many=True)
         expected = [
             {'id': 1, 'name': 'target-1', 'sources': [1, 2, 3]},
@@ -272,7 +274,7 @@ class PKForeignKeyTests(TestCase):
         assert serializer.data == data
 
         # Ensure source 1 is updated, and everything else is as expected
-        queryset = ForeignKeySource.objects.all()
+        queryset = ForeignKeySource.objects.order_by('pk')
         serializer = ForeignKeySourceSerializer(queryset, many=True)
         expected = [
             {'id': 1, 'name': 'source-1', 'target': 2},
@@ -295,7 +297,7 @@ class PKForeignKeyTests(TestCase):
         assert serializer.is_valid()
         # We shouldn't have saved anything to the db yet since save
         # hasn't been called.
-        queryset = ForeignKeyTarget.objects.all()
+        queryset = ForeignKeyTarget.objects.order_by('pk')
         new_serializer = ForeignKeyTargetSerializer(queryset, many=True)
         expected = [
             {'id': 1, 'name': 'target-1', 'sources': [1, 2, 3]},
@@ -307,7 +309,7 @@ class PKForeignKeyTests(TestCase):
         assert serializer.data == data
 
         # Ensure target 2 is update, and everything else is as expected
-        queryset = ForeignKeyTarget.objects.all()
+        queryset = ForeignKeyTarget.objects.order_by('pk')
         serializer = ForeignKeyTargetSerializer(queryset, many=True)
         expected = [
             {'id': 1, 'name': 'target-1', 'sources': [2]},
@@ -324,7 +326,7 @@ class PKForeignKeyTests(TestCase):
         assert obj.name == 'source-4'
 
         # Ensure source 4 is added, and everything else is as expected
-        queryset = ForeignKeySource.objects.all()
+        queryset = ForeignKeySource.objects.order_by('pk')
         serializer = ForeignKeySourceSerializer(queryset, many=True)
         expected = [
             {'id': 1, 'name': 'source-1', 'target': 1},
@@ -343,7 +345,7 @@ class PKForeignKeyTests(TestCase):
         assert obj.name == 'target-3'
 
         # Ensure target 3 is added, and everything else is as expected
-        queryset = ForeignKeyTarget.objects.all()
+        queryset = ForeignKeyTarget.objects.order_by('pk')
         serializer = ForeignKeyTargetSerializer(queryset, many=True)
         expected = [
             {'id': 1, 'name': 'target-1', 'sources': [2]},
@@ -415,6 +417,7 @@ class PKForeignKeyTests(TestCase):
         assert len(queryset) == 1
 
 
+@pytest.mark.usefixtures("reset_sequences")
 class PKRelationTests(TestCase):
 
     def setUp(self):
@@ -443,6 +446,7 @@ class PKRelationTests(TestCase):
             self.assertEqual(serializer.data, expected)
 
 
+@pytest.mark.usefixtures("reset_sequences")
 class PKNullableForeignKeyTests(TestCase):
     def setUp(self):
         target = ForeignKeyTarget(name='target-1')
@@ -454,7 +458,7 @@ class PKNullableForeignKeyTests(TestCase):
             source.save()
 
     def test_foreign_key_retrieve_with_null(self):
-        queryset = NullableForeignKeySource.objects.all()
+        queryset = NullableForeignKeySource.objects.order_by('pk')
         serializer = NullableForeignKeySourceSerializer(queryset, many=True)
         expected = [
             {'id': 1, 'name': 'source-1', 'target': 1},
@@ -472,7 +476,7 @@ class PKNullableForeignKeyTests(TestCase):
         assert obj.name == 'source-4'
 
         # Ensure source 4 is created, and everything else is as expected
-        queryset = NullableForeignKeySource.objects.all()
+        queryset = NullableForeignKeySource.objects.order_by('pk')
         serializer = NullableForeignKeySourceSerializer(queryset, many=True)
         expected = [
             {'id': 1, 'name': 'source-1', 'target': 1},
@@ -496,7 +500,7 @@ class PKNullableForeignKeyTests(TestCase):
         assert obj.name == 'source-4'
 
         # Ensure source 4 is created, and everything else is as expected
-        queryset = NullableForeignKeySource.objects.all()
+        queryset = NullableForeignKeySource.objects.order_by('pk')
         serializer = NullableForeignKeySourceSerializer(queryset, many=True)
         expected = [
             {'id': 1, 'name': 'source-1', 'target': 1},
@@ -515,7 +519,7 @@ class PKNullableForeignKeyTests(TestCase):
         assert serializer.data == data
 
         # Ensure source 1 is updated, and everything else is as expected
-        queryset = NullableForeignKeySource.objects.all()
+        queryset = NullableForeignKeySource.objects.order_by('pk')
         serializer = NullableForeignKeySourceSerializer(queryset, many=True)
         expected = [
             {'id': 1, 'name': 'source-1', 'target': None},
@@ -538,7 +542,7 @@ class PKNullableForeignKeyTests(TestCase):
         assert serializer.data == expected_data
 
         # Ensure source 1 is updated, and everything else is as expected
-        queryset = NullableForeignKeySource.objects.all()
+        queryset = NullableForeignKeySource.objects.order_by('pk')
         serializer = NullableForeignKeySourceSerializer(queryset, many=True)
         expected = [
             {'id': 1, 'name': 'source-1', 'target': None},
@@ -559,6 +563,7 @@ class PKNullableForeignKeyTests(TestCase):
         assert serializer.is_valid(), serializer.errors
 
 
+@pytest.mark.usefixtures("reset_sequences")
 class PKNullableOneToOneTests(TestCase):
     def setUp(self):
         target = OneToOneTarget(name='target-1')
@@ -569,7 +574,7 @@ class PKNullableOneToOneTests(TestCase):
         source.save()
 
     def test_reverse_foreign_key_retrieve_with_null(self):
-        queryset = OneToOneTarget.objects.all()
+        queryset = OneToOneTarget.objects.order_by('pk')
         serializer = NullableOneToOneTargetSerializer(queryset, many=True)
         expected = [
             {'id': 1, 'name': 'target-1', 'nullable_source': None},

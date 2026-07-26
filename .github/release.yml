@@ -1,0 +1,29 @@
+changelog:
+  exclude:
+    labels:
+      - dependencies
+      - Internal
+      - CI
+      - Documentation
+    authors:
+      - dependabot[bot]
+      - pre-commit-ci[bot]
+  categories:
+    - title: Breaking changes
+      labels:
+        - Breaking
+    - title: Features
+      labels:
+        - Feature
+    - title: Bug fixes
+      labels:
+        - Bug
+    - title: Translations
+      labels:
+        - Translations
+    - title: Packaging
+      labels:
+        - Packaging
+    - title: Other changes
+      labels:
+        - '*'

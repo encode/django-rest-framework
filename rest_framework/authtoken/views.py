@@ -1,12 +1,7 @@
-from django.contrib.auth import get_user_model
-
 from rest_framework import parsers, renderers
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.serializers import AuthTokenSerializer
-from rest_framework.compat import coreapi, coreschema
 from rest_framework.response import Response
-from rest_framework.schemas import ManualSchema
-from rest_framework.schemas import coreapi as coreapi_schema
 from rest_framework.views import APIView
 
 
@@ -16,33 +11,6 @@ class ObtainAuthToken(APIView):
     parser_classes = (parsers.FormParser, parsers.MultiPartParser, parsers.JSONParser,)
     renderer_classes = (renderers.JSONRenderer,)
     serializer_class = AuthTokenSerializer
-
-    if coreapi_schema.is_enabled():
-        USER_MODEL = get_user_model()
-        identifier_field_name = USER_MODEL.USERNAME_FIELD
-        schema = ManualSchema(
-            fields=[
-                coreapi.Field(
-                    name=identifier_field_name,
-                    required=True,
-                    location='form',
-                    schema=coreschema.String(
-                        title=identifier_field_name.title(),
-                        description=f"Valid {identifier_field_name} for authentication",
-                    ),
-                ),
-                coreapi.Field(
-                    name="password",
-                    required=True,
-                    location='form',
-                    schema=coreschema.String(
-                        title="Password",
-                        description="Valid password for authentication",
-                    ),
-                ),
-            ],
-            encoding="application/json",
-        )
 
     def get_serializer_context(self):
         return {
