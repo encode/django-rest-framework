@@ -16,6 +16,7 @@ classifiers = [
   "Framework :: Django",
   "Framework :: Django :: 5.2",
   "Framework :: Django :: 6.0",
+  "Framework :: Django :: 6.1",
   "Intended Audience :: Developers",
   "Operating System :: OS Independent",
   "Programming Language :: Python",
@@ -71,6 +72,7 @@ optional = [
 ]
 django52 = [ "django>=5.2,<6.0" ]
 django60 = [ "django>=6.0,<6.1" ]
+django61 = [ "django>=6.1rc1,<6.2" ]
 djangomain = [ "django @ https://github.com/django/django/archive/main.tar.gz" ]
 
 [tool.setuptools]
@@ -95,6 +97,11 @@ multi_line_output = 5
 extra_standard_library = [ "types" ]
 known_third_party = [ "pytest", "_pytest", "django", "uritemplate" ]
 known_first_party = [ "rest_framework", "tests" ]
+
+[tool.flake8]
+extend-ignore = [ "E501", "W503", "W504", "B" ]
+extend-select = [ "B006" ]
+banned-modules = "json = use from rest_framework.utils import json!"
 
 [tool.codespell]
 # Ref: https://github.com/codespell-project/codespell#using-a-config-file
