@@ -85,23 +85,59 @@ Proper usage of pagination should have an ordering field that satisfies the foll
 * Should not be a float. Precision errors easily lead to incorrect results. Hint: use decimals instead. (If you already have a float field and must paginate on that, an [example `CursorPagination` subclass that uses decimals to limit precision is available here][float_cursor_pagination_example].)
 * The field should have a database index.
 
-Using an ordering field that does not satisfy these constraints will generally still work, but the results might be suboptimal or outright inconsistent depending on the chosen scheme. These inconsistencies might manifest as either missing records or duplicate records.
-
-If the main field that you wish to order by does not satisfy these conditions, you can order by multiple fields, as long as one of the fields fulfills all of the conditions above the result set should remain consistent across database calls.
-
-    # inconsistent
-    class MyModel(models.Model):
-        foo = models.CharField()  # not unique, can change
-
+Using an ordering field that does not satisfy these constraints will generally still work, but the results might be suboptimal or outright inconsistent depending on the chosen scheme. These inconsistencies might manifest as either missing records or duplicate records:
+     
+    class Product(models.Model):
+        name = models.CharField(max_length=100)
+        category = models.CharField(max_length=100)
+        # No unique/indexed field used for ordering
+    
+    class ProductSerializer(serializers.ModelSerializer):
         class Meta:
-            ordering = "foo"  # page results will be inconsistent
+            model = Product
+            fields = '__all__'
+    
+    # 1. Inconsistent LimitOffsetPagination
+    class UnreliableProductViewSet(viewsets.ModelViewSet):
+        # Many duplicates, inconsistent pages
+        queryset = Product.objects.all().order_by('category')
+        serializer_class = ProductSerializer
+        pagination_class = pagination.LimitOffsetPagination
+    
+    # 2. Inconsistent CursorPagination (Will fail or be buggy)
+    class RiskyCursorPagination(pagination.CursorPagination):
+        page_size = 10
+        # Problematic: 'name' is not unique and can change
+        ordering = 'name'
 
-    # consistent
-    class MyOtherModel(models.Model):
-        foo = models.CharField()  # still not unique, can change
-
+By ensuring the final ordering field is unique and indexed (like id or a created timestamp), we guarantee that the cursor position remains stable:
+ 
+    class SecureProduct(models.Model):
+        name = models.CharField(max_length=100)
+        created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+    
+    class SecureProductSerializer(serializers.ModelSerializer):
         class Meta:
-            ordering = ["foo", "id"]  # id is unique, cannot change, cannot be null, etc.
+            model = SecureProduct
+            fields = '__all__'
+    
+    # 1. Consistent PageNumberPagination with Multiple Ordering
+    class ReliableProductViewSet(viewsets.ModelViewSet):
+        # Combining a non-unique field with a unique ID ensures consistency
+        queryset = SecureProduct.objects.all().order_by('name', 'id')
+        serializer_class = SecureProductSerializer
+        pagination_class = pagination.PageNumberPagination
+    
+    # 2. Recommended CursorPagination Usage
+    class StandardCursorPagination(pagination.CursorPagination):
+        page_size = 10
+         # Unique-ish, indexed, and unchanging
+        ordering = '-created_at'
+    
+    class AccurateProductViewSet(viewsets.ModelViewSet):
+        queryset = SecureProduct.objects.all()
+        serializer_class = SecureProductSerializer
+        pagination_class = StandardCursorPagination
 
 ---
 
