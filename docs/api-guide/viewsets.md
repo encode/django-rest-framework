@@ -247,21 +247,21 @@ The `url_name` argument for `.reverse_action()` should match the same argument t
 
 ---
 
-# API Reference
+## API Reference
 
-## ViewSet
+### ViewSet
 
 The `ViewSet` class inherits from `APIView`.  You can use any of the standard attributes such as `permission_classes`, `authentication_classes` in order to control the API policy on the viewset.
 
 The `ViewSet` class does not provide any implementations of actions.  In order to use a `ViewSet` class you'll override the class and define the action implementations explicitly.
 
-## GenericViewSet
+### GenericViewSet
 
 The `GenericViewSet` class inherits from `GenericAPIView`, and provides the default set of `get_object`, `get_queryset` methods and other generic view base behavior, but does not include any actions by default.
 
 In order to use a `GenericViewSet` class you'll override the class and either mixin the required mixin classes, or define the action implementations explicitly.
 
-## ModelViewSet
+### ModelViewSet
 
 The `ModelViewSet` class inherits from `GenericAPIView` and includes implementations for various actions, by mixing in the behavior of the various mixin classes.
 
@@ -296,7 +296,7 @@ Note however that upon removal of the `queryset` property from your `ViewSet`, a
 
 Also note that although this class provides the complete set of create/list/retrieve/update/destroy actions by default, you can restrict the available operations by using the standard permission classes.
 
-## ReadOnlyModelViewSet
+### ReadOnlyModelViewSet
 
 The `ReadOnlyModelViewSet` class also inherits from `GenericAPIView`.  As with `ModelViewSet` it also includes implementations for various actions, but unlike `ModelViewSet` only provides the 'read-only' actions, `.list()` and `.retrieve()`.
 
@@ -313,11 +313,11 @@ As with `ModelViewSet`, you'll normally need to provide at least the `queryset` 
 
 Again, as with `ModelViewSet`, you can use any of the standard attributes and method overrides available to `GenericAPIView`.
 
-# Custom ViewSet base classes
+## Custom ViewSet base classes
 
 You may need to provide custom `ViewSet` classes that do not have the full set of `ModelViewSet` actions, or that customize the behavior in some other way.
 
-## Example
+### Example
 
 To create a base viewset class that provides `create`, `list` and `retrieve` operations, inherit from `GenericViewSet`, and mixin the required actions:
 

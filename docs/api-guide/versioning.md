@@ -21,7 +21,7 @@ When API versioning is enabled, the `request.version` attribute will contain a s
 
 By default, versioning is not enabled, and `request.version` will always return `None`.
 
-#### Varying behavior based on the version
+### Varying behavior based on the version
 
 How you vary the API behavior is up to you, but one example you might typically want is to switch to a different serialization style in a newer version. For example:
 
@@ -30,7 +30,7 @@ How you vary the API behavior is up to you, but one example you might typically 
             return AccountSerializerVersion1
         return AccountSerializer
 
-#### Reversing URLs for versioned APIs
+### Reversing URLs for versioned APIs
 
 The `reverse` function included by REST framework ties in with the versioning scheme. You need to make sure to include the current `request` as a keyword argument, like so.
 
@@ -43,7 +43,7 @@ The above function will apply any URL transformations appropriate to the request
 * If `NamespaceVersioning` was being used, and the API version was 'v1', then the URL lookup used would be `'v1:bookings-list'`, which might resolve to a URL like `http://example.org/v1/bookings/`.
 * If `QueryParameterVersioning` was being used, and the API version was `1.0`, then the returned URL might be something like `http://example.org/bookings/?version=1.0`
 
-#### Versioned APIs and hyperlinked serializers
+### Versioned APIs and hyperlinked serializers
 
 When using hyperlinked serialization styles together with a URL based versioning scheme make sure to include the request as context to the serializer.
 
@@ -69,7 +69,7 @@ You can also set the versioning scheme on an individual view. Typically you won'
     class ProfileList(APIView):
         versioning_class = versioning.QueryParameterVersioning
 
-#### Other versioning settings
+### Other versioning settings
 
 The following settings keys are also used to control versioning:
 
@@ -92,9 +92,9 @@ You can also set your versioning class plus those three values on a per-view or 
 
 ---
 
-# API Reference
+## API Reference
 
-## AcceptHeaderVersioning
+### AcceptHeaderVersioning
 
 This scheme requires the client to specify the version as part of the media type in the `Accept` header. The version is included as a media type parameter, that supplements the main media type.
 
@@ -121,7 +121,7 @@ Your client requests would now look like this:
     Host: example.com
     Accept: application/vnd.megacorp.bookings+json; version=1.0
 
-## URLPathVersioning
+### URLPathVersioning
 
 This scheme requires the client to specify the version as part of the URL path.
 
@@ -144,7 +144,7 @@ Your URL conf must include a pattern that matches the version with a `'version'`
         )
     ]
 
-## NamespaceVersioning
+### NamespaceVersioning
 
 To the client, this scheme is the same as `URLPathVersioning`. The only difference is how it is configured in your Django application, as it uses URL namespacing, instead of URL keyword arguments.
 
@@ -170,7 +170,7 @@ In the following example we're giving a set of views two different possible URL 
 
 Both `URLPathVersioning` and `NamespaceVersioning` are reasonable if you just need a simple versioning scheme. The `URLPathVersioning` approach might be better suitable for small ad-hoc projects, and the `NamespaceVersioning` is probably easier to manage for larger projects.
 
-## HostNameVersioning
+### HostNameVersioning
 
 The hostname versioning scheme requires the client to specify the requested version as part of the hostname in the URL.
 
@@ -190,7 +190,7 @@ The `HostNameVersioning` scheme can be awkward to use in debug mode as you will 
 
 Hostname based versioning can be particularly useful if you have requirements to route incoming requests to different servers based on the version, as you can configure different DNS records for different API versions.
 
-## QueryParameterVersioning
+### QueryParameterVersioning
 
 This scheme is a simple style that includes the version as a query parameter in the URL. For example:
 
@@ -200,11 +200,11 @@ This scheme is a simple style that includes the version as a query parameter in 
 
 ---
 
-# Custom versioning schemes
+## Custom versioning schemes
 
 To implement a custom versioning scheme, subclass `BaseVersioning` and override the `.determine_version` method.
 
-## Example
+### Example
 
 The following example uses a custom `X-API-Version` header to determine the requested version.
 

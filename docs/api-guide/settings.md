@@ -35,9 +35,9 @@ The `api_settings` object will check for any user-defined settings, and otherwis
 
 ---
 
-# API Reference
+## API Reference
 
-## API policy settings
+### API policy settings
 
 *The following settings control the basic API policies, and are applied to every `APIView` class-based view, or `@api_view` function based view.*
 
@@ -105,7 +105,7 @@ Default: `'rest_framework.schemas.openapi.AutoSchema'`
 
 ---
 
-## Generic view settings
+### Generic view settings
 
 *The following settings control the behavior of the generic class-based views.*
 
@@ -129,7 +129,7 @@ The default page size to use for pagination.  If set to `None`, pagination is di
 
 Default: `None`
 
-### SEARCH_PARAM
+#### SEARCH_PARAM
 
 The name of a query parameter, which can be used to specify the search term used by `SearchFilter`.
 
@@ -143,7 +143,7 @@ Default: `ordering`
 
 ---
 
-## Versioning settings
+### Versioning settings
 
 #### DEFAULT_VERSION
 
@@ -171,7 +171,7 @@ Default: `None`
 
 ---
 
-## Authentication settings
+### Authentication settings
 
 *The following settings control the behavior of unauthenticated requests.*
 
@@ -191,7 +191,7 @@ Default: `None`
 
 ---
 
-## Test settings
+### Test settings
 
 *The following settings control the behavior of APIRequestFactory and APIClient*
 
@@ -218,7 +218,7 @@ Default:
 
 ---
 
-## Schema generation controls
+### Schema generation controls
 
 #### SCHEMA_COERCE_PATH_PK
 
@@ -240,7 +240,7 @@ Default: `{'retrieve': 'read', 'destroy': 'delete'}`
 
 ---
 
-## Content type controls
+### Content type controls
 
 #### URL_FORMAT_OVERRIDE
 
@@ -262,7 +262,7 @@ Default: `'format'`
 
 ---
 
-## Date and time formatting
+### Date and time formatting
 
 *The following settings are used to control how date and time representations may be parsed and rendered.*
 
@@ -325,7 +325,7 @@ Default: `'django'`
 
 ---
 
-## Encodings
+### Encodings
 
 #### UNICODE_JSON
 
@@ -381,7 +381,7 @@ Default: `False`
 
 ---
 
-## View names and descriptions
+### View names and descriptions
 
 **The following settings are used to generate the view names and descriptions, as used in responses to `OPTIONS` requests, and as used in the browsable API.**
 
@@ -422,7 +422,7 @@ If the view instance inherits `ViewSet`, it may have been initialized with sever
 
 Default: `'rest_framework.views.get_view_description'`
 
-## HTML Select Field cutoffs
+### HTML Select Field cutoffs
 
 Global settings for [select field cutoffs for rendering relational fields](relations.md#select-field-cutoffs) in the browsable API.
 
@@ -440,7 +440,7 @@ Default: `"More than {count} items..."`
 
 ---
 
-## Miscellaneous settings
+### Miscellaneous settings
 
 #### EXCEPTION_HANDLER
 
