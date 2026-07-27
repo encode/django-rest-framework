@@ -71,7 +71,7 @@ You can modify the ordering in multiple ways:
 * Using the `OrderingFilter` filter class together with the pagination class in the view definition. 
 * Setting the `ordering` attribute on the `Meta` class of the model whose records are being paginated.
 * Explicitly calling `order_by` on the view's `queryset`.
-* If using the `CursorPagination` class, overriding the `ordering` attribute 
+* If using the [`CursorPagination`](#cursorpagination) class, overriding the `ordering` attribute 
 
 When using `OrderingFilter`, you should strongly consider restricting the fields that the user may order by.
 
