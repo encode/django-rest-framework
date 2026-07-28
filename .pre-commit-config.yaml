@@ -43,3 +43,7 @@ repos:
   rev: v2.11.1
   hooks:
   - id: pyproject-fmt
+- repo: https://github.com/adamchainz/django-upgrade
+  rev: 1.24.0
+  hooks:
+  - id: django-upgrade

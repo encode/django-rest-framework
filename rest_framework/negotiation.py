@@ -93,5 +93,5 @@ class DefaultContentNegotiation(BaseContentNegotiation):
         Given the incoming request, return a tokenized list of media
         type strings.
         """
-        header = request.META.get('HTTP_ACCEPT', '*/*')
+        header = request.headers.get('accept', '*/*')
         return [token.strip() for token in header.split(',')]
