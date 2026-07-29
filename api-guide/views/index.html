@@ -1186,6 +1186,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#throttle-scope-decorator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Throttle scope decorator
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -3295,6 +3306,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#throttle-scope-decorator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Throttle scope decorator
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -3526,6 +3548,16 @@ You may pass <code>None</code> in order to exclude the view from schema generati
 def view(request):
     return Response({&quot;message&quot;: &quot;Will not appear in schema!&quot;})
 </code></pre></div>
+<h3 id="throttle-scope-decorator">Throttle scope decorator<a class="headerlink" href="#throttle-scope-decorator" title="Permanent link">&para;</a></h3>
+<p>To set the throttle scope of function based views you may use the <code>@throttle_scope</code> decorator:</p>
+<div class="language-text highlight"><pre><span></span><code>from rest_framework.decorators import api_view, throttle_scope
+
+@api_view([&#39;GET&#39;])
+@throttle_scope(&quot;hello&quot;)
+def view(request):
+    return Response({&quot;message&quot;: &quot;Hello for today! See you tomorrow!&quot;})
+</code></pre></div>
+<p>See <a href="../throttling/#scopedratethrottle">ScopedRateThrottle documentation</a> for more details.</p>
 
 
 
