@@ -1283,6 +1283,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#details-and-limitations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Details and limitations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#api-reference" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1383,17 +1394,6 @@
   
     <nav class="md-nav" aria-label="CursorPagination">
       <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#details-and-limitations" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Details and limitations
-      
-    </span>
-  </a>
-  
-</li>
         
           <li class="md-nav__item">
   <a href="#setup_2" class="md-nav__link">
@@ -2920,6 +2920,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#details-and-limitations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Details and limitations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#api-reference" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3020,17 +3031,6 @@
   
     <nav class="md-nav" aria-label="CursorPagination">
       <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#details-and-limitations" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Details and limitations
-      
-    </span>
-  </a>
-  
-</li>
         
           <li class="md-nav__item">
   <a href="#setup_2" class="md-nav__link">
@@ -3312,6 +3312,77 @@ class StandardResultsSetPagination(PageNumberPagination):
     &#39;DEFAULT_PAGINATION_CLASS&#39;: &#39;apps.core.pagination.StandardResultsSetPagination&#39;
 }
 </code></pre></div>
+<h2 id="details-and-limitations">Details and limitations<a class="headerlink" href="#details-and-limitations" title="Permanent link">&para;</a></h2>
+<p>Proper use of pagination requires a little attention to detail. You'll need to think about what ordering you want the scheme to be applied against.</p>
+<p>You can modify the ordering in multiple ways:</p>
+<ul>
+<li>Using the <code>OrderingFilter</code> filter class together with the pagination class in the view definition. </li>
+<li>Setting the <code>ordering</code> attribute on the <code>Meta</code> class of the model whose records are being paginated.</li>
+<li>Explicitly calling <code>order_by</code> on the view's <code>queryset</code>.</li>
+<li>If using the <a href="#cursorpagination"><code>CursorPagination</code></a> class, overriding the <code>ordering</code> attribute </li>
+</ul>
+<p>When using <code>OrderingFilter</code>, you should strongly consider restricting the fields that the user may order by.</p>
+<p>For <code>CursorPagination</code>, the default is to order by <code>"-created"</code>. This assumes that <strong>there must be a 'created' timestamp field</strong> on the model instances, and will present a "timeline" style paginated view, with the most recently added items first.</p>
+<p>Proper usage of pagination should have an ordering field that satisfies the following:</p>
+<ul>
+<li>Should be an unchanging value, such as a timestamp, slug, or other field that is only set once, on creation.</li>
+<li>Should be unique, or nearly unique if using <code>CursorPagination</code>. The <code>CursorPagination</code> implementation uses a smart "position plus offset" style that allows it to properly support not-strictly-unique values as the ordering. Millisecond precision timestamps are a good example.</li>
+<li>Should be a non-nullable value that can be coerced to a string.</li>
+<li>Should not be a float. Precision errors easily lead to incorrect results. Hint: use decimals instead. (If you already have a float field and must paginate on that, an <a href="https://gist.github.com/keturn/8bc88525a183fd41c73ffb729b8865be#file-fpcursorpagination-py">example <code>CursorPagination</code> subclass that uses decimals to limit precision is available here</a>.)</li>
+<li>The field should have a database index.</li>
+</ul>
+<p>Using an ordering field that does not satisfy these constraints will generally still work, but the results might be suboptimal or outright inconsistent depending on the chosen scheme. These inconsistencies might manifest as either missing records or duplicate records:</p>
+<div class="language-text highlight"><pre><span></span><code>class Product(models.Model):
+    name = models.CharField(max_length=100)
+    category = models.CharField(max_length=100)
+    # No unique/indexed field used for ordering
+
+class ProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = &#39;__all__&#39;
+
+# 1. Inconsistent LimitOffsetPagination
+class UnreliableProductViewSet(viewsets.ModelViewSet):
+    # Many duplicates, inconsistent pages
+    queryset = Product.objects.all().order_by(&#39;category&#39;)
+    serializer_class = ProductSerializer
+    pagination_class = pagination.LimitOffsetPagination
+
+# 2. Inconsistent CursorPagination (Will fail or be buggy)
+class RiskyCursorPagination(pagination.CursorPagination):
+    page_size = 10
+    # Problematic: &#39;name&#39; is not unique and can change
+    ordering = &#39;name&#39;
+</code></pre></div>
+<p>By ensuring the final ordering field is unique and indexed (like id or a created timestamp), we guarantee that the cursor position remains stable:</p>
+<div class="language-text highlight"><pre><span></span><code>class SecureProduct(models.Model):
+    name = models.CharField(max_length=100)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+
+class SecureProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SecureProduct
+        fields = &#39;__all__&#39;
+
+# 1. Consistent PageNumberPagination with Multiple Ordering
+class ReliableProductViewSet(viewsets.ModelViewSet):
+    # Combining a non-unique field with a unique ID ensures consistency
+    queryset = SecureProduct.objects.all().order_by(&#39;name&#39;, &#39;id&#39;)
+    serializer_class = SecureProductSerializer
+    pagination_class = pagination.PageNumberPagination
+
+# 2. Recommended CursorPagination Usage
+class StandardCursorPagination(pagination.CursorPagination):
+    page_size = 10
+     # Unique-ish, indexed, and unchanging
+    ordering = &#39;-created_at&#39;
+
+class AccurateProductViewSet(viewsets.ModelViewSet):
+    queryset = SecureProduct.objects.all()
+    serializer_class = SecureProductSerializer
+    pagination_class = StandardCursorPagination
+</code></pre></div>
 <hr />
 <h2 id="api-reference">API Reference<a class="headerlink" href="#api-reference" title="Permanent link">&para;</a></h2>
 <h3 id="pagenumberpagination">PageNumberPagination<a class="headerlink" href="#pagenumberpagination" title="Permanent link">&para;</a></h3>
@@ -3404,21 +3475,6 @@ class CustomPagination(PageNumberPagination):
 <li>Provides a consistent pagination view. When used properly <code>CursorPagination</code> ensures that the client will never see the same item twice when paging through records, even when new items are being inserted by other clients during the pagination process.</li>
 <li>Supports usage with very large datasets. With extremely large datasets pagination using offset-based pagination styles may become inefficient or unusable. Cursor based pagination schemes instead have fixed-time properties, and do not slow down as the dataset size increases.</li>
 </ul>
-<h4 id="details-and-limitations">Details and limitations<a class="headerlink" href="#details-and-limitations" title="Permanent link">&para;</a></h4>
-<p>Proper use of cursor based pagination requires a little attention to detail. You'll need to think about what ordering you want the scheme to be applied against. The default is to order by <code>"-created"</code>. This assumes that <strong>there must be a 'created' timestamp field</strong> on the model instances, and will present a "timeline" style paginated view, with the most recently added items first.</p>
-<p>You can modify the ordering by overriding the <code>'ordering'</code> attribute on the pagination class, or by using the <code>OrderingFilter</code> filter class together with <code>CursorPagination</code>. When used with <code>OrderingFilter</code> you should strongly consider restricting the fields that the user may order by.</p>
-<p>Proper usage of cursor pagination should have an ordering field that satisfies the following:</p>
-<ul>
-<li>Should be an unchanging value, such as a timestamp, slug, or other field that is only set once, on creation.</li>
-<li>Should be unique, or nearly unique. Millisecond precision timestamps are a good example. This implementation of cursor pagination uses a smart "position plus offset" style that allows it to properly support not-strictly-unique values as the ordering.</li>
-<li>Should be a non-nullable value that can be coerced to a string.</li>
-<li>Should not be a float. Precision errors easily lead to incorrect results.
-  Hint: use decimals instead.
-  (If you already have a float field and must paginate on that, an
-  <a href="https://gist.github.com/keturn/8bc88525a183fd41c73ffb729b8865be#file-fpcursorpagination-py">example <code>CursorPagination</code> subclass that uses decimals to limit precision is available here</a>.)</li>
-<li>The field should have a database index.</li>
-</ul>
-<p>Using an ordering field that does not satisfy these constraints will generally still work, but you'll be losing some of the benefits of cursor pagination.</p>
 <p>For more technical details on the implementation we use for cursor pagination, the <a href="https://cra.mr/2011/03/08/building-cursors-for-the-disqus-api">"Building cursors for the Disqus API"</a> blog post gives a good overview of the basic approach.</p>
 <h4 id="setup_2">Setup<a class="headerlink" href="#setup_2" title="Permanent link">&para;</a></h4>
 <p>To enable the <code>CursorPagination</code> style globally, use the following configuration, modifying the <code>PAGE_SIZE</code> as desired:</p>
