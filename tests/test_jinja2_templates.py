@@ -53,7 +53,7 @@ def test_jinja2_render_field_individual():
     """
     Environment, DRFExtension = load_jinja()
     env = Environment(extensions=[DRFExtension])
-    template_str = "{{ render_field(serializer.name) }}"
+    template_str = "{{ render_field(serializer['name']) }}"
     template = env.from_string(template_str)
 
     serializer = SimpleSerializer(data={"name": "Ahmed", "age": 25})
