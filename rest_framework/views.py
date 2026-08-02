@@ -1,7 +1,6 @@
 """
 Provides an APIView class that is the base of all views in REST framework.
 """
-from django import VERSION as DJANGO_VERSION
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
 from django.db import connections, models
@@ -143,8 +142,7 @@ class APIView(View):
 
         # Exempt all DRF views from Django's LoginRequiredMiddleware. Users should set
         # DEFAULT_PERMISSION_CLASSES to 'rest_framework.permissions.IsAuthenticated' instead
-        if DJANGO_VERSION >= (5, 1):
-            view.login_required = False
+        view.login_required = False
 
         # Note: session based authentication is explicitly CSRF validated,
         # all other authentication is CSRF exempt.
@@ -491,8 +489,20 @@ class APIView(View):
     # be overridden.
     def dispatch(self, request, *args, **kwargs):
         """
-        `.dispatch()` is pretty much the same as Django's regular dispatch,
-        but with extra hooks for startup, finalize, and exception handling.
+        Dispatch the incoming request to the appropriate handler method.
+
+        This method implements the core request/response lifecycle for
+        Django REST Framework views:
+
+        1. Wraps the incoming Django HttpRequest in a REST framework Request.
+        2. Performs content negotiation, authentication, permission, and
+            throttling checks.
+        3. Resolves and calls the appropriate HTTP method handler
+            (e.g. get(), post(), put()).
+        4. Handles any exceptions raised during processing and converts
+            them into appropriate Response objects.
+        5. Finalizes and returns the response with proper rendering
+            and headers applied.
         """
         self.args = args
         self.kwargs = kwargs
