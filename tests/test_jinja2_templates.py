@@ -64,3 +64,58 @@ def test_jinja2_render_field_individual():
     assert (
         "Ahmed" in output or "name" in output.lower()
     ), "Expected field rendering to work"
+
+
+def test_jinja2_render_form_with_template_pack():
+    """
+    Test that render_form mirrors the template-tag API in Jinja2.
+    """
+    Environment, DRFExtension = load_jinja()
+    env = Environment(extensions=[DRFExtension])
+    template = env.from_string(
+        '{{ render_form(serializer, template_pack="rest_framework/vertical") }}'
+    )
+
+    serializer = SimpleSerializer(data={"name": "Ali", "age": 41})
+    serializer.is_valid()
+
+    output = template.render(serializer=serializer)
+
+    assert "Ali" in output, "Expected rendered form to contain serializer data"
+
+
+def test_jinja2_render_field_with_style():
+    """
+    Test that render_field accepts the same style mapping the template tag does.
+    """
+    Environment, DRFExtension = load_jinja()
+    env = Environment(extensions=[DRFExtension])
+    template = env.from_string(
+        "{{ render_field(serializer['name'], style={'base_template': 'textarea.html'}) }}"
+    )
+
+    serializer = SimpleSerializer(data={"name": "Asiya", "age": 23})
+    serializer.is_valid()
+
+    output = template.render(serializer=serializer)
+
+    assert "Asiya" in output, "Expected rendered field to contain serializer data"
+
+
+def test_jinja2_render_form_with_autoescape_preserves_html():
+    """
+    Test that extension output is marked safe so autoescaped environments keep HTML intact.
+    """
+    Environment, DRFExtension = load_jinja()
+    env = Environment(autoescape=True, extensions=[DRFExtension])
+    template = env.from_string("{{ render_form(serializer) }}")
+
+    serializer = SimpleSerializer(data={"name": "Hajar", "age": 28})
+    serializer.is_valid()
+
+    output = template.render(serializer=serializer)
+
+    assert (
+        '<div class="form-group' in output
+    ), "Expected rendered form HTML to remain unescaped"
+    assert "Hajar" in output, "Expected rendered form to contain serializer data"

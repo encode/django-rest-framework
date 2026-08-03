@@ -1,3 +1,4 @@
+from markupsafe import Markup
 from jinja2.ext import Extension
 
 from rest_framework.renderers import HTMLFormRenderer
@@ -11,15 +12,16 @@ class DRFExtension(Extension):
         environment.globals["render_form"] = self.render_form
         environment.globals["render_field"] = self.render_field
 
-    def render_form(self, serializer, style=None):
+    def render_form(self, serializer, template_pack=None):
         """Render a complete HTML form for the given serializer."""
+        style = {"template_pack": template_pack} if template_pack else {}
         renderer = HTMLFormRenderer()
-        return renderer.render(
-            serializer.data,
-            renderer_context={"serializer": serializer, "style": style or {}},
-        )
+        return Markup(renderer.render(serializer.data, None, {"style": style}))
 
     def render_field(self, field, style=None):
         """Render an individual HTML field."""
-        renderer = HTMLFormRenderer()
-        return renderer.render_field(field, style or {})
+        renderer = (
+            style.get("renderer", HTMLFormRenderer()) if style else HTMLFormRenderer()
+        )
+        html = renderer.render_field(field, style or {})
+        return Markup(html)
