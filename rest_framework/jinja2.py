@@ -1,5 +1,5 @@
-from markupsafe import Markup
 from jinja2.ext import Extension
+from markupsafe import Markup
 
 from rest_framework.renderers import HTMLFormRenderer
 
