@@ -435,9 +435,8 @@ class TestGenericIPAddressFieldValidation(TestCase):
 
         s = TestSerializer(data={'address': 'not an ip address'})
         self.assertFalse(s.is_valid())
-        self.assertEqual(1, len(s.errors['address']),
-                         'Unexpected number of validation errors: '
-                         '{}'.format(s.errors))
+        self.assertEqual(s.errors['address'],
+                         ['Enter a valid IPv4 or IPv6 address.'])
 
     def test_ip_address_validation_with_protocol_ipv4(self):
         class IPv4AddressFieldModel(models.Model):
@@ -457,16 +456,14 @@ class TestGenericIPAddressFieldValidation(TestCase):
 
         s = TestSerializer(data={'address': 'not an ip address'})
         self.assertFalse(s.is_valid())
-        self.assertEqual(1, len(s.errors['address']),
-                         'Unexpected number of validation errors: '
-                         '{}'.format(s.errors))
+        self.assertEqual(s.errors['address'],
+                         ['Enter a valid IPv4 address.'])
 
         # An IPv6 address is not valid for an IPv4-only field.
         s = TestSerializer(data={'address': '2001:db8::1'})
         self.assertFalse(s.is_valid())
-        self.assertEqual(1, len(s.errors['address']),
-                         'Unexpected number of validation errors: '
-                         '{}'.format(s.errors))
+        self.assertEqual(s.errors['address'],
+                         ['Enter a valid IPv4 address.'])
 
         s = TestSerializer(data={'address': '192.0.2.1'})
         self.assertTrue(s.is_valid(), s.errors)
@@ -489,16 +486,14 @@ class TestGenericIPAddressFieldValidation(TestCase):
 
         s = TestSerializer(data={'address': 'not an ip address'})
         self.assertFalse(s.is_valid())
-        self.assertEqual(1, len(s.errors['address']),
-                         'Unexpected number of validation errors: '
-                         '{}'.format(s.errors))
+        self.assertEqual(s.errors['address'],
+                         ['Enter a valid IPv6 address.'])
 
         # An IPv4 address is not valid for an IPv6-only field.
         s = TestSerializer(data={'address': '192.0.2.1'})
         self.assertFalse(s.is_valid())
-        self.assertEqual(1, len(s.errors['address']),
-                         'Unexpected number of validation errors: '
-                         '{}'.format(s.errors))
+        self.assertEqual(s.errors['address'],
+                         ['Enter a valid IPv6 address.'])
 
         s = TestSerializer(data={'address': '2001:db8::1'})
         self.assertTrue(s.is_valid(), s.errors)
