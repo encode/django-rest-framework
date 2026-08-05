@@ -68,7 +68,7 @@ def set_rollback():
     # the @atomic block for the request was started.
     # Note that this in_atomic_block check may be a false positive due to
     # transactions started in other ways, e.g. when testing with TestCase.
-    for db in connections.all():
+    for db in connections.all(initialized_only=True):
         if db.settings_dict['ATOMIC_REQUESTS'] and db.in_atomic_block:
             transaction.set_rollback(True, using=db.alias)
 
