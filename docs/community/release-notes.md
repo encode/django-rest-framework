@@ -38,6 +38,17 @@ You can determine your currently installed version using `pip show`:
 
 ## 3.17.x series
 
+### 3.17.2
+
+**Date**: 5th August 2026
+
+#### Bug fixes
+
+* Fix disclosure of GET-protected data in case of validation error with `AdminRenderer` by [@browniebroke](https://github.com/browniebroke) in [#10012](https://github.com/encode/django-rest-framework/pull/10012). Thanks, [@zainnadeem786](https://github.com/zainnadeem786) for the report.
+* Enforce `DATA_UPLOAD_MAX_MEMORY_SIZE` for `request.data` parsing by [@zainnadeem786](https://github.com/zainnadeem786) in [#10013](https://github.com/encode/django-rest-framework/pull/10013). Thanks, [@zainnadeem786](https://github.com/zainnadeem786) for the report.
+
+**Full Changelog**: [3.17.1...3.17.2](https://github.com/encode/django-rest-framework/compare/3.17.1...3.17.2)
+
 ### 3.17.1
 
 **Date**: 24th March 2026

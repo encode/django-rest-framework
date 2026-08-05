@@ -67,6 +67,9 @@ def api_view(http_method_names=None):
         WrappedAPIView.throttle_classes = getattr(func, 'throttle_classes',
                                                   APIView.throttle_classes)
 
+        WrappedAPIView.throttle_scope = getattr(func, 'throttle_scope',
+                                                None)
+
         WrappedAPIView.permission_classes = getattr(func, 'permission_classes',
                                                     APIView.permission_classes)
 
@@ -132,6 +135,14 @@ def throttle_classes(throttle_classes):
     def decorator(func):
         _check_decorator_order(func, 'throttle_classes')
         func.throttle_classes = throttle_classes
+        return func
+    return decorator
+
+
+def throttle_scope(throttle_scope):
+    def decorator(func):
+        _check_decorator_order(func, 'throttle_scope')
+        func.throttle_scope = throttle_scope
         return func
     return decorator
 
