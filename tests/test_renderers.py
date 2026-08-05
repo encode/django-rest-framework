@@ -14,6 +14,7 @@ from django.utils.translation import gettext_lazy as _
 
 from rest_framework import permissions, serializers, status
 from rest_framework.decorators import action
+from rest_framework.permissions import BasePermission
 from rest_framework.renderers import (
     AdminRenderer, BaseRenderer, BrowsableAPIRenderer, HTMLFormRenderer,
     JSONRenderer, StaticHTMLRenderer
@@ -1019,3 +1020,100 @@ class AdminRendererTests(TestCase):
         self.assertEqual(results[1]['url'], '/example')
         self.assertEqual(results[2]['url'], None)
         self.assertNotIn('url', results[3])
+
+    def test_invalid_post_request_shows_validation_error(self):
+        factory = APIRequestFactory()
+
+        class DummySerializer(serializers.Serializer):
+            name = serializers.CharField()
+
+            def validate_name(self, value):
+                raise serializers.ValidationError("any-post-is-invalid")
+
+        class DummyView(APIView):
+            renderer_classes = (AdminRenderer,)
+            serializer_class = DummySerializer
+
+            def get(self, request):
+                return Response({'content': 'page-content-on-get'})
+
+            def post(self, request):
+                serializer = DummySerializer(data=request.data)
+                serializer.is_valid(raise_exception=True)
+                return Response(serializer.data)
+
+        view = DummyView.as_view()
+        request = factory.post('/', {'name': 'anything'})
+        response = view(request)
+        response.render()
+
+        # Render normal page
+        self.assertContains(response, 'page-content-on-get', status_code=400)
+        # The validation error is surfaced through the bound error form
+        self.assertContains(response, 'any-post-is-invalid', status_code=400)
+
+    def test_invalid_post_request_missing_get_permissions(self):
+        factory = APIRequestFactory()
+
+        class PostOnlyPermission(BasePermission):
+            def has_permission(self, request, view):
+                return request.method == "POST"
+
+        class DummyView(APIView):
+            renderer_classes = (AdminRenderer,)
+            permission_classes = (PostOnlyPermission,)
+
+            def get(self, request):
+                return Response({'content': 'super-duper-secret'})
+
+            def post(self, request):
+                raise serializers.ValidationError("any-post-is-invalid")
+
+        view = DummyView.as_view()
+        request = factory.post('/')
+        response = view(request)
+        response.render()
+
+        # We should not leak private data
+        self.assertNotContains(response, 'super-duper-secret', status_code=400)
+
+        # We should show the validation error instead
+        self.assertContains(response, 'any-post-is-invalid', status_code=400)
+
+    def test_invalid_post_request_missing_get_permissions_with_serializer(self):
+        factory = APIRequestFactory()
+
+        class PostOnlyPermission(BasePermission):
+            def has_permission(self, request, view):
+                return request.method == "POST"
+
+        class DummySerializer(serializers.Serializer):
+            name = serializers.CharField()
+
+            def validate_name(self, value):
+                raise serializers.ValidationError("any-post-is-invalid")
+
+        class DummyView(APIView):
+            renderer_classes = (AdminRenderer,)
+            permission_classes = (PostOnlyPermission,)
+            serializer_class = DummySerializer
+
+            def get(self, request):
+                return Response({'content': 'super-duper-secret'})
+
+            def post(self, request):
+                serializer = DummySerializer(data=request.data)
+                serializer.is_valid(raise_exception=True)
+                return Response(serializer.data)
+
+        view = DummyView.as_view()
+        request = factory.post('/', {'name': 'anything'})
+        response = view(request)
+        response.render()
+
+        # Even with a serializer (and its bound error form), the denied GET
+        # representation must not leak.
+        self.assertNotContains(response, 'super-duper-secret', status_code=400)
+
+        # We should still show the validation error.
+        self.assertContains(response, 'any-post-is-invalid', status_code=400)
