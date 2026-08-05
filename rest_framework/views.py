@@ -233,9 +233,9 @@ class APIView(View):
         """
         return {
             'view': self,
-            'args': self.args,
-            'kwargs': self.kwargs,
-            'request': self.request,
+            'args': getattr(self, 'args', ()),
+            'kwargs': getattr(self, 'kwargs', {}),
+            'request': getattr(self, 'request', None),
         }
 
     def get_view_name(self):
