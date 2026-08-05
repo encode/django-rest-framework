@@ -38,7 +38,7 @@ You can determine your currently installed version using `pip show`:
 
 ## 3.18.x series
 
-### 3.18.1
+### 3.18.0
 
 **Date**: 6th August 2026
 
