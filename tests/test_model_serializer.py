@@ -758,6 +758,7 @@ class DisplayValueModel(models.Model):
     color = models.ForeignKey(DisplayValueTargetModel, on_delete=models.CASCADE)
 
 
+@pytest.mark.usefixtures("reset_sequences")
 class TestRelationalFieldDisplayValue(TestCase):
     def setUp(self):
         DisplayValueTargetModel.objects.bulk_create([
