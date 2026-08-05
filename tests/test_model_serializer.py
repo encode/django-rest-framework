@@ -16,7 +16,8 @@ import pytest
 from django.core.exceptions import ImproperlyConfigured
 from django.core.serializers.json import DjangoJSONEncoder
 from django.core.validators import (
-    MaxValueValidator, MinLengthValidator, MinValueValidator
+    MaxLengthValidator, MaxValueValidator, MinLengthValidator,
+    MinValueValidator
 )
 from django.db import models
 from django.db.models.signals import m2m_changed
@@ -437,6 +438,28 @@ class TestGenericIPAddressFieldValidation(TestCase):
         self.assertFalse(s.is_valid())
         self.assertEqual(s.errors['address'],
                          ['Enter a valid IPv4 or IPv6 address.'])
+
+    def test_ip_address_validation_with_custom_validator(self):
+        class IPAddressFieldModel(models.Model):
+            address = models.GenericIPAddressField(
+                # MaxLengthValidator is an unhashable type
+                validators=[MaxLengthValidator(15)],
+            )
+
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = IPAddressFieldModel
+                fields = '__all__'
+
+        s = TestSerializer(data={'address': 'not an ip address'})
+        self.assertFalse(s.is_valid())
+        self.assertEqual(
+            s.errors['address'],
+            [
+                'Ensure this value has at most 15 characters (it has 17).',
+                'Enter a valid IPv4 or IPv6 address.',
+            ],
+        )
 
     def test_ip_address_validation_with_protocol_ipv4(self):
         class IPv4AddressFieldModel(models.Model):
