@@ -95,8 +95,9 @@ class DBTransactionErrorTests(TestCase):
             # 1 - begin savepoint
             # 2 - insert
             # 3 - release savepoint
-            with transaction.atomic(), self.assertRaises(Exception):
-                self.view(request)
+            with transaction.atomic():
+                with self.assertRaises(Exception):
+                    self.view(request)
                 assert not transaction.get_rollback()
         assert BasicModel.objects.count() == 1
 
