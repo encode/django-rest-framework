@@ -45,6 +45,10 @@ class DefaultContentNegotiation(BaseContentNegotiation):
             renderers = self.filter_renderers(renderers, format)
 
         accepts = self.get_accept_list(request)
+        unacceptable_media_types = [
+            media_type for media_type in accepts
+            if _MediaType(media_type).quality <= 0
+        ]
 
         # Check the acceptable media types against each renderer,
         # attempting more specific media types first
@@ -54,6 +58,10 @@ class DefaultContentNegotiation(BaseContentNegotiation):
             for renderer in renderers:
                 for media_type in media_type_set:
                     if media_type_matches(renderer.media_type, media_type):
+                        if self.is_renderer_unacceptable(
+                            renderer, media_type, unacceptable_media_types
+                        ):
+                            continue
                         # Return the most specific media type as accepted.
                         media_type_wrapper = _MediaType(media_type)
                         if (
@@ -76,6 +84,14 @@ class DefaultContentNegotiation(BaseContentNegotiation):
                             return renderer, media_type
 
         raise exceptions.NotAcceptable(available_renderers=renderers)
+
+    def is_renderer_unacceptable(self, renderer, media_type, unacceptable_media_types):
+        media_type_precedence = _MediaType(media_type).precedence
+        return any(
+            media_type_matches(renderer.media_type, unacceptable_media_type) and
+            _MediaType(unacceptable_media_type).precedence >= media_type_precedence
+            for unacceptable_media_type in unacceptable_media_types
+        )
 
     def filter_renderers(self, renderers, format):
         """
