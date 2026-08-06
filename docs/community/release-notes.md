@@ -63,6 +63,8 @@ You can determine your currently installed version using `pip show`:
 * Handle unhashable `BooleanField` representation value by [@emfpdlzj](https://github.com/emfpdlzj) in [#9973](https://github.com/encode/django-rest-framework/pull/9973)
 * Fix OpenAPI schema for zero numeric bounds on ListField children by [@zainnadeem786](https://github.com/zainnadeem786) in [#9977](https://github.com/encode/django-rest-framework/pull/9977)
 * Fix `set_rollback` to only rollback initialized connections by [@jdetaeye](https://github.com/jdetaeye) in [#9599](https://github.com/encode/django-rest-framework/pull/9599)
+* Fix DictField HTML input returning empty dict for missing fields by [@veeceey](https://github.com/veeceey) in [#9891](https://github.com/encode/django-rest-framework/pull/9891)
+* Raise clear error for unsupported unique-together list updates by [@zainnadeem786](https://github.com/zainnadeem786) in [#9981](https://github.com/encode/django-rest-framework/pull/9981)
 
 #### New Contributors
 
@@ -78,6 +80,7 @@ You can determine your currently installed version using `pip show`:
 * [@Elkasitu](https://github.com/Elkasitu) made their first contribution in [#8494](https://github.com/encode/django-rest-framework/pull/8494)
 * [@vishalanandl177](https://github.com/vishalanandl177) made their first contribution in [#10002](https://github.com/encode/django-rest-framework/pull/10002)
 * [@jdetaeye](https://github.com/jdetaeye) made their first contribution in [#9599](https://github.com/encode/django-rest-framework/pull/9599)
+* [@veeceey](https://github.com/veeceey) made their first contribution in #[#9891](https://github.com/encode/django-rest-framework/pull/9891)
 
 **Full Changelog**: [3.17.2...3.18.0](https://github.com/encode/django-rest-framework/compare/3.17.2...3.18.0)
 
