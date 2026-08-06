@@ -80,7 +80,7 @@ You can determine your currently installed version using `pip show`:
 * [@Elkasitu](https://github.com/Elkasitu) made their first contribution in [#8494](https://github.com/encode/django-rest-framework/pull/8494)
 * [@vishalanandl177](https://github.com/vishalanandl177) made their first contribution in [#10002](https://github.com/encode/django-rest-framework/pull/10002)
 * [@jdetaeye](https://github.com/jdetaeye) made their first contribution in [#9599](https://github.com/encode/django-rest-framework/pull/9599)
-* [@veeceey](https://github.com/veeceey) made their first contribution in #[#9891](https://github.com/encode/django-rest-framework/pull/9891)
+* [@veeceey](https://github.com/veeceey) made their first contribution in [#9891](https://github.com/encode/django-rest-framework/pull/9891)
 
 **Full Changelog**: [3.17.2...3.18.0](https://github.com/encode/django-rest-framework/compare/3.17.2...3.18.0)
 
