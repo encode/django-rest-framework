@@ -98,4 +98,8 @@ def parse_html_dict(dictionary, prefix='', default=NOT_PROVIDED):
         value = dictionary.getlist(field)
         ret.setlist(key, value)
 
+    # Left for backwards compatibility in case of external caller
+    if default is NOT_PROVIDED:
+        return ret
+
     return ret if ret else default
