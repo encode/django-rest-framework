@@ -66,7 +66,10 @@ def parse_html_list(dictionary, prefix='', default=None):
     return [ret[item] for item in sorted(ret)] if ret else default
 
 
-def parse_html_dict(dictionary, prefix='', default=None):
+NOT_PROVIDED = object()
+
+
+def parse_html_dict(dictionary, prefix='', default=NOT_PROVIDED):
     """
     Used to support dictionary values in HTML forms.
 
