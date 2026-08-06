@@ -1,3 +1,4 @@
+import pytest
 from django.contrib.auth.models import Group, User
 from django.test import TestCase
 
@@ -18,6 +19,7 @@ class UserUpdate(generics.UpdateAPIView):
     serializer_class = UserSerializer
 
 
+@pytest.mark.usefixtures("reset_sequences")
 class TestPrefetchRelatedUpdates(TestCase):
     def setUp(self):
         self.user = User.objects.create(username='tom', email='tom@example.com')
