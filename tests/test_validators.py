@@ -646,21 +646,19 @@ class UniqueConstraintNullableModel(models.Model):
         ]
 
 
-# Only define nulls_distinct model for Django 5.0+
-if django_version >= (5, 0):
-    class UniqueConstraintNullsDistinctModel(models.Model):
-        name = models.CharField(max_length=100)
-        code = models.CharField(max_length=100, null=True)
-        category = models.CharField(max_length=100, null=True)
+class UniqueConstraintNullsDistinctModel(models.Model):
+    name = models.CharField(max_length=100)
+    code = models.CharField(max_length=100, null=True)
+    category = models.CharField(max_length=100, null=True)
 
-        class Meta:
-            constraints = [
-                models.UniqueConstraint(
-                    name='unique_code_category_nulls_not_distinct',
-                    fields=('code', 'category'),
-                    nulls_distinct=False,
-                ),
-            ]
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                name='unique_code_category_nulls_not_distinct',
+                fields=('code', 'category'),
+                nulls_distinct=False,
+            ),
+        ]
 
 
 class UniqueConstraintCustomMessageCodeModel(models.Model):
@@ -1115,13 +1113,9 @@ class ValidatorsTests(TestCase):
         assert validator != validator2
 
 
-# Tests for `nulls_distinct` option (Django 5.0+)
-# -----------------------------------------------
+# Tests for `nulls_distinct` option
+# ---------------------------------
 
-@pytest.mark.skipif(
-    django_version < (5, 0),
-    reason="nulls_distinct requires Django 5.0+"
-)
 class TestUniqueConstraintNullsDistinct(TestCase):
     """
     Tests for UniqueConstraint with nulls_distinct=False option.
@@ -1130,8 +1124,6 @@ class TestUniqueConstraintNullsDistinct(TestCase):
     """
 
     def setUp(self):
-        from tests.test_validators import UniqueConstraintNullsDistinctModel
-
         self.model = UniqueConstraintNullsDistinctModel
 
         class UniqueConstraintNullsDistinctSerializer(serializers.ModelSerializer):

@@ -1469,7 +1469,7 @@ class ModelSerializer(Serializer):
                         model._default_manager,
                         condition_fields,
                         constraint.condition,
-                        getattr(constraint, 'nulls_distinct', None),
+                        constraint.nulls_distinct,
                     )
 
     def get_uniqueness_extra_kwargs(self, field_names, declared_fields, extra_kwargs):
