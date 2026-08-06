@@ -52,6 +52,7 @@ You can determine your currently installed version using `pip show`:
 * Add support for Django 6.1 by [@browniebroke](https://github.com/browniebroke) in [#10003](https://github.com/encode/django-rest-framework/pull/10003)
 * Add `unaccent` to `SearchFilter` by [@mgaligniana](https://github.com/mgaligniana) in [#9385](https://github.com/encode/django-rest-framework/pull/9385)
 * Add `@throttle_scope` function based view decorator by [@d-ryzhykau](https://github.com/d-ryzhykau) in [#9963](https://github.com/encode/django-rest-framework/pull/9963)
+* Add `nulls_distinct` support to `UniqueTogetherValidator` by [@mag123c](https://github.com/mag123c) in [#9866](https://github.com/encode/django-rest-framework/pull/9866)
 
 #### Bug fixes
 
@@ -81,6 +82,7 @@ You can determine your currently installed version using `pip show`:
 * [@vishalanandl177](https://github.com/vishalanandl177) made their first contribution in [#10002](https://github.com/encode/django-rest-framework/pull/10002)
 * [@jdetaeye](https://github.com/jdetaeye) made their first contribution in [#9599](https://github.com/encode/django-rest-framework/pull/9599)
 * [@veeceey](https://github.com/veeceey) made their first contribution in [#9891](https://github.com/encode/django-rest-framework/pull/9891)
+* [@mag123c](https://github.com/mag123c) made their first contribution in [#9866](https://github.com/encode/django-rest-framework/pull/9866)
 
 **Full Changelog**: [3.17.2...3.18.0](https://github.com/encode/django-rest-framework/compare/3.17.2...3.18.0)
 
