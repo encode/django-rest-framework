@@ -72,7 +72,7 @@ optional = [
 ]
 django52 = [ "django>=5.2,<6.0" ]
 django60 = [ "django>=6.0,<6.1" ]
-django61 = [ "django>=6.1rc1,<6.2" ]
+django61 = [ "django>=6.1,<6.2" ]
 djangomain = [ "django @ https://github.com/django/django/archive/main.tar.gz" ]
 
 [tool.setuptools]
@@ -107,6 +107,7 @@ banned-modules = "json = use from rest_framework.utils import json!"
 # Ref: https://github.com/codespell-project/codespell#using-a-config-file
 skip = "*/kickstarter-announcement.md,*.js,*.map,*.po,*.css,locale"
 ignore-words = "codespell-ignore-words.txt"
+ignore-words-list = "commitish"
 builtin = "clear,rare,code,names,en-GB_to_en-US"
 
 [tool.pyproject-fmt]

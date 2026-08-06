@@ -1,0 +1,113 @@
+name: Prepare Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'New release version (e.g. 3.17.2)'
+        required: true
+
+jobs:
+  prepare-release:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Validate version format
+        run: |
+          if ! echo "${{ github.event.inputs.version }}" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo "Error: Version '${{ github.event.inputs.version }}' must match X.Y.Z format"
+            exit 1
+          fi
+
+      - name: Checkout main branch
+        uses: actions/checkout@v6
+        with:
+          ref: main
+
+      - name: Get current version
+        id: current_version
+        run: |
+          VERSION=$(grep -Po "(?<=__version__ = ')[0-9]+\.[0-9]+\.[0-9]+" rest_framework/__init__.py)
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Update version in __init__.py
+        run: |
+          sed -i "s/__version__ = '${{ steps.current_version.outputs.version }}'/__version__ = '${{ github.event.inputs.version }}'/" rest_framework/__init__.py
+
+      - name: Generate release notes from GitHub API
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          curl -sf \
+            -H "Authorization: token $GH_TOKEN" \
+            -H "Accept: application/json" \
+            "https://github.com/encode/django-rest-framework/releases/notes?commitish=main&tag_name=${{ github.event.inputs.version }}&previous_tag_name=${{ steps.current_version.outputs.version }}" \
+            | jq -r '.body' > input.md
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Linkify release notes
+        run: uv tool run linkify-gh-markdown --heading-level 4 input.md > output.md
+
+      - name: Insert release notes into docs
+        env:
+          NEW_VERSION: ${{ github.event.inputs.version }}
+          OLD_VERSION: ${{ steps.current_version.outputs.version }}
+        run: |
+          python3 << 'EOF'
+          import os, re
+
+          new_version = os.environ['NEW_VERSION']
+          old_version = os.environ['OLD_VERSION']
+
+          new_series = '.'.join(new_version.split('.')[:2])
+          old_series = '.'.join(old_version.split('.')[:2])
+
+          with open('output.md') as f:
+              new_notes = f.read().strip()
+
+          with open('docs/community/release-notes.md') as f:
+              content = f.read()
+
+          series_header = f'## {new_series}.x series'
+          old_version_header = f'### {old_version}'
+
+          if series_header in content:
+              # Same series: insert before the previous version heading
+              content = content.replace(
+                  old_version_header,
+                  new_notes + '\n\n' + old_version_header,
+                  1
+              )
+          else:
+              # New series: insert a new series block before the first existing one
+              first_series = re.search(r'^## \d+\.\d+\.x series', content, re.MULTILINE)
+              insert_pos = first_series.start() if first_series else len(content)
+              new_block = series_header + '\n\n' + new_notes + '\n\n'
+              content = content[:insert_pos] + new_block + content[insert_pos:]
+
+          with open('docs/community/release-notes.md', 'w') as f:
+              f.write(content)
+          EOF
+
+      - name: Create branch and commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout -b feat/release-${{ github.event.inputs.version }}
+          git add rest_framework/__init__.py docs/community/release-notes.md
+          git commit -m "Prepare release ${{ github.event.inputs.version }}"
+          git push origin feat/release-${{ github.event.inputs.version }}
+
+      - name: Create pull request
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr create \
+            --title "Prepare release ${{ github.event.inputs.version }}" \
+            --body "This PR prepares the release of version ${{ github.event.inputs.version }}." \
+            --base main \
+            --head feat/release-${{ github.event.inputs.version }}
