@@ -171,6 +171,18 @@ class UniqueTogetherValidator:
         return queryset
 
     def __call__(self, attrs, serializer):
+        if (
+            serializer.instance is not None and
+            getattr(serializer.parent, 'many', False) and
+            not hasattr(serializer.instance, 'pk')
+        ):
+            raise RuntimeError(
+                '`UniqueTogetherValidator` cannot determine the current '
+                'instance during a multiple update. Override '
+                '`ListSerializer.run_child_validation()` to set '
+                '`child.instance` before validation.'
+            )
+
         self.enforce_required_fields(attrs, serializer)
         queryset = self.queryset
         queryset = self.filter_queryset(attrs, queryset, serializer)
