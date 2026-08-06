@@ -4372,6 +4372,19 @@ Set to false if this field is not required to be present during deserialization.
     email = serializers.EmailField(source=&quot;user.email&quot;)
 </code></pre></div>
 <p>This case would require user object to be fetched from database when it is not prefetched. If that is not wanted, be sure to be using <code>prefetch_related</code> and <code>select_related</code> methods appropriately. For more information about the methods refer to <a href="https://docs.djangoproject.com/en/stable/ref/models/querysets/#django.db.models.query.QuerySet.select_related">django documentation</a>.</p>
+<p>Also note that when dotted notation is used, after serializer validation the <code>.validated_data</code> attribute will <em>not</em> include a flat <code>"&lt;fieldname&gt;": &lt;value&gt;</code> item. Instead, it will include a nested dictionary derived by expanding the dotted path value of the <code>source</code> argument. So, for the previous serializer example, <code>.validated_data</code> would be:</p>
+<div class="language-text highlight"><pre><span></span><code>{
+    &quot;user&quot;: {
+        &quot;email&quot;: ...
+    }
+}
+</code></pre></div>
+<p>instead of:</p>
+<div class="language-text highlight"><pre><span></span><code>{
+    &quot;email&quot;: ...
+}
+</code></pre></div>
+<p>This works this way because, in DRF's philosophy, the <code>.data</code> attribute represents the external API representation (where key names equal field names), while the <code>.validated_data</code> attribute represents the internal object structure (where the nesting and key names follow the <code>source</code> path).</p>
 <p>The value <code>source='*'</code> has a special meaning, and is used to indicate that the entire object should be passed through to the field.  This can be useful for creating nested representations, or for fields which require access to the complete object in order to determine the output representation.</p>
 <p>Defaults to the name of the field.</p>
 <h3 id="validators"><code>validators</code><a class="headerlink" href="#validators" title="Permanent link">&para;</a></h3>
