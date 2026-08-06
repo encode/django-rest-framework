@@ -39,18 +39,28 @@ jobs:
       - name: Generate release notes from GitHub API
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NEW_VERSION: ${{ github.event.inputs.version }}
+          OLD_VERSION: ${{ steps.current_version.outputs.version }}
         run: |
-          curl -sf \
-            -H "Authorization: token $GH_TOKEN" \
-            -H "Accept: application/json" \
-            "https://github.com/encode/django-rest-framework/releases/notes?commitish=main&tag_name=${{ github.event.inputs.version }}&previous_tag_name=${{ steps.current_version.outputs.version }}" \
-            | jq -r '.body' > input.md
+          set -euo pipefail
+          gh api \
+            --method POST \
+            -H "Accept: application/vnd.github+json" \
+            "/repos/${{ github.repository }}/releases/generate-notes" \
+            -f tag_name="$NEW_VERSION" \
+            -f previous_tag_name="$OLD_VERSION" \
+            -f target_commitish=main \
+            --jq '.body' > input.md
+          if [ ! -s input.md ]; then
+            echo "::error::GitHub returned empty release notes for $OLD_VERSION..$NEW_VERSION"
+            exit 1
+          fi
 
       - name: Set up uv
         uses: astral-sh/setup-uv@v5
 
       - name: Linkify release notes
-        run: uv tool run linkify-gh-markdown --heading-level 4 input.md > output.md
+        run: uv tool run linkify-gh-markdown --heading-level 3 input.md > output.md
 
       - name: Insert release notes into docs
         env:
@@ -59,15 +69,31 @@ jobs:
         run: |
           python3 << 'EOF'
           import os, re
+          from datetime import date
 
           new_version = os.environ['NEW_VERSION']
           old_version = os.environ['OLD_VERSION']
 
           new_series = '.'.join(new_version.split('.')[:2])
-          old_series = '.'.join(old_version.split('.')[:2])
 
           with open('output.md') as f:
               new_notes = f.read().strip()
+
+          # GitHub wraps the categories in a "What's Changed" heading, which the
+          # rest of this file doesn't use. Drop it, then demote the remaining top
+          # level headings ("New Contributors") to sit under the version heading.
+          new_notes = re.sub(r"^### What's Changed\n+", '', new_notes, flags=re.MULTILINE)
+          new_notes = re.sub(r'^### ', '#### ', new_notes, flags=re.MULTILINE)
+
+          # GitHub packs the headings against the surrounding bullets, the rest
+          # of the file leaves a blank line on either side.
+          new_notes = re.sub(r'^(#{4} .*)$', r'\n\1\n', new_notes, flags=re.MULTILINE)
+          new_notes = re.sub(r'\n{3,}', '\n\n', new_notes).strip()
+
+          today = date.today()
+          suffix = 'th' if 11 <= today.day <= 13 else {1: 'st', 2: 'nd', 3: 'rd'}.get(today.day % 10, 'th')
+          heading = f'### {new_version}\n\n**Date**: {today.day}{suffix} {today:%B %Y}\n\n'
+          new_notes = heading + new_notes
 
           with open('docs/community/release-notes.md') as f:
               content = f.read()
