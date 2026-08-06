@@ -14,19 +14,27 @@ jobs:
   pre-commit:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-
-      - uses: actions/setup-python@v6
-        with:
-          python-version: "3.10"
-
-      - uses: pre-commit/action@v3.0.1
+      - uses: actions/checkout@v7.0.1
+      - uses: j178/prek-action@v2.0.6
 
   tests:
     name: Python ${{ matrix.python-version }}
     runs-on: ubuntu-24.04
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     strategy:
       matrix:
@@ -37,10 +45,13 @@ jobs:
         - '3.13'
         - '3.14'
 
-    steps:
-    - uses: actions/checkout@v6
+    env:
+      DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
 
-    - uses: actions/setup-python@v6
+    steps:
+    - uses: actions/checkout@v7.0.1
+
+    - uses: actions/setup-python@v7.0.0
       with:
         python-version: ${{ matrix.python-version }}
         allow-prereleases: true
@@ -61,7 +72,7 @@ jobs:
         tox -e base,dist,docs
 
     - name: Upload coverage
-      uses: codecov/codecov-action@v5
+      uses: codecov/codecov-action@v7.0.0
       with:
         env_vars: TOXENV,DJANGO
 
@@ -69,9 +80,9 @@ jobs:
     name: Test documentation links
     runs-on: ubuntu-24.04
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7.0.1
 
-    - uses: actions/setup-python@v6
+    - uses: actions/setup-python@v7.0.0
       with:
         python-version: '3.13'
 

@@ -202,7 +202,7 @@ decorator. For example:
     from rest_framework.schemas import AutoSchema
 
     class CustomAutoSchema(AutoSchema):
-        def get_link(self, path, method, base_url):
+        def get_operation(self, path, method):
             # override view introspection here...
 
     @api_view(['GET'])
@@ -210,8 +210,8 @@ decorator. For example:
     def view(request):
         return Response({"message": "Hello for today! See you tomorrow!"})
 
-This decorator takes a single `AutoSchema` instance, an `AutoSchema` subclass
-instance or `ManualSchema` instance as described in the [Schemas documentation][schemas].
+This decorator takes a single `AutoSchema` instance or an `AutoSchema` subclass
+instance as described in the [Schemas documentation][schemas].
 You may pass `None` in order to exclude the view from schema generation.
 
     @api_view(['GET'])
@@ -219,12 +219,26 @@ You may pass `None` in order to exclude the view from schema generation.
     def view(request):
         return Response({"message": "Will not appear in schema!"})
 
+### Throttle scope decorator
+
+To set the throttle scope of function based views you may use the `@throttle_scope` decorator:
+
+    from rest_framework.decorators import api_view, throttle_scope
+
+    @api_view(['GET'])
+    @throttle_scope("hello")
+    def view(request):
+        return Response({"message": "Hello for today! See you tomorrow!"})
+
+See [ScopedRateThrottle documentation][scoped-rate-throttle] for more details.
+
 
 [cite]: https://reinout.vanrees.org/weblog/2011/08/24/class-based-views-usage.html
 [cite2]: http://www.boredomandlaziness.org/2012/05/djangos-cbvs-are-not-mistake-but.html
 [settings]: settings.md
 [throttling]: throttling.md
 [schemas]: schemas.md
+[scoped-rate-throttle]: throttling.md#scopedratethrottle
 [classy-drf]: http://www.cdrf.co
 [api-policy-attributes]: views.md#api-policy-attributes
 

@@ -9,9 +9,7 @@ from enum import auto
 from unittest.mock import patch
 from zoneinfo import ZoneInfo
 
-import django
 import pytest
-import pytz
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db.models import IntegerChoices, TextChoices
 from django.http import QueryDict
@@ -576,6 +574,67 @@ class TestHTMLInput:
         assert serializer.is_valid()
         assert serializer.validated_data == {'scores': ['']}
 
+    def test_partial_update_with_indexed_keys(self):
+        """
+        Regression test for indexed HTML form keys with partial=True.
+        When data is passed as `colors[0]=#ffffff&colors[1]=#000000`
+        with partial=True, the field should parse indexed keys correctly.
+        """
+        class TestSerializer(serializers.Serializer):
+            colors = serializers.ListField(
+                allow_null=True,
+                child=serializers.CharField(max_length=7),
+                required=False
+            )
+            name = serializers.CharField(max_length=100, required=False)
+
+        serializer = TestSerializer(
+            data=QueryDict('colors[0]=#ffffff&colors[1]=#000000'),
+            partial=True
+        )
+        assert serializer.is_valid()
+        assert serializer.validated_data == {'colors': ['#ffffff', '#000000']}
+
+    def test_partial_update_omitted_list_field(self):
+        """
+        When a ListField is omitted in a partial update (and there are no
+        indexed keys for it), the field should be skipped and not included in
+        the validated data.
+        """
+        class TestSerializer(serializers.Serializer):
+            colors = serializers.ListField(
+                child=serializers.CharField(max_length=7),
+                required=False
+            )
+            name = serializers.CharField(max_length=100)
+
+        # colors is omitted, only name is provided
+        serializer = TestSerializer(
+            data=QueryDict('name=Test'),
+            partial=True
+        )
+        assert serializer.is_valid()
+        assert serializer.validated_data == {'name': 'Test'}
+        assert 'colors' not in serializer.validated_data
+
+    def test_partial_update_indexed_keys_ordering(self):
+        """
+        Indexed keys should preserve the correct order even when
+        they appear out of order in the QueryDict.
+        """
+        class TestSerializer(serializers.Serializer):
+            items = serializers.ListField(
+                child=serializers.IntegerField(),
+                required=False
+            )
+
+        serializer = TestSerializer(
+            data=QueryDict('items[2]=3&items[0]=1&items[1]=2'),
+            partial=True
+        )
+        assert serializer.is_valid()
+        assert serializer.validated_data == {'items': [1, 2, 3]}
+
 
 class TestCreateOnlyDefault:
     def setup_method(self):
@@ -713,33 +772,38 @@ class TestBooleanField(FieldValues):
         'foo': ['Must be a valid boolean.'],
         None: ['This field may not be null.']
     }
-    outputs = {
-        'True': True,
-        'TRUE': True,
-        'tRuE': True,
-        't': True,
-        'T': True,
-        'true': True,
-        'on': True,
-        'ON': True,
-        'oN': True,
-        'False': False,
-        'FALSE': False,
-        'fALse': False,
-        'f': False,
-        'F': False,
-        'false': False,
-        'off': False,
-        'OFF': False,
-        'oFf': False,
-        '1': True,
-        '0': False,
-        1: True,
-        0: False,
-        True: True,
-        False: False,
-        'other': True
-    }
+    outputs = [
+        ('True', True),
+        ('TRUE', True),
+        ('tRuE', True),
+        ('t', True),
+        ('T', True),
+        ('true', True),
+        ('on', True),
+        ('ON', True),
+        ('oN', True),
+        ('False', False),
+        ('FALSE', False),
+        ('fALse', False),
+        ('f', False),
+        ('F', False),
+        ('false', False),
+        ('off', False),
+        ('OFF', False),
+        ('oFf', False),
+        ('1', True),
+        ('0', False),
+        (1, True),
+        (0, False),
+        (True, True),
+        (False, False),
+        ('other', True),
+        ([], False),
+        ({}, False),
+        (set(), False),
+        ([1], True),
+        ({'example': 'value'}, True),
+    ]
     field = serializers.BooleanField()
 
     def test_disallow_unhashable_collection_types(self):
@@ -1647,7 +1711,7 @@ class TestDefaultTZDateTimeField(TestCase):
 
     def assertUTC(self, tzinfo):
         """
-        Check UTC for datetime.timezone, ZoneInfo, and pytz tzinfo instances.
+        Check UTC for datetime.timezone, ZoneInfo.
         """
         assert (
             tzinfo is utc or
@@ -1683,34 +1747,6 @@ class TestCustomTimezoneForDateTimeField(TestCase):
         rendered_date_in_timezone = dt.astimezone(self.kolkata).strftime(self.date_format)
 
         assert rendered_date == rendered_date_in_timezone
-
-
-@pytest.mark.skipif(
-    condition=django.VERSION >= (5,),
-    reason="Django 5.0 has removed pytz; this test should eventually be able to get removed.",
-)
-class TestPytzNaiveDayLightSavingTimeTimeZoneDateTimeField(FieldValues):
-    """
-    Invalid values for `DateTimeField` with datetime in DST shift (non-existing or ambiguous) and timezone with DST.
-    Timezone America/New_York has DST shift from 2017-03-12T02:00:00 to 2017-03-12T03:00:00 and
-     from 2017-11-05T02:00:00 to 2017-11-05T01:00:00 in 2017.
-    """
-    valid_inputs = {}
-    invalid_inputs = {
-        '2017-03-12T02:30:00': ['Invalid datetime for the timezone "America/New_York".'],
-        '2017-11-05T01:30:00': ['Invalid datetime for the timezone "America/New_York".']
-    }
-    outputs = {}
-
-    class MockTimezone(pytz.BaseTzInfo):
-        @staticmethod
-        def localize(value, is_dst):
-            raise pytz.InvalidTimeError()
-
-        def __str__(self):
-            return 'America/New_York'
-
-    field = serializers.DateTimeField(default_timezone=MockTimezone())
 
 
 @patch('rest_framework.utils.timezone.datetime_ambiguous', return_value=True)
@@ -2521,6 +2557,74 @@ class TestDictField(FieldValues):
             field.run_validation({})
 
         assert exc_info.value.detail == ['This dictionary may not be empty.']
+
+    def test_query_dict_input_with_dot_separated_keys(self):
+        """
+        DictField should correctly parse HTML form (QueryDict) input
+        with dot-separated keys.
+        """
+        class TestSerializer(serializers.Serializer):
+            data = serializers.DictField(child=serializers.CharField())
+
+        serializer = TestSerializer(data=QueryDict('data.a=1&data.b=2'))
+        assert serializer.is_valid(), serializer.errors
+        assert serializer.validated_data == {'data': {'a': '1', 'b': '2'}}
+
+    def test_query_dict_input_no_values_uses_default(self):
+        """
+        When no matching keys are present in the QueryDict and a default
+        is set, the field should return the default value.
+        """
+        class TestSerializer(serializers.Serializer):
+            a = serializers.IntegerField(required=True)
+            data = serializers.DictField(default=lambda: {'x': 'y'})
+
+        serializer = TestSerializer(data=QueryDict('a=1'))
+        assert serializer.is_valid(), serializer.errors
+        assert serializer.validated_data == {'a': 1, 'data': {'x': 'y'}}
+
+    def test_query_dict_input_no_values_no_default_and_not_required(self):
+        """
+        When no matching keys are present in the QueryDict, there is no
+        default, and the field is not required, the field should be
+        skipped entirely from validated_data.
+        """
+        class TestSerializer(serializers.Serializer):
+            data = serializers.DictField(required=False)
+
+        serializer = TestSerializer(data=QueryDict(''))
+        assert serializer.is_valid(), serializer.errors
+        assert serializer.validated_data == {}
+
+    def test_query_dict_input_no_values_required(self):
+        """
+        When no matching keys are present in the QueryDict and the field
+        is required, validation should fail.
+        """
+        class TestSerializer(serializers.Serializer):
+            data = serializers.DictField(required=True)
+
+        serializer = TestSerializer(data=QueryDict(''))
+        assert not serializer.is_valid()
+        assert 'data' in serializer.errors
+
+    def test_partial_update_can_clear_html_dict_field(self):
+        """
+        Test that a partial update can clear a DictField when provided with an
+        empty string value through a QueryDict.
+        """
+        class TestSerializer(serializers.Serializer):
+            field_name = serializers.DictField(required=False)
+            other_field = serializers.CharField(required=False)
+
+        serializer = TestSerializer(
+            data=QueryDict('field_name='),
+            partial=True,
+        )
+        assert serializer.is_valid()
+        assert 'field_name' in serializer.validated_data
+        assert serializer.validated_data['field_name'] == {}
+        assert 'other_field' not in serializer.validated_data
 
 
 class TestNestedDictField(FieldValues):

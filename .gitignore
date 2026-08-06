@@ -19,3 +19,5 @@ coverage.*
 !.github
 !.gitignore
 !.pre-commit-config.yaml
+
+.idea

@@ -32,8 +32,6 @@ updates:
 
       optional:
         patterns:
-          - "coreapi"
-          - "coreschema"
           - "django-filter"
           - "django-guardian"
           - "inflection"

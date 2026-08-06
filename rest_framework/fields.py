@@ -16,7 +16,7 @@ from django.core.exceptions import ValidationError as DjangoValidationError
 from django.core.validators import (
     EmailValidator, MaxLengthValidator, MaxValueValidator, MinLengthValidator,
     MinValueValidator, ProhibitNullCharactersValidator, RegexValidator,
-    URLValidator
+    URLValidator, ip_address_validators
 )
 from django.forms import FilePathField as DjangoFilePathField
 from django.forms import ImageField as DjangoImageField
@@ -30,13 +30,7 @@ from django.utils.formats import localize_input, sanitize_separators
 from django.utils.ipv6 import clean_ipv6_address
 from django.utils.translation import gettext_lazy as _
 
-try:
-    import pytz
-except ImportError:
-    pytz = None
-
 from rest_framework import DJANGO_DURATION_FORMAT, ISO_8601
-from rest_framework.compat import ip_address_validators
 from rest_framework.exceptions import ErrorDetail, ValidationError
 from rest_framework.settings import api_settings
 from rest_framework.utils import html, humanize_datetime, json, representation
@@ -708,12 +702,13 @@ class BooleanField(Field):
         self.fail("invalid", input=data)
 
     def to_representation(self, value):
-        if self._lower_if_str(value) in self.TRUE_VALUES:
-            return True
-        elif self._lower_if_str(value) in self.FALSE_VALUES:
-            return False
-        if self._lower_if_str(value) in self.NULL_VALUES and self.allow_null:
-            return None
+        with contextlib.suppress(TypeError):
+            if self._lower_if_str(value) in self.TRUE_VALUES:
+                return True
+            elif self._lower_if_str(value) in self.FALSE_VALUES:
+                return False
+            if self._lower_if_str(value) in self.NULL_VALUES and self.allow_null:
+                return None
         return bool(value)
 
 
@@ -1177,17 +1172,12 @@ class DateTimeField(Field):
                     return value.astimezone(field_timezone)
                 except OverflowError:
                     self.fail('overflow')
-            try:
-                dt = timezone.make_aware(value, field_timezone)
-                # When the resulting datetime is a ZoneInfo instance, it won't necessarily
-                # throw given an invalid datetime, so we need to specifically check.
-                if not valid_datetime(dt):
-                    self.fail('make_aware', timezone=field_timezone)
-                return dt
-            except Exception as e:
-                if pytz and isinstance(e, pytz.exceptions.InvalidTimeError):
-                    self.fail('make_aware', timezone=field_timezone)
-                raise e
+            dt = timezone.make_aware(value, field_timezone)
+            # When the resulting datetime is a ZoneInfo instance, it won't necessarily
+            # throw given an invalid datetime, so we need to specifically check.
+            if not valid_datetime(dt):
+                self.fail('make_aware', timezone=field_timezone)
+            return dt
         elif (field_timezone is None) and timezone.is_aware(value):
             return timezone.make_naive(value, datetime.timezone.utc)
         return value
@@ -1680,18 +1670,24 @@ class ListField(Field):
             self.validators.append(MinLengthValidator(self.min_length, message=message))
 
     def get_value(self, dictionary):
-        if self.field_name not in dictionary:
-            if getattr(self.root, 'partial', False):
-                return empty
         # We override the default field access in order to support
         # lists in HTML forms.
         if html.is_html_input(dictionary):
             val = dictionary.getlist(self.field_name, [])
             if len(val) > 0:
-                # Support QueryDict lists in HTML input.
+                # Support QueryDict lists and other list-like results in HTML input.
                 return val
+            # For partial updates, avoid calling parse_html_list unless indexed keys are present.
+            # This reduces unnecessary parsing overhead for omitted list fields.
+            if getattr(self.root, 'partial', False):
+                prefix = self.field_name + '['
+                if not any(key.startswith(prefix) for key in dictionary):
+                    return empty
             return html.parse_html_list(dictionary, prefix=self.field_name, default=empty)
 
+        # Non-HTML input: standard dictionary access
+        if self.field_name not in dictionary and getattr(self.root, 'partial', False):
+            return empty
         return dictionary.get(self.field_name, empty)
 
     def to_internal_value(self, data):
@@ -1754,7 +1750,14 @@ class DictField(Field):
         # We override the default field access in order to support
         # dictionaries in HTML forms.
         if html.is_html_input(dictionary):
-            return html.parse_html_dict(dictionary, prefix=self.field_name)
+            result = html.parse_html_dict(dictionary, prefix=self.field_name, default=empty)
+            if result is not empty:
+                return result
+            # If the field name itself is present in the input,
+            # treat it as an explicit empty dict (e.g. clearing the field).
+            if self.field_name in dictionary:
+                return {}
+            return empty
         return dictionary.get(self.field_name, empty)
 
     def to_internal_value(self, data):
@@ -1762,7 +1765,13 @@ class DictField(Field):
         Dicts of native values <- Dicts of primitive datatypes.
         """
         if html.is_html_input(data):
-            data = html.parse_html_dict(data)
+            # Coerce HTML form inputs (e.g. QueryDict/MultiValueDict) to a plain dict.
+            # Use `.dict()` when available to preserve existing behavior of taking
+            # the first value for each key, otherwise fall back to `dict()`.
+            if hasattr(data, 'dict'):
+                data = data.dict()
+            else:
+                data = dict(data)
         if not isinstance(data, dict):
             self.fail('not_a_dict', input_type=type(data).__name__)
         if not self.allow_empty and len(data) == 0:

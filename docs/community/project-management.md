@@ -40,48 +40,36 @@ Further notes for maintainers:
 
 ## Release process
 
-* The release manager is selected by `@tomchristie`.
+* The release manager is selected.
 * The release manager will then have the maintainer role added to PyPI package.
 * The previous manager will then have the maintainer role removed from the PyPI package.
 
-Our PyPI releases will be handled by either the current release manager, or by `@tomchristie`. Every release should have an open issue tagged with the `Release` label and marked against the appropriate milestone.
+Our PyPI releases is automated in GitHub actions on tag pushes. The following template can be used as a release checklist:
 
-The following template should be used for the description of the issue, and serves as a release checklist.
-
-    Release manager is @***.
-    Pull request is #***.
-
-    Checklist:
-
-    - [ ] Create pull request for [release notes](https://github.com/encode/django-rest-framework/blob/mains/docs/topics/release-notes.md) based on the [*.*.* milestone](https://github.com/encode/django-rest-framework/milestones/***).
-    - [ ] Update supported versions:
-        - [ ] `pyproject.toml` `python_requires` list
-        - [ ] `pyproject.toml` Python & Django version trove classifiers
-        - [ ] `README` Python & Django versions
-        - [ ] `docs` Python & Django versions
-    - [ ] Ensure the pull request increments the version to `*.*.*` in [`restframework/__init__.py`](https://github.com/encode/django-rest-framework/blob/main/rest_framework/__init__.py).
-    - [ ] Update the release-notes.md:
-        - Start drafting a new release in GitHub: https://github.com/encode/django-rest-framework/releases/new
-        - Select the tag that you want to give to the next release and the previous tag
-        - Click the "Generate release notes" button
-        - Don't confirm anything yet! Copy the generated content to a file `input.md`
-        - Run `uv tool run linkify-gh-markdown input.md` to make the links absolute
-        - Put the generated content in the release-notes.md file
-    - [ ] Ensure documentation validates
-        - Build and serve docs `mkdocs serve`
-        - Validate links `pylinkvalidate.py -P http://127.0.0.1:8000`
-    - [ ] Confirm with other maintainers that the release is finalized and ready to go.
-    - [ ] Ensure that release date is included in pull request.
-    - [ ] Merge the release pull request.
-    - [ ] Tag the release, either with `git tag -a *.*.* -m 'version *.*.*'; git push --tags` or in GitHub.
-    - [ ] Wait for the release workflow to run. It will build the distribution, upload it to Test PyPI, PyPI and create the GitHub release.
-    - [ ] Make a release announcement on the [discussion group](https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework).
-    - [ ] Make a release announcement on social media (Mastodon, etc...) and on the [Django forum](https://forum.djangoproject.com/).
-    - [ ] Close the milestone on GitHub.
-
-    To modify this process for future releases make a pull request to the [project management](https://www.django-rest-framework.org/topics/project-management/) documentation.
-
-When pushing the release to PyPI ensure that your environment has been installed from our development `requirement.txt`, so that documentation and PyPI installs are consistently being built against a pinned set of packages.
+- Create pull request for [release notes](https://github.com/encode/django-rest-framework/blob/mains/docs/topics/release-notes.md):
+    - Start drafting a [new release in GitHub](https://github.com/encode/django-rest-framework/releases/new)
+    - Select the tag that you want to give to the release and the previous tag
+    - Click the "Generate release notes" button
+    - Don't confirm anything! Copy the generated content to a file `input.md`
+    - Run `uv tool run linkify-gh-markdown input.md` to make the links absolute
+    - Put the generated content in the `release-notes.md` file
+- Update supported versions:
+    - `pyproject.toml` ensure the `requires-python` key is up to date
+    - `pyproject.toml` Python & Django version trove classifiers
+    - `README` Python & Django versions
+    - `docs` Python & Django versions
+- Ensure the pull request increments the version to `*.*.*` in [`restframework/__init__.py`](https://github.com/encode/django-rest-framework/blob/main/rest_framework/__init__.py).
+- Ensure documentation validates
+    - Build and serve docs `mkdocs serve`
+    - Validate links `pylinkvalidate.py -P http://127.0.0.1:8000`
+- Confirm with other maintainers that the release is finalized and ready to go.
+- Ensure that release date is included in pull request.
+- Merge the release pull request.
+- Tag the release, either with `git tag -a *.*.* -m 'version *.*.*'; git push --tags` or in GitHub.
+- Wait for the release workflow to run. It will build the distribution, upload it to Test PyPI, PyPI and create the GitHub release.
+- Make a release announcement on the [discussion group](https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework).
+- Make a release announcement on social media (Mastodon, etc...) and on the [Django forum](https://forum.djangoproject.com/).
+- Close the milestone on GitHub.
 
 ---
 
