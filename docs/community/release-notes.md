@@ -42,20 +42,18 @@ You can determine your currently installed version using `pip show`:
 
 **Date**: 6th August 2026
 
-#### What's Changed
-
-##### Breaking changes
+#### Breaking changes
 
 * Drop support for Django 4.2, Django 5.0 and Django 5.1 by [@p-r-a-v-i-n](https://github.com/p-r-a-v-i-n) in [#9899](https://github.com/encode/django-rest-framework/pull/9899)
 * Change errors for list serializers (`many=True`) to dict format by [@p-r-a-v-i-n](https://github.com/p-r-a-v-i-n) in [#9837](https://github.com/encode/django-rest-framework/pull/9837)
 
-##### Features
+#### Features
 
 * Add support for Django 6.1 by [@browniebroke](https://github.com/browniebroke) in [#10003](https://github.com/encode/django-rest-framework/pull/10003)
 * Add `unaccent` to `SearchFilter` by [@mgaligniana](https://github.com/mgaligniana) in [#9385](https://github.com/encode/django-rest-framework/pull/9385)
 * Add `@throttle_scope` function based view decorator by [@d-ryzhykau](https://github.com/d-ryzhykau) in [#9963](https://github.com/encode/django-rest-framework/pull/9963)
 
-##### Bug fixes
+#### Bug fixes
 
 * Replace `cc_delim_re usage` with `split_header_value` for Django 6.1+ compatibility by [@laymonage](https://github.com/laymonage) in [#9978](https://github.com/encode/django-rest-framework/pull/9978)
 * Include `choices` param for non-editable fields by [@ticosax](https://github.com/ticosax) in [#9929](https://github.com/encode/django-rest-framework/pull/9929)
@@ -81,7 +79,7 @@ You can determine your currently installed version using `pip show`:
 * [@vishalanandl177](https://github.com/vishalanandl177) made their first contribution in [#10002](https://github.com/encode/django-rest-framework/pull/10002)
 * [@jdetaeye](https://github.com/jdetaeye) made their first contribution in [#9599](https://github.com/encode/django-rest-framework/pull/9599)
 
-**Full Changelog**: [3.17.1...3.18.0](https://github.com/encode/django-rest-framework/compare/3.17.1...3.18.0)
+**Full Changelog**: [3.17.2...3.18.0](https://github.com/encode/django-rest-framework/compare/3.17.2...3.18.0)
 
 ## 3.17.x series
 
