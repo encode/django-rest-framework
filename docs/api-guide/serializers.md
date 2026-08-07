@@ -1229,8 +1229,3 @@ The [drf-pydantic][drf-pydantic] package allows you to use Pydantic with Django 
 [drf-encrypt-content]: https://github.com/oguzhancelikarslan/drf-encrypt-content
 [drf-shapeless-serializers]: https://github.com/khaledsukkar2/drf-shapeless-serializers
 [drf-pydantic]: https://github.com/georgebv/drf-pydantic
-
-> **Note**: The Browsable API internally simulates a `POST` request in order to
-> determine the serializer fields for its HTML form. Because of this,
-> `get_serializer_class()` or permission checks may observe `request.method`
-> as `"POST"` even during GET requests. This is expected behavior.
