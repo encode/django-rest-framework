@@ -10,6 +10,7 @@ REST framework also provides an HTML renderer that renders the browsable API.
 import contextlib
 import datetime
 import sys
+import warnings
 
 from django import forms
 from django.conf import settings
@@ -24,6 +25,7 @@ from rest_framework import ISO_8601, VERSION, exceptions, serializers, status
 from rest_framework.compat import (
     INDENT_SEPARATORS, LONG_SEPARATORS, SHORT_SEPARATORS, pygments_css, yaml
 )
+from rest_framework.deprecation import RemovedInDRF320Warning
 from rest_framework.exceptions import ParseError
 from rest_framework.request import is_form_media_type, override_method
 from rest_framework.settings import api_settings
@@ -107,6 +109,46 @@ class JSONRenderer(BaseRenderer):
         return ret.encode()
 
 
+class _DeprecatedResultsList(list):
+    """
+    The list exposed under the legacy `details` template variable, warning on
+    first use to point users at `results` instead.
+
+    The deprecation lives on the value rather than on the context dict, because
+    Django copies the context dict into a plain `dict` when building the
+    `RequestContext`, which would drop any `dict` subclass behavior.
+
+    See `TemplateHTMLRenderer.get_template_context()`.
+    """
+    _warned = False
+
+    def _warn(self):
+        if not self._warned:
+            self._warned = True
+            warnings.warn(
+                'The "details" template variable is deprecated, '
+                'update your templates to use "results" instead.',
+                RemovedInDRF320Warning,
+                stacklevel=3,
+            )
+
+    def __iter__(self):
+        self._warn()
+        return super().__iter__()
+
+    def __len__(self):
+        self._warn()
+        return super().__len__()
+
+    def __getitem__(self, item):
+        self._warn()
+        return super().__getitem__(item)
+
+    def __repr__(self):
+        self._warn()
+        return super().__repr__()
+
+
 class TemplateHTMLRenderer(BaseRenderer):
     """
     An HTML renderer for use with templates.
@@ -168,10 +210,16 @@ class TemplateHTMLRenderer(BaseRenderer):
 
     def get_template_context(self, data, renderer_context):
         response = renderer_context['response']
-        # in case a ValidationError is caught the data parameter may be a list
-        # see rest_framework.views.exception_handler
+        # data may be a list when a list view is used or when a ValidationError
+        # is raised; wrap it in a dict so Django's template engine can accept it.
+        # Use 'results' to stay consistent with paginated response conventions.
         if isinstance(data, list):
-            return {'details': data, 'status_code': response.status_code}
+            return {
+                'results': data,
+                # Deprecated alias for 'results', kept until DRF 3.20.
+                'details': _DeprecatedResultsList(data),
+                'status_code': response.status_code,
+            }
         if response.exception:
             data['status_code'] = response.status_code
         return data
