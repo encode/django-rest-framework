@@ -36,6 +36,57 @@ You can determine your currently installed version using `pip show`:
 
 ---
 
+## 3.18.x series
+
+### 3.18.0
+
+**Date**: 7th August 2026
+
+#### Breaking changes
+
+* Drop support for Django 4.2, Django 5.0 and Django 5.1 by [@p-r-a-v-i-n](https://github.com/p-r-a-v-i-n) in [#9899](https://github.com/encode/django-rest-framework/pull/9899)
+* Change errors for list serializers (`many=True`) to dict format by [@p-r-a-v-i-n](https://github.com/p-r-a-v-i-n) in [#9837](https://github.com/encode/django-rest-framework/pull/9837)
+
+#### Features
+
+* Add support for Django 6.1 by [@browniebroke](https://github.com/browniebroke) in [#10003](https://github.com/encode/django-rest-framework/pull/10003)
+* Add `unaccent` to `SearchFilter` by [@mgaligniana](https://github.com/mgaligniana) in [#9385](https://github.com/encode/django-rest-framework/pull/9385)
+* Add `@throttle_scope` function based view decorator by [@d-ryzhykau](https://github.com/d-ryzhykau) in [#9963](https://github.com/encode/django-rest-framework/pull/9963)
+* Add `nulls_distinct` support to `UniqueTogetherValidator` by [@mag123c](https://github.com/mag123c) in [#9866](https://github.com/encode/django-rest-framework/pull/9866)
+
+#### Bug fixes
+
+* Replace `cc_delim_re usage` with `split_header_value` for Django 6.1+ compatibility by [@laymonage](https://github.com/laymonage) in [#9978](https://github.com/encode/django-rest-framework/pull/9978)
+* Include `choices` param for non-editable fields by [@ticosax](https://github.com/ticosax) in [#9929](https://github.com/encode/django-rest-framework/pull/9929)
+* Improve cursor pagination template accessibility in browsable API by [@kosbemrunal](https://github.com/kosbemrunal) in [#9905](https://github.com/encode/django-rest-framework/pull/9905)
+* Fix partial form data updates involving `ListField` by [@Natgho](https://github.com/Natgho) in [#9902](https://github.com/encode/django-rest-framework/pull/9902)
+* Fix crash due to browsable API extra action permissions by [@dlfoerster](https://github.com/dlfoerster) in [#9934](https://github.com/encode/django-rest-framework/pull/9934)
+* Handle unhashable `BooleanField` representation value by [@emfpdlzj](https://github.com/emfpdlzj) in [#9973](https://github.com/encode/django-rest-framework/pull/9973)
+* Fix OpenAPI schema for zero numeric bounds on ListField children by [@zainnadeem786](https://github.com/zainnadeem786) in [#9977](https://github.com/encode/django-rest-framework/pull/9977)
+* Fix `set_rollback` to only rollback initialized connections by [@jdetaeye](https://github.com/jdetaeye) in [#9599](https://github.com/encode/django-rest-framework/pull/9599)
+* Fix DictField HTML input returning empty dict for missing fields by [@veeceey](https://github.com/veeceey) in [#9891](https://github.com/encode/django-rest-framework/pull/9891)
+* Raise clear error for unsupported unique-together list updates by [@zainnadeem786](https://github.com/zainnadeem786) in [#9981](https://github.com/encode/django-rest-framework/pull/9981)
+
+#### New Contributors
+
+* [@Im-Bilal](https://github.com/Im-Bilal) made their first contribution in [#9967](https://github.com/encode/django-rest-framework/pull/9967)
+* [@dlfoerster](https://github.com/dlfoerster) made their first contribution in [#9934](https://github.com/encode/django-rest-framework/pull/9934)
+* [@emfpdlzj](https://github.com/emfpdlzj) made their first contribution in [#9973](https://github.com/encode/django-rest-framework/pull/9973)
+* [@zainnadeem786](https://github.com/zainnadeem786) made their first contribution in [#9977](https://github.com/encode/django-rest-framework/pull/9977)
+* [@laymonage](https://github.com/laymonage) made their first contribution in [#9978](https://github.com/encode/django-rest-framework/pull/9978)
+* [@harshitkandpal](https://github.com/harshitkandpal) made their first contribution in [#9993](https://github.com/encode/django-rest-framework/pull/9993)
+* [@udit-prabhakar](https://github.com/udit-prabhakar) made their first contribution in [#9962](https://github.com/encode/django-rest-framework/pull/9962)
+* [@sai09111995](https://github.com/sai09111995) made their first contribution in [#9884](https://github.com/encode/django-rest-framework/pull/9884)
+* [@d-ryzhykau](https://github.com/d-ryzhykau) made their first contribution in [#9963](https://github.com/encode/django-rest-framework/pull/9963)
+* [@Elkasitu](https://github.com/Elkasitu) made their first contribution in [#8494](https://github.com/encode/django-rest-framework/pull/8494)
+* [@vishalanandl177](https://github.com/vishalanandl177) made their first contribution in [#10002](https://github.com/encode/django-rest-framework/pull/10002)
+* [@jdetaeye](https://github.com/jdetaeye) made their first contribution in [#9599](https://github.com/encode/django-rest-framework/pull/9599)
+* [@veeceey](https://github.com/veeceey) made their first contribution in [#9891](https://github.com/encode/django-rest-framework/pull/9891)
+* [@mag123c](https://github.com/mag123c) made their first contribution in [#9866](https://github.com/encode/django-rest-framework/pull/9866)
+* [@anurag12anu](https://github.com/anurag12anu) made their first contribution in [#9814](https://github.com/encode/django-rest-framework/pull/9814)
+
+**Full Changelog**: [3.17.2...3.18.0](https://github.com/encode/django-rest-framework/compare/3.17.2...3.18.0)
+
 ## 3.17.x series
 
 ### 3.17.2
