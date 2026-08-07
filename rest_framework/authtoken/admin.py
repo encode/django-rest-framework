@@ -21,12 +21,14 @@ class TokenChangeList(ChangeList):
                        current_app=self.model_admin.admin_site.name)
 
 
+@admin.register(TokenProxy)
 class TokenAdmin(admin.ModelAdmin):
     list_display = ('key', 'user', 'created')
+    list_filter = ('created',)
     fields = ('user',)
-    search_fields = ('user__username',)
+    search_fields = ('user__%s' % User.USERNAME_FIELD,)
     search_help_text = _('Username')
-    ordering = ('-created',)
+    ordering = ('user__%s' % User.USERNAME_FIELD,)
     actions = None  # Actions not compatible with mapped IDs.
 
     def get_changelist(self, request, **kwargs):
@@ -49,6 +51,3 @@ class TokenAdmin(admin.ModelAdmin):
         # Map back to actual Token, since delete() uses pk.
         token = Token.objects.get(key=obj.key)
         return super().delete_model(request, token)
-
-
-admin.site.register(TokenProxy, TokenAdmin)

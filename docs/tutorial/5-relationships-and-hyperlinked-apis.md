@@ -120,25 +120,16 @@ Notice that we've also added a new `'highlight'` field.  This field is of the sa
 
 Because we've included format suffixed URLs such as `'.json'`, we also need to indicate on the `highlight` field that any format suffixed hyperlinks it returns should use the `'.html'` suffix.
 
----
+!!! note
+    When you are manually instantiating these serializers inside your views (e.g., in `SnippetDetail` or `SnippetList`), you **must** pass `context={'request': request}` so the serializer knows how to build absolute URLs. For example, instead of:
 
-**Note:**
+        serializer = SnippetSerializer(snippet)
+    
+    You must write:
 
-When you are manually instantiating these serializers inside your views (e.g., in `SnippetDetail` or `SnippetList`), you **must** pass `context={'request': request}` so the serializer knows how to build absolute URLs. For example, instead of:
-
-```python
-serializer = SnippetSerializer(snippet)
-```
-
-You must write:
-
-```python
-serializer = SnippetSerializer(snippet, context={"request": request})
-```
-
-If your view is a subclass of `GenericAPIView`, you may use the `get_serializer_context()` as a convenience method.
-
----
+        serializer = SnippetSerializer(snippet, context={"request": request})
+    
+    If your view is a subclass of `GenericAPIView`, you may use the `get_serializer_context()` as a convenience method.
 
 ## Making sure our URL patterns are named
 
