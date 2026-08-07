@@ -227,6 +227,90 @@ class PKManyToManyTests(TestCase):
             serializer.data
 
 
+class PKManyRelatedFieldBulkValidationTests(TestCase):
+    """`PrimaryKeyRelatedField(many=True)` should resolve all pks in a single
+    query rather than one query per item (regression test for #9607)."""
+
+    def setUp(self):
+        self.pks = [
+            ManyToManyTarget.objects.create(name='target-%d' % idx).pk
+            for idx in range(1, 6)
+        ]
+
+    def _field(self, queryset=None):
+        if queryset is None:
+            queryset = ManyToManyTarget.objects.all()
+        field = serializers.PrimaryKeyRelatedField(queryset=queryset, many=True)
+        field.bind('targets', serializers.Serializer())
+        return field
+
+    def test_validation_uses_single_query(self):
+        field = self._field()
+        with self.assertNumQueries(1):
+            field.run_validation(self.pks)
+
+    def test_order_and_duplicates_preserved(self):
+        field = self._field()
+        order = [self.pks[2], self.pks[0], self.pks[0], self.pks[1]]
+        result = field.run_validation(order)
+        assert [obj.pk for obj in result] == order
+
+    def test_string_pks_are_accepted(self):
+        # HTML form input arrives as strings; must match int pks (#9607).
+        field = self._field()
+        result = field.run_validation([str(pk) for pk in self.pks])
+        assert [obj.pk for obj in result] == self.pks
+
+    def test_does_not_exist_error(self):
+        field = self._field()
+        missing = max(self.pks) + 1000
+        with pytest.raises(serializers.ValidationError) as exc_info:
+            field.run_validation([self.pks[0], missing])
+        assert exc_info.value.detail[0].code == 'does_not_exist'
+
+    def test_incorrect_type_error(self):
+        field = self._field()
+        with pytest.raises(serializers.ValidationError) as exc_info:
+            field.run_validation(['not-a-pk'])
+        assert exc_info.value.detail[0].code == 'incorrect_type'
+
+    def test_queryset_filtering_is_respected(self):
+        field = self._field(ManyToManyTarget.objects.exclude(pk=self.pks[1]))
+        with pytest.raises(serializers.ValidationError) as exc_info:
+            field.run_validation([self.pks[0], self.pks[1]])
+        assert exc_info.value.detail[0].code == 'does_not_exist'
+
+    def test_pk_field_transform_is_applied(self):
+        field = serializers.PrimaryKeyRelatedField(
+            queryset=ManyToManyTarget.objects.all(), many=True,
+            pk_field=serializers.IntegerField())
+        field.bind('targets', serializers.Serializer())
+        result = field.run_validation([str(self.pks[0]), str(self.pks[1])])
+        assert [obj.pk for obj in result] == [self.pks[0], self.pks[1]]
+
+    def test_error_details_match_per_item_with_pk_field(self):
+        # The bulk path must report the same incorrect_type detail as the
+        # per-item path, i.e. the type *after* pk_field transformation.
+        child = serializers.PrimaryKeyRelatedField(
+            queryset=ManyToManyTarget.objects.all(),
+            pk_field=serializers.BooleanField())
+        child.bind('targets', serializers.Serializer())
+        with pytest.raises(serializers.ValidationError) as per_item:
+            child.to_internal_value('true')
+        with pytest.raises(serializers.ValidationError) as bulk:
+            child.to_internal_value_bulk(['true'])
+        assert str(bulk.value.detail[0]) == str(per_item.value.detail[0])
+        assert 'bool' in str(bulk.value.detail[0])
+
+    def test_many_related_field_with_non_related_child(self):
+        # ManyRelatedField may wrap a plain field that has no
+        # `to_internal_value_bulk`; it must fall back to per-item conversion.
+        field = serializers.ManyRelatedField(
+            child_relation=serializers.IntegerField())
+        field.bind('values', serializers.Serializer())
+        assert field.to_internal_value([1, 2, 3]) == [1, 2, 3]
+
+
 @pytest.mark.usefixtures("reset_sequences")
 class PKForeignKeyTests(TestCase):
     def setUp(self):
