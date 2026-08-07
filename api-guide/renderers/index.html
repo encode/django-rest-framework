@@ -3664,6 +3664,7 @@ def simple_html_view(request):
 <p>Renders data into HTML for the Browsable API:</p>
 <p><img alt="The BrowsableAPIRenderer" src="../../img/quickstart.png" /></p>
 <p>This renderer will determine which other renderer would have been given highest priority, and use that to display an API style response within the HTML page.</p>
+<p>It also renders an HTML form for each method the view allows, which involves calling back into the view with the request method overridden.  See <a href="../../topics/browsable-api/#form-rendering">form rendering</a> for the implications of this.</p>
 <p><strong>.media_type</strong>: <code>text/html</code></p>
 <p><strong>.format</strong>: <code>'api'</code></p>
 <p><strong>.charset</strong>: <code>utf-8</code></p>

@@ -3600,6 +3600,10 @@ class UserList(generics.ListCreateAPIView):
         return FullAccountSerializer
     return BasicAccountSerializer
 </code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If your implementation branches on <code>self.request.method</code>, note that the browsable API calls this method with the request method overridden while <a href="../../topics/browsable-api/#form-rendering">rendering its forms</a>.</p>
+</div>
 <p><strong>Save and deletion hooks</strong>:</p>
 <p>The following methods are provided by the mixin classes, and provide easy overriding of the object save or deletion behavior.</p>
 <ul>

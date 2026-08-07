@@ -1801,6 +1801,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#form-rendering" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Form rendering
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#customizing" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2813,6 +2824,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#form-rendering" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Form rendering
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#customizing" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3049,6 +3071,9 @@
     <span class="n">path</span><span class="p">(</span><span class="s2">&quot;api-auth/&quot;</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="s2">&quot;rest_framework.urls&quot;</span><span class="p">,</span> <span class="n">namespace</span><span class="o">=</span><span class="s2">&quot;rest_framework&quot;</span><span class="p">))</span>
 <span class="p">]</span>
 </code></pre></div>
+<h2 id="form-rendering">Form rendering<a class="headerlink" href="#form-rendering" title="Permanent link">&para;</a></h2>
+<p>In order to render the HTML forms, the browsable API needs to know which fields each form should contain, so it asks the view for a serializer once per form.  Each of those calls is made with the request method overridden to match the form being rendered, rather than the method that was actually used for the request.</p>
+<p>This means that during a <code>GET</code> request the view may be called again with <code>self.request.method</code> set to <code>POST</code>, <code>PUT</code>, <code>PATCH</code>, <code>DELETE</code> or <code>OPTIONS</code>.  Any code that branches on the request method will observe the overridden value.  Two common cases are a <code>get_serializer_class()</code> implementation that returns a different serializer for read and write operations, and permission classes, which are checked for each method before its form is rendered.  This is expected behavior, and only affects rendering of the browsable API.</p>
 <h2 id="customizing">Customizing<a class="headerlink" href="#customizing" title="Permanent link">&para;</a></h2>
 <p>The browsable API is built with <a href="https://getbootstrap.com/">Twitter's Bootstrap</a> (v 3.4.1), making it easy to customize the look-and-feel.</p>
 <p>To customize the default style, create a template called <code>rest_framework/api.html</code> that extends from <code>rest_framework/base.html</code>.  For example:</p>
