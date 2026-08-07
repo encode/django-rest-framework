@@ -439,6 +439,42 @@ class TestGenericIPAddressFieldValidation(TestCase):
                          'Unexpected number of validation errors: '
                          '{}'.format(s.errors))
 
+    def test_ip_address_validation_with_protocol_ipv4(self):
+        class IPAddressFieldModel(models.Model):
+            address = models.GenericIPAddressField(protocol='IPv4')
+
+            class Meta:
+                app_label = 'test_model_serializer'
+
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = IPAddressFieldModel
+                fields = '__all__'
+
+        s = TestSerializer(data={'address': 'not an ip address'})
+        self.assertFalse(s.is_valid())
+        self.assertEqual(1, len(s.errors['address']),
+                         'Unexpected number of validation errors: '
+                         '{}'.format(s.errors))
+
+    def test_ip_address_validation_with_protocol_ipv6(self):
+        class IPAddressFieldModel(models.Model):
+            address = models.GenericIPAddressField(protocol='IPv6')
+
+            class Meta:
+                app_label = 'test_model_serializer'
+
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = IPAddressFieldModel
+                fields = '__all__'
+
+        s = TestSerializer(data={'address': 'not an ip address'})
+        self.assertFalse(s.is_valid())
+        self.assertEqual(1, len(s.errors['address']),
+                         'Unexpected number of validation errors: '
+                         '{}'.format(s.errors))
+
 
 @pytest.mark.skipif('not postgres_fields')
 class TestPosgresFieldsMapping(TestCase):
