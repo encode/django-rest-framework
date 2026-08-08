@@ -99,6 +99,34 @@ class TestFieldMapping(TestCase):
             with self.subTest(field=field):
                 assert inspector.map_field(field) == mapping
 
+    def test_integer_field_int64_boundary_mapping(self):
+        inspector = AutoSchema()
+        cases = [
+            (
+                serializers.IntegerField(min_value=-2147483649),
+                {'type': 'integer', 'minimum': -2147483649, 'format': 'int64'},
+            ),
+            (
+                serializers.IntegerField(min_value=-2147483648),
+                {'type': 'integer', 'minimum': -2147483648},
+            ),
+            (
+                serializers.IntegerField(max_value=2147483648),
+                {'type': 'integer', 'maximum': 2147483648, 'format': 'int64'},
+            ),
+            (
+                serializers.IntegerField(max_value=2147483647),
+                {'type': 'integer', 'maximum': 2147483647},
+            ),
+            (
+                serializers.IntegerField(min_value=2147483648),
+                {'type': 'integer', 'minimum': 2147483648, 'format': 'int64'},
+            ),
+        ]
+        for field, mapping in cases:
+            with self.subTest(field=field):
+                assert inspector.map_field(field) == mapping
+
     def test_lazy_string_field(self):
         class ItemSerializer(serializers.Serializer):
             text = serializers.CharField(help_text=_('lazy string'))
