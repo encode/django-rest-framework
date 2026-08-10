@@ -107,6 +107,10 @@ class TestFieldMapping(TestCase):
                 {'type': 'integer', 'minimum': -2147483649, 'format': 'int64'},
             ),
             (
+                serializers.IntegerField(max_value=-2147483649),
+                {'type': 'integer', 'maximum': -2147483649, 'format': 'int64'},
+            ),
+            (
                 serializers.IntegerField(min_value=-2147483648),
                 {'type': 'integer', 'minimum': -2147483648},
             ),

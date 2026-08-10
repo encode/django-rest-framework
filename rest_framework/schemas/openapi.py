@@ -491,7 +491,9 @@ class AutoSchema(ViewInspector):
             maximum = content.get('maximum')
             minimum = content.get('minimum')
             if (
-                (maximum is not None and int(maximum) > 2147483647) or
+                (maximum is not None and (
+                    int(maximum) > 2147483647 or int(maximum) < -2147483648
+                )) or
                 (minimum is not None and (
                     int(minimum) > 2147483647 or int(minimum) < -2147483648
                 ))
