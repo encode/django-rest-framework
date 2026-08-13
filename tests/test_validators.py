@@ -318,7 +318,6 @@ class TestUniquenessTogetherValidation(TestCase):
             'position': 1
         }
 
-
     def test_many_update_requires_child_instance(self):
         class ListUpdateSerializer(serializers.ListSerializer):
             def update(self, instance, validated_data):
@@ -348,7 +347,6 @@ class TestUniquenessTogetherValidation(TestCase):
 
         with pytest.raises(RuntimeError, match=re.escape(message)):
             serializer.is_valid()
-
 
     def test_updated_instance_excluded_from_unique_together_condition_based(self):
         """
