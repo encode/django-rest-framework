@@ -167,12 +167,17 @@ def get_referenced_base_fields_from_q(q_object):
     if q_object is None:
         return set()
 
+    # Prefer Django's built-in implementation when available.
+    referenced = getattr(q_object, "referenced_base_fields", None)
+    if referenced is not None:
+        return set(referenced)
+
     referenced_fields = set()
     for child in q_object.children:
         if isinstance(child, tuple):
             # child[0] is the field name (e.g., 'status', 'global_id__lte')
             # We strip off any lookup part (__lte, __exact, etc.)
-            field_name = child[0].split('__')[0]
+            field_name = child[0].split('__', 1)[0]
             referenced_fields.add(field_name)
         else:
             # child is another Q object
