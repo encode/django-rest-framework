@@ -84,6 +84,22 @@ When serializing fields with dotted notation, it may be necessary to provide a `
 
 This case would require user object to be fetched from database when it is not prefetched. If that is not wanted, be sure to be using `prefetch_related` and `select_related` methods appropriately. For more information about the methods refer to [django documentation][django-docs-select-related].
 
+Also note that when dotted notation is used, after serializer validation the `.validated_data` attribute will _not_ include a flat `"<fieldname>": <value>` item. Instead, it will include a nested dictionary derived by expanding the dotted path value of the `source` argument. So, for the previous serializer example, `.validated_data` would be:
+
+    {
+        "user": {
+            "email": ...
+        }
+    }
+
+instead of:
+
+    {
+        "email": ...
+    }
+
+This works this way because, in DRF's philosophy, the `.data` attribute represents the external API representation (where key names equal field names), while the `.validated_data` attribute represents the internal object structure (where the nesting and key names follow the `source` path).
+
 The value `source='*'` has a special meaning, and is used to indicate that the entire object should be passed through to the field.  This can be useful for creating nested representations, or for fields which require access to the complete object in order to determine the output representation.
 
 Defaults to the name of the field.
@@ -330,7 +346,7 @@ Corresponds to `django.db.models.fields.DateTimeField`.
 
 * `format` - A string representing the output format. If not specified, this defaults to the same value as the `DATETIME_FORMAT` settings key, which will be `'iso-8601'` unless set. Setting to a format string indicates that `to_representation` return values should be coerced to string output. Format strings are described below. Setting this value to `None` indicates that Python `datetime` objects should be returned by `to_representation`. In this case the datetime encoding will be determined by the renderer.
 * `input_formats` - A list of strings representing the input formats which may be used to parse the date.  If not specified, the `DATETIME_INPUT_FORMATS` setting will be used, which defaults to `['iso-8601']`.
-* `default_timezone` - A `tzinfo` subclass (`zoneinfo` or `pytz`) representing the timezone. If not specified and the `USE_TZ` setting is enabled, this defaults to the [current timezone][django-current-timezone]. If `USE_TZ` is disabled, then datetime objects will be naive.
+* `default_timezone` - A `tzinfo` subclass (`zoneinfo`) representing the timezone. If not specified and the `USE_TZ` setting is enabled, this defaults to the [current timezone][django-current-timezone]. If `USE_TZ` is disabled, then datetime objects will be naive.
 
 #### `DateTimeField` format strings.
 
