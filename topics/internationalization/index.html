@@ -2811,12 +2811,12 @@
 </ul>
 <h2 id="enabling-internationalized-apis">Enabling internationalized APIs<a class="headerlink" href="#enabling-internationalized-apis" title="Permanent link">&para;</a></h2>
 <p>You can change the default language by using the standard Django <code>LANGUAGE_CODE</code> setting:</p>
-<div class="language-text highlight"><pre><span></span><code>LANGUAGE_CODE = &quot;es-es&quot;
+<div class="language-text highlight"><pre><span></span><code>LANGUAGE_CODE = "es-es"
 </code></pre></div>
 <p>You can turn on per-request language requests by adding <code>LocalMiddleware</code> to your <code>MIDDLEWARE</code> setting:</p>
 <div class="language-text highlight"><pre><span></span><code>MIDDLEWARE = [
     ...
-    &#39;django.middleware.locale.LocaleMiddleware&#39;
+    'django.middleware.locale.LocaleMiddleware'
 ]
 </code></pre></div>
 <p>When per-request internationalization is enabled, client requests will respect the <code>Accept-Language</code> header where possible. For example, let's make a request for an unsupported media type:</p>
@@ -2829,19 +2829,19 @@ Host: example.org
 <p><strong>Response</strong></p>
 <div class="language-text highlight"><pre><span></span><code>HTTP/1.0 406 NOT ACCEPTABLE
 
-{&quot;detail&quot;: &quot;No se ha podido satisfacer la solicitud de cabecera de Accept.&quot;}
+{"detail": "No se ha podido satisfacer la solicitud de cabecera de Accept."}
 </code></pre></div>
 <p>REST framework includes these built-in translations both for standard exception cases, and for serializer validation errors.</p>
 <p>Note that the translations only apply to the error strings themselves. The format of error messages, and the keys of field names will remain the same. An example <code>400 Bad Request</code> response body might look like this:</p>
-<div class="language-text highlight"><pre><span></span><code>{&quot;detail&quot;: {&quot;username&quot;: [&quot;Esse campo deve ser único.&quot;]}}
+<div class="language-text highlight"><pre><span></span><code>{"detail": {"username": ["Esse campo deve ser único."]}}
 </code></pre></div>
 <p>If you want to use different string for parts of the response such as <code>detail</code> and <code>non_field_errors</code> then you can modify this behavior by using a <a href="../../api-guide/exceptions/#custom-exception-handling">custom exception handler</a>.</p>
 <h4 id="specifying-the-set-of-supported-languages">Specifying the set of supported languages.<a class="headerlink" href="#specifying-the-set-of-supported-languages" title="Permanent link">&para;</a></h4>
 <p>By default all available languages will be supported.</p>
 <p>If you only wish to support a subset of the available languages, use Django's standard <code>LANGUAGES</code> setting:</p>
 <div class="language-text highlight"><pre><span></span><code>LANGUAGES = [
-    (&#39;de&#39;, _(&#39;German&#39;)),
-    (&#39;en&#39;, _(&#39;English&#39;)),
+    ('de', _('German')),
+    ('en', _('English')),
 ]
 </code></pre></div>
 <h2 id="adding-new-translations">Adding new translations<a class="headerlink" href="#adding-new-translations" title="Permanent link">&para;</a></h2>

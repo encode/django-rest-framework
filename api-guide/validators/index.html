@@ -3265,10 +3265,10 @@
 &gt;&gt;&gt; serializer = CustomerReportSerializer()
 &gt;&gt;&gt; print(repr(serializer))
 CustomerReportSerializer():
-    id = IntegerField(label=&#39;ID&#39;, read_only=True)
+    id = IntegerField(label='ID', read_only=True)
     time_raised = DateTimeField(read_only=True)
     reference = CharField(max_length=20, validators=[UniqueValidator(queryset=CustomerReportRecord.objects.all())])
-    description = CharField(style={&#39;type&#39;: &#39;textarea&#39;})
+    description = CharField(style={'type': 'textarea'})
 </code></pre></div>
 <p>The interesting bit here is the <code>reference</code> field. We can see that the uniqueness constraint is being explicitly enforced by a validator on the serializer field.</p>
 <p>Because of this more explicit style REST framework includes a few validator classes that are not available in core Django. These classes are detailed below.  REST framework validators, like their Django counterparts, implement the <code>__eq__</code> method, allowing you to compare instances for equality.</p>
@@ -3304,12 +3304,12 @@ class ExampleSerializer(serializers.Serializer):
     # ...
     class Meta:
         # ToDo items belong to a parent list, and have an ordering defined
-        # by the &#39;position&#39; field. No two items in a given list may share
+        # by the 'position' field. No two items in a given list may share
         # the same position.
         validators = [
             UniqueTogetherValidator(
                 queryset=ToDoItem.objects.all(),
-                fields=[&#39;list&#39;, &#39;position&#39;]
+                fields=['list', 'position']
             )
         ]
 </code></pre></div>
@@ -3337,8 +3337,8 @@ class ExampleSerializer(serializers.Serializer):
         validators = [
             UniqueForYearValidator(
                 queryset=BlogPostItem.objects.all(),
-                field=&#39;slug&#39;,
-                date_field=&#39;published&#39;
+                field='slug',
+                date_field='published'
             )
         ]
 </code></pre></div>
@@ -3406,9 +3406,9 @@ in the <code>.validate()</code> method, or else in the view.</p>
         # Apply custom validation either here, or in the view.
 
     class Meta:
-        fields = [&#39;client&#39;, &#39;date&#39;, &#39;amount&#39;]
-        extra_kwargs = {&#39;client&#39;: {&#39;required&#39;: False}}
-        validators = []  # Remove a default &quot;unique together&quot; constraint.
+        fields = ['client', 'date', 'amount']
+        extra_kwargs = {'client': {'required': False}}
+        validators = []  # Remove a default "unique together" constraint.
 </code></pre></div>
 <h3 id="updating-nested-serializers">Updating nested serializers<a class="headerlink" href="#updating-nested-serializers" title="Permanent link">&para;</a></h3>
 <p>When applying an update to an existing instance, uniqueness validators will
@@ -3442,7 +3442,7 @@ that the resulting behavior is more transparent.</p>
 <p>A validator may be any callable that raises a <code>serializers.ValidationError</code> on failure.</p>
 <div class="language-text highlight"><pre><span></span><code>def even_number(value):
     if value % 2 != 0:
-        raise serializers.ValidationError(&#39;This field must be an even number.&#39;)
+        raise serializers.ValidationError('This field must be an even number.')
 </code></pre></div>
 <h4 id="field-level-validation">Field-level validation<a class="headerlink" href="#field-level-validation" title="Permanent link">&para;</a></h4>
 <p>You can specify custom field-level validation by adding <code>.validate_&lt;field_name&gt;</code> methods
@@ -3456,7 +3456,7 @@ to your <code>Serializer</code> subclass. This is documented in the
 
     def __call__(self, value):
         if value % self.base != 0:
-            message = &#39;This field must be a multiple of %d.&#39; % self.base
+            message = 'This field must be a multiple of %d.' % self.base
             raise serializers.ValidationError(message)
 </code></pre></div>
 <h4 id="accessing-the-context">Accessing the context<a class="headerlink" href="#accessing-the-context" title="Permanent link">&para;</a></h4>

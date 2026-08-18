@@ -2932,12 +2932,12 @@ libraries are optional but recommended.</p>
 <p>To install the API documentation, you'll need to include it in your projects URLconf:</p>
 <div class="language-text highlight"><pre><span></span><code>from rest_framework.documentation import include_docs_urls
 
-API_TITLE = &#39;API title&#39;
-API_DESCRIPTION = &#39;...&#39;
+API_TITLE = 'API title'
+API_DESCRIPTION = '...'
 
 urlpatterns = [
     ...
-    path(&#39;docs/&#39;, include_docs_urls(title=API_TITLE, description=API_DESCRIPTION))
+    path('docs/', include_docs_urls(title=API_TITLE, description=API_DESCRIPTION))
 ]
 </code></pre></div>
 <p>Once installed you should see something a little like this:</p>
@@ -2960,18 +2960,18 @@ requests explicitly.</p>
 <p><strong>index.html</strong></p>
 <div class="language-text highlight"><pre><span></span><code>&lt;html&gt;
     &lt;head&gt;
-        &lt;script src=&quot;/static/rest_framework/js/coreapi-0.1.0.js&quot;&gt;&lt;/script&gt;
-        &lt;script src=&quot;/docs/schema.js&quot;&gt;&lt;/script&gt;
+        &lt;script src="/static/rest_framework/js/coreapi-0.1.0.js"&gt;&lt;/script&gt;
+        &lt;script src="/docs/schema.js"&gt;&lt;/script&gt;
         &lt;script&gt;
             const coreapi = window.coreapi
             const schema = window.schema
 
             // Instantiate a client...
-            let auth = coreapi.auth.TokenAuthentication({scheme: &#39;JWT&#39;, token: &#39;xxx&#39;})
+            let auth = coreapi.auth.TokenAuthentication({scheme: 'JWT', token: 'xxx'})
             let client = coreapi.Client({auth: auth})
 
             // Make an API request...
-            client.action(schema, [&#39;projects&#39;, &#39;list&#39;]).then(function(result) {
+            client.action(schema, ['projects', 'list']).then(function(result) {
                 alert(result)
             })
         &lt;/script&gt;
@@ -2991,7 +2991,7 @@ allowing users to provide explicit header values.</p>
 the introduction of the <code>BasicAuthentication</code>, <code>TokenAuthentication</code>, and
 <code>SessionAuthentication</code> schemes.</p>
 <p>You can include the authentication scheme when instantiating a new client.</p>
-<div class="language-text highlight"><pre><span></span><code>auth = coreapi.auth.TokenAuthentication(scheme=&#39;JWT&#39;, token=&#39;xxx-xxx-xxx&#39;)
+<div class="language-text highlight"><pre><span></span><code>auth = coreapi.auth.TokenAuthentication(scheme='JWT', token='xxx-xxx-xxx')
 client = coreapi.Client(auth=auth)
 </code></pre></div>
 <p>For more information see the <a href="https://github.com/encode/django-rest-framework/blob/3.14.0/docs/topics/api-clients.md#python-client-library">Python client library documentation</a>.</p>

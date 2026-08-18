@@ -2959,17 +2959,17 @@
 <div class="language-text highlight"><pre><span></span><code>class AccountsSerializer(serializer.HyperlinkedModelSerializer):
     class Meta:
         model = Accounts
-        fields = [&#39;account_name&#39;, &#39;users&#39;]
+        fields = ['account_name', 'users']
 </code></pre></div>
 <p>The output representation would match the version used on the incoming request. Like so:</p>
-<div class="language-text highlight"><pre><span></span><code>GET http://example.org/v2/accounts/10  # Version &#39;v2&#39;
+<div class="language-text highlight"><pre><span></span><code>GET http://example.org/v2/accounts/10  # Version 'v2'
 
 {
-    &quot;account_name&quot;: &quot;europa&quot;,
-    &quot;users&quot;: [
-        &quot;http://example.org/v2/users/12&quot;,  # Version &#39;v2&#39;
-        &quot;http://example.org/v2/users/54&quot;,
-        &quot;http://example.org/v2/users/87&quot;
+    "account_name": "europa",
+    "users": [
+        "http://example.org/v2/users/12",  # Version 'v2'
+        "http://example.org/v2/users/54",
+        "http://example.org/v2/users/87"
     ]
 }
 </code></pre></div>
@@ -2977,12 +2977,12 @@
 <h2 id="internationalization">Internationalization<a class="headerlink" href="#internationalization" title="Permanent link">&para;</a></h2>
 <p>REST framework now includes a built-in set of translations, and <a href="../../topics/internationalization/">supports internationalized error responses</a>. This allows you to either change the default language, or to allow clients to specify the language via the <code>Accept-Language</code> header.</p>
 <p>You can change the default language by using the standard Django <code>LANGUAGE_CODE</code> setting:</p>
-<div class="language-text highlight"><pre><span></span><code>LANGUAGE_CODE = &quot;es-es&quot;
+<div class="language-text highlight"><pre><span></span><code>LANGUAGE_CODE = "es-es"
 </code></pre></div>
 <p>You can turn on per-request language requests by adding <code>LocalMiddleware</code> to your <code>MIDDLEWARE_CLASSES</code> setting:</p>
 <div class="language-text highlight"><pre><span></span><code>MIDDLEWARE_CLASSES = [
     ...
-    &#39;django.middleware.locale.LocaleMiddleware&#39;
+    'django.middleware.locale.LocaleMiddleware'
 ]
 </code></pre></div>
 <p>When per-request internationalization is enabled, client requests will respect the <code>Accept-Language</code> header where possible. For example, let's make a request for an unsupported media type:</p>
@@ -2996,7 +2996,7 @@ Host: example.org
 <div class="language-text highlight"><pre><span></span><code>HTTP/1.0 406 NOT ACCEPTABLE
 
 {
-    &quot;detail&quot;: &quot;No se ha podido satisfacer la solicitud de cabecera de Accept.&quot;
+    "detail": "No se ha podido satisfacer la solicitud de cabecera de Accept."
 }
 </code></pre></div>
 <p>Note that the structure of the error responses is still the same. We still have a <code>detail</code> key in the response. If needed you can modify this behavior too, by using a <a href="../../api-guide/exceptions/#custom-exception-handling">custom exception handler</a>.</p>
@@ -3004,8 +3004,8 @@ Host: example.org
 <p>The full list of supported languages can be found on our <a href="https://www.transifex.com/django-rest-framework-1/django-rest-framework/">Transifex project page</a>.</p>
 <p>If you only wish to support a subset of the supported languages, use Django's standard <code>LANGUAGES</code> setting:</p>
 <div class="language-text highlight"><pre><span></span><code>LANGUAGES = [
-    (&#39;de&#39;, _(&#39;German&#39;)),
-    (&#39;en&#39;, _(&#39;English&#39;)),
+    ('de', _('German')),
+    ('en', _('English')),
 ]
 </code></pre></div>
 <p>For more details, see the <a href="../../topics/internationalization/">internationalization documentation</a>.</p>
@@ -3038,10 +3038,10 @@ Host: example.org
 </code></pre></div>
 <p>And modify your settings, like so:</p>
 <div class="language-text highlight"><pre><span></span><code>REST_FRAMEWORK = {
-    &#39;DEFAULT_RENDERER_CLASSES&#39;: [
-        &#39;rest_framework.renderers.JSONRenderer&#39;,
-        &#39;rest_framework.renderers.BrowsableAPIRenderer&#39;,
-        &#39;rest_framework_xml.renderers.XMLRenderer&#39;
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+        'rest_framework_xml.renderers.XMLRenderer'
     ]
 }
 </code></pre></div>

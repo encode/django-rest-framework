@@ -3068,7 +3068,7 @@
 <h3 id="varying-behavior-based-on-the-version">Varying behavior based on the version<a class="headerlink" href="#varying-behavior-based-on-the-version" title="Permanent link">&para;</a></h3>
 <p>How you vary the API behavior is up to you, but one example you might typically want is to switch to a different serialization style in a newer version. For example:</p>
 <div class="language-text highlight"><pre><span></span><code>def get_serializer_class(self):
-    if self.request.version == &#39;v1&#39;:
+    if self.request.version == 'v1':
         return AccountSerializerVersion1
     return AccountSerializer
 </code></pre></div>
@@ -3076,7 +3076,7 @@
 <p>The <code>reverse</code> function included by REST framework ties in with the versioning scheme. You need to make sure to include the current <code>request</code> as a keyword argument, like so.</p>
 <div class="language-text highlight"><pre><span></span><code>from rest_framework.reverse import reverse
 
-reverse(&#39;bookings-list&#39;, request=request)
+reverse('bookings-list', request=request)
 </code></pre></div>
 <p>The above function will apply any URL transformations appropriate to the request version. For example:</p>
 <ul>
@@ -3087,14 +3087,14 @@ reverse(&#39;bookings-list&#39;, request=request)
 <p>When using hyperlinked serialization styles together with a URL based versioning scheme make sure to include the request as context to the serializer.</p>
 <div class="language-text highlight"><pre><span></span><code>def get(self, request):
     queryset = Booking.objects.all()
-    serializer = BookingsSerializer(queryset, many=True, context={&#39;request&#39;: request})
-    return Response({&#39;all_bookings&#39;: serializer.data})
+    serializer = BookingsSerializer(queryset, many=True, context={'request': request})
+    return Response({'all_bookings': serializer.data})
 </code></pre></div>
 <p>Doing so will allow any returned URLs to include the appropriate versioning.</p>
 <h2 id="configuring-the-versioning-scheme">Configuring the versioning scheme<a class="headerlink" href="#configuring-the-versioning-scheme" title="Permanent link">&para;</a></h2>
 <p>The versioning scheme is defined by the <code>DEFAULT_VERSIONING_CLASS</code> settings key.</p>
 <div class="language-text highlight"><pre><span></span><code>REST_FRAMEWORK = {
-    &#39;DEFAULT_VERSIONING_CLASS&#39;: &#39;rest_framework.versioning.NamespaceVersioning&#39;
+    'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.NamespaceVersioning'
 }
 </code></pre></div>
 <p>Unless it is explicitly set, the value for <code>DEFAULT_VERSIONING_CLASS</code> will be <code>None</code>. In this case the <code>request.version</code> attribute will always return <code>None</code>.</p>
@@ -3135,7 +3135,7 @@ Accept: application/json; version=1.0
 <h4 id="using-accept-headers-with-vendor-media-types">Using accept headers with vendor media types<a class="headerlink" href="#using-accept-headers-with-vendor-media-types" title="Permanent link">&para;</a></h4>
 <p>Strictly speaking the <code>json</code> media type is not specified as <a href="https://tools.ietf.org/html/rfc4627#section-6">including additional parameters</a>. If you are building a well-specified public API you might consider using a <a href="https://en.wikipedia.org/wiki/Internet_media_type#Vendor_tree">vendor media type</a>. To do so, configure your renderers to use a JSON based renderer with a custom media type:</p>
 <div class="language-text highlight"><pre><span></span><code>class BookingsAPIRenderer(JSONRenderer):
-    media_type = &#39;application/vnd.megacorp.bookings+json&#39;
+    media_type = 'application/vnd.megacorp.bookings+json'
 </code></pre></div>
 <p>Your client requests would now look like this:</p>
 <div class="language-text highlight"><pre><span></span><code>GET /bookings/ HTTP/1.1
@@ -3151,14 +3151,14 @@ Accept: application/json
 <p>Your URL conf must include a pattern that matches the version with a <code>'version'</code> keyword argument, so that this information is available to the versioning scheme.</p>
 <div class="language-text highlight"><pre><span></span><code>urlpatterns = [
     re_path(
-        r&#39;^(?P&lt;version&gt;(v1|v2))/bookings/$&#39;,
+        r'^(?P&lt;version&gt;(v1|v2))/bookings/$',
         bookings_list,
-        name=&#39;bookings-list&#39;
+        name='bookings-list'
     ),
     re_path(
-        r&#39;^(?P&lt;version&gt;(v1|v2))/bookings/(?P&lt;pk&gt;[0-9]+)/$&#39;,
+        r'^(?P&lt;version&gt;(v1|v2))/bookings/(?P&lt;pk&gt;[0-9]+)/$',
         bookings_detail,
-        name=&#39;bookings-detail&#39;
+        name='bookings-detail'
     )
 ]
 </code></pre></div>
@@ -3172,14 +3172,14 @@ Accept: application/json
 <p>In the following example we're giving a set of views two different possible URL prefixes, each under a different namespace:</p>
 <div class="language-text highlight"><pre><span></span><code># bookings/urls.py
 urlpatterns = [
-    re_path(r&#39;^$&#39;, bookings_list, name=&#39;bookings-list&#39;),
-    re_path(r&#39;^(?P&lt;pk&gt;[0-9]+)/$&#39;, bookings_detail, name=&#39;bookings-detail&#39;)
+    re_path(r'^$', bookings_list, name='bookings-list'),
+    re_path(r'^(?P&lt;pk&gt;[0-9]+)/$', bookings_detail, name='bookings-detail')
 ]
 
 # urls.py
 urlpatterns = [
-    re_path(r&#39;^v1/bookings/&#39;, include(&#39;bookings.urls&#39;, namespace=&#39;v1&#39;)),
-    re_path(r&#39;^v2/bookings/&#39;, include(&#39;bookings.urls&#39;, namespace=&#39;v2&#39;))
+    re_path(r'^v1/bookings/', include('bookings.urls', namespace='v1')),
+    re_path(r'^v2/bookings/', include('bookings.urls', namespace='v2'))
 ]
 </code></pre></div>
 <p>Both <code>URLPathVersioning</code> and <code>NamespaceVersioning</code> are reasonable if you just need a simple versioning scheme. The <code>URLPathVersioning</code> approach might be better suitable for small ad-hoc projects, and the <code>NamespaceVersioning</code> is probably easier to manage for larger projects.</p>
@@ -3209,7 +3209,7 @@ Accept: application/json
 <p>The following example uses a custom <code>X-API-Version</code> header to determine the requested version.</p>
 <div class="language-text highlight"><pre><span></span><code>class XAPIVersionScheme(versioning.BaseVersioning):
     def determine_version(self, request, *args, **kwargs):
-        return request.META.get(&#39;HTTP_X_API_VERSION&#39;, None)
+        return request.META.get('HTTP_X_API_VERSION', None)
 </code></pre></div>
 <p>If your versioning scheme is based on the request URL, you will also want to alter how versioned URLs are determined. In order to do so you should override the <code>.reverse()</code> method on the class. See the source code for examples.</p>
 

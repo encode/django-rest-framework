@@ -6451,12 +6451,12 @@ representation. In order to restore the old behavior you can override <code>data
 <p>For example:</p>
 <div class="language-text highlight"><pre><span></span><code>@property
 def data(self):
-    &quot;&quot;&quot;
+    """
     Drop `maybe_none` field if None.
-    &quot;&quot;&quot;
+    """
     data = super().data
-    if &#39;maybe_none&#39; in data and data[&#39;maybe_none&#39;] is None:
-        del data[&#39;maybe_none&#39;]
+    if 'maybe_none' in data and data['maybe_none'] is None:
+        del data['maybe_none']
     return data
 </code></pre></div>
 </li>

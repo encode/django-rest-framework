@@ -2837,7 +2837,7 @@ python3<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </
 pip<span class="w"> </span>install<span class="w"> </span>djangorestframework
 
 <span class="c1"># Set up a new project with a single application</span>
-django-admin<span class="w"> </span>startproject<span class="w"> </span>tutorial<span class="w"> </span>.<span class="w">  </span><span class="c1"># Note the trailing &#39;.&#39; character</span>
+django-admin<span class="w"> </span>startproject<span class="w"> </span>tutorial<span class="w"> </span>.<span class="w">  </span><span class="c1"># Note the trailing '.' character</span>
 <span class="nb">cd</span><span class="w"> </span>tutorial
 django-admin<span class="w"> </span>startapp<span class="w"> </span>quickstart
 <span class="nb">cd</span><span class="w"> </span>..
@@ -2857,7 +2857,7 @@ python3<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </
 pip<span class="w"> </span>install<span class="w"> </span>djangorestframework
 
 <span class="c1"># Set up a new project with a single application</span>
-django-admin<span class="w"> </span>startproject<span class="w"> </span>tutorial<span class="w"> </span>.<span class="w">  </span><span class="c1"># Note the trailing &#39;.&#39; character</span>
+django-admin<span class="w"> </span>startproject<span class="w"> </span>tutorial<span class="w"> </span>.<span class="w">  </span><span class="c1"># Note the trailing '.' character</span>
 <span class="nb">cd</span><span class="w"> </span>tutorial
 django-admin<span class="w"> </span>startapp<span class="w"> </span>quickstart
 <span class="nb">cd</span><span class="w"> </span>..
@@ -2906,13 +2906,13 @@ $<span class="w"> </span>find<span class="w"> </span>.
 <span class="k">class</span><span class="w"> </span><span class="nc">UserSerializer</span><span class="p">(</span><span class="n">serializers</span><span class="o">.</span><span class="n">HyperlinkedModelSerializer</span><span class="p">):</span>
     <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
         <span class="n">model</span> <span class="o">=</span> <span class="n">User</span>
-        <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;url&quot;</span><span class="p">,</span> <span class="s2">&quot;username&quot;</span><span class="p">,</span> <span class="s2">&quot;email&quot;</span><span class="p">,</span> <span class="s2">&quot;groups&quot;</span><span class="p">]</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"url"</span><span class="p">,</span> <span class="s2">"username"</span><span class="p">,</span> <span class="s2">"email"</span><span class="p">,</span> <span class="s2">"groups"</span><span class="p">]</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">GroupSerializer</span><span class="p">(</span><span class="n">serializers</span><span class="o">.</span><span class="n">HyperlinkedModelSerializer</span><span class="p">):</span>
     <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
         <span class="n">model</span> <span class="o">=</span> <span class="n">Group</span>
-        <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;url&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">]</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"url"</span><span class="p">,</span> <span class="s2">"name"</span><span class="p">]</span>
 </code></pre></div>
 <p>Notice that we're using hyperlinked relations in this case with <code>HyperlinkedModelSerializer</code>.  You can also use primary key and various other relationships, but hyperlinking is good RESTful design.</p>
 <h2 id="views">Views<a class="headerlink" href="#views" title="Permanent link">&para;</a></h2>
@@ -2924,21 +2924,21 @@ $<span class="w"> </span>find<span class="w"> </span>.
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">UserViewSet</span><span class="p">(</span><span class="n">viewsets</span><span class="o">.</span><span class="n">ModelViewSet</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    API endpoint that allows users to be viewed or edited.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">queryset</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;-date_joined&quot;</span><span class="p">)</span>
+    <span class="n">queryset</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">"-date_joined"</span><span class="p">)</span>
     <span class="n">serializer_class</span> <span class="o">=</span> <span class="n">UserSerializer</span>
     <span class="n">permission_classes</span> <span class="o">=</span> <span class="p">[</span><span class="n">permissions</span><span class="o">.</span><span class="n">IsAuthenticated</span><span class="p">]</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">GroupViewSet</span><span class="p">(</span><span class="n">viewsets</span><span class="o">.</span><span class="n">ModelViewSet</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    API endpoint that allows groups to be viewed or edited.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">queryset</span> <span class="o">=</span> <span class="n">Group</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span>
+    <span class="n">queryset</span> <span class="o">=</span> <span class="n">Group</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">"name"</span><span class="p">)</span>
     <span class="n">serializer_class</span> <span class="o">=</span> <span class="n">GroupSerializer</span>
     <span class="n">permission_classes</span> <span class="o">=</span> <span class="p">[</span><span class="n">permissions</span><span class="o">.</span><span class="n">IsAuthenticated</span><span class="p">]</span>
 </code></pre></div>
@@ -2952,14 +2952,14 @@ $<span class="w"> </span>find<span class="w"> </span>.
 <span class="kn">from</span><span class="w"> </span><span class="nn">tutorial.quickstart</span><span class="w"> </span><span class="kn">import</span> <span class="n">views</span>
 
 <span class="n">router</span> <span class="o">=</span> <span class="n">routers</span><span class="o">.</span><span class="n">DefaultRouter</span><span class="p">()</span>
-<span class="n">router</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;users&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">UserViewSet</span><span class="p">)</span>
-<span class="n">router</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;groups&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">GroupViewSet</span><span class="p">)</span>
+<span class="n">router</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="sa">r</span><span class="s2">"users"</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">UserViewSet</span><span class="p">)</span>
+<span class="n">router</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="sa">r</span><span class="s2">"groups"</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">GroupViewSet</span><span class="p">)</span>
 
 <span class="c1"># Wire up our API using automatic URL routing.</span>
 <span class="c1"># Additionally, we include login URLs for the browsable API.</span>
 <span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="n">path</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="n">router</span><span class="o">.</span><span class="n">urls</span><span class="p">)),</span>
-    <span class="n">path</span><span class="p">(</span><span class="s2">&quot;api-auth/&quot;</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="s2">&quot;rest_framework.urls&quot;</span><span class="p">,</span> <span class="n">namespace</span><span class="o">=</span><span class="s2">&quot;rest_framework&quot;</span><span class="p">)),</span>
+    <span class="n">path</span><span class="p">(</span><span class="s2">""</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="n">router</span><span class="o">.</span><span class="n">urls</span><span class="p">)),</span>
+    <span class="n">path</span><span class="p">(</span><span class="s2">"api-auth/"</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="s2">"rest_framework.urls"</span><span class="p">,</span> <span class="n">namespace</span><span class="o">=</span><span class="s2">"rest_framework"</span><span class="p">)),</span>
 <span class="p">]</span>
 </code></pre></div>
 <p>Because we're using viewsets instead of views, we can automatically generate the URL conf for our API, by simply registering the viewsets with a router class.</p>
@@ -2968,15 +2968,15 @@ $<span class="w"> </span>find<span class="w"> </span>.
 <h2 id="pagination">Pagination<a class="headerlink" href="#pagination" title="Permanent link">&para;</a></h2>
 <p>Pagination allows you to control how many objects per page are returned. To enable it add the following lines to <code>tutorial/settings.py</code></p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">REST_FRAMEWORK</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;DEFAULT_PAGINATION_CLASS&quot;</span><span class="p">:</span> <span class="s2">&quot;rest_framework.pagination.PageNumberPagination&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;PAGE_SIZE&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+    <span class="s2">"DEFAULT_PAGINATION_CLASS"</span><span class="p">:</span> <span class="s2">"rest_framework.pagination.PageNumberPagination"</span><span class="p">,</span>
+    <span class="s2">"PAGE_SIZE"</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
 <span class="p">}</span>
 </code></pre></div>
 <h2 id="settings">Settings<a class="headerlink" href="#settings" title="Permanent link">&para;</a></h2>
 <p>Add <code>'rest_framework'</code> to <code>INSTALLED_APPS</code>. The settings module will be in <code>tutorial/settings.py</code></p>
 <div class="language-text highlight"><pre><span></span><code>INSTALLED_APPS = [
     ...
-    &#39;rest_framework&#39;,
+    'rest_framework',
 ]
 </code></pre></div>
 <p>Okay, we're done.</p>
@@ -2986,18 +2986,18 @@ $<span class="w"> </span>find<span class="w"> </span>.
 <div class="language-bash highlight"><pre><span></span><code>python<span class="w"> </span>manage.py<span class="w"> </span>runserver
 </code></pre></div>
 <p>We can now access our API, both from the command-line, using tools like <code>curl</code>...</p>
-<div class="language-bash highlight"><pre><span></span><code>bash:<span class="w"> </span>curl<span class="w"> </span>-u<span class="w"> </span>admin<span class="w"> </span>-H<span class="w"> </span><span class="s1">&#39;Accept: application/json; indent=4&#39;</span><span class="w"> </span>http://127.0.0.1:8000/users/
-Enter<span class="w"> </span>host<span class="w"> </span>password<span class="w"> </span><span class="k">for</span><span class="w"> </span>user<span class="w"> </span><span class="s1">&#39;admin&#39;</span>:
+<div class="language-bash highlight"><pre><span></span><code>bash:<span class="w"> </span>curl<span class="w"> </span>-u<span class="w"> </span>admin<span class="w"> </span>-H<span class="w"> </span><span class="s1">'Accept: application/json; indent=4'</span><span class="w"> </span>http://127.0.0.1:8000/users/
+Enter<span class="w"> </span>host<span class="w"> </span>password<span class="w"> </span><span class="k">for</span><span class="w"> </span>user<span class="w"> </span><span class="s1">'admin'</span>:
 <span class="o">{</span>
-<span class="w">    </span><span class="s2">&quot;count&quot;</span>:<span class="w"> </span><span class="m">1</span>,
-<span class="w">    </span><span class="s2">&quot;next&quot;</span>:<span class="w"> </span>null,
-<span class="w">    </span><span class="s2">&quot;previous&quot;</span>:<span class="w"> </span>null,
-<span class="w">    </span><span class="s2">&quot;results&quot;</span>:<span class="w"> </span><span class="o">[</span>
+<span class="w">    </span><span class="s2">"count"</span>:<span class="w"> </span><span class="m">1</span>,
+<span class="w">    </span><span class="s2">"next"</span>:<span class="w"> </span>null,
+<span class="w">    </span><span class="s2">"previous"</span>:<span class="w"> </span>null,
+<span class="w">    </span><span class="s2">"results"</span>:<span class="w"> </span><span class="o">[</span>
 <span class="w">        </span><span class="o">{</span>
-<span class="w">            </span><span class="s2">&quot;url&quot;</span>:<span class="w"> </span><span class="s2">&quot;http://127.0.0.1:8000/users/1/&quot;</span>,
-<span class="w">            </span><span class="s2">&quot;username&quot;</span>:<span class="w"> </span><span class="s2">&quot;admin&quot;</span>,
-<span class="w">            </span><span class="s2">&quot;email&quot;</span>:<span class="w"> </span><span class="s2">&quot;admin@example.com&quot;</span>,
-<span class="w">            </span><span class="s2">&quot;groups&quot;</span>:<span class="w"> </span><span class="o">[]</span>
+<span class="w">            </span><span class="s2">"url"</span>:<span class="w"> </span><span class="s2">"http://127.0.0.1:8000/users/1/"</span>,
+<span class="w">            </span><span class="s2">"username"</span>:<span class="w"> </span><span class="s2">"admin"</span>,
+<span class="w">            </span><span class="s2">"email"</span>:<span class="w"> </span><span class="s2">"admin@example.com"</span>,
+<span class="w">            </span><span class="s2">"groups"</span>:<span class="w"> </span><span class="o">[]</span>
 <span class="w">        </span><span class="o">}</span>
 <span class="w">    </span><span class="o">]</span>
 <span class="o">}</span>
@@ -3008,15 +3008,15 @@ http:<span class="w"> </span>password<span class="w"> </span><span class="k">for
 <span class="nv">$HTTP</span>/1.1<span class="w"> </span><span class="m">200</span><span class="w"> </span>OK
 ...
 <span class="o">{</span>
-<span class="w">    </span><span class="s2">&quot;count&quot;</span>:<span class="w"> </span><span class="m">1</span>,
-<span class="w">    </span><span class="s2">&quot;next&quot;</span>:<span class="w"> </span>null,
-<span class="w">    </span><span class="s2">&quot;previous&quot;</span>:<span class="w"> </span>null,
-<span class="w">    </span><span class="s2">&quot;results&quot;</span>:<span class="w"> </span><span class="o">[</span>
+<span class="w">    </span><span class="s2">"count"</span>:<span class="w"> </span><span class="m">1</span>,
+<span class="w">    </span><span class="s2">"next"</span>:<span class="w"> </span>null,
+<span class="w">    </span><span class="s2">"previous"</span>:<span class="w"> </span>null,
+<span class="w">    </span><span class="s2">"results"</span>:<span class="w"> </span><span class="o">[</span>
 <span class="w">        </span><span class="o">{</span>
-<span class="w">            </span><span class="s2">&quot;email&quot;</span>:<span class="w"> </span><span class="s2">&quot;admin@example.com&quot;</span>,
-<span class="w">            </span><span class="s2">&quot;groups&quot;</span>:<span class="w"> </span><span class="o">[]</span>,
-<span class="w">            </span><span class="s2">&quot;url&quot;</span>:<span class="w"> </span><span class="s2">&quot;http://127.0.0.1:8000/users/1/&quot;</span>,
-<span class="w">            </span><span class="s2">&quot;username&quot;</span>:<span class="w"> </span><span class="s2">&quot;admin&quot;</span>
+<span class="w">            </span><span class="s2">"email"</span>:<span class="w"> </span><span class="s2">"admin@example.com"</span>,
+<span class="w">            </span><span class="s2">"groups"</span>:<span class="w"> </span><span class="o">[]</span>,
+<span class="w">            </span><span class="s2">"url"</span>:<span class="w"> </span><span class="s2">"http://127.0.0.1:8000/users/1/"</span>,
+<span class="w">            </span><span class="s2">"username"</span>:<span class="w"> </span><span class="s2">"admin"</span>
 <span class="w">        </span><span class="o">}</span>
 <span class="w">    </span><span class="o">]</span>
 <span class="o">}</span>

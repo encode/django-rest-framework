@@ -3068,7 +3068,7 @@
 
 <span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
     <span class="c1"># ...</span>
-    <span class="n">path</span><span class="p">(</span><span class="s2">&quot;api-auth/&quot;</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="s2">&quot;rest_framework.urls&quot;</span><span class="p">,</span> <span class="n">namespace</span><span class="o">=</span><span class="s2">&quot;rest_framework&quot;</span><span class="p">))</span>
+    <span class="n">path</span><span class="p">(</span><span class="s2">"api-auth/"</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="s2">"rest_framework.urls"</span><span class="p">,</span> <span class="n">namespace</span><span class="o">=</span><span class="s2">"rest_framework"</span><span class="p">))</span>
 <span class="p">]</span>
 </code></pre></div>
 <h2 id="form-rendering">Form rendering<a class="headerlink" href="#form-rendering" title="Permanent link">&para;</a></h2>
@@ -3078,23 +3078,23 @@
 <p>The browsable API is built with <a href="https://getbootstrap.com/">Twitter's Bootstrap</a> (v 3.4.1), making it easy to customize the look-and-feel.</p>
 <p>To customize the default style, create a template called <code>rest_framework/api.html</code> that extends from <code>rest_framework/base.html</code>.  For example:</p>
 <p><strong>templates/rest_framework/api.html</strong></p>
-<div class="language-text highlight"><pre><span></span><code>{% extends &quot;rest_framework/base.html&quot; %}
+<div class="language-text highlight"><pre><span></span><code>{% extends "rest_framework/base.html" %}
 
 ...  # Override blocks with required customizations
 </code></pre></div>
 <h3 id="overriding-the-default-theme">Overriding the default theme<a class="headerlink" href="#overriding-the-default-theme" title="Permanent link">&para;</a></h3>
 <p>To replace the default theme, add a <code>bootstrap_theme</code> block to your <code>api.html</code> and insert a <code>link</code> to the desired Bootstrap theme css file.  This will completely replace the included theme.</p>
 <div class="language-text highlight"><pre><span></span><code>{% block bootstrap_theme %}
-    &lt;link rel=&quot;stylesheet&quot; href=&quot;/path/to/my/bootstrap.css&quot; type=&quot;text/css&quot;&gt;
+    &lt;link rel="stylesheet" href="/path/to/my/bootstrap.css" type="text/css"&gt;
 {% endblock %}
 </code></pre></div>
 <p>Suitable pre-made replacement themes are available at <a href="https://bootswatch.com/">Bootswatch</a>.  To use any of the Bootswatch themes, simply download the theme's <code>bootstrap.min.css</code> file, add it to your project, and replace the default one as described above. Make sure that the Bootstrap version of the new theme matches that of the default theme.</p>
 <p>You can also change the navbar variant, which by default is <code>navbar-inverse</code>, using the <code>bootstrap_navbar_variant</code> block.  The empty <code>{% block bootstrap_navbar_variant %}{% endblock %}</code> will use the original Bootstrap navbar style.</p>
 <p>Full example:</p>
-<div class="language-text highlight"><pre><span></span><code>{% extends &quot;rest_framework/base.html&quot; %}
+<div class="language-text highlight"><pre><span></span><code>{% extends "rest_framework/base.html" %}
 
 {% block bootstrap_theme %}
-    &lt;link rel=&quot;stylesheet&quot; href=&quot;https://cdn.jsdelivr.net/npm/bootswatch@3.4.1/flatly/bootstrap.min.css&quot; type=&quot;text/css&quot;&gt;
+    &lt;link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@3.4.1/flatly/bootstrap.min.css" type="text/css"&gt;
 {% endblock %}
 
 {% block bootstrap_navbar_variant %}{% endblock %}
@@ -3152,10 +3152,10 @@
 <h3 id="login-template">Login Template<a class="headerlink" href="#login-template" title="Permanent link">&para;</a></h3>
 <p>To add branding and customize the look-and-feel of the login template, create a template called <code>login.html</code> and add it to your project, eg: <code>templates/rest_framework/login.html</code>.  The template should extend from <code>rest_framework/login_base.html</code>.</p>
 <p>You can add your site name or branding by including the branding block:</p>
-<div class="language-text highlight"><pre><span></span><code>{% extends &quot;rest_framework/login_base.html&quot; %}
+<div class="language-text highlight"><pre><span></span><code>{% extends "rest_framework/login_base.html" %}
 
 {% block branding %}
-    &lt;h3 style=&quot;margin: 0 0 20px;&quot;&gt;My Site Name&lt;/h3&gt;
+    &lt;h3 style="margin: 0 0 20px;"&gt;My Site Name&lt;/h3&gt;
 {% endblock %}
 </code></pre></div>
 <p>You can also customize the style by adding the <code>bootstrap_theme</code> or <code>style</code> block similar to <code>api.html</code>.</p>
@@ -3188,7 +3188,7 @@
 <p>The simplest option in this case is to replace the select input with a standard text input. For example:</p>
 <div class="language-text highlight"><pre><span></span><code> author = serializers.HyperlinkedRelatedField(
     queryset=User.objects.all(),
-    style={&#39;base_template&#39;: &#39;input.html&#39;}
+    style={'base_template': 'input.html'}
 )
 </code></pre></div>
 <h4 id="autocomplete">Autocomplete<a class="headerlink" href="#autocomplete" title="Permanent link">&para;</a></h4>

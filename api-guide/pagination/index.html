@@ -3283,8 +3283,8 @@
 <h2 id="setting-the-pagination-style">Setting the pagination style<a class="headerlink" href="#setting-the-pagination-style" title="Permanent link">&para;</a></h2>
 <p>The pagination style may be set globally, using the <code>DEFAULT_PAGINATION_CLASS</code> and <code>PAGE_SIZE</code> setting keys. For example, to use the built-in limit/offset pagination, you would do something like this:</p>
 <div class="language-text highlight"><pre><span></span><code>REST_FRAMEWORK = {
-    &#39;DEFAULT_PAGINATION_CLASS&#39;: &#39;rest_framework.pagination.LimitOffsetPagination&#39;,
-    &#39;PAGE_SIZE&#39;: 100
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 100
 }
 </code></pre></div>
 <p>Note that you need to set both the pagination class, and the page size that should be used.  Both <code>DEFAULT_PAGINATION_CLASS</code> and <code>PAGE_SIZE</code> are <code>None</code> by default.</p>
@@ -3293,12 +3293,12 @@
 <p>If you want to modify particular aspects of the pagination style, you'll want to override one of the pagination classes, and set the attributes that you want to change.</p>
 <div class="language-text highlight"><pre><span></span><code>class LargeResultsSetPagination(PageNumberPagination):
     page_size = 1000
-    page_size_query_param = &#39;page_size&#39;
+    page_size_query_param = 'page_size'
     max_page_size = 10000
 
 class StandardResultsSetPagination(PageNumberPagination):
     page_size = 100
-    page_size_query_param = &#39;page_size&#39;
+    page_size_query_param = 'page_size'
     max_page_size = 1000
 </code></pre></div>
 <p>You can then apply your new style to a view using the <code>pagination_class</code> attribute:</p>
@@ -3309,7 +3309,7 @@ class StandardResultsSetPagination(PageNumberPagination):
 </code></pre></div>
 <p>Or apply the style globally, using the <code>DEFAULT_PAGINATION_CLASS</code> settings key. For example:</p>
 <div class="language-text highlight"><pre><span></span><code>REST_FRAMEWORK = {
-    &#39;DEFAULT_PAGINATION_CLASS&#39;: &#39;apps.core.pagination.StandardResultsSetPagination&#39;
+    'DEFAULT_PAGINATION_CLASS': 'apps.core.pagination.StandardResultsSetPagination'
 }
 </code></pre></div>
 <h2 id="details-and-limitations">Details and limitations<a class="headerlink" href="#details-and-limitations" title="Permanent link">&para;</a></h2>
@@ -3340,20 +3340,20 @@ class StandardResultsSetPagination(PageNumberPagination):
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = &#39;__all__&#39;
+        fields = '__all__'
 
 # 1. Inconsistent LimitOffsetPagination
 class UnreliableProductViewSet(viewsets.ModelViewSet):
     # Many duplicates, inconsistent pages
-    queryset = Product.objects.all().order_by(&#39;category&#39;)
+    queryset = Product.objects.all().order_by('category')
     serializer_class = ProductSerializer
     pagination_class = pagination.LimitOffsetPagination
 
 # 2. Inconsistent CursorPagination (Will fail or be buggy)
 class RiskyCursorPagination(pagination.CursorPagination):
     page_size = 10
-    # Problematic: &#39;name&#39; is not unique and can change
-    ordering = &#39;name&#39;
+    # Problematic: 'name' is not unique and can change
+    ordering = 'name'
 </code></pre></div>
 <p>By ensuring the final ordering field is unique and indexed (like id or a created timestamp), we guarantee that the cursor position remains stable:</p>
 <div class="language-text highlight"><pre><span></span><code>class SecureProduct(models.Model):
@@ -3363,12 +3363,12 @@ class RiskyCursorPagination(pagination.CursorPagination):
 class SecureProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = SecureProduct
-        fields = &#39;__all__&#39;
+        fields = '__all__'
 
 # 1. Consistent PageNumberPagination with Multiple Ordering
 class ReliableProductViewSet(viewsets.ModelViewSet):
     # Combining a non-unique field with a unique ID ensures consistency
-    queryset = SecureProduct.objects.all().order_by(&#39;name&#39;, &#39;id&#39;)
+    queryset = SecureProduct.objects.all().order_by('name', 'id')
     serializer_class = SecureProductSerializer
     pagination_class = pagination.PageNumberPagination
 
@@ -3376,7 +3376,7 @@ class ReliableProductViewSet(viewsets.ModelViewSet):
 class StandardCursorPagination(pagination.CursorPagination):
     page_size = 10
      # Unique-ish, indexed, and unchanging
-    ordering = &#39;-created_at&#39;
+    ordering = '-created_at'
 
 class AccurateProductViewSet(viewsets.ModelViewSet):
     queryset = SecureProduct.objects.all()
@@ -3393,10 +3393,10 @@ class AccurateProductViewSet(viewsets.ModelViewSet):
 <p><strong>Response</strong>:</p>
 <div class="language-text highlight"><pre><span></span><code>HTTP 200 OK
 {
-    &quot;count&quot;: 1023,
-    &quot;next&quot;: &quot;https://api.example.org/accounts/?page=5&quot;,
-    &quot;previous&quot;: &quot;https://api.example.org/accounts/?page=3&quot;,
-    &quot;results&quot;: [
+    "count": 1023,
+    "next": "https://api.example.org/accounts/?page=5",
+    "previous": "https://api.example.org/accounts/?page=3",
+    "results": [
        …
     ]
 }
@@ -3404,8 +3404,8 @@ class AccurateProductViewSet(viewsets.ModelViewSet):
 <h4 id="setup">Setup<a class="headerlink" href="#setup" title="Permanent link">&para;</a></h4>
 <p>To enable the <code>PageNumberPagination</code> style globally, use the following configuration, and set the <code>PAGE_SIZE</code> as desired:</p>
 <div class="language-text highlight"><pre><span></span><code>REST_FRAMEWORK = {
-    &#39;DEFAULT_PAGINATION_CLASS&#39;: &#39;rest_framework.pagination.PageNumberPagination&#39;,
-    &#39;PAGE_SIZE&#39;: 100
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 100
 }
 </code></pre></div>
 <p>On <code>GenericAPIView</code> subclasses you may also set the <code>pagination_class</code> attribute to select <code>PageNumberPagination</code> on a per-view basis.</p>
@@ -3415,7 +3415,7 @@ This can be customized by subclassing <code>PageNumberPagination</code> and over
 <div class="language-text highlight"><pre><span></span><code>from rest_framework.pagination import PageNumberPagination
 
 class CustomPagination(PageNumberPagination):
-    page_query_param = &#39;p&#39;
+    page_query_param = 'p'
 </code></pre></div>
 <p>With this configuration, clients would request pages using <code>?p=2</code> instead of <code>?page=2</code>.</p>
 <h4 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h4>
@@ -3440,10 +3440,10 @@ class CustomPagination(PageNumberPagination):
 <p><strong>Response</strong>:</p>
 <div class="language-text highlight"><pre><span></span><code>HTTP 200 OK
 {
-    &quot;count&quot;: 1023,
-    &quot;next&quot;: &quot;https://api.example.org/accounts/?limit=100&amp;offset=500&quot;,
-    &quot;previous&quot;: &quot;https://api.example.org/accounts/?limit=100&amp;offset=300&quot;,
-    &quot;results&quot;: [
+    "count": 1023,
+    "next": "https://api.example.org/accounts/?limit=100&amp;offset=500",
+    "previous": "https://api.example.org/accounts/?limit=100&amp;offset=300",
+    "results": [
        …
     ]
 }
@@ -3451,7 +3451,7 @@ class CustomPagination(PageNumberPagination):
 <h4 id="setup_1">Setup<a class="headerlink" href="#setup_1" title="Permanent link">&para;</a></h4>
 <p>To enable the <code>LimitOffsetPagination</code> style globally, use the following configuration:</p>
 <div class="language-text highlight"><pre><span></span><code>REST_FRAMEWORK = {
-    &#39;DEFAULT_PAGINATION_CLASS&#39;: &#39;rest_framework.pagination.LimitOffsetPagination&#39;
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination'
 }
 </code></pre></div>
 <p>Optionally, you may also set a <code>PAGE_SIZE</code> key. If the <code>PAGE_SIZE</code> parameter is also used then the <code>limit</code> query parameter will be optional, and may be omitted by the client.</p>
@@ -3479,8 +3479,8 @@ class CustomPagination(PageNumberPagination):
 <h4 id="setup_2">Setup<a class="headerlink" href="#setup_2" title="Permanent link">&para;</a></h4>
 <p>To enable the <code>CursorPagination</code> style globally, use the following configuration, modifying the <code>PAGE_SIZE</code> as desired:</p>
 <div class="language-text highlight"><pre><span></span><code>REST_FRAMEWORK = {
-    &#39;DEFAULT_PAGINATION_CLASS&#39;: &#39;rest_framework.pagination.CursorPagination&#39;,
-    &#39;PAGE_SIZE&#39;: 100
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.CursorPagination',
+    'PAGE_SIZE': 100
 }
 </code></pre></div>
 <p>On <code>GenericAPIView</code> subclasses you may also set the <code>pagination_class</code> attribute to select <code>CursorPagination</code> on a per-view basis.</p>
@@ -3506,26 +3506,26 @@ class CustomPagination(PageNumberPagination):
 <div class="language-text highlight"><pre><span></span><code>class CustomPagination(pagination.PageNumberPagination):
     def get_paginated_response(self, data):
         return Response({
-            &#39;links&#39;: {
-                &#39;next&#39;: self.get_next_link(),
-                &#39;previous&#39;: self.get_previous_link()
+            'links': {
+                'next': self.get_next_link(),
+                'previous': self.get_previous_link()
             },
-            &#39;count&#39;: self.page.paginator.count,
-            &#39;results&#39;: data
+            'count': self.page.paginator.count,
+            'results': data
         })
 </code></pre></div>
 <p>We'd then need to set up the custom class in our configuration:</p>
 <div class="language-text highlight"><pre><span></span><code>REST_FRAMEWORK = {
-    &#39;DEFAULT_PAGINATION_CLASS&#39;: &#39;my_project.apps.core.pagination.CustomPagination&#39;,
-    &#39;PAGE_SIZE&#39;: 100
+    'DEFAULT_PAGINATION_CLASS': 'my_project.apps.core.pagination.CustomPagination',
+    'PAGE_SIZE': 100
 }
 </code></pre></div>
 <p>Note that if you care about how the ordering of keys is displayed in responses in the browsable API you might choose to use an <code>OrderedDict</code> when constructing the body of paginated responses, but this is optional.</p>
 <h3 id="using-your-custom-pagination-class">Using your custom pagination class<a class="headerlink" href="#using-your-custom-pagination-class" title="Permanent link">&para;</a></h3>
 <p>To have your custom pagination class be used by default, use the <code>DEFAULT_PAGINATION_CLASS</code> setting:</p>
 <div class="language-text highlight"><pre><span></span><code>REST_FRAMEWORK = {
-    &#39;DEFAULT_PAGINATION_CLASS&#39;: &#39;my_project.apps.core.pagination.LinkHeaderPagination&#39;,
-    &#39;PAGE_SIZE&#39;: 100
+    'DEFAULT_PAGINATION_CLASS': 'my_project.apps.core.pagination.LinkHeaderPagination',
+    'PAGE_SIZE': 100
 }
 </code></pre></div>
 <p>API responses for list endpoints will now include a <code>Link</code> header, instead of including the pagination links as part of the body of the response, for example:</p>

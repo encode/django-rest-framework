@@ -2770,10 +2770,10 @@ include:</p>
 <p>In this example view operation descriptions for the <code>get</code> and <code>post</code> methods will
 be extracted from the class docstring:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">DocStringExampleListView</span><span class="p">(</span><span class="n">APIView</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    get: A description of my GET operation.</span>
 <span class="sd">    post: A description of my POST operation.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">permission_classes</span> <span class="o">=</span> <span class="p">[</span><span class="n">permissions</span><span class="o">.</span><span class="n">IsAuthenticatedOrReadOnly</span><span class="p">]</span>
 

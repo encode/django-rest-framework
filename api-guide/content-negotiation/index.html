@@ -2799,21 +2799,21 @@ request when selecting the appropriate parser or renderer.</p>
 
 class IgnoreClientContentNegotiation(BaseContentNegotiation):
     def select_parser(self, request, parsers):
-        &quot;&quot;&quot;
+        """
         Select the first parser in the `.parser_classes` list.
-        &quot;&quot;&quot;
+        """
         return parsers[0]
 
     def select_renderer(self, request, renderers, format_suffix):
-        &quot;&quot;&quot;
+        """
         Select the first renderer in the `.renderer_classes` list.
-        &quot;&quot;&quot;
+        """
         return (renderers[0], renderers[0].media_type)
 </code></pre></div>
 <h3 id="setting-the-content-negotiation">Setting the content negotiation<a class="headerlink" href="#setting-the-content-negotiation" title="Permanent link">&para;</a></h3>
 <p>The default content negotiation class may be set globally, using the <code>DEFAULT_CONTENT_NEGOTIATION_CLASS</code> setting.  For example, the following settings would use our example <code>IgnoreClientContentNegotiation</code> class.</p>
 <div class="language-text highlight"><pre><span></span><code>REST_FRAMEWORK = {
-    &#39;DEFAULT_CONTENT_NEGOTIATION_CLASS&#39;: &#39;myapp.negotiation.IgnoreClientContentNegotiation&#39;,
+    'DEFAULT_CONTENT_NEGOTIATION_CLASS': 'myapp.negotiation.IgnoreClientContentNegotiation',
 }
 </code></pre></div>
 <p>You can also set the content negotiation used for an individual view, or viewset, using the <code>APIView</code> class-based views.</p>
@@ -2822,14 +2822,14 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 class NoNegotiationView(APIView):
-    &quot;&quot;&quot;
+    """
     An example view that does not perform content negotiation.
-    &quot;&quot;&quot;
+    """
     content_negotiation_class = IgnoreClientContentNegotiation
 
     def get(self, request, format=None):
         return Response({
-            &#39;accepted media type&#39;: request.accepted_renderer.media_type
+            'accepted media type': request.accepted_renderer.media_type
         })
 </code></pre></div>
 

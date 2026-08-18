@@ -2995,12 +2995,12 @@ the schema into your repository.</li>
 <span class="kn">from</span><span class="w"> </span><span class="nn">django.urls</span><span class="w"> </span><span class="kn">import</span> <span class="n">path</span>
 
 <span class="n">schema_view</span> <span class="o">=</span> <span class="n">get_schema_view</span><span class="p">(</span>
-    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Server Monitoring API&quot;</span><span class="p">,</span>
-    <span class="n">url</span><span class="o">=</span><span class="s2">&quot;https://www.example.org/api/&quot;</span><span class="p">,</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">"Server Monitoring API"</span><span class="p">,</span>
+    <span class="n">url</span><span class="o">=</span><span class="s2">"https://www.example.org/api/"</span><span class="p">,</span>
     <span class="n">renderer_classes</span><span class="o">=</span><span class="p">[</span><span class="n">JSONOpenAPIRenderer</span><span class="p">],</span>
 <span class="p">)</span>
 
-<span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span><span class="n">path</span><span class="p">(</span><span class="s2">&quot;schema.json&quot;</span><span class="p">,</span> <span class="n">schema_view</span><span class="p">),</span> <span class="o">...</span><span class="p">]</span>
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span><span class="n">path</span><span class="p">(</span><span class="s2">"schema.json"</span><span class="p">,</span> <span class="n">schema_view</span><span class="p">),</span> <span class="o">...</span><span class="p">]</span>
 </code></pre></div>
 <p>And here's how you can use the <code>generateschema</code> management command:</p>
 <div class="language-shell highlight"><pre><span></span><code>$<span class="w"> </span>python<span class="w"> </span>manage.py<span class="w"> </span>generateschema<span class="w"> </span>--format<span class="w"> </span>openapi<span class="w"> </span>&gt;<span class="w"> </span>schema.yml
@@ -3014,7 +3014,7 @@ command line tool.</p>
 </code></pre></div>
 <p>Or to build API documentation:</p>
 <div class="language-shell highlight"><pre><span></span><code>$<span class="w"> </span>apistar<span class="w"> </span>docs<span class="w"> </span>--path<span class="w"> </span>schema.json<span class="w"> </span>--format<span class="w"> </span>openapi
-✓<span class="w"> </span>Documentation<span class="w"> </span>built<span class="w"> </span>at<span class="w"> </span><span class="s2">&quot;build/index.html&quot;</span>.
+✓<span class="w"> </span>Documentation<span class="w"> </span>built<span class="w"> </span>at<span class="w"> </span><span class="s2">"build/index.html"</span>.
 </code></pre></div>
 <p>API Star also includes a <a href="https://docs.apistar.com/client-library/">dynamic client library</a>
 that uses an API schema to automatically provide a client library interface for making requests.</p>

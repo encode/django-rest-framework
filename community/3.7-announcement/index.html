@@ -2908,7 +2908,7 @@ class CustomView(APIView):
 <p>If we want to mostly use the default behavior, but additionally include some additional fields on a particular view, we can now do so easily...</p>
 <div class="language-text highlight"><pre><span></span><code>class CustomView(APIView):
     schema = AutoSchema(manual_fields=[
-        coreapi.Field(&#39;search&#39;, location=&#39;query&#39;)
+        coreapi.Field('search', location='query')
     ])
 </code></pre></div>
 <p>To ignore the automatic generation for a particular view, and instead specify the schema explicitly, we use the <code>ManualSchema</code> class instead...</p>

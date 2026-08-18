@@ -3313,7 +3313,7 @@ or if you override the <code>get_object</code> method on a generic view, then yo
 <p>This will either raise a <code>PermissionDenied</code> or <code>NotAuthenticated</code> exception, or simply return if the view has the appropriate permissions.</p>
 <p>For example:</p>
 <div class="language-text highlight"><pre><span></span><code>def get_object(self):
-    obj = get_object_or_404(self.get_queryset(), pk=self.kwargs[&quot;pk&quot;])
+    obj = get_object_or_404(self.get_queryset(), pk=self.kwargs["pk"])
     self.check_object_permissions(self.request, obj)
     return obj
 </code></pre></div>
@@ -3334,14 +3334,14 @@ permissions</em></a> section (below).</p>
 <h2 id="setting-the-permission-policy">Setting the permission policy<a class="headerlink" href="#setting-the-permission-policy" title="Permanent link">&para;</a></h2>
 <p>The default permission policy may be set globally, using the <code>DEFAULT_PERMISSION_CLASSES</code> setting.  For example.</p>
 <div class="language-text highlight"><pre><span></span><code>REST_FRAMEWORK = {
-    &#39;DEFAULT_PERMISSION_CLASSES&#39;: [
-        &#39;rest_framework.permissions.IsAuthenticated&#39;,
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
     ]
 }
 </code></pre></div>
 <p>If not specified, this setting defaults to allowing unrestricted access:</p>
-<div class="language-text highlight"><pre><span></span><code>&#39;DEFAULT_PERMISSION_CLASSES&#39;: [
-   &#39;rest_framework.permissions.AllowAny&#39;,
+<div class="language-text highlight"><pre><span></span><code>'DEFAULT_PERMISSION_CLASSES': [
+   'rest_framework.permissions.AllowAny',
 ]
 </code></pre></div>
 <p>You can also set the authentication policy on a per-view, or per-viewset basis,
@@ -3355,7 +3355,7 @@ class ExampleView(APIView):
 
     def get(self, request, format=None):
         content = {
-            &#39;status&#39;: &#39;request was permitted&#39;
+            'status': 'request was permitted'
         }
         return Response(content)
 </code></pre></div>
@@ -3364,11 +3364,11 @@ class ExampleView(APIView):
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-@api_view([&#39;GET&#39;])
+@api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def example_view(request, format=None):
     content = {
-        &#39;status&#39;: &#39;request was permitted&#39;
+        'status': 'request was permitted'
     }
     return Response(content)
 </code></pre></div>
@@ -3390,7 +3390,7 @@ class ExampleView(APIView):
 
     def get(self, request, format=None):
         content = {
-            &#39;status&#39;: &#39;request was permitted&#39;
+            'status': 'request was permitted'
         }
         return Response(content)
 </code></pre></div>
@@ -3458,7 +3458,7 @@ else:
 <div class="language-text highlight"><pre><span></span><code>from rest_framework import permissions
 
 class CustomerAccessPermission(permissions.BasePermission):
-    message = &#39;Adding customers not allowed.&#39;
+    message = 'Adding customers not allowed.'
 
     def has_permission(self, request, view):
          ...
@@ -3468,25 +3468,25 @@ class CustomerAccessPermission(permissions.BasePermission):
 <div class="language-text highlight"><pre><span></span><code>from rest_framework import permissions
 
 class BlocklistPermission(permissions.BasePermission):
-    &quot;&quot;&quot;
+    """
     Global permission check for blocked IPs.
-    &quot;&quot;&quot;
+    """
 
     def has_permission(self, request, view):
-        ip_addr = request.META[&#39;REMOTE_ADDR&#39;]
+        ip_addr = request.META['REMOTE_ADDR']
         blocked = Blocklist.objects.filter(ip_addr=ip_addr).exists()
         return not blocked
 </code></pre></div>
 <p>As well as global permissions, that are run against all incoming requests, you can also create object-level permissions, that are only run against operations that affect a particular object instance.  For example:</p>
 <div class="language-text highlight"><pre><span></span><code>class IsOwnerOrReadOnly(permissions.BasePermission):
-    &quot;&quot;&quot;
+    """
     Object-level permission to only allow owners of an object to edit it.
     Assumes the model instance has an `owner` attribute.
-    &quot;&quot;&quot;
+    """
 
     def has_object_permission(self, request, view, obj):
         # Read permissions are allowed to any request,
-        # so we&#39;ll always allow GET, HEAD or OPTIONS requests.
+        # so we'll always allow GET, HEAD or OPTIONS requests.
         if request.method in permissions.SAFE_METHODS:
             return True
 

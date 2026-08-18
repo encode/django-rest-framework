@@ -3513,9 +3513,9 @@
 <h2 id="setting-the-authentication-scheme">Setting the authentication scheme<a class="headerlink" href="#setting-the-authentication-scheme" title="Permanent link">&para;</a></h2>
 <p>The default authentication schemes may be set globally, using the <code>DEFAULT_AUTHENTICATION_CLASSES</code> setting.  For example.</p>
 <div class="language-text highlight"><pre><span></span><code>REST_FRAMEWORK = {
-    &#39;DEFAULT_AUTHENTICATION_CLASSES&#39;: [
-        &#39;rest_framework.authentication.BasicAuthentication&#39;,
-        &#39;rest_framework.authentication.SessionAuthentication&#39;,
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
     ]
 }
 </code></pre></div>
@@ -3532,19 +3532,19 @@ class ExampleView(APIView):
 
     def get(self, request, format=None):
         content = {
-            &#39;user&#39;: str(request.user),  # `django.contrib.auth.User` instance.
-            &#39;auth&#39;: str(request.auth),  # None
+            'user': str(request.user),  # `django.contrib.auth.User` instance.
+            'auth': str(request.auth),  # None
         }
         return Response(content)
 </code></pre></div>
 <p>Or, if you're using the <code>@api_view</code> decorator with function based views.</p>
-<div class="language-text highlight"><pre><span></span><code>@api_view([&#39;GET&#39;])
+<div class="language-text highlight"><pre><span></span><code>@api_view(['GET'])
 @authentication_classes([SessionAuthentication, BasicAuthentication])
 @permission_classes([IsAuthenticated])
 def example_view(request, format=None):
     content = {
-        &#39;user&#39;: str(request.user),  # `django.contrib.auth.User` instance.
-        &#39;auth&#39;: str(request.auth),  # None
+        'user': str(request.user),  # `django.contrib.auth.User` instance.
+        'auth': str(request.auth),  # None
     }
     return Response(content)
 </code></pre></div>
@@ -3576,7 +3576,7 @@ WSGIPassAuthorization On
 <li><code>request.auth</code> will be <code>None</code>.</li>
 </ul>
 <p>Unauthenticated responses that are denied permission will result in an <code>HTTP 401 Unauthorized</code> response with an appropriate WWW-Authenticate header.  For example:</p>
-<div class="language-text highlight"><pre><span></span><code>WWW-Authenticate: Basic realm=&quot;api&quot;
+<div class="language-text highlight"><pre><span></span><code>WWW-Authenticate: Basic realm="api"
 </code></pre></div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -3592,7 +3592,7 @@ WSGIPassAuthorization On
 <p>To use the <code>TokenAuthentication</code> scheme you'll need to <a href="#setting-the-authentication-scheme">configure the authentication classes</a> to include <code>TokenAuthentication</code>, and additionally include <code>rest_framework.authtoken</code> in your <code>INSTALLED_APPS</code> setting:</p>
 <div class="language-text highlight"><pre><span></span><code>INSTALLED_APPS = [
     ...
-    &#39;rest_framework.authtoken&#39;
+    'rest_framework.authtoken'
 ]
 </code></pre></div>
 <p>Make sure to run <code>manage.py migrate</code> after changing your settings.</p>
@@ -3616,7 +3616,7 @@ print(token.key)
 <div class="language-text highlight"><pre><span></span><code>WWW-Authenticate: Token
 </code></pre></div>
 <p>The <code>curl</code> command line tool may be useful for testing token authenticated APIs.  For example:</p>
-<div class="language-text highlight"><pre><span></span><code>curl -X GET http://127.0.0.1:8000/api/example/ -H &#39;Authorization: Token 9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b&#39;
+<div class="language-text highlight"><pre><span></span><code>curl -X GET http://127.0.0.1:8000/api/example/ -H 'Authorization: Token 9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b'
 </code></pre></div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -3647,12 +3647,12 @@ for user in User.objects.all():
 <p>When using <code>TokenAuthentication</code>, you may want to provide a mechanism for clients to obtain a token given the username and password.  REST framework provides a built-in view to provide this behavior.  To use it, add the <code>obtain_auth_token</code> view to your URLconf:</p>
 <div class="language-text highlight"><pre><span></span><code>from rest_framework.authtoken import views
 urlpatterns += [
-    path(&#39;api-token-auth/&#39;, views.obtain_auth_token)
+    path('api-token-auth/', views.obtain_auth_token)
 ]
 </code></pre></div>
 <p>Note that the URL part of the pattern can be whatever you want to use.</p>
 <p>The <code>obtain_auth_token</code> view will return a JSON response when valid <code>username</code> and <code>password</code> fields are POSTed to the view using form data or JSON:</p>
-<div class="language-text highlight"><pre><span></span><code>{ &#39;token&#39; : &#39;9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b&#39; }
+<div class="language-text highlight"><pre><span></span><code>{ 'token' : '9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b' }
 </code></pre></div>
 <p>Note that the default <code>obtain_auth_token</code> view explicitly uses JSON requests and responses, rather than using default renderer and parser classes in your settings.</p>
 <p>By default, there are no permissions or throttling applied to the <code>obtain_auth_token</code> view. If you do wish to apply throttling you'll need to override the view class,
@@ -3667,19 +3667,19 @@ class CustomAuthToken(ObtainAuthToken):
 
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data,
-                                           context={&#39;request&#39;: request})
+                                           context={'request': request})
         serializer.is_valid(raise_exception=True)
-        user = serializer.validated_data[&#39;user&#39;]
+        user = serializer.validated_data['user']
         token, created = Token.objects.get_or_create(user=user)
         return Response({
-            &#39;token&#39;: token.key,
-            &#39;user_id&#39;: user.pk,
-            &#39;email&#39;: user.email
+            'token': token.key,
+            'user_id': user.pk,
+            'email': user.email
         })
 </code></pre></div>
 <p>And in your <code>urls.py</code>:</p>
 <div class="language-text highlight"><pre><span></span><code>urlpatterns += [
-    path(&#39;api-token-auth/&#39;, CustomAuthToken.as_view())
+    path('api-token-auth/', CustomAuthToken.as_view())
 ]
 </code></pre></div>
 <h5 id="with-django-admin">With Django admin<a class="headerlink" href="#with-django-admin" title="Permanent link">&para;</a></h5>
@@ -3687,7 +3687,7 @@ class CustomAuthToken(ObtainAuthToken):
 <p><code>your_app/admin.py</code>:</p>
 <div class="language-text highlight"><pre><span></span><code>from rest_framework.authtoken.admin import TokenAdmin
 
-TokenAdmin.raw_id_fields = [&#39;user&#39;]
+TokenAdmin.raw_id_fields = ['user']
 </code></pre></div>
 <h5 id="using-django-managepy-command">Using Django manage.py command<a class="headerlink" href="#using-django-managepy-command" title="Permanent link">&para;</a></h5>
 <p>Since version 3.6.4 it's possible to generate a user token using the following command:</p>
@@ -3752,14 +3752,14 @@ from rest_framework import exceptions
 
 class ExampleAuthentication(authentication.BaseAuthentication):
     def authenticate(self, request):
-        username = request.META.get(&#39;HTTP_X_USERNAME&#39;)
+        username = request.META.get('HTTP_X_USERNAME')
         if not username:
             return None
 
         try:
             user = User.objects.get(username=username)
         except User.DoesNotExist:
-            raise exceptions.AuthenticationFailed(&#39;No such user&#39;)
+            raise exceptions.AuthenticationFailed('No such user')
 
         return (user, None)
 </code></pre></div>
@@ -3777,12 +3777,12 @@ class ExampleAuthentication(authentication.BaseAuthentication):
 <p>Add the package to your <code>INSTALLED_APPS</code> and modify your REST framework settings.</p>
 <div class="language-text highlight"><pre><span></span><code>INSTALLED_APPS = [
     ...
-    &#39;oauth2_provider&#39;,
+    'oauth2_provider',
 ]
 
 REST_FRAMEWORK = {
-    &#39;DEFAULT_AUTHENTICATION_CLASSES&#39;: [
-        &#39;oauth2_provider.contrib.rest_framework.OAuth2Authentication&#39;,
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
     ]
 }
 </code></pre></div>

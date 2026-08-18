@@ -2743,9 +2743,9 @@
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">SnippetList</span><span class="p">(</span><span class="n">APIView</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    List all snippets, or create a new snippet.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">snippets</span> <span class="o">=</span> <span class="n">Snippet</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
@@ -2761,9 +2761,9 @@
 </code></pre></div>
 <p>So far, so good.  It looks pretty similar to the previous case, but we've got better separation between the different HTTP methods.  We'll also need to update the instance view in <code>views.py</code>.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">SnippetDetail</span><span class="p">(</span><span class="n">APIView</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Retrieve, update or delete a snippet instance.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">get_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pk</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
@@ -2796,8 +2796,8 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">snippets</span><span class="w"> </span><span class="kn">import</span> <span class="n">views</span>
 
 <span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="n">path</span><span class="p">(</span><span class="s2">&quot;snippets/&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">SnippetList</span><span class="o">.</span><span class="n">as_view</span><span class="p">()),</span>
-    <span class="n">path</span><span class="p">(</span><span class="s2">&quot;snippets/&lt;int:pk&gt;/&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">SnippetDetail</span><span class="o">.</span><span class="n">as_view</span><span class="p">()),</span>
+    <span class="n">path</span><span class="p">(</span><span class="s2">"snippets/"</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">SnippetList</span><span class="o">.</span><span class="n">as_view</span><span class="p">()),</span>
+    <span class="n">path</span><span class="p">(</span><span class="s2">"snippets/&lt;int:pk&gt;/"</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">SnippetDetail</span><span class="o">.</span><span class="n">as_view</span><span class="p">()),</span>
 <span class="p">]</span>
 
 <span class="n">urlpatterns</span> <span class="o">=</span> <span class="n">format_suffix_patterns</span><span class="p">(</span><span class="n">urlpatterns</span><span class="p">)</span>

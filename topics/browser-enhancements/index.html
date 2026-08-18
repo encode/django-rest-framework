@@ -2806,8 +2806,8 @@
 <h2 id="browser-based-put-delete-etc">Browser based PUT, DELETE, etc...<a class="headerlink" href="#browser-based-put-delete-etc" title="Permanent link">&para;</a></h2>
 <p>The <a href="https://github.com/tomchristie/ajax-form">AJAX form library</a> supports browser-based <code>PUT</code>, <code>DELETE</code> and other methods on HTML forms.</p>
 <p>After including the library, use the <code>data-method</code> attribute on the form, like so:</p>
-<div class="language-text highlight"><pre><span></span><code>&lt;form action=&quot;/&quot; data-method=&quot;PUT&quot;&gt;
-    &lt;input name=&#39;foo&#39;/&gt;
+<div class="language-text highlight"><pre><span></span><code>&lt;form action="/" data-method="PUT"&gt;
+    &lt;input name='foo'/&gt;
     ...
 &lt;/form&gt;
 </code></pre></div>
@@ -2815,10 +2815,10 @@
 <h2 id="browser-based-submission-of-non-form-content">Browser based submission of non-form content<a class="headerlink" href="#browser-based-submission-of-non-form-content" title="Permanent link">&para;</a></h2>
 <p>Browser-based submission of content types such as JSON are supported by the <a href="https://github.com/tomchristie/ajax-form">AJAX form library</a>, using form fields with <code>data-override='content-type'</code> and <code>data-override='content'</code> attributes.</p>
 <p>For example:</p>
-<div class="language-text highlight"><pre><span></span><code>    &lt;form action=&quot;/&quot;&gt;
-        &lt;input data-override=&#39;content-type&#39; value=&#39;application/json&#39; type=&#39;hidden&#39;/&gt;
-        &lt;textarea data-override=&#39;content&#39;&gt;{}&lt;/textarea&gt;
-        &lt;input type=&quot;submit&quot;/&gt;
+<div class="language-text highlight"><pre><span></span><code>    &lt;form action="/"&gt;
+        &lt;input data-override='content-type' value='application/json' type='hidden'/&gt;
+        &lt;textarea data-override='content'&gt;{}&lt;/textarea&gt;
+        &lt;input type="submit"/&gt;
     &lt;/form&gt;
 </code></pre></div>
 <p>Note that prior to 3.3.0, this support was server-side rather than javascript based.</p>
@@ -2830,7 +2830,7 @@ the view.</p>
 <h2 id="http-header-based-method-overriding">HTTP header based method overriding<a class="headerlink" href="#http-header-based-method-overriding" title="Permanent link">&para;</a></h2>
 <p>Prior to version 3.3.0 the semi extension header <code>X-HTTP-Method-Override</code> was supported for overriding the request method. This behavior is no longer in core, but can be adding if needed using middleware.</p>
 <p>For example:</p>
-<div class="language-text highlight"><pre><span></span><code>METHOD_OVERRIDE_HEADER = &#39;HTTP_X_HTTP_METHOD_OVERRIDE&#39;
+<div class="language-text highlight"><pre><span></span><code>METHOD_OVERRIDE_HEADER = 'HTTP_X_HTTP_METHOD_OVERRIDE'
 
 class MethodOverrideMiddleware:
 
@@ -2838,7 +2838,7 @@ class MethodOverrideMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        if request.method == &#39;POST&#39; and METHOD_OVERRIDE_HEADER in request.META:
+        if request.method == 'POST' and METHOD_OVERRIDE_HEADER in request.META:
             request.method = request.META[METHOD_OVERRIDE_HEADER]
         return self.get_response(request)
 </code></pre></div>
@@ -2848,9 +2848,9 @@ class MethodOverrideMiddleware:
 <p>For example:</p>
 <div class="language-text highlight"><pre><span></span><code>class AcceptQueryParamOverride()
     def get_accept_list(self, request):
-       header = request.META.get(&#39;HTTP_ACCEPT&#39;, &#39;*/*&#39;)
-       header = request.query_params.get(&#39;_accept&#39;, header)
-       return [token.strip() for token in header.split(&#39;,&#39;)]
+       header = request.META.get('HTTP_ACCEPT', '*/*')
+       header = request.query_params.get('_accept', header)
+       return [token.strip() for token in header.split(',')]
 </code></pre></div>
 <h2 id="doesnt-html5-support-put-and-delete-forms">Doesn't HTML5 support PUT and DELETE forms?<a class="headerlink" href="#doesnt-html5-support-put-and-delete-forms" title="Permanent link">&para;</a></h2>
 <p>Nope.  It was at one point intended to support <code>PUT</code> and <code>DELETE</code> forms, but

@@ -2912,7 +2912,7 @@
 <p>Now that we're inside a virtual environment, we can install our package requirements.</p>
 <div class="language-bash highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>django
 pip<span class="w"> </span>install<span class="w"> </span>djangorestframework
-pip<span class="w"> </span>install<span class="w"> </span>pygments<span class="w">  </span><span class="c1"># We&#39;ll be using this for the code highlighting</span>
+pip<span class="w"> </span>install<span class="w"> </span>pygments<span class="w">  </span><span class="c1"># We'll be using this for the code highlighting</span>
 </code></pre></div>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
@@ -2931,8 +2931,8 @@ django-admin<span class="w"> </span>startproject<span class="w"> </span>tutorial
 <p>We'll need to add our new <code>snippets</code> app and the <code>rest_framework</code> app to <code>INSTALLED_APPS</code>. Let's edit the <code>tutorial/settings.py</code> file:</p>
 <div class="language-text highlight"><pre><span></span><code>INSTALLED_APPS = [
     ...
-    &#39;rest_framework&#39;,
-    &#39;snippets&#39;,
+    'rest_framework',
+    'snippets',
 ]
 </code></pre></div>
 <p>Okay, we're ready to roll.</p>
@@ -2949,16 +2949,16 @@ django-admin<span class="w"> </span>startproject<span class="w"> </span>tutorial
 
 <span class="k">class</span><span class="w"> </span><span class="nc">Snippet</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
     <span class="n">created</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span><span class="n">auto_now_add</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">title</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="n">title</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">""</span><span class="p">)</span>
     <span class="n">code</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">TextField</span><span class="p">()</span>
     <span class="n">linenos</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">language</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
-        <span class="n">choices</span><span class="o">=</span><span class="n">LANGUAGE_CHOICES</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;python&quot;</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">100</span>
+        <span class="n">choices</span><span class="o">=</span><span class="n">LANGUAGE_CHOICES</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">"python"</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">100</span>
     <span class="p">)</span>
-    <span class="n">style</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">choices</span><span class="o">=</span><span class="n">STYLE_CHOICES</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;friendly&quot;</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+    <span class="n">style</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">choices</span><span class="o">=</span><span class="n">STYLE_CHOICES</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">"friendly"</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
-        <span class="n">ordering</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;created&quot;</span><span class="p">]</span>
+        <span class="n">ordering</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"created"</span><span class="p">]</span>
 </code></pre></div>
 <p>We'll also need to create an initial migration for our snippet model, and sync the database for the first time.</p>
 <div class="language-bash highlight"><pre><span></span><code>python<span class="w"> </span>manage.py<span class="w"> </span>makemigrations<span class="w"> </span>snippets
@@ -2973,26 +2973,26 @@ python<span class="w"> </span>manage.py<span class="w"> </span>migrate<span clas
 <span class="k">class</span><span class="w"> </span><span class="nc">SnippetSerializer</span><span class="p">(</span><span class="n">serializers</span><span class="o">.</span><span class="n">Serializer</span><span class="p">):</span>
     <span class="nb">id</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">IntegerField</span><span class="p">(</span><span class="n">read_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">title</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">allow_blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
-    <span class="n">code</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">style</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;base_template&quot;</span><span class="p">:</span> <span class="s2">&quot;textarea.html&quot;</span><span class="p">})</span>
+    <span class="n">code</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">style</span><span class="o">=</span><span class="p">{</span><span class="s2">"base_template"</span><span class="p">:</span> <span class="s2">"textarea.html"</span><span class="p">})</span>
     <span class="n">linenos</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">language</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">ChoiceField</span><span class="p">(</span><span class="n">choices</span><span class="o">=</span><span class="n">LANGUAGE_CHOICES</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;python&quot;</span><span class="p">)</span>
-    <span class="n">style</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">ChoiceField</span><span class="p">(</span><span class="n">choices</span><span class="o">=</span><span class="n">STYLE_CHOICES</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;friendly&quot;</span><span class="p">)</span>
+    <span class="n">language</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">ChoiceField</span><span class="p">(</span><span class="n">choices</span><span class="o">=</span><span class="n">LANGUAGE_CHOICES</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">"python"</span><span class="p">)</span>
+    <span class="n">style</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">ChoiceField</span><span class="p">(</span><span class="n">choices</span><span class="o">=</span><span class="n">STYLE_CHOICES</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">"friendly"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">validated_data</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Create and return a new `Snippet` instance, given the validated data.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="n">Snippet</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="o">**</span><span class="n">validated_data</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">validated_data</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Update and return an existing `Snippet` instance, given the validated data.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">instance</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="n">validated_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;title&quot;</span><span class="p">,</span> <span class="n">instance</span><span class="o">.</span><span class="n">title</span><span class="p">)</span>
-        <span class="n">instance</span><span class="o">.</span><span class="n">code</span> <span class="o">=</span> <span class="n">validated_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;code&quot;</span><span class="p">,</span> <span class="n">instance</span><span class="o">.</span><span class="n">code</span><span class="p">)</span>
-        <span class="n">instance</span><span class="o">.</span><span class="n">linenos</span> <span class="o">=</span> <span class="n">validated_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;linenos&quot;</span><span class="p">,</span> <span class="n">instance</span><span class="o">.</span><span class="n">linenos</span><span class="p">)</span>
-        <span class="n">instance</span><span class="o">.</span><span class="n">language</span> <span class="o">=</span> <span class="n">validated_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;language&quot;</span><span class="p">,</span> <span class="n">instance</span><span class="o">.</span><span class="n">language</span><span class="p">)</span>
-        <span class="n">instance</span><span class="o">.</span><span class="n">style</span> <span class="o">=</span> <span class="n">validated_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;style&quot;</span><span class="p">,</span> <span class="n">instance</span><span class="o">.</span><span class="n">style</span><span class="p">)</span>
+<span class="sd">        """</span>
+        <span class="n">instance</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="n">validated_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"title"</span><span class="p">,</span> <span class="n">instance</span><span class="o">.</span><span class="n">title</span><span class="p">)</span>
+        <span class="n">instance</span><span class="o">.</span><span class="n">code</span> <span class="o">=</span> <span class="n">validated_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"code"</span><span class="p">,</span> <span class="n">instance</span><span class="o">.</span><span class="n">code</span><span class="p">)</span>
+        <span class="n">instance</span><span class="o">.</span><span class="n">linenos</span> <span class="o">=</span> <span class="n">validated_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"linenos"</span><span class="p">,</span> <span class="n">instance</span><span class="o">.</span><span class="n">linenos</span><span class="p">)</span>
+        <span class="n">instance</span><span class="o">.</span><span class="n">language</span> <span class="o">=</span> <span class="n">validated_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"language"</span><span class="p">,</span> <span class="n">instance</span><span class="o">.</span><span class="n">language</span><span class="p">)</span>
+        <span class="n">instance</span><span class="o">.</span><span class="n">style</span> <span class="o">=</span> <span class="n">validated_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"style"</span><span class="p">,</span> <span class="n">instance</span><span class="o">.</span><span class="n">style</span><span class="p">)</span>
         <span class="n">instance</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">instance</span>
 </code></pre></div>
@@ -3010,21 +3010,21 @@ python<span class="w"> </span>manage.py<span class="w"> </span>migrate<span clas
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">rest_framework.renderers</span><span class="w"> </span><span class="kn">import</span> <span class="n">JSONRenderer</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">rest_framework.parsers</span><span class="w"> </span><span class="kn">import</span> <span class="n">JSONParser</span>
 
-<span class="gp">&gt;&gt;&gt; </span><span class="n">snippet</span> <span class="o">=</span> <span class="n">Snippet</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="s1">&#39;foo = &quot;bar&quot;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">snippet</span> <span class="o">=</span> <span class="n">Snippet</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="s1">'foo = "bar"</span><span class="se">\n</span><span class="s1">'</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">snippet</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
 
-<span class="gp">&gt;&gt;&gt; </span><span class="n">snippet</span> <span class="o">=</span> <span class="n">Snippet</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="s1">&#39;print(&quot;hello, world&quot;)</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">snippet</span> <span class="o">=</span> <span class="n">Snippet</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="s1">'print("hello, world")</span><span class="se">\n</span><span class="s1">'</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">snippet</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
 </code></pre></div>
 <p>We've now got a few snippet instances to play with.  Let's take a look at serializing one of those instances.</p>
 <div class="language-pycon highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">serializer</span> <span class="o">=</span> <span class="n">SnippetSerializer</span><span class="p">(</span><span class="n">snippet</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">serializer</span><span class="o">.</span><span class="n">data</span>
-<span class="go">{&#39;id&#39;: 2, &#39;title&#39;: &#39;&#39;, &#39;code&#39;: &#39;print(&quot;hello, world&quot;)\n&#39;, &#39;linenos&#39;: False, &#39;language&#39;: &#39;python&#39;, &#39;style&#39;: &#39;friendly&#39;}</span>
+<span class="go">{'id': 2, 'title': '', 'code': 'print("hello, world")\n', 'linenos': False, 'language': 'python', 'style': 'friendly'}</span>
 </code></pre></div>
 <p>At this point we've translated the model instance into Python native datatypes.  To finalize the serialization process we render the data into <code>json</code>.</p>
 <div class="language-pycon highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">content</span> <span class="o">=</span> <span class="n">JSONRenderer</span><span class="p">()</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">serializer</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">content</span>
-<span class="go">b&#39;{&quot;id&quot;:2,&quot;title&quot;:&quot;&quot;,&quot;code&quot;:&quot;print(\\&quot;hello, world\\&quot;)\\n&quot;,&quot;linenos&quot;:false,&quot;language&quot;:&quot;python&quot;,&quot;style&quot;:&quot;friendly&quot;}&#39;</span>
+<span class="go">b'{"id":2,"title":"","code":"print(\\"hello, world\\")\\n","linenos":false,"language":"python","style":"friendly"}'</span>
 </code></pre></div>
 <p>Deserialization is similar.  First we parse a stream into Python native datatypes...</p>
 <div class="language-pycon highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">io</span>
@@ -3037,7 +3037,7 @@ python<span class="w"> </span>manage.py<span class="w"> </span>migrate<span clas
 <span class="gp">&gt;&gt;&gt; </span><span class="n">serializer</span><span class="o">.</span><span class="n">is_valid</span><span class="p">()</span>
 <span class="go">True</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">serializer</span><span class="o">.</span><span class="n">validated_data</span>
-<span class="go">{&#39;title&#39;: &#39;&#39;, &#39;code&#39;: &#39;print(&quot;hello, world&quot;)&#39;, &#39;linenos&#39;: False, &#39;language&#39;: &#39;python&#39;, &#39;style&#39;: &#39;friendly&#39;}</span>
+<span class="go">{'title': '', 'code': 'print("hello, world")', 'linenos': False, 'language': 'python', 'style': 'friendly'}</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">serializer</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
 <span class="go">&lt;Snippet: Snippet object&gt;</span>
 </code></pre></div>
@@ -3045,7 +3045,7 @@ python<span class="w"> </span>manage.py<span class="w"> </span>migrate<span clas
 <p>We can also serialize querysets instead of model instances.  To do so we simply add a <code>many=True</code> flag to the serializer arguments.</p>
 <div class="language-pycon highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">serializer</span> <span class="o">=</span> <span class="n">SnippetSerializer</span><span class="p">(</span><span class="n">Snippet</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">(),</span> <span class="n">many</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">serializer</span><span class="o">.</span><span class="n">data</span>
-<span class="go">[{&#39;id&#39;: 1, &#39;title&#39;: &#39;&#39;, &#39;code&#39;: &#39;foo = &quot;bar&quot;\n&#39;, &#39;linenos&#39;: False, &#39;language&#39;: &#39;python&#39;, &#39;style&#39;: &#39;friendly&#39;}, {&#39;id&#39;: 2, &#39;title&#39;: &#39;&#39;, &#39;code&#39;: &#39;print(&quot;hello, world&quot;)\n&#39;, &#39;linenos&#39;: False, &#39;language&#39;: &#39;python&#39;, &#39;style&#39;: &#39;friendly&#39;}, {&#39;id&#39;: 3, &#39;title&#39;: &#39;&#39;, &#39;code&#39;: &#39;print(&quot;hello, world&quot;)&#39;, &#39;linenos&#39;: False, &#39;language&#39;: &#39;python&#39;, &#39;style&#39;: &#39;friendly&#39;}]</span>
+<span class="go">[{'id': 1, 'title': '', 'code': 'foo = "bar"\n', 'linenos': False, 'language': 'python', 'style': 'friendly'}, {'id': 2, 'title': '', 'code': 'print("hello, world")\n', 'linenos': False, 'language': 'python', 'style': 'friendly'}, {'id': 3, 'title': '', 'code': 'print("hello, world")', 'linenos': False, 'language': 'python', 'style': 'friendly'}]</span>
 </code></pre></div>
 <h2 id="using-modelserializers">Using ModelSerializers<a class="headerlink" href="#using-modelserializers" title="Permanent link">&para;</a></h2>
 <p>Our <code>SnippetSerializer</code> class is replicating a lot of information that's also contained in the <code>Snippet</code> model.  It would be nice if we could keep our code a bit more concise.</p>
@@ -3059,7 +3059,7 @@ Open the file <code>snippets/serializers.py</code> again, and replace the <code>
 <span class="k">class</span><span class="w"> </span><span class="nc">SnippetSerializer</span><span class="p">(</span><span class="n">serializers</span><span class="o">.</span><span class="n">ModelSerializer</span><span class="p">):</span>
     <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
         <span class="n">model</span> <span class="o">=</span> <span class="n">Snippet</span>
-        <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;title&quot;</span><span class="p">,</span> <span class="s2">&quot;code&quot;</span><span class="p">,</span> <span class="s2">&quot;linenos&quot;</span><span class="p">,</span> <span class="s2">&quot;language&quot;</span><span class="p">,</span> <span class="s2">&quot;style&quot;</span><span class="p">]</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"id"</span><span class="p">,</span> <span class="s2">"title"</span><span class="p">,</span> <span class="s2">"code"</span><span class="p">,</span> <span class="s2">"linenos"</span><span class="p">,</span> <span class="s2">"language"</span><span class="p">,</span> <span class="s2">"style"</span><span class="p">]</span>
 </code></pre></div>
 <p>One nice property that serializers have is that you can inspect all the fields in a serializer instance, by printing its representation. Open the Django shell with <code>python manage.py shell</code>, then try the following:</p>
 <div class="language-pycon highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">snippets.serializers</span><span class="w"> </span><span class="kn">import</span> <span class="n">SnippetSerializer</span>
@@ -3067,12 +3067,12 @@ Open the file <code>snippets/serializers.py</code> again, and replace the <code>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">serializer</span> <span class="o">=</span> <span class="n">SnippetSerializer</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">serializer</span><span class="p">))</span>
 <span class="go">SnippetSerializer():</span>
-<span class="go">    id = IntegerField(label=&#39;ID&#39;, read_only=True)</span>
+<span class="go">    id = IntegerField(label='ID', read_only=True)</span>
 <span class="go">    title = CharField(allow_blank=True, max_length=100, required=False)</span>
-<span class="go">    code = CharField(style={&#39;base_template&#39;: &#39;textarea.html&#39;})</span>
+<span class="go">    code = CharField(style={'base_template': 'textarea.html'})</span>
 <span class="go">    linenos = BooleanField(required=False)</span>
-<span class="go">    language = ChoiceField(choices=[(&#39;Clipper&#39;, &#39;FoxPro&#39;), (&#39;Cucumber&#39;, &#39;Gherkin&#39;), (&#39;RobotFramework&#39;, &#39;RobotFramework&#39;), (&#39;abap&#39;, &#39;ABAP&#39;), (&#39;ada&#39;, &#39;Ada&#39;)...</span>
-<span class="go">    style = ChoiceField(choices=[(&#39;autumn&#39;, &#39;autumn&#39;), (&#39;borland&#39;, &#39;borland&#39;), (&#39;bw&#39;, &#39;bw&#39;), (&#39;colorful&#39;, &#39;colorful&#39;)...</span>
+<span class="go">    language = ChoiceField(choices=[('Clipper', 'FoxPro'), ('Cucumber', 'Gherkin'), ('RobotFramework', 'RobotFramework'), ('abap', 'ABAP'), ('ada', 'Ada')...</span>
+<span class="go">    style = ChoiceField(choices=[('autumn', 'autumn'), ('borland', 'borland'), ('bw', 'bw'), ('colorful', 'colorful')...</span>
 </code></pre></div>
 <p>It's important to remember that <code>ModelSerializer</code> classes don't do anything particularly magical, they are simply a shortcut for creating serializer classes:</p>
 <ul>
@@ -3092,15 +3092,15 @@ For the moment we won't use any of REST framework's other features, we'll just w
 <p>The root of our API is going to be a view that supports listing all the existing snippets, or creating a new snippet.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="nd">@csrf_exempt</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">snippet_list</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    List all code snippets, or create a new snippet.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;GET&quot;</span><span class="p">:</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s2">"GET"</span><span class="p">:</span>
         <span class="n">snippets</span> <span class="o">=</span> <span class="n">Snippet</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
         <span class="n">serializer</span> <span class="o">=</span> <span class="n">SnippetSerializer</span><span class="p">(</span><span class="n">snippets</span><span class="p">,</span> <span class="n">many</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">JsonResponse</span><span class="p">(</span><span class="n">serializer</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">safe</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-    <span class="k">elif</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;POST&quot;</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s2">"POST"</span><span class="p">:</span>
         <span class="n">data</span> <span class="o">=</span> <span class="n">JSONParser</span><span class="p">()</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
         <span class="n">serializer</span> <span class="o">=</span> <span class="n">SnippetSerializer</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">serializer</span><span class="o">.</span><span class="n">is_valid</span><span class="p">():</span>
@@ -3112,19 +3112,19 @@ For the moment we won't use any of REST framework's other features, we'll just w
 <p>We'll also need a view which corresponds to an individual snippet, and can be used to retrieve, update or delete the snippet.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="nd">@csrf_exempt</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">snippet_detail</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">pk</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Retrieve, update or delete a code snippet.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">snippet</span> <span class="o">=</span> <span class="n">Snippet</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="n">pk</span><span class="p">)</span>
     <span class="k">except</span> <span class="n">Snippet</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">HttpResponse</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">404</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;GET&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s2">"GET"</span><span class="p">:</span>
         <span class="n">serializer</span> <span class="o">=</span> <span class="n">SnippetSerializer</span><span class="p">(</span><span class="n">snippet</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">JsonResponse</span><span class="p">(</span><span class="n">serializer</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
 
-    <span class="k">elif</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;PUT&quot;</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s2">"PUT"</span><span class="p">:</span>
         <span class="n">data</span> <span class="o">=</span> <span class="n">JSONParser</span><span class="p">()</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
         <span class="n">serializer</span> <span class="o">=</span> <span class="n">SnippetSerializer</span><span class="p">(</span><span class="n">snippet</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">serializer</span><span class="o">.</span><span class="n">is_valid</span><span class="p">():</span>
@@ -3132,7 +3132,7 @@ For the moment we won't use any of REST framework's other features, we'll just w
             <span class="k">return</span> <span class="n">JsonResponse</span><span class="p">(</span><span class="n">serializer</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">JsonResponse</span><span class="p">(</span><span class="n">serializer</span><span class="o">.</span><span class="n">errors</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
 
-    <span class="k">elif</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;DELETE&quot;</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s2">"DELETE"</span><span class="p">:</span>
         <span class="n">snippet</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">HttpResponse</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">204</span><span class="p">)</span>
 </code></pre></div>
@@ -3141,15 +3141,15 @@ For the moment we won't use any of REST framework's other features, we'll just w
 <span class="kn">from</span><span class="w"> </span><span class="nn">snippets</span><span class="w"> </span><span class="kn">import</span> <span class="n">views</span>
 
 <span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="n">path</span><span class="p">(</span><span class="s2">&quot;snippets/&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">snippet_list</span><span class="p">),</span>
-    <span class="n">path</span><span class="p">(</span><span class="s2">&quot;snippets/&lt;int:pk&gt;/&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">snippet_detail</span><span class="p">),</span>
+    <span class="n">path</span><span class="p">(</span><span class="s2">"snippets/"</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">snippet_list</span><span class="p">),</span>
+    <span class="n">path</span><span class="p">(</span><span class="s2">"snippets/&lt;int:pk&gt;/"</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">snippet_detail</span><span class="p">),</span>
 <span class="p">]</span>
 </code></pre></div>
 <p>We also need to wire up the root urlconf, in the <code>tutorial/urls.py</code> file, to include our snippet app's URLs.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">django.urls</span><span class="w"> </span><span class="kn">import</span> <span class="n">path</span><span class="p">,</span> <span class="n">include</span>
 
 <span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="n">path</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="s2">&quot;snippets.urls&quot;</span><span class="p">)),</span>
+    <span class="n">path</span><span class="p">(</span><span class="s2">""</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="s2">"snippets.urls"</span><span class="p">)),</span>
 <span class="p">]</span>
 </code></pre></div>
 <p>It's worth noting that there are a couple of edge cases we're not dealing with properly at the moment.  If we send malformed <code>json</code>, or if a request is made with a method that the view doesn't handle, then we'll end up with a 500 "server error" response.  Still, this'll do for now.</p>
@@ -3164,7 +3164,7 @@ For the moment we won't use any of REST framework's other features, we'll just w
 Validating<span class="w"> </span>models...
 
 <span class="m">0</span><span class="w"> </span>errors<span class="w"> </span>found
-Django<span class="w"> </span>version<span class="w"> </span><span class="m">5</span>.0,<span class="w"> </span>using<span class="w"> </span>settings<span class="w"> </span><span class="s1">&#39;tutorial.settings&#39;</span>
+Django<span class="w"> </span>version<span class="w"> </span><span class="m">5</span>.0,<span class="w"> </span>using<span class="w"> </span>settings<span class="w"> </span><span class="s1">'tutorial.settings'</span>
 Starting<span class="w"> </span>Development<span class="w"> </span>server<span class="w"> </span>at<span class="w"> </span>http://127.0.0.1:8000/
 Quit<span class="w"> </span>the<span class="w"> </span>server<span class="w"> </span>with<span class="w"> </span>CONTROL-C.
 </code></pre></div>
@@ -3180,28 +3180,28 @@ HTTP/1.1<span class="w"> </span><span class="m">200</span><span class="w"> </spa
 ...
 <span class="o">[</span>
 <span class="w">    </span><span class="o">{</span>
-<span class="w">        </span><span class="s2">&quot;id&quot;</span>:<span class="w"> </span><span class="m">1</span>,
-<span class="w">        </span><span class="s2">&quot;title&quot;</span>:<span class="w"> </span><span class="s2">&quot;&quot;</span>,
-<span class="w">        </span><span class="s2">&quot;code&quot;</span>:<span class="w"> </span><span class="s2">&quot;foo = \&quot;bar\&quot;\n&quot;</span>,
-<span class="w">        </span><span class="s2">&quot;linenos&quot;</span>:<span class="w"> </span>false,
-<span class="w">        </span><span class="s2">&quot;language&quot;</span>:<span class="w"> </span><span class="s2">&quot;python&quot;</span>,
-<span class="w">        </span><span class="s2">&quot;style&quot;</span>:<span class="w"> </span><span class="s2">&quot;friendly&quot;</span>
+<span class="w">        </span><span class="s2">"id"</span>:<span class="w"> </span><span class="m">1</span>,
+<span class="w">        </span><span class="s2">"title"</span>:<span class="w"> </span><span class="s2">""</span>,
+<span class="w">        </span><span class="s2">"code"</span>:<span class="w"> </span><span class="s2">"foo = \"bar\"\n"</span>,
+<span class="w">        </span><span class="s2">"linenos"</span>:<span class="w"> </span>false,
+<span class="w">        </span><span class="s2">"language"</span>:<span class="w"> </span><span class="s2">"python"</span>,
+<span class="w">        </span><span class="s2">"style"</span>:<span class="w"> </span><span class="s2">"friendly"</span>
 <span class="w">    </span><span class="o">}</span>,
 <span class="w">    </span><span class="o">{</span>
-<span class="w">        </span><span class="s2">&quot;id&quot;</span>:<span class="w"> </span><span class="m">2</span>,
-<span class="w">        </span><span class="s2">&quot;title&quot;</span>:<span class="w"> </span><span class="s2">&quot;&quot;</span>,
-<span class="w">        </span><span class="s2">&quot;code&quot;</span>:<span class="w"> </span><span class="s2">&quot;print(\&quot;hello, world\&quot;)\n&quot;</span>,
-<span class="w">        </span><span class="s2">&quot;linenos&quot;</span>:<span class="w"> </span>false,
-<span class="w">        </span><span class="s2">&quot;language&quot;</span>:<span class="w"> </span><span class="s2">&quot;python&quot;</span>,
-<span class="w">        </span><span class="s2">&quot;style&quot;</span>:<span class="w"> </span><span class="s2">&quot;friendly&quot;</span>
+<span class="w">        </span><span class="s2">"id"</span>:<span class="w"> </span><span class="m">2</span>,
+<span class="w">        </span><span class="s2">"title"</span>:<span class="w"> </span><span class="s2">""</span>,
+<span class="w">        </span><span class="s2">"code"</span>:<span class="w"> </span><span class="s2">"print(\"hello, world\")\n"</span>,
+<span class="w">        </span><span class="s2">"linenos"</span>:<span class="w"> </span>false,
+<span class="w">        </span><span class="s2">"language"</span>:<span class="w"> </span><span class="s2">"python"</span>,
+<span class="w">        </span><span class="s2">"style"</span>:<span class="w"> </span><span class="s2">"friendly"</span>
 <span class="w">    </span><span class="o">}</span>,
 <span class="w">    </span><span class="o">{</span>
-<span class="w">        </span><span class="s2">&quot;id&quot;</span>:<span class="w"> </span><span class="m">3</span>,
-<span class="w">        </span><span class="s2">&quot;title&quot;</span>:<span class="w"> </span><span class="s2">&quot;&quot;</span>,
-<span class="w">        </span><span class="s2">&quot;code&quot;</span>:<span class="w"> </span><span class="s2">&quot;print(\&quot;hello, world\&quot;)&quot;</span>,
-<span class="w">        </span><span class="s2">&quot;linenos&quot;</span>:<span class="w"> </span>false,
-<span class="w">        </span><span class="s2">&quot;language&quot;</span>:<span class="w"> </span><span class="s2">&quot;python&quot;</span>,
-<span class="w">        </span><span class="s2">&quot;style&quot;</span>:<span class="w"> </span><span class="s2">&quot;friendly&quot;</span>
+<span class="w">        </span><span class="s2">"id"</span>:<span class="w"> </span><span class="m">3</span>,
+<span class="w">        </span><span class="s2">"title"</span>:<span class="w"> </span><span class="s2">""</span>,
+<span class="w">        </span><span class="s2">"code"</span>:<span class="w"> </span><span class="s2">"print(\"hello, world\")"</span>,
+<span class="w">        </span><span class="s2">"linenos"</span>:<span class="w"> </span>false,
+<span class="w">        </span><span class="s2">"language"</span>:<span class="w"> </span><span class="s2">"python"</span>,
+<span class="w">        </span><span class="s2">"style"</span>:<span class="w"> </span><span class="s2">"friendly"</span>
 <span class="w">    </span><span class="o">}</span>
 <span class="o">]</span>
 </code></pre></div>
@@ -3211,12 +3211,12 @@ HTTP/1.1<span class="w"> </span><span class="m">200</span><span class="w"> </spa
 HTTP/1.1<span class="w"> </span><span class="m">200</span><span class="w"> </span>OK
 ...
 <span class="o">{</span>
-<span class="w">    </span><span class="s2">&quot;id&quot;</span>:<span class="w"> </span><span class="m">2</span>,
-<span class="w">    </span><span class="s2">&quot;title&quot;</span>:<span class="w"> </span><span class="s2">&quot;&quot;</span>,
-<span class="w">    </span><span class="s2">&quot;code&quot;</span>:<span class="w"> </span><span class="s2">&quot;print(\&quot;hello, world\&quot;)\n&quot;</span>,
-<span class="w">    </span><span class="s2">&quot;linenos&quot;</span>:<span class="w"> </span>false,
-<span class="w">    </span><span class="s2">&quot;language&quot;</span>:<span class="w"> </span><span class="s2">&quot;python&quot;</span>,
-<span class="w">    </span><span class="s2">&quot;style&quot;</span>:<span class="w"> </span><span class="s2">&quot;friendly&quot;</span>
+<span class="w">    </span><span class="s2">"id"</span>:<span class="w"> </span><span class="m">2</span>,
+<span class="w">    </span><span class="s2">"title"</span>:<span class="w"> </span><span class="s2">""</span>,
+<span class="w">    </span><span class="s2">"code"</span>:<span class="w"> </span><span class="s2">"print(\"hello, world\")\n"</span>,
+<span class="w">    </span><span class="s2">"linenos"</span>:<span class="w"> </span>false,
+<span class="w">    </span><span class="s2">"language"</span>:<span class="w"> </span><span class="s2">"python"</span>,
+<span class="w">    </span><span class="s2">"style"</span>:<span class="w"> </span><span class="s2">"friendly"</span>
 <span class="o">}</span>
 </code></pre></div>
 <p>Similarly, you can have the same json displayed by visiting these URLs in a web browser.</p>

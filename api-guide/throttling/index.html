@@ -2949,13 +2949,13 @@ If any throttle check fails an <code>exceptions.Throttled</code> exception will 
 <h2 id="setting-the-throttling-policy">Setting the throttling policy<a class="headerlink" href="#setting-the-throttling-policy" title="Permanent link">&para;</a></h2>
 <p>The default throttling policy may be set globally, using the <code>DEFAULT_THROTTLE_CLASSES</code> and <code>DEFAULT_THROTTLE_RATES</code> settings.  For example.</p>
 <div class="language-text highlight"><pre><span></span><code>REST_FRAMEWORK = {
-    &#39;DEFAULT_THROTTLE_CLASSES&#39;: [
-        &#39;rest_framework.throttling.AnonRateThrottle&#39;,
-        &#39;rest_framework.throttling.UserRateThrottle&#39;
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle'
     ],
-    &#39;DEFAULT_THROTTLE_RATES&#39;: {
-        &#39;anon&#39;: &#39;100/day&#39;,
-        &#39;user&#39;: &#39;1000/day&#39;
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '100/day',
+        'user': '1000/day'
     }
 }
 </code></pre></div>
@@ -2971,25 +2971,25 @@ class ExampleView(APIView):
 
     def get(self, request, format=None):
         content = {
-            &#39;status&#39;: &#39;request was permitted&#39;
+            'status': 'request was permitted'
         }
         return Response(content)
 </code></pre></div>
 <p>If you're using the <code>@api_view</code> decorator with function based views you can use the following decorator.</p>
-<div class="language-text highlight"><pre><span></span><code>@api_view([&#39;GET&#39;])
+<div class="language-text highlight"><pre><span></span><code>@api_view(['GET'])
 @throttle_classes([UserRateThrottle])
 def example_view(request, format=None):
     content = {
-        &#39;status&#39;: &#39;request was permitted&#39;
+        'status': 'request was permitted'
     }
     return Response(content)
 </code></pre></div>
 <p>It's also possible to set throttle classes for routes that are created using the <code>@action</code> decorator.
 Throttle classes set in this way will override any viewset level class settings.</p>
-<div class="language-text highlight"><pre><span></span><code>@action(detail=True, methods=[&quot;post&quot;], throttle_classes=[UserRateThrottle])
+<div class="language-text highlight"><pre><span></span><code>@action(detail=True, methods=["post"], throttle_classes=[UserRateThrottle])
 def example_adhoc_method(request, pk=None):
     content = {
-        &#39;status&#39;: &#39;request was permitted&#39;
+        'status': 'request was permitted'
     }
     return Response(content)
 </code></pre></div>
@@ -3004,7 +3004,7 @@ def example_adhoc_method(request, pk=None):
 <div class="language-text highlight"><pre><span></span><code>from django.core.cache import caches
 
 class CustomAnonRateThrottle(AnonRateThrottle):
-    cache = caches[&#39;alternate&#39;]
+    cache = caches['alternate']
 </code></pre></div>
 <p>You'll need to remember to also set your custom throttle class in the <code>'DEFAULT_THROTTLE_CLASSES'</code> settings key, or using the <code>throttle_classes</code> view attribute.</p>
 <h2 id="a-note-on-concurrency">A note on concurrency<a class="headerlink" href="#a-note-on-concurrency" title="Permanent link">&para;</a></h2>
@@ -3030,20 +3030,20 @@ class CustomAnonRateThrottle(AnonRateThrottle):
 <p>An API may have multiple <code>UserRateThrottles</code> in place at the same time.  To do so, override <code>UserRateThrottle</code> and set a unique "scope" for each class.</p>
 <p>For example, multiple user throttle rates could be implemented by using the following classes...</p>
 <div class="language-text highlight"><pre><span></span><code>class BurstRateThrottle(UserRateThrottle):
-    scope = &#39;burst&#39;
+    scope = 'burst'
 
 class SustainedRateThrottle(UserRateThrottle):
-    scope = &#39;sustained&#39;
+    scope = 'sustained'
 </code></pre></div>
 <p>...and the following settings.</p>
 <div class="language-text highlight"><pre><span></span><code>REST_FRAMEWORK = {
-    &#39;DEFAULT_THROTTLE_CLASSES&#39;: [
-        &#39;example.throttles.BurstRateThrottle&#39;,
-        &#39;example.throttles.SustainedRateThrottle&#39;
+    'DEFAULT_THROTTLE_CLASSES': [
+        'example.throttles.BurstRateThrottle',
+        'example.throttles.SustainedRateThrottle'
     ],
-    &#39;DEFAULT_THROTTLE_RATES&#39;: {
-        &#39;burst&#39;: &#39;60/min&#39;,
-        &#39;sustained&#39;: &#39;1000/day&#39;
+    'DEFAULT_THROTTLE_RATES': {
+        'burst': '60/min',
+        'sustained': '1000/day'
     }
 }
 </code></pre></div>
@@ -3053,25 +3053,25 @@ class SustainedRateThrottle(UserRateThrottle):
 <p>The allowed request rate is determined by the <code>DEFAULT_THROTTLE_RATES</code> setting using a key from the request "scope".</p>
 <p>For example, given the following views...</p>
 <div class="language-text highlight"><pre><span></span><code>class ContactListView(APIView):
-    throttle_scope = &#39;contacts&#39;
+    throttle_scope = 'contacts'
     ...
 
 class ContactDetailView(APIView):
-    throttle_scope = &#39;contacts&#39;
+    throttle_scope = 'contacts'
     ...
 
 class UploadView(APIView):
-    throttle_scope = &#39;uploads&#39;
+    throttle_scope = 'uploads'
     ...
 </code></pre></div>
 <p>...and the following settings.</p>
 <div class="language-text highlight"><pre><span></span><code>REST_FRAMEWORK = {
-    &#39;DEFAULT_THROTTLE_CLASSES&#39;: [
-        &#39;rest_framework.throttling.ScopedRateThrottle&#39;,
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.ScopedRateThrottle',
     ],
-    &#39;DEFAULT_THROTTLE_RATES&#39;: {
-        &#39;contacts&#39;: &#39;1000/day&#39;,
-        &#39;uploads&#39;: &#39;20/day&#39;
+    'DEFAULT_THROTTLE_RATES': {
+        'contacts': '1000/day',
+        'uploads': '20/day'
     }
 }
 </code></pre></div>

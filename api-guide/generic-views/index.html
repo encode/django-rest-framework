@@ -3497,7 +3497,7 @@ class UserList(generics.ListCreateAPIView):
         return Response(serializer.data)
 </code></pre></div>
 <p>For very simple cases you might want to pass through any class attributes using the <code>.as_view()</code> method.  For example, your URLconf might include something like the following entry:</p>
-<div class="language-text highlight"><pre><span></span><code>path(&#39;users/&#39;, ListCreateAPIView.as_view(queryset=User.objects.all(), serializer_class=UserSerializer), name=&#39;user-list&#39;)
+<div class="language-text highlight"><pre><span></span><code>path('users/', ListCreateAPIView.as_view(queryset=User.objects.all(), serializer_class=UserSerializer), name='user-list')
 </code></pre></div>
 <hr />
 <h2 id="api-reference">API Reference<a class="headerlink" href="#api-reference" title="Permanent link">&para;</a></h2>
@@ -3543,19 +3543,19 @@ class UserList(generics.ListCreateAPIView):
 <p><strong>For ForeignKey and OneToOneField</strong>:</p>
 <p>Use <code>select_related()</code> to fetch related objects in the same query:</p>
 <div class="language-text highlight"><pre><span></span><code>def get_queryset(self):
-    return Order.objects.select_related(&quot;customer&quot;, &quot;billing_address&quot;)
+    return Order.objects.select_related("customer", "billing_address")
 </code></pre></div>
 <p><strong>For reverse and many-to-many relationships</strong>:</p>
 <p>Use <code>prefetch_related()</code> to efficiently load collections of related objects:</p>
 <div class="language-text highlight"><pre><span></span><code>def get_queryset(self):
-    return Book.objects.prefetch_related(&quot;categories&quot;, &quot;reviews__user&quot;)
+    return Book.objects.prefetch_related("categories", "reviews__user")
 </code></pre></div>
 <p><strong>Combining both</strong>:</p>
 <div class="language-text highlight"><pre><span></span><code>def get_queryset(self):
     return (
         Order.objects
-        .select_related(&quot;customer&quot;)
-        .prefetch_related(&quot;items__product&quot;)
+        .select_related("customer")
+        .prefetch_related("items__product")
     )
 </code></pre></div>
 <p>These optimizations reduce repeated database access and improve list view performance.</p>
@@ -3581,9 +3581,9 @@ class UserList(generics.ListCreateAPIView):
 <div class="language-text highlight"><pre><span></span><code>def filter_queryset(self, queryset):
     filter_backends = [CategoryFilter]
 
-    if &#39;geo_route&#39; in self.request.query_params:
+    if 'geo_route' in self.request.query_params:
         filter_backends = [GeoRouteFilter, CategoryFilter]
-    elif &#39;geo_point&#39; in self.request.query_params:
+    elif 'geo_point' in self.request.query_params:
         filter_backends = [GeoPointFilter, CategoryFilter]
 
     for backend in list(filter_backends):
@@ -3624,7 +3624,7 @@ class UserList(generics.ListCreateAPIView):
 <div class="language-text highlight"><pre><span></span><code>def perform_create(self, serializer):
     queryset = SignupRequest.objects.filter(user=self.request.user)
     if queryset.exists():
-        raise ValidationError(&#39;You have already signed up&#39;)
+        raise ValidationError('You have already signed up')
     serializer.save(user=self.request.user)
 </code></pre></div>
 <p><strong>Other methods</strong>:</p>
@@ -3704,10 +3704,10 @@ class UserList(generics.ListCreateAPIView):
 <h3 id="creating-custom-mixins">Creating custom mixins<a class="headerlink" href="#creating-custom-mixins" title="Permanent link">&para;</a></h3>
 <p>For example, if you need to lookup objects based on multiple fields in the URL conf, you could create a mixin class like the following:</p>
 <div class="language-text highlight"><pre><span></span><code>class MultipleFieldLookupMixin:
-    &quot;&quot;&quot;
+    """
     Apply this mixin to any view or viewset to get multiple field filtering
     based on a `lookup_fields` attribute, instead of the default single field filtering.
-    &quot;&quot;&quot;
+    """
     def get_object(self):
         queryset = self.get_queryset()             # Get the base queryset
         queryset = self.filter_queryset(queryset)  # Apply any filter backends
@@ -3723,7 +3723,7 @@ class UserList(generics.ListCreateAPIView):
 <div class="language-text highlight"><pre><span></span><code>class RetrieveUserView(MultipleFieldLookupMixin, generics.RetrieveAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    lookup_fields = [&#39;account&#39;, &#39;username&#39;]
+    lookup_fields = ['account', 'username']
 </code></pre></div>
 <p>Using custom mixins is a good option if you have custom behavior that needs to be used.</p>
 <h3 id="creating-custom-base-classes">Creating custom base classes<a class="headerlink" href="#creating-custom-base-classes" title="Permanent link">&para;</a></h3>

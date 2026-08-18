@@ -2859,11 +2859,11 @@ from rest_framework.views import APIView
 
 class ProfileList(APIView):
     renderer_classes = [TemplateHTMLRenderer]
-    template_name = &#39;profile_list.html&#39;
+    template_name = 'profile_list.html'
 
     def get(self, request):
         queryset = Profile.objects.all()
-        return Response({&#39;profiles&#39;: queryset})
+        return Response({'profiles': queryset})
 </code></pre></div>
 <p><strong>profile_list.html</strong>:</p>
 <div class="language-text highlight"><pre><span></span><code>&lt;html&gt;&lt;body&gt;
@@ -2887,20 +2887,20 @@ from rest_framework.views import APIView
 
 class ProfileDetail(APIView):
     renderer_classes = [TemplateHTMLRenderer]
-    template_name = &#39;profile_detail.html&#39;
+    template_name = 'profile_detail.html'
 
     def get(self, request, pk):
         profile = get_object_or_404(Profile, pk=pk)
         serializer = ProfileSerializer(profile)
-        return Response({&#39;serializer&#39;: serializer, &#39;profile&#39;: profile})
+        return Response({'serializer': serializer, 'profile': profile})
 
     def post(self, request, pk):
         profile = get_object_or_404(Profile, pk=pk)
         serializer = ProfileSerializer(profile, data=request.data)
         if not serializer.is_valid():
-            return Response({&#39;serializer&#39;: serializer, &#39;profile&#39;: profile})
+            return Response({'serializer': serializer, 'profile': profile})
         serializer.save()
-        return redirect(&#39;profile-list&#39;)
+        return redirect('profile-list')
 </code></pre></div>
 <p><strong>profile_detail.html</strong>:</p>
 <div class="language-text highlight"><pre><span></span><code>{% load rest_framework %}
@@ -2909,10 +2909,10 @@ class ProfileDetail(APIView):
 
 &lt;h1&gt;Profile - {{ profile.name }}&lt;/h1&gt;
 
-&lt;form action=&quot;{% url &#39;profile-detail&#39; pk=profile.pk %}&quot; method=&quot;POST&quot;&gt;
+&lt;form action="{% url 'profile-detail' pk=profile.pk %}" method="POST"&gt;
     {% csrf_token %}
     {% render_form serializer %}
-    &lt;input type=&quot;submit&quot; value=&quot;Save&quot;&gt;
+    &lt;input type="submit" value="Save"&gt;
 &lt;/form&gt;
 
 &lt;/body&gt;&lt;/html&gt;
@@ -2923,7 +2923,7 @@ class ProfileDetail(APIView):
 <p>The following HTML will link to a CDN hosted version of the Bootstrap 3 CSS:</p>
 <div class="language-text highlight"><pre><span></span><code>&lt;head&gt;
     …
-    &lt;link rel=&quot;stylesheet&quot; href=&quot;https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css&quot;&gt;
+    &lt;link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css"&gt;
 &lt;/head&gt;
 </code></pre></div>
 <p>Third party packages may include alternate template packs, by bundling a template directory containing the necessary form and field templates.</p>
@@ -2931,11 +2931,11 @@ class ProfileDetail(APIView):
 <div class="language-text highlight"><pre><span></span><code>class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField(
         max_length=100,
-        style={&#39;placeholder&#39;: &#39;Email&#39;, &#39;autofocus&#39;: True}
+        style={'placeholder': 'Email', 'autofocus': True}
     )
     password = serializers.CharField(
         max_length=100,
-        style={&#39;input_type&#39;: &#39;password&#39;, &#39;placeholder&#39;: &#39;Password&#39;}
+        style={'input_type': 'password', 'placeholder': 'Password'}
     )
     remember_me = serializers.BooleanField()
 </code></pre></div>
@@ -2947,10 +2947,10 @@ class ProfileDetail(APIView):
 
 ...
 
-&lt;form action=&quot;{% url &#39;login&#39; %}&quot; method=&quot;post&quot; novalidate&gt;
+&lt;form action="{% url 'login' %}" method="post" novalidate&gt;
     {% csrf_token %}
-    {% render_form serializer template_pack=&#39;rest_framework/vertical&#39; %}
-    &lt;button type=&quot;submit&quot; class=&quot;btn btn-default&quot;&gt;Sign in&lt;/button&gt;
+    {% render_form serializer template_pack='rest_framework/vertical' %}
+    &lt;button type="submit" class="btn btn-default"&gt;Sign in&lt;/button&gt;
 &lt;/form&gt;
 </code></pre></div>
 <p><img alt="Vertical form example" src="../../img/vertical.png" /></p>
@@ -2962,12 +2962,12 @@ class ProfileDetail(APIView):
 
 ...
 
-&lt;form class=&quot;form-horizontal&quot; action=&quot;{% url &#39;login&#39; %}&quot; method=&quot;post&quot; novalidate&gt;
+&lt;form class="form-horizontal" action="{% url 'login' %}" method="post" novalidate&gt;
     {% csrf_token %}
     {% render_form serializer %}
-    &lt;div class=&quot;form-group&quot;&gt;
-        &lt;div class=&quot;col-sm-offset-2 col-sm-10&quot;&gt;
-            &lt;button type=&quot;submit&quot; class=&quot;btn btn-default&quot;&gt;Sign in&lt;/button&gt;
+    &lt;div class="form-group"&gt;
+        &lt;div class="col-sm-offset-2 col-sm-10"&gt;
+            &lt;button type="submit" class="btn btn-default"&gt;Sign in&lt;/button&gt;
         &lt;/div&gt;
     &lt;/div&gt;
 &lt;/form&gt;
@@ -2980,10 +2980,10 @@ class ProfileDetail(APIView):
 
 ...
 
-&lt;form class=&quot;form-inline&quot; action=&quot;{% url &#39;login&#39; %}&quot; method=&quot;post&quot; novalidate&gt;
+&lt;form class="form-inline" action="{% url 'login' %}" method="post" novalidate&gt;
     {% csrf_token %}
-    {% render_form serializer template_pack=&#39;rest_framework/inline&#39; %}
-    &lt;button type=&quot;submit&quot; class=&quot;btn btn-default&quot;&gt;Sign in&lt;/button&gt;
+    {% render_form serializer template_pack='rest_framework/inline' %}
+    &lt;button type="submit" class="btn btn-default"&gt;Sign in&lt;/button&gt;
 &lt;/form&gt;
 </code></pre></div>
 <p><img alt="Inline form example" src="../../img/inline.png" /></p>
@@ -2993,19 +2993,19 @@ class ProfileDetail(APIView):
 <p>For example, to render a <code>CharField</code> as an HTML textarea rather than the default HTML input, you would use something like this:</p>
 <div class="language-text highlight"><pre><span></span><code>details = serializers.CharField(
     max_length=1000,
-    style={&#39;base_template&#39;: &#39;textarea.html&#39;}
+    style={'base_template': 'textarea.html'}
 )
 </code></pre></div>
 <p>If you instead want a field to be rendered using a custom template that is <em>not part of an included template pack</em>, you can instead use the <code>template</code> style option, to fully specify a template name:</p>
 <div class="language-text highlight"><pre><span></span><code>details = serializers.CharField(
     max_length=1000,
-    style={&#39;template&#39;: &#39;my-field-templates/custom-input.html&#39;}
+    style={'template': 'my-field-templates/custom-input.html'}
 )
 </code></pre></div>
 <p>Field templates can also use additional style properties, depending on their type. For example, the <code>textarea.html</code> template also accepts a <code>rows</code> property that can be used to affect the sizing of the control.</p>
 <div class="language-text highlight"><pre><span></span><code>details = serializers.CharField(
     max_length=1000,
-    style={&#39;base_template&#39;: &#39;textarea.html&#39;, &#39;rows&#39;: 10}
+    style={'base_template': 'textarea.html', 'rows': 10}
 )
 </code></pre></div>
 <p>The complete list of <code>base_template</code> options and their associated style options is listed below.</p>

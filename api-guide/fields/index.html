@@ -4350,14 +4350,14 @@ Set to false if this field is not required to be present during deserialization.
 <p>May be set to a function or other callable, in which case the value will be evaluated each time it is used. When called, it will receive no arguments. If the callable has a <code>requires_context = True</code> attribute, then the serializer field will be passed as an argument.</p>
 <p>For example:</p>
 <div class="language-text highlight"><pre><span></span><code>class CurrentUserDefault:
-    &quot;&quot;&quot;
+    """
     May be applied as a `default=...` value on a serializer field.
     Returns the current user.
-    &quot;&quot;&quot;
+    """
     requires_context = True
 
     def __call__(self, serializer_field):
-        return serializer_field.context[&#39;request&#39;].user
+        return serializer_field.context['request'].user
 </code></pre></div>
 <p>When serializing the instance, default will be used if the object attribute or dictionary key is not present in the instance.</p>
 <p>Note that setting a <code>default</code> value implies that the field is not required. Including both the <code>default</code> and <code>required</code> keyword arguments is invalid and will raise an error.</p>
@@ -4369,19 +4369,19 @@ Set to false if this field is not required to be present during deserialization.
 <p>The name of the attribute that will be used to populate the field.  May be a method that only takes a <code>self</code> argument, such as <code>URLField(source='get_absolute_url')</code>, or may use dotted notation to traverse attributes, such as <code>EmailField(source='user.email')</code>.</p>
 <p>When serializing fields with dotted notation, it may be necessary to provide a <code>default</code> value if any object is not present or is empty during attribute traversal. Beware of possible n+1 problems when using source attribute if you are accessing a relational orm model. For example:</p>
 <div class="language-text highlight"><pre><span></span><code>class CommentSerializer(serializers.Serializer):
-    email = serializers.EmailField(source=&quot;user.email&quot;)
+    email = serializers.EmailField(source="user.email")
 </code></pre></div>
 <p>This case would require user object to be fetched from database when it is not prefetched. If that is not wanted, be sure to be using <code>prefetch_related</code> and <code>select_related</code> methods appropriately. For more information about the methods refer to <a href="https://docs.djangoproject.com/en/stable/ref/models/querysets/#django.db.models.query.QuerySet.select_related">django documentation</a>.</p>
 <p>Also note that when dotted notation is used, after serializer validation the <code>.validated_data</code> attribute will <em>not</em> include a flat <code>"&lt;fieldname&gt;": &lt;value&gt;</code> item. Instead, it will include a nested dictionary derived by expanding the dotted path value of the <code>source</code> argument. So, for the previous serializer example, <code>.validated_data</code> would be:</p>
 <div class="language-text highlight"><pre><span></span><code>{
-    &quot;user&quot;: {
-        &quot;email&quot;: ...
+    "user": {
+        "email": ...
     }
 }
 </code></pre></div>
 <p>instead of:</p>
 <div class="language-text highlight"><pre><span></span><code>{
-    &quot;email&quot;: ...
+    "email": ...
 }
 </code></pre></div>
 <p>This works this way because, in DRF's philosophy, the <code>.data</code> attribute represents the external API representation (where key names equal field names), while the <code>.validated_data</code> attribute represents the internal object structure (where the nesting and key names follow the <code>source</code> path).</p>
@@ -4406,15 +4406,15 @@ class ExampleSerializer(serializers.Serializer):
 <h3 id="style"><code>style</code><a class="headerlink" href="#style" title="Permanent link">&para;</a></h3>
 <p>A dictionary of key-value pairs that can be used to control how renderers should render the field.</p>
 <p>Two examples here are <code>'input_type'</code> and <code>'base_template'</code>:</p>
-<div class="language-text highlight"><pre><span></span><code># Use &lt;input type=&quot;password&quot;&gt; for the input.
+<div class="language-text highlight"><pre><span></span><code># Use &lt;input type="password"&gt; for the input.
 password = serializers.CharField(
-    style={&#39;input_type&#39;: &#39;password&#39;}
+    style={'input_type': 'password'}
 )
 
 # Use a radio input instead of a select input.
 color_channel = serializers.ChoiceField(
-    choices=[&#39;red&#39;, &#39;green&#39;, &#39;blue&#39;],
-    style={&#39;base_template&#39;: &#39;radio.html&#39;}
+    choices=['red', 'green', 'blue'],
+    style={'base_template': 'radio.html'}
 )
 </code></pre></div>
 <p>For more details see the <a href="../../topics/html-and-forms/">HTML &amp; Forms</a> documentation.</p>
@@ -4466,7 +4466,7 @@ explicitly declare the <code>BooleanField</code> on the serializer class, or use
 <p><strong>Signature:</strong> <code>URLField(max_length=200, min_length=None, allow_blank=False)</code></p>
 <h3 id="uuidfield">UUIDField<a class="headerlink" href="#uuidfield" title="Permanent link">&para;</a></h3>
 <p>A field that ensures the input is a valid UUID string. The <code>to_internal_value</code> method will return a <code>uuid.UUID</code> instance. On output the field will return a string in the canonical hyphenated format, for example:</p>
-<div class="language-text highlight"><pre><span></span><code>&quot;de305d54-75b4-431b-adb2-eb6b9e546013&quot;
+<div class="language-text highlight"><pre><span></span><code>"de305d54-75b4-431b-adb2-eb6b9e546013"
 </code></pre></div>
 <p><strong>Signature:</strong> <code>UUIDField(format='hex_verbose')</code></p>
 <ul>
@@ -4710,7 +4710,7 @@ Django's regular <a href="https://docs.djangoproject.com/en/stable/ref/settings/
 <div class="language-text highlight"><pre><span></span><code>class AccountSerializer(serializers.ModelSerializer):
     class Meta:
         model = Account
-        fields = [&#39;id&#39;, &#39;account_name&#39;, &#39;has_expired&#39;]
+        fields = ['id', 'account_name', 'has_expired']
 </code></pre></div>
 <h3 id="hiddenfield">HiddenField<a class="headerlink" href="#hiddenfield" title="Permanent link">&para;</a></h3>
 <p>A field class that does not take a value based on user input, but instead takes its value from a default value or callable.</p>
@@ -4745,7 +4745,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = &#39;__all__&#39;
+        fields = '__all__'
 
     def get_days_since_joined(self, obj):
         return (now() - obj.date_joined).days
@@ -4759,24 +4759,24 @@ class UserSerializer(serializers.ModelSerializer):
 <h4 id="a-basic-custom-field">A Basic Custom Field<a class="headerlink" href="#a-basic-custom-field" title="Permanent link">&para;</a></h4>
 <p>Let's look at an example of serializing a class that represents an RGB color value:</p>
 <div class="language-text highlight"><pre><span></span><code>class Color:
-    &quot;&quot;&quot;
+    """
     A color represented in the RGB colorspace.
-    &quot;&quot;&quot;
+    """
     def __init__(self, red, green, blue):
         assert(red &gt;= 0 and green &gt;= 0 and blue &gt;= 0)
         assert(red &lt; 256 and green &lt; 256 and blue &lt; 256)
         self.red, self.green, self.blue = red, green, blue
 
 class ColorField(serializers.Field):
-    &quot;&quot;&quot;
-    Color objects are serialized into &#39;rgb(#, #, #)&#39; notation.
-    &quot;&quot;&quot;
+    """
+    Color objects are serialized into 'rgb(#, #, #)' notation.
+    """
     def to_representation(self, value):
-        return &quot;rgb(%d, %d, %d)&quot; % (value.red, value.green, value.blue)
+        return "rgb(%d, %d, %d)" % (value.red, value.green, value.blue)
 
     def to_internal_value(self, data):
-        data = data.strip(&#39;rgb(&#39;).rstrip(&#39;)&#39;)
-        red, green, blue = [int(col) for col in data.split(&#39;,&#39;)]
+        data = data.strip('rgb(').rstrip(')')
+        red, green, blue = [int(col) for col in data.split(',')]
         return Color(red, green, blue)
 </code></pre></div>
 <p>By default field values are treated as mapping to an attribute on the object.  If you need to customize how the field value is accessed and set you need to override <code>.get_attribute()</code> and/or <code>.get_value()</code>.</p>
@@ -4788,9 +4788,9 @@ class ColorField(serializers.Field):
         return instance
 
     def to_representation(self, value):
-        &quot;&quot;&quot;
-        Serialize the value&#39;s class name.
-        &quot;&quot;&quot;
+        """
+        Serialize the value's class name.
+        """
         return value.__class__.__name__
 </code></pre></div>
 <h4 id="raising-validation-errors">Raising validation errors<a class="headerlink" href="#raising-validation-errors" title="Permanent link">&para;</a></h4>
@@ -4798,39 +4798,39 @@ class ColorField(serializers.Field):
 To indicate invalid data, we should raise a <code>serializers.ValidationError</code>, like so:</p>
 <div class="language-text highlight"><pre><span></span><code>def to_internal_value(self, data):
     if not isinstance(data, str):
-        msg = &#39;Incorrect type. Expected a string, but got %s&#39;
+        msg = 'Incorrect type. Expected a string, but got %s'
         raise ValidationError(msg % type(data).__name__)
 
-    if not re.match(r&#39;^rgb\([0-9]+,[0-9]+,[0-9]+\)$&#39;, data):
-        raise ValidationError(&#39;Incorrect format. Expected `rgb(#,#,#)`.&#39;)
+    if not re.match(r'^rgb\([0-9]+,[0-9]+,[0-9]+\)$', data):
+        raise ValidationError('Incorrect format. Expected `rgb(#,#,#)`.')
 
-    data = data.strip(&#39;rgb(&#39;).rstrip(&#39;)&#39;)
-    red, green, blue = [int(col) for col in data.split(&#39;,&#39;)]
+    data = data.strip('rgb(').rstrip(')')
+    red, green, blue = [int(col) for col in data.split(',')]
 
     if any([col &gt; 255 or col &lt; 0 for col in (red, green, blue)]):
-        raise ValidationError(&#39;Value out of range. Must be between 0 and 255.&#39;)
+        raise ValidationError('Value out of range. Must be between 0 and 255.')
 
     return Color(red, green, blue)
 </code></pre></div>
 <p>The <code>.fail()</code> method is a shortcut for raising <code>ValidationError</code> that takes a message string from the <code>error_messages</code> dictionary. For example:</p>
 <div class="language-text highlight"><pre><span></span><code>default_error_messages = {
-    &#39;incorrect_type&#39;: &#39;Incorrect type. Expected a string, but got {input_type}&#39;,
-    &#39;incorrect_format&#39;: &#39;Incorrect format. Expected `rgb(#,#,#)`.&#39;,
-    &#39;out_of_range&#39;: &#39;Value out of range. Must be between 0 and 255.&#39;
+    'incorrect_type': 'Incorrect type. Expected a string, but got {input_type}',
+    'incorrect_format': 'Incorrect format. Expected `rgb(#,#,#)`.',
+    'out_of_range': 'Value out of range. Must be between 0 and 255.'
 }
 
 def to_internal_value(self, data):
     if not isinstance(data, str):
-        self.fail(&#39;incorrect_type&#39;, input_type=type(data).__name__)
+        self.fail('incorrect_type', input_type=type(data).__name__)
 
-    if not re.match(r&#39;^rgb\([0-9]+,[0-9]+,[0-9]+\)$&#39;, data):
-        self.fail(&#39;incorrect_format&#39;)
+    if not re.match(r'^rgb\([0-9]+,[0-9]+,[0-9]+\)$', data):
+        self.fail('incorrect_format')
 
-    data = data.strip(&#39;rgb(&#39;).rstrip(&#39;)&#39;)
-    red, green, blue = [int(col) for col in data.split(&#39;,&#39;)]
+    data = data.strip('rgb(').rstrip(')')
+    red, green, blue = [int(col) for col in data.split(',')]
 
     if any([col &gt; 255 or col &lt; 0 for col in (red, green, blue)]):
-        self.fail(&#39;out_of_range&#39;)
+        self.fail('out_of_range')
 
     return Color(red, green, blue)
 </code></pre></div>
@@ -4848,25 +4848,25 @@ the coordinate pair:</p>
 
     def to_representation(self, value):
         ret = {
-            &quot;x&quot;: value.x_coordinate,
-            &quot;y&quot;: value.y_coordinate
+            "x": value.x_coordinate,
+            "y": value.y_coordinate
         }
         return ret
 
     def to_internal_value(self, data):
         ret = {
-            &quot;x_coordinate&quot;: data[&quot;x&quot;],
-            &quot;y_coordinate&quot;: data[&quot;y&quot;],
+            "x_coordinate": data["x"],
+            "y_coordinate": data["y"],
         }
         return ret
 
 
 class DataPointSerializer(serializers.ModelSerializer):
-    coordinates = CoordinateField(source=&#39;*&#39;)
+    coordinates = CoordinateField(source='*')
 
     class Meta:
         model = DataPoint
-        fields = [&#39;label&#39;, &#39;coordinates&#39;]
+        fields = ['label', 'coordinates']
 </code></pre></div>
 <p>Note that this example doesn't handle validation. Partly for that reason, in a
 real project, the coordinate nesting might be better handled with a nested serializer
@@ -4877,10 +4877,10 @@ pointing to the relevant field.</p>
 <li>
 <p><code>to_representation</code> is passed the entire <code>DataPoint</code> object and must map from that
 to the desired output.</p>
-<div class="language-text highlight"><pre><span></span><code>&gt;&gt;&gt; instance = DataPoint(label=&#39;Example&#39;, x_coordinate=1, y_coordinate=2)
+<div class="language-text highlight"><pre><span></span><code>&gt;&gt;&gt; instance = DataPoint(label='Example', x_coordinate=1, y_coordinate=2)
 &gt;&gt;&gt; out_serializer = DataPointSerializer(instance)
 &gt;&gt;&gt; out_serializer.data
-ReturnDict([(&#39;label&#39;, &#39;Example&#39;), (&#39;coordinates&#39;, {&#39;x&#39;: 1, &#39;y&#39;: 2})])
+ReturnDict([('label', 'Example'), ('coordinates', {'x': 1, 'y': 2})])
 </code></pre></div>
 </li>
 <li>
@@ -4888,35 +4888,35 @@ ReturnDict([(&#39;label&#39;, &#39;Example&#39;), (&#39;coordinates&#39;, {&#39;
 suitable for updating our target object. With <code>source='*'</code>, the return from
 <code>to_internal_value</code> will update the root validated data dictionary, rather than a single key.</p>
 <div class="language-text highlight"><pre><span></span><code>&gt;&gt;&gt; data = {
-...     &quot;label&quot;: &quot;Second Example&quot;,
-...     &quot;coordinates&quot;: {
-...         &quot;x&quot;: 3,
-...         &quot;y&quot;: 4,
+...     "label": "Second Example",
+...     "coordinates": {
+...         "x": 3,
+...         "y": 4,
 ...     }
 ... }
 &gt;&gt;&gt; in_serializer = DataPointSerializer(data=data)
 &gt;&gt;&gt; in_serializer.is_valid()
 True
 &gt;&gt;&gt; in_serializer.validated_data
-OrderedDict([(&#39;label&#39;, &#39;Second Example&#39;),
-             (&#39;y_coordinate&#39;, 4),
-             (&#39;x_coordinate&#39;, 3)])
+OrderedDict([('label', 'Second Example'),
+             ('y_coordinate', 4),
+             ('x_coordinate', 3)])
 </code></pre></div>
 </li>
 </ul>
 <p>For completeness let's do the same thing again but with the nested serializer
 approach suggested above:</p>
 <div class="language-text highlight"><pre><span></span><code>class NestedCoordinateSerializer(serializers.Serializer):
-    x = serializers.IntegerField(source=&#39;x_coordinate&#39;)
-    y = serializers.IntegerField(source=&#39;y_coordinate&#39;)
+    x = serializers.IntegerField(source='x_coordinate')
+    y = serializers.IntegerField(source='y_coordinate')
 
 
 class DataPointSerializer(serializers.ModelSerializer):
-    coordinates = NestedCoordinateSerializer(source=&#39;*&#39;)
+    coordinates = NestedCoordinateSerializer(source='*')
 
     class Meta:
         model = DataPoint
-        fields = [&#39;label&#39;, &#39;coordinates&#39;]
+        fields = ['label', 'coordinates']
 </code></pre></div>
 <p>Here the mapping between the target and source attribute pairs (<code>x</code> and
 <code>x_coordinate</code>, <code>y</code> and <code>y_coordinate</code>) is handled in the <code>IntegerField</code>
@@ -4926,33 +4926,33 @@ approach.</p>
 <p>Serializing:</p>
 <div class="language-text highlight"><pre><span></span><code>&gt;&gt;&gt; out_serializer = DataPointSerializer(instance)
 &gt;&gt;&gt; out_serializer.data
-ReturnDict([(&#39;label&#39;, &#39;testing&#39;),
-            (&#39;coordinates&#39;, OrderedDict([(&#39;x&#39;, 1), (&#39;y&#39;, 2)]))])
+ReturnDict([('label', 'testing'),
+            ('coordinates', OrderedDict([('x', 1), ('y', 2)]))])
 </code></pre></div>
 <p>Deserializing:</p>
 <div class="language-text highlight"><pre><span></span><code>&gt;&gt;&gt; in_serializer = DataPointSerializer(data=data)
 &gt;&gt;&gt; in_serializer.is_valid()
 True
 &gt;&gt;&gt; in_serializer.validated_data
-OrderedDict([(&#39;label&#39;, &#39;still testing&#39;),
-             (&#39;x_coordinate&#39;, 3),
-             (&#39;y_coordinate&#39;, 4)])
+OrderedDict([('label', 'still testing'),
+             ('x_coordinate', 3),
+             ('y_coordinate', 4)])
 </code></pre></div>
 <p>But we also get the built-in validation for free:</p>
 <div class="language-text highlight"><pre><span></span><code>&gt;&gt;&gt; invalid_data = {
-...     &quot;label&quot;: &quot;still testing&quot;,
-...     &quot;coordinates&quot;: {
-...         &quot;x&quot;: &#39;a&#39;,
-...         &quot;y&quot;: &#39;b&#39;,
+...     "label": "still testing",
+...     "coordinates": {
+...         "x": 'a',
+...         "y": 'b',
 ...     }
 ... }
 &gt;&gt;&gt; invalid_serializer = DataPointSerializer(data=invalid_data)
 &gt;&gt;&gt; invalid_serializer.is_valid()
 False
 &gt;&gt;&gt; invalid_serializer.errors
-ReturnDict([(&#39;coordinates&#39;,
-             {&#39;x&#39;: [&#39;A valid integer is required.&#39;],
-              &#39;y&#39;: [&#39;A valid integer is required.&#39;]})])
+ReturnDict([('coordinates',
+             {'x': ['A valid integer is required.'],
+              'y': ['A valid integer is required.']})])
 </code></pre></div>
 <p>For this reason, the nested serializer approach would be the first to try. You
 would use the custom field approach when the nested serializer becomes infeasible

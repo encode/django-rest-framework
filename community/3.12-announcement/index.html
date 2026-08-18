@@ -2990,7 +2990,7 @@ in the URL path.</p>
 </table>
 <p>The tags used for a particular view may also be overridden...</p>
 <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">MyOrders</span><span class="p">(</span><span class="n">APIView</span><span class="p">):</span>
-    <span class="n">schema</span> <span class="o">=</span> <span class="n">AutoSchema</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;users&quot;</span><span class="p">,</span> <span class="s2">&quot;orders&quot;</span><span class="p">])</span>
+    <span class="n">schema</span> <span class="o">=</span> <span class="n">AutoSchema</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">"users"</span><span class="p">,</span> <span class="s2">"orders"</span><span class="p">])</span>
     <span class="o">...</span>
 </code></pre></div>
 <p>See <a href="https://www.django-rest-framework.org/api-guide/schemas/#grouping-operations-with-tags">the schema documentation</a> for more information.</p>
@@ -3007,7 +3007,7 @@ fully expanded the request and response bodies for each operation.</p>
 <p>The names used for a component default to using the serializer class name, <a href="https://www.django-rest-framework.org/api-guide/schemas/#components">but
 may be overridden if needed</a>...</p>
 <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">MyOrders</span><span class="p">(</span><span class="n">APIView</span><span class="p">):</span>
-    <span class="n">schema</span> <span class="o">=</span> <span class="n">AutoSchema</span><span class="p">(</span><span class="n">component_name</span><span class="o">=</span><span class="s2">&quot;OrderDetails&quot;</span><span class="p">)</span>
+    <span class="n">schema</span> <span class="o">=</span> <span class="n">AutoSchema</span><span class="p">(</span><span class="n">component_name</span><span class="o">=</span><span class="s2">"OrderDetails"</span><span class="p">)</span>
 </code></pre></div>
 <h2 id="more-public-api">More Public API<a class="headerlink" href="#more-public-api" title="Permanent link">&para;</a></h2>
 <p>Many methods on the <code>AutoSchema</code> class have now been promoted to public API,
@@ -3041,30 +3041,30 @@ classes will correctly map the model field.</p>
 the double underscore notation for traversing which element of the field the
 search should apply to.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">SitesSearchView</span><span class="p">(</span><span class="n">generics</span><span class="o">.</span><span class="n">ListAPIView</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    An API view to return a list of archaeological sites, optionally filtered</span>
 <span class="sd">    by a search against the site name or location. (Location searches are</span>
 <span class="sd">    matched against the region and country names.)</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">queryset</span> <span class="o">=</span> <span class="n">Sites</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
     <span class="n">serializer_class</span> <span class="o">=</span> <span class="n">SitesSerializer</span>
     <span class="n">filter_backends</span> <span class="o">=</span> <span class="p">[</span><span class="n">filters</span><span class="o">.</span><span class="n">SearchFilter</span><span class="p">]</span>
-    <span class="n">search_fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;site_name&quot;</span><span class="p">,</span> <span class="s2">&quot;location__region&quot;</span><span class="p">,</span> <span class="s2">&quot;location__country&quot;</span><span class="p">]</span>
+    <span class="n">search_fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"site_name"</span><span class="p">,</span> <span class="s2">"location__region"</span><span class="p">,</span> <span class="s2">"location__country"</span><span class="p">]</span>
 </code></pre></div>
 <h3 id="searches-against-annotate-fields">Searches against annotate fields<a class="headerlink" href="#searches-against-annotate-fields" title="Permanent link">&para;</a></h3>
 <p>Django allows querysets to create additional virtual fields, using the <code>.annotate</code>
 method. We now support searching against annotate fields.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PublisherSearchView</span><span class="p">(</span><span class="n">generics</span><span class="o">.</span><span class="n">ListAPIView</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Search for publishers, optionally filtering the search against the average</span>
 <span class="sd">    rating of all their books.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">queryset</span> <span class="o">=</span> <span class="n">Publisher</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">avg_rating</span><span class="o">=</span><span class="n">Avg</span><span class="p">(</span><span class="s2">&quot;book__rating&quot;</span><span class="p">))</span>
+    <span class="n">queryset</span> <span class="o">=</span> <span class="n">Publisher</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">avg_rating</span><span class="o">=</span><span class="n">Avg</span><span class="p">(</span><span class="s2">"book__rating"</span><span class="p">))</span>
     <span class="n">serializer_class</span> <span class="o">=</span> <span class="n">PublisherSerializer</span>
     <span class="n">filter_backends</span> <span class="o">=</span> <span class="p">[</span><span class="n">filters</span><span class="o">.</span><span class="n">SearchFilter</span><span class="p">]</span>
-    <span class="n">search_fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;avg_rating&quot;</span><span class="p">]</span>
+    <span class="n">search_fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"avg_rating"</span><span class="p">]</span>
 </code></pre></div>
 <hr />
 <h2 id="deprecations">Deprecations<a class="headerlink" href="#deprecations" title="Permanent link">&para;</a></h2>

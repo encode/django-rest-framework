@@ -2877,13 +2877,13 @@ pip<span class="w"> </span>install<span class="w"> </span>django-filter<span cla
 <p>Add <code>'rest_framework'</code> to your <code>INSTALLED_APPS</code> setting.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">INSTALLED_APPS</span> <span class="o">=</span> <span class="p">[</span>
     <span class="c1"># ...</span>
-    <span class="s2">&quot;rest_framework&quot;</span><span class="p">,</span>
+    <span class="s2">"rest_framework"</span><span class="p">,</span>
 <span class="p">]</span>
 </code></pre></div>
 <p>If you're intending to use the browsable API you'll probably also want to add REST framework's login and logout views.  Add the following to your root <code>urls.py</code> file.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
     <span class="c1"># ...</span>
-    <span class="n">path</span><span class="p">(</span><span class="s2">&quot;api-auth/&quot;</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="s2">&quot;rest_framework.urls&quot;</span><span class="p">))</span>
+    <span class="n">path</span><span class="p">(</span><span class="s2">"api-auth/"</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="s2">"rest_framework.urls"</span><span class="p">))</span>
 <span class="p">]</span>
 </code></pre></div>
 <p>Note that the URL path can be whatever you want.</p>
@@ -2892,10 +2892,10 @@ pip<span class="w"> </span>install<span class="w"> </span>django-filter<span cla
 <p>We'll create a read-write API for accessing information on the users of our project.</p>
 <p>Any global settings for a REST framework API are kept in a single configuration dictionary named <code>REST_FRAMEWORK</code>.  Start off by adding the following to your <code>settings.py</code> module:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">REST_FRAMEWORK</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="c1"># Use Django&#39;s standard `django.contrib.auth` permissions,</span>
+    <span class="c1"># Use Django's standard `django.contrib.auth` permissions,</span>
     <span class="c1"># or allow read-only access for unauthenticated users.</span>
-    <span class="s2">&quot;DEFAULT_PERMISSION_CLASSES&quot;</span><span class="p">:</span> <span class="p">[</span>
-        <span class="s2">&quot;rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly&quot;</span>
+    <span class="s2">"DEFAULT_PERMISSION_CLASSES"</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">"rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly"</span>
     <span class="p">]</span>
 <span class="p">}</span>
 </code></pre></div>
@@ -2911,7 +2911,7 @@ Here's our project's root <code>urls.py</code> module:</p>
 <span class="k">class</span><span class="w"> </span><span class="nc">UserSerializer</span><span class="p">(</span><span class="n">serializers</span><span class="o">.</span><span class="n">HyperlinkedModelSerializer</span><span class="p">):</span>
     <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
         <span class="n">model</span> <span class="o">=</span> <span class="n">User</span>
-        <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;url&quot;</span><span class="p">,</span> <span class="s2">&quot;username&quot;</span><span class="p">,</span> <span class="s2">&quot;email&quot;</span><span class="p">,</span> <span class="s2">&quot;is_staff&quot;</span><span class="p">]</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"url"</span><span class="p">,</span> <span class="s2">"username"</span><span class="p">,</span> <span class="s2">"email"</span><span class="p">,</span> <span class="s2">"is_staff"</span><span class="p">]</span>
 
 
 <span class="c1"># ViewSets define the view behavior.</span>
@@ -2922,13 +2922,13 @@ Here's our project's root <code>urls.py</code> module:</p>
 
 <span class="c1"># Routers provide an easy way of automatically determining the URL conf.</span>
 <span class="n">router</span> <span class="o">=</span> <span class="n">routers</span><span class="o">.</span><span class="n">DefaultRouter</span><span class="p">()</span>
-<span class="n">router</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;users&quot;</span><span class="p">,</span> <span class="n">UserViewSet</span><span class="p">)</span>
+<span class="n">router</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="sa">r</span><span class="s2">"users"</span><span class="p">,</span> <span class="n">UserViewSet</span><span class="p">)</span>
 
 <span class="c1"># Wire up our API using automatic URL routing.</span>
 <span class="c1"># Additionally, we include login URLs for the browsable API.</span>
 <span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="n">path</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="n">router</span><span class="o">.</span><span class="n">urls</span><span class="p">)),</span>
-    <span class="n">path</span><span class="p">(</span><span class="s2">&quot;api-auth/&quot;</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="s2">&quot;rest_framework.urls&quot;</span><span class="p">,</span> <span class="n">namespace</span><span class="o">=</span><span class="s2">&quot;rest_framework&quot;</span><span class="p">)),</span>
+    <span class="n">path</span><span class="p">(</span><span class="s2">""</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="n">router</span><span class="o">.</span><span class="n">urls</span><span class="p">)),</span>
+    <span class="n">path</span><span class="p">(</span><span class="s2">"api-auth/"</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="s2">"rest_framework.urls"</span><span class="p">,</span> <span class="n">namespace</span><span class="o">=</span><span class="s2">"rest_framework"</span><span class="p">)),</span>
 <span class="p">]</span>
 </code></pre></div>
 <p>You can now open the API in your browser at <a href="http://127.0.0.1:8000/">http://127.0.0.1:8000/</a>, and view your new 'users' API. If you use the login control in the top right corner you'll also be able to add, create and delete users from the system.</p>

@@ -4104,11 +4104,11 @@
 <p>Configuration for REST framework is all namespaced inside a single Django setting, named <code>REST_FRAMEWORK</code>.</p>
 <p>For example your project's <code>settings.py</code> file might include something like this:</p>
 <div class="language-text highlight"><pre><span></span><code>REST_FRAMEWORK = {
-    &#39;DEFAULT_RENDERER_CLASSES&#39;: [
-        &#39;rest_framework.renderers.JSONRenderer&#39;,
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
     ],
-    &#39;DEFAULT_PARSER_CLASSES&#39;: [
-        &#39;rest_framework.parsers.JSONParser&#39;,
+    'DEFAULT_PARSER_CLASSES': [
+        'rest_framework.parsers.JSONParser',
     ]
 }
 </code></pre></div>
@@ -4128,32 +4128,32 @@ print(api_settings.DEFAULT_AUTHENTICATION_CLASSES)
 <p>A list or tuple of renderer classes, that determines the default set of renderers that may be used when returning a <code>Response</code> object.</p>
 <p>Default:</p>
 <div class="language-text highlight"><pre><span></span><code>[
-    &#39;rest_framework.renderers.JSONRenderer&#39;,
-    &#39;rest_framework.renderers.BrowsableAPIRenderer&#39;,
+    'rest_framework.renderers.JSONRenderer',
+    'rest_framework.renderers.BrowsableAPIRenderer',
 ]
 </code></pre></div>
 <h4 id="default_parser_classes">DEFAULT_PARSER_CLASSES<a class="headerlink" href="#default_parser_classes" title="Permanent link">&para;</a></h4>
 <p>A list or tuple of parser classes, that determines the default set of parsers used when accessing the <code>request.data</code> property.</p>
 <p>Default:</p>
 <div class="language-text highlight"><pre><span></span><code>[
-    &#39;rest_framework.parsers.JSONParser&#39;,
-    &#39;rest_framework.parsers.FormParser&#39;,
-    &#39;rest_framework.parsers.MultiPartParser&#39;
+    'rest_framework.parsers.JSONParser',
+    'rest_framework.parsers.FormParser',
+    'rest_framework.parsers.MultiPartParser'
 ]
 </code></pre></div>
 <h4 id="default_authentication_classes">DEFAULT_AUTHENTICATION_CLASSES<a class="headerlink" href="#default_authentication_classes" title="Permanent link">&para;</a></h4>
 <p>A list or tuple of authentication classes, that determines the default set of authenticators used when accessing the <code>request.user</code> or <code>request.auth</code> properties.</p>
 <p>Default:</p>
 <div class="language-text highlight"><pre><span></span><code>[
-    &#39;rest_framework.authentication.SessionAuthentication&#39;,
-    &#39;rest_framework.authentication.BasicAuthentication&#39;
+    'rest_framework.authentication.SessionAuthentication',
+    'rest_framework.authentication.BasicAuthentication'
 ]
 </code></pre></div>
 <h4 id="default_permission_classes">DEFAULT_PERMISSION_CLASSES<a class="headerlink" href="#default_permission_classes" title="Permanent link">&para;</a></h4>
 <p>A list or tuple of permission classes, that determines the default set of permissions checked at the start of a view. Permission must be granted by every class in the list.</p>
 <p>Default:</p>
 <div class="language-text highlight"><pre><span></span><code>[
-    &#39;rest_framework.permissions.AllowAny&#39;,
+    'rest_framework.permissions.AllowAny',
 ]
 </code></pre></div>
 <h4 id="default_throttle_classes">DEFAULT_THROTTLE_CLASSES<a class="headerlink" href="#default_throttle_classes" title="Permanent link">&para;</a></h4>
@@ -4223,8 +4223,8 @@ is disabled by default. See the pagination documentation for further guidance on
 <p>The format of any of these renderer classes may be used when constructing a test request, for example: <code>client.post('/users', {'username': 'jamie'}, format='json')</code></p>
 <p>Default:</p>
 <div class="language-text highlight"><pre><span></span><code>[
-    &#39;rest_framework.renderers.MultiPartRenderer&#39;,
-    &#39;rest_framework.renderers.JSONRenderer&#39;
+    'rest_framework.renderers.MultiPartRenderer',
+    'rest_framework.renderers.JSONRenderer'
 ]
 </code></pre></div>
 <hr />
@@ -4287,19 +4287,19 @@ internally in the codebase.</p>
 <h3 id="encodings">Encodings<a class="headerlink" href="#encodings" title="Permanent link">&para;</a></h3>
 <h4 id="unicode_json">UNICODE_JSON<a class="headerlink" href="#unicode_json" title="Permanent link">&para;</a></h4>
 <p>When set to <code>True</code>, JSON responses will allow unicode characters in responses. For example:</p>
-<div class="language-text highlight"><pre><span></span><code>{&quot;unicode black star&quot;:&quot;★&quot;}
+<div class="language-text highlight"><pre><span></span><code>{"unicode black star":"★"}
 </code></pre></div>
 <p>When set to <code>False</code>, JSON responses will escape non-ascii characters, like so:</p>
-<div class="language-text highlight"><pre><span></span><code>{&quot;unicode black star&quot;:&quot;\u2605&quot;}
+<div class="language-text highlight"><pre><span></span><code>{"unicode black star":"\u2605"}
 </code></pre></div>
 <p>Both styles conform to <a href="https://www.ietf.org/rfc/rfc4627.txt">RFC 4627</a>, and are syntactically valid JSON. The unicode style is preferred as being more user-friendly when inspecting API responses.</p>
 <p>Default: <code>True</code></p>
 <h4 id="compact_json">COMPACT_JSON<a class="headerlink" href="#compact_json" title="Permanent link">&para;</a></h4>
 <p>When set to <code>True</code>, JSON responses will return compact representations, with no spacing after <code>':'</code> and <code>','</code> characters. For example:</p>
-<div class="language-text highlight"><pre><span></span><code>{&quot;is_admin&quot;:false,&quot;email&quot;:&quot;jane@example&quot;}
+<div class="language-text highlight"><pre><span></span><code>{"is_admin":false,"email":"jane@example"}
 </code></pre></div>
 <p>When set to <code>False</code>, JSON responses will return slightly more verbose representations, like so:</p>
-<div class="language-text highlight"><pre><span></span><code>{&quot;is_admin&quot;: false, &quot;email&quot;: &quot;jane@example&quot;}
+<div class="language-text highlight"><pre><span></span><code>{"is_admin": false, "email": "jane@example"}
 </code></pre></div>
 <p>The default style is to return minified responses, in line with <a href="https://github.com/interagent/http-api-design#keep-json-minified-in-all-responses">Heroku's API design guidelines</a>.</p>
 <p>Default: <code>True</code></p>

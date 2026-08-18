@@ -2736,7 +2736,7 @@ class APIRootView(APIView):
         year = now().year
         data = {
             ...
-            &#39;year-summary-url&#39;: reverse(&#39;year-summary&#39;, args=[year], request=request)
+            'year-summary-url': reverse('year-summary', args=[year], request=request)
         }
         return Response(data)
 </code></pre></div>
@@ -2744,7 +2744,7 @@ class APIRootView(APIView):
 <p><strong>Signature:</strong> <code>reverse_lazy(viewname, *args, **kwargs)</code></p>
 <p>Has the same behavior as <a href="https://docs.djangoproject.com/en/stable/ref/urlresolvers/#reverse-lazy"><code>django.urls.reverse_lazy</code></a>, except that it returns a fully qualified URL, using the request to determine the host and port.</p>
 <p>As with the <code>reverse</code> function, you should <strong>include the request as a keyword argument</strong> to the function, for example:</p>
-<div class="language-text highlight"><pre><span></span><code>api_root = reverse_lazy(&#39;api-root&#39;, request=request)
+<div class="language-text highlight"><pre><span></span><code>api_root = reverse_lazy('api-root', request=request)
 </code></pre></div>
 
 

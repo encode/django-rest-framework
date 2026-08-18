@@ -2840,13 +2840,13 @@
 <h2 id="adminrenderer">AdminRenderer<a class="headerlink" href="#adminrenderer" title="Permanent link">&para;</a></h2>
 <p>To include <code>AdminRenderer</code> simply add it to your settings:</p>
 <div class="language-text highlight"><pre><span></span><code>REST_FRAMEWORK = {
-    &#39;DEFAULT_RENDERER_CLASSES&#39;: [
-        &#39;rest_framework.renderers.JSONRenderer&#39;,
-        &#39;rest_framework.renderers.AdminRenderer&#39;,
-        &#39;rest_framework.renderers.BrowsableAPIRenderer&#39;
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.AdminRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer'
     ],
-    &#39;DEFAULT_PAGINATION_CLASS&#39;: &#39;rest_framework.pagination.PageNumberPagination&#39;,
-    &#39;PAGE_SIZE&#39;: 100
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 100
 }
 </code></pre></div>
 <p>There are some limitations to the <code>AdminRenderer</code>, in particular it is not yet able to handle list or dictionary inputs, as we do not have any HTML form fields that support those.</p>

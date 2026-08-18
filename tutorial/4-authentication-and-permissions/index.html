@@ -2875,7 +2875,7 @@
 First, let's add a couple of fields.  One of those fields will be used to represent the user who created the code snippet.  The other field will be used to store the highlighted HTML representation of the code.</p>
 <p>Add the following two fields to the <code>Snippet</code> model in <code>models.py</code>.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">owner</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span>
-    <span class="s2">&quot;auth.User&quot;</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s2">&quot;snippets&quot;</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span>
+    <span class="s2">"auth.User"</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s2">"snippets"</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span>
 <span class="p">)</span>
 <span class="n">highlighted</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">TextField</span><span class="p">()</span>
 </code></pre></div>
@@ -2887,13 +2887,13 @@ First, let's add a couple of fields.  One of those fields will be used to repres
 </code></pre></div>
 <p>And now we can add a <code>.save()</code> method to our model class:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Use the `pygments` library to create a highlighted HTML</span>
 <span class="sd">    representation of the code snippet.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">lexer</span> <span class="o">=</span> <span class="n">get_lexer_by_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">language</span><span class="p">)</span>
-    <span class="n">linenos</span> <span class="o">=</span> <span class="s2">&quot;table&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">linenos</span> <span class="k">else</span> <span class="kc">False</span>
-    <span class="n">options</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">}</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">title</span> <span class="k">else</span> <span class="p">{}</span>
+    <span class="n">linenos</span> <span class="o">=</span> <span class="s2">"table"</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">linenos</span> <span class="k">else</span> <span class="kc">False</span>
+    <span class="n">options</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"title"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">}</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">title</span> <span class="k">else</span> <span class="p">{}</span>
     <span class="n">formatter</span> <span class="o">=</span> <span class="n">HtmlFormatter</span><span class="p">(</span><span class="n">style</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="p">,</span> <span class="n">linenos</span><span class="o">=</span><span class="n">linenos</span><span class="p">,</span> <span class="n">full</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">highlighted</span> <span class="o">=</span> <span class="n">highlight</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="p">,</span> <span class="n">lexer</span><span class="p">,</span> <span class="n">formatter</span><span class="p">)</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -2920,7 +2920,7 @@ python<span class="w"> </span>manage.py<span class="w"> </span>migrate
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
         <span class="n">model</span> <span class="o">=</span> <span class="n">User</span>
-        <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;username&quot;</span><span class="p">,</span> <span class="s2">&quot;snippets&quot;</span><span class="p">]</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"id"</span><span class="p">,</span> <span class="s2">"username"</span><span class="p">,</span> <span class="s2">"snippets"</span><span class="p">]</span>
 </code></pre></div>
 <p>Because <code>'snippets'</code> is a <em>reverse</em> relationship on the User model, it will not be included by default when using the <code>ModelSerializer</code> class, so we needed to add an explicit field for it.</p>
 <p>We'll also add a couple of views to <code>views.py</code>.  We'd like to just use read-only views for the user representations, so we'll use the <code>ListAPIView</code> and <code>RetrieveAPIView</code> generic class-based views.</p>
@@ -2940,8 +2940,8 @@ python<span class="w"> </span>manage.py<span class="w"> </span>migrate
 <div class="language-python highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">snippets.serializers</span><span class="w"> </span><span class="kn">import</span> <span class="n">UserSerializer</span>
 </code></pre></div>
 <p>Finally we need to add those views into the API, by referencing them from the URL conf. Add the following to the patterns in <code>snippets/urls.py</code>.</p>
-<div class="language-python highlight"><pre><span></span><code><span class="n">path</span><span class="p">(</span><span class="s2">&quot;users/&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">UserList</span><span class="o">.</span><span class="n">as_view</span><span class="p">()),</span>
-<span class="n">path</span><span class="p">(</span><span class="s2">&quot;users/&lt;int:pk&gt;/&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">UserDetail</span><span class="o">.</span><span class="n">as_view</span><span class="p">()),</span>
+<div class="language-python highlight"><pre><span></span><code><span class="n">path</span><span class="p">(</span><span class="s2">"users/"</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">UserList</span><span class="o">.</span><span class="n">as_view</span><span class="p">()),</span>
+<span class="n">path</span><span class="p">(</span><span class="s2">"users/&lt;int:pk&gt;/"</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">UserDetail</span><span class="o">.</span><span class="n">as_view</span><span class="p">()),</span>
 </code></pre></div>
 <h2 id="associating-snippets-with-users">Associating Snippets with Users<a class="headerlink" href="#associating-snippets-with-users" title="Permanent link">&para;</a></h2>
 <p>Right now, if we created a code snippet, there'd be no way of associating the user that created the snippet, with the snippet instance.  The user isn't sent as part of the serialized representation, but is instead a property of the incoming request.</p>
@@ -2953,7 +2953,7 @@ python<span class="w"> </span>manage.py<span class="w"> </span>migrate
 <p>The <code>create()</code> method of our serializer will now be passed an additional <code>'owner'</code> field, along with the validated data from the request.</p>
 <h2 id="updating-our-serializer">Updating our serializer<a class="headerlink" href="#updating-our-serializer" title="Permanent link">&para;</a></h2>
 <p>Now that snippets are associated with the user that created them, let's update our <code>SnippetSerializer</code> to reflect that.  Add the following field to the serializer definition in <code>serializers.py</code>:</p>
-<div class="language-python highlight"><pre><span></span><code><span class="n">owner</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">ReadOnlyField</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="s2">&quot;owner.username&quot;</span><span class="p">)</span>
+<div class="language-python highlight"><pre><span></span><code><span class="n">owner</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">ReadOnlyField</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="s2">"owner.username"</span><span class="p">)</span>
 </code></pre></div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -2978,7 +2978,7 @@ python<span class="w"> </span>manage.py<span class="w"> </span>migrate
 </code></pre></div>
 <p>And, at the end of the file, add a pattern to include the login and logout views for the browsable API.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">urlpatterns</span> <span class="o">+=</span> <span class="p">[</span>
-    <span class="n">path</span><span class="p">(</span><span class="s2">&quot;api-auth/&quot;</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="s2">&quot;rest_framework.urls&quot;</span><span class="p">)),</span>
+    <span class="n">path</span><span class="p">(</span><span class="s2">"api-auth/"</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="s2">"rest_framework.urls"</span><span class="p">)),</span>
 <span class="p">]</span>
 </code></pre></div>
 <p>The <code>'api-auth/'</code> part of pattern can actually be whatever URL you want to use.</p>
@@ -2992,13 +2992,13 @@ python<span class="w"> </span>manage.py<span class="w"> </span>migrate
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">IsOwnerOrReadOnly</span><span class="p">(</span><span class="n">permissions</span><span class="o">.</span><span class="n">BasePermission</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Custom permission to only allow owners of an object to edit it.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">has_object_permission</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">view</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
         <span class="c1"># Read permissions are allowed to any request,</span>
-        <span class="c1"># so we&#39;ll always allow GET, HEAD or OPTIONS requests.</span>
+        <span class="c1"># so we'll always allow GET, HEAD or OPTIONS requests.</span>
         <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="ow">in</span> <span class="n">permissions</span><span class="o">.</span><span class="n">SAFE_METHODS</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">True</span>
 
@@ -3017,23 +3017,23 @@ python<span class="w"> </span>manage.py<span class="w"> </span>migrate
 <p>When we interact with the API through the web browser, we can login, and the browser session will then provide the required authentication for the requests.</p>
 <p>If we're interacting with the API programmatically we need to explicitly provide the authentication credentials on each request.</p>
 <p>If we try to create a snippet without authenticating, we'll get an error:</p>
-<div class="language-bash highlight"><pre><span></span><code>http<span class="w"> </span>POST<span class="w"> </span>http://127.0.0.1:8000/snippets/<span class="w"> </span><span class="nv">code</span><span class="o">=</span><span class="s2">&quot;print(123)&quot;</span>
+<div class="language-bash highlight"><pre><span></span><code>http<span class="w"> </span>POST<span class="w"> </span>http://127.0.0.1:8000/snippets/<span class="w"> </span><span class="nv">code</span><span class="o">=</span><span class="s2">"print(123)"</span>
 
 <span class="o">{</span>
-<span class="w">    </span><span class="s2">&quot;detail&quot;</span>:<span class="w"> </span><span class="s2">&quot;Authentication credentials were not provided.&quot;</span>
+<span class="w">    </span><span class="s2">"detail"</span>:<span class="w"> </span><span class="s2">"Authentication credentials were not provided."</span>
 <span class="o">}</span>
 </code></pre></div>
 <p>We can make a successful request by including the username and password of one of the users we created earlier.</p>
-<div class="language-bash highlight"><pre><span></span><code>http<span class="w"> </span>-a<span class="w"> </span>admin:password123<span class="w"> </span>POST<span class="w"> </span>http://127.0.0.1:8000/snippets/<span class="w"> </span><span class="nv">code</span><span class="o">=</span><span class="s2">&quot;print(789)&quot;</span>
+<div class="language-bash highlight"><pre><span></span><code>http<span class="w"> </span>-a<span class="w"> </span>admin:password123<span class="w"> </span>POST<span class="w"> </span>http://127.0.0.1:8000/snippets/<span class="w"> </span><span class="nv">code</span><span class="o">=</span><span class="s2">"print(789)"</span>
 
 <span class="o">{</span>
-<span class="w">    </span><span class="s2">&quot;id&quot;</span>:<span class="w"> </span><span class="m">1</span>,
-<span class="w">    </span><span class="s2">&quot;owner&quot;</span>:<span class="w"> </span><span class="s2">&quot;admin&quot;</span>,
-<span class="w">    </span><span class="s2">&quot;title&quot;</span>:<span class="w"> </span><span class="s2">&quot;foo&quot;</span>,
-<span class="w">    </span><span class="s2">&quot;code&quot;</span>:<span class="w"> </span><span class="s2">&quot;print(789)&quot;</span>,
-<span class="w">    </span><span class="s2">&quot;linenos&quot;</span>:<span class="w"> </span>false,
-<span class="w">    </span><span class="s2">&quot;language&quot;</span>:<span class="w"> </span><span class="s2">&quot;python&quot;</span>,
-<span class="w">    </span><span class="s2">&quot;style&quot;</span>:<span class="w"> </span><span class="s2">&quot;friendly&quot;</span>
+<span class="w">    </span><span class="s2">"id"</span>:<span class="w"> </span><span class="m">1</span>,
+<span class="w">    </span><span class="s2">"owner"</span>:<span class="w"> </span><span class="s2">"admin"</span>,
+<span class="w">    </span><span class="s2">"title"</span>:<span class="w"> </span><span class="s2">"foo"</span>,
+<span class="w">    </span><span class="s2">"code"</span>:<span class="w"> </span><span class="s2">"print(789)"</span>,
+<span class="w">    </span><span class="s2">"linenos"</span>:<span class="w"> </span>false,
+<span class="w">    </span><span class="s2">"language"</span>:<span class="w"> </span><span class="s2">"python"</span>,
+<span class="w">    </span><span class="s2">"style"</span>:<span class="w"> </span><span class="s2">"friendly"</span>
 <span class="o">}</span>
 </code></pre></div>
 <h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>

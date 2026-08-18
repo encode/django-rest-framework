@@ -2805,12 +2805,12 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">rest_framework.reverse</span><span class="w"> </span><span class="kn">import</span> <span class="n">reverse</span>
 
 
-<span class="nd">@api_view</span><span class="p">([</span><span class="s2">&quot;GET&quot;</span><span class="p">])</span>
+<span class="nd">@api_view</span><span class="p">([</span><span class="s2">"GET"</span><span class="p">])</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">api_root</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">Response</span><span class="p">(</span>
         <span class="p">{</span>
-            <span class="s2">&quot;users&quot;</span><span class="p">:</span> <span class="n">reverse</span><span class="p">(</span><span class="s2">&quot;user-list&quot;</span><span class="p">,</span> <span class="n">request</span><span class="o">=</span><span class="n">request</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">),</span>
-            <span class="s2">&quot;snippets&quot;</span><span class="p">:</span> <span class="n">reverse</span><span class="p">(</span><span class="s2">&quot;snippet-list&quot;</span><span class="p">,</span> <span class="n">request</span><span class="o">=</span><span class="n">request</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">),</span>
+            <span class="s2">"users"</span><span class="p">:</span> <span class="n">reverse</span><span class="p">(</span><span class="s2">"user-list"</span><span class="p">,</span> <span class="n">request</span><span class="o">=</span><span class="n">request</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">),</span>
+            <span class="s2">"snippets"</span><span class="p">:</span> <span class="n">reverse</span><span class="p">(</span><span class="s2">"snippet-list"</span><span class="p">,</span> <span class="n">request</span><span class="o">=</span><span class="n">request</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">),</span>
         <span class="p">}</span>
     <span class="p">)</span>
 </code></pre></div>
@@ -2833,10 +2833,10 @@
 </code></pre></div>
 <p>As usual we need to add the new views that we've created in to our URLconf.
 We'll add a url pattern for our new API root in <code>snippets/urls.py</code>:</p>
-<div class="language-python highlight"><pre><span></span><code><span class="n">path</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">api_root</span><span class="p">),</span>
+<div class="language-python highlight"><pre><span></span><code><span class="n">path</span><span class="p">(</span><span class="s2">""</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">api_root</span><span class="p">),</span>
 </code></pre></div>
 <p>And then add a url pattern for the snippet highlights:</p>
-<div class="language-python highlight"><pre><span></span><code><span class="n">path</span><span class="p">(</span><span class="s2">&quot;snippets/&lt;int:pk&gt;/highlight/&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">SnippetHighlight</span><span class="o">.</span><span class="n">as_view</span><span class="p">()),</span>
+<div class="language-python highlight"><pre><span></span><code><span class="n">path</span><span class="p">(</span><span class="s2">"snippets/&lt;int:pk&gt;/highlight/"</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">SnippetHighlight</span><span class="o">.</span><span class="n">as_view</span><span class="p">()),</span>
 </code></pre></div>
 <h2 id="hyperlinking-our-api">Hyperlinking our API<a class="headerlink" href="#hyperlinking-our-api" title="Permanent link">&para;</a></h2>
 <p>Dealing with relationships between entities is one of the more challenging aspects of Web API design.  There are a number of different ways that we might choose to represent a relationship:</p>
@@ -2859,34 +2859,34 @@ We'll add a url pattern for our new API root in <code>snippets/urls.py</code>:</
 </ul>
 <p>We can easily re-write our existing serializers to use hyperlinking. In your <code>snippets/serializers.py</code> add:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">SnippetSerializer</span><span class="p">(</span><span class="n">serializers</span><span class="o">.</span><span class="n">HyperlinkedModelSerializer</span><span class="p">):</span>
-    <span class="n">owner</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">ReadOnlyField</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="s2">&quot;owner.username&quot;</span><span class="p">)</span>
+    <span class="n">owner</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">ReadOnlyField</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="s2">"owner.username"</span><span class="p">)</span>
     <span class="n">highlight</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">HyperlinkedIdentityField</span><span class="p">(</span>
-        <span class="n">view_name</span><span class="o">=</span><span class="s2">&quot;snippet-highlight&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;html&quot;</span>
+        <span class="n">view_name</span><span class="o">=</span><span class="s2">"snippet-highlight"</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">"html"</span>
     <span class="p">)</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
         <span class="n">model</span> <span class="o">=</span> <span class="n">Snippet</span>
         <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="s2">&quot;url&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;id&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;highlight&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;owner&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;title&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;code&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;linenos&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;language&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;style&quot;</span><span class="p">,</span>
+            <span class="s2">"url"</span><span class="p">,</span>
+            <span class="s2">"id"</span><span class="p">,</span>
+            <span class="s2">"highlight"</span><span class="p">,</span>
+            <span class="s2">"owner"</span><span class="p">,</span>
+            <span class="s2">"title"</span><span class="p">,</span>
+            <span class="s2">"code"</span><span class="p">,</span>
+            <span class="s2">"linenos"</span><span class="p">,</span>
+            <span class="s2">"language"</span><span class="p">,</span>
+            <span class="s2">"style"</span><span class="p">,</span>
         <span class="p">]</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">UserSerializer</span><span class="p">(</span><span class="n">serializers</span><span class="o">.</span><span class="n">HyperlinkedModelSerializer</span><span class="p">):</span>
     <span class="n">snippets</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">HyperlinkedRelatedField</span><span class="p">(</span>
-        <span class="n">many</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">view_name</span><span class="o">=</span><span class="s2">&quot;snippet-detail&quot;</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="kc">True</span>
+        <span class="n">many</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">view_name</span><span class="o">=</span><span class="s2">"snippet-detail"</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="kc">True</span>
     <span class="p">)</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
         <span class="n">model</span> <span class="o">=</span> <span class="n">User</span>
-        <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;url&quot;</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;username&quot;</span><span class="p">,</span> <span class="s2">&quot;snippets&quot;</span><span class="p">]</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"url"</span><span class="p">,</span> <span class="s2">"id"</span><span class="p">,</span> <span class="s2">"username"</span><span class="p">,</span> <span class="s2">"snippets"</span><span class="p">]</span>
 </code></pre></div>
 <p>Notice that we've also added a new <code>'highlight'</code> field.  This field is of the same type as the <code>url</code> field, except that it points to the <code>'snippet-highlight'</code> url pattern, instead of the <code>'snippet-detail'</code> url pattern.</p>
 <p>Because we've included format suffixed URLs such as <code>'.json'</code>, we also need to indicate on the <code>highlight</code> field that any format suffixed hyperlinks it returns should use the <code>'.html'</code> suffix.</p>
@@ -2896,7 +2896,7 @@ We'll add a url pattern for our new API root in <code>snippets/urls.py</code>:</
 <div class="language-text highlight"><pre><span></span><code>serializer = SnippetSerializer(snippet)
 </code></pre></div>
 <p>You must write:</p>
-<div class="language-text highlight"><pre><span></span><code>serializer = SnippetSerializer(snippet, context={&quot;request&quot;: request})
+<div class="language-text highlight"><pre><span></span><code>serializer = SnippetSerializer(snippet, context={"request": request})
 </code></pre></div>
 <p>If your view is a subclass of <code>GenericAPIView</code>, you may use the <code>get_serializer_context()</code> as a convenience method.</p>
 </div>
@@ -2916,18 +2916,18 @@ We'll add a url pattern for our new API root in <code>snippets/urls.py</code>:</
 <span class="c1"># API endpoints</span>
 <span class="n">urlpatterns</span> <span class="o">=</span> <span class="n">format_suffix_patterns</span><span class="p">(</span>
     <span class="p">[</span>
-        <span class="n">path</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">api_root</span><span class="p">),</span>
-        <span class="n">path</span><span class="p">(</span><span class="s2">&quot;snippets/&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">SnippetList</span><span class="o">.</span><span class="n">as_view</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;snippet-list&quot;</span><span class="p">),</span>
+        <span class="n">path</span><span class="p">(</span><span class="s2">""</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">api_root</span><span class="p">),</span>
+        <span class="n">path</span><span class="p">(</span><span class="s2">"snippets/"</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">SnippetList</span><span class="o">.</span><span class="n">as_view</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s2">"snippet-list"</span><span class="p">),</span>
         <span class="n">path</span><span class="p">(</span>
-            <span class="s2">&quot;snippets/&lt;int:pk&gt;/&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">SnippetDetail</span><span class="o">.</span><span class="n">as_view</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;snippet-detail&quot;</span>
+            <span class="s2">"snippets/&lt;int:pk&gt;/"</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">SnippetDetail</span><span class="o">.</span><span class="n">as_view</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s2">"snippet-detail"</span>
         <span class="p">),</span>
         <span class="n">path</span><span class="p">(</span>
-            <span class="s2">&quot;snippets/&lt;int:pk&gt;/highlight/&quot;</span><span class="p">,</span>
+            <span class="s2">"snippets/&lt;int:pk&gt;/highlight/"</span><span class="p">,</span>
             <span class="n">views</span><span class="o">.</span><span class="n">SnippetHighlight</span><span class="o">.</span><span class="n">as_view</span><span class="p">(),</span>
-            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;snippet-highlight&quot;</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">"snippet-highlight"</span><span class="p">,</span>
         <span class="p">),</span>
-        <span class="n">path</span><span class="p">(</span><span class="s2">&quot;users/&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">UserList</span><span class="o">.</span><span class="n">as_view</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;user-list&quot;</span><span class="p">),</span>
-        <span class="n">path</span><span class="p">(</span><span class="s2">&quot;users/&lt;int:pk&gt;/&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">UserDetail</span><span class="o">.</span><span class="n">as_view</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;user-detail&quot;</span><span class="p">),</span>
+        <span class="n">path</span><span class="p">(</span><span class="s2">"users/"</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">UserList</span><span class="o">.</span><span class="n">as_view</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s2">"user-list"</span><span class="p">),</span>
+        <span class="n">path</span><span class="p">(</span><span class="s2">"users/&lt;int:pk&gt;/"</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">UserDetail</span><span class="o">.</span><span class="n">as_view</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s2">"user-detail"</span><span class="p">),</span>
     <span class="p">]</span>
 <span class="p">)</span>
 </code></pre></div>
@@ -2935,8 +2935,8 @@ We'll add a url pattern for our new API root in <code>snippets/urls.py</code>:</
 <p>The list views for users and code snippets could end up returning quite a lot of instances, so really we'd like to make sure we paginate the results, and allow the API client to step through each of the individual pages.</p>
 <p>We can change the default list style to use pagination, by modifying our <code>tutorial/settings.py</code> file slightly. Add the following setting:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">REST_FRAMEWORK</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;DEFAULT_PAGINATION_CLASS&quot;</span><span class="p">:</span> <span class="s2">&quot;rest_framework.pagination.PageNumberPagination&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;PAGE_SIZE&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+    <span class="s2">"DEFAULT_PAGINATION_CLASS"</span><span class="p">:</span> <span class="s2">"rest_framework.pagination.PageNumberPagination"</span><span class="p">,</span>
+    <span class="s2">"PAGE_SIZE"</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
 <span class="p">}</span>
 </code></pre></div>
 <p>Note that settings in REST framework are all namespaced into a single dictionary setting, named <code>REST_FRAMEWORK</code>, which helps keep them well separated from your other project settings.</p>

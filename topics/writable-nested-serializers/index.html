@@ -2628,22 +2628,22 @@
 <div class="language-text highlight"><pre><span></span><code>class ToDoItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = ToDoItem
-        fields = [&#39;text&#39;, &#39;is_completed&#39;]
+        fields = ['text', 'is_completed']
 
 class ToDoListSerializer(serializers.ModelSerializer):
     items = ToDoItemSerializer(many=True, read_only=True)
 
     class Meta:
         model = ToDoList
-        fields = [&#39;title&#39;, &#39;items&#39;]
+        fields = ['title', 'items']
 </code></pre></div>
 <p>Some example output from our serializer.</p>
 <div class="language-text highlight"><pre><span></span><code>{
-    &#39;title&#39;: &#39;Leaving party preparations&#39;,
-    &#39;items&#39;: [
-        {&#39;text&#39;: &#39;Compile playlist&#39;, &#39;is_completed&#39;: True},
-        {&#39;text&#39;: &#39;Send invites&#39;, &#39;is_completed&#39;: False},
-        {&#39;text&#39;: &#39;Clean house&#39;, &#39;is_completed&#39;: False}
+    'title': 'Leaving party preparations',
+    'items': [
+        {'text': 'Compile playlist', 'is_completed': True},
+        {'text': 'Send invites', 'is_completed': False},
+        {'text': 'Clean house', 'is_completed': False}
     ]
 }
 </code></pre></div>

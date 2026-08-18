@@ -2763,9 +2763,9 @@
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">UserViewSet</span><span class="p">(</span><span class="n">viewsets</span><span class="o">.</span><span class="n">ReadOnlyModelViewSet</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    This viewset automatically provides `list` and `retrieve` actions.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">queryset</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
     <span class="n">serializer_class</span> <span class="o">=</span> <span class="n">UserSerializer</span>
@@ -2779,12 +2779,12 @@
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">SnippetViewSet</span><span class="p">(</span><span class="n">viewsets</span><span class="o">.</span><span class="n">ModelViewSet</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    This ViewSet automatically provides `list`, `create`, `retrieve`,</span>
 <span class="sd">    `update` and `destroy` actions.</span>
 
 <span class="sd">    Additionally we also provide an extra `highlight` action.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">queryset</span> <span class="o">=</span> <span class="n">Snippet</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
     <span class="n">serializer_class</span> <span class="o">=</span> <span class="n">SnippetSerializer</span>
@@ -2810,28 +2810,28 @@ To see what's going on under the hood let's first explicitly create a set of vie
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">snippets.views</span><span class="w"> </span><span class="kn">import</span> <span class="n">api_root</span><span class="p">,</span> <span class="n">SnippetViewSet</span><span class="p">,</span> <span class="n">UserViewSet</span>
 
-<span class="n">snippet_list</span> <span class="o">=</span> <span class="n">SnippetViewSet</span><span class="o">.</span><span class="n">as_view</span><span class="p">({</span><span class="s2">&quot;get&quot;</span><span class="p">:</span> <span class="s2">&quot;list&quot;</span><span class="p">,</span> <span class="s2">&quot;post&quot;</span><span class="p">:</span> <span class="s2">&quot;create&quot;</span><span class="p">})</span>
+<span class="n">snippet_list</span> <span class="o">=</span> <span class="n">SnippetViewSet</span><span class="o">.</span><span class="n">as_view</span><span class="p">({</span><span class="s2">"get"</span><span class="p">:</span> <span class="s2">"list"</span><span class="p">,</span> <span class="s2">"post"</span><span class="p">:</span> <span class="s2">"create"</span><span class="p">})</span>
 <span class="n">snippet_detail</span> <span class="o">=</span> <span class="n">SnippetViewSet</span><span class="o">.</span><span class="n">as_view</span><span class="p">(</span>
-    <span class="p">{</span><span class="s2">&quot;get&quot;</span><span class="p">:</span> <span class="s2">&quot;retrieve&quot;</span><span class="p">,</span> <span class="s2">&quot;put&quot;</span><span class="p">:</span> <span class="s2">&quot;update&quot;</span><span class="p">,</span> <span class="s2">&quot;patch&quot;</span><span class="p">:</span> <span class="s2">&quot;partial_update&quot;</span><span class="p">,</span> <span class="s2">&quot;delete&quot;</span><span class="p">:</span> <span class="s2">&quot;destroy&quot;</span><span class="p">}</span>
+    <span class="p">{</span><span class="s2">"get"</span><span class="p">:</span> <span class="s2">"retrieve"</span><span class="p">,</span> <span class="s2">"put"</span><span class="p">:</span> <span class="s2">"update"</span><span class="p">,</span> <span class="s2">"patch"</span><span class="p">:</span> <span class="s2">"partial_update"</span><span class="p">,</span> <span class="s2">"delete"</span><span class="p">:</span> <span class="s2">"destroy"</span><span class="p">}</span>
 <span class="p">)</span>
 <span class="n">snippet_highlight</span> <span class="o">=</span> <span class="n">SnippetViewSet</span><span class="o">.</span><span class="n">as_view</span><span class="p">(</span>
-    <span class="p">{</span><span class="s2">&quot;get&quot;</span><span class="p">:</span> <span class="s2">&quot;highlight&quot;</span><span class="p">},</span> <span class="n">renderer_classes</span><span class="o">=</span><span class="p">[</span><span class="n">renderers</span><span class="o">.</span><span class="n">StaticHTMLRenderer</span><span class="p">]</span>
+    <span class="p">{</span><span class="s2">"get"</span><span class="p">:</span> <span class="s2">"highlight"</span><span class="p">},</span> <span class="n">renderer_classes</span><span class="o">=</span><span class="p">[</span><span class="n">renderers</span><span class="o">.</span><span class="n">StaticHTMLRenderer</span><span class="p">]</span>
 <span class="p">)</span>
-<span class="n">user_list</span> <span class="o">=</span> <span class="n">UserViewSet</span><span class="o">.</span><span class="n">as_view</span><span class="p">({</span><span class="s2">&quot;get&quot;</span><span class="p">:</span> <span class="s2">&quot;list&quot;</span><span class="p">})</span>
-<span class="n">user_detail</span> <span class="o">=</span> <span class="n">UserViewSet</span><span class="o">.</span><span class="n">as_view</span><span class="p">({</span><span class="s2">&quot;get&quot;</span><span class="p">:</span> <span class="s2">&quot;retrieve&quot;</span><span class="p">})</span>
+<span class="n">user_list</span> <span class="o">=</span> <span class="n">UserViewSet</span><span class="o">.</span><span class="n">as_view</span><span class="p">({</span><span class="s2">"get"</span><span class="p">:</span> <span class="s2">"list"</span><span class="p">})</span>
+<span class="n">user_detail</span> <span class="o">=</span> <span class="n">UserViewSet</span><span class="o">.</span><span class="n">as_view</span><span class="p">({</span><span class="s2">"get"</span><span class="p">:</span> <span class="s2">"retrieve"</span><span class="p">})</span>
 </code></pre></div>
 <p>Notice how we're creating multiple views from each <code>ViewSet</code> class, by binding the HTTP methods to the required action for each view.</p>
 <p>Now that we've bound our resources into concrete views, we can register the views with the URL conf as usual.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">urlpatterns</span> <span class="o">=</span> <span class="n">format_suffix_patterns</span><span class="p">(</span>
     <span class="p">[</span>
-        <span class="n">path</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">api_root</span><span class="p">),</span>
-        <span class="n">path</span><span class="p">(</span><span class="s2">&quot;snippets/&quot;</span><span class="p">,</span> <span class="n">snippet_list</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;snippet-list&quot;</span><span class="p">),</span>
-        <span class="n">path</span><span class="p">(</span><span class="s2">&quot;snippets/&lt;int:pk&gt;/&quot;</span><span class="p">,</span> <span class="n">snippet_detail</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;snippet-detail&quot;</span><span class="p">),</span>
+        <span class="n">path</span><span class="p">(</span><span class="s2">""</span><span class="p">,</span> <span class="n">api_root</span><span class="p">),</span>
+        <span class="n">path</span><span class="p">(</span><span class="s2">"snippets/"</span><span class="p">,</span> <span class="n">snippet_list</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"snippet-list"</span><span class="p">),</span>
+        <span class="n">path</span><span class="p">(</span><span class="s2">"snippets/&lt;int:pk&gt;/"</span><span class="p">,</span> <span class="n">snippet_detail</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"snippet-detail"</span><span class="p">),</span>
         <span class="n">path</span><span class="p">(</span>
-            <span class="s2">&quot;snippets/&lt;int:pk&gt;/highlight/&quot;</span><span class="p">,</span> <span class="n">snippet_highlight</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;snippet-highlight&quot;</span>
+            <span class="s2">"snippets/&lt;int:pk&gt;/highlight/"</span><span class="p">,</span> <span class="n">snippet_highlight</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"snippet-highlight"</span>
         <span class="p">),</span>
-        <span class="n">path</span><span class="p">(</span><span class="s2">&quot;users/&quot;</span><span class="p">,</span> <span class="n">user_list</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;user-list&quot;</span><span class="p">),</span>
-        <span class="n">path</span><span class="p">(</span><span class="s2">&quot;users/&lt;int:pk&gt;/&quot;</span><span class="p">,</span> <span class="n">user_detail</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;user-detail&quot;</span><span class="p">),</span>
+        <span class="n">path</span><span class="p">(</span><span class="s2">"users/"</span><span class="p">,</span> <span class="n">user_list</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"user-list"</span><span class="p">),</span>
+        <span class="n">path</span><span class="p">(</span><span class="s2">"users/&lt;int:pk&gt;/"</span><span class="p">,</span> <span class="n">user_detail</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"user-detail"</span><span class="p">),</span>
     <span class="p">]</span>
 <span class="p">)</span>
 </code></pre></div>
@@ -2845,12 +2845,12 @@ To see what's going on under the hood let's first explicitly create a set of vie
 
 <span class="c1"># Create a router and register our ViewSets with it.</span>
 <span class="n">router</span> <span class="o">=</span> <span class="n">DefaultRouter</span><span class="p">()</span>
-<span class="n">router</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;snippets&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">SnippetViewSet</span><span class="p">,</span> <span class="n">basename</span><span class="o">=</span><span class="s2">&quot;snippet&quot;</span><span class="p">)</span>
-<span class="n">router</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;users&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">UserViewSet</span><span class="p">,</span> <span class="n">basename</span><span class="o">=</span><span class="s2">&quot;user&quot;</span><span class="p">)</span>
+<span class="n">router</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="sa">r</span><span class="s2">"snippets"</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">SnippetViewSet</span><span class="p">,</span> <span class="n">basename</span><span class="o">=</span><span class="s2">"snippet"</span><span class="p">)</span>
+<span class="n">router</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="sa">r</span><span class="s2">"users"</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">UserViewSet</span><span class="p">,</span> <span class="n">basename</span><span class="o">=</span><span class="s2">"user"</span><span class="p">)</span>
 
 <span class="c1"># The API URLs are now determined automatically by the router.</span>
 <span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="n">path</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="n">router</span><span class="o">.</span><span class="n">urls</span><span class="p">)),</span>
+    <span class="n">path</span><span class="p">(</span><span class="s2">""</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="n">router</span><span class="o">.</span><span class="n">urls</span><span class="p">)),</span>
 <span class="p">]</span>
 </code></pre></div>
 <p>Registering the ViewSets with the router is similar to providing a urlpattern.  We include two arguments - the URL prefix for the views, and the view set itself.</p>

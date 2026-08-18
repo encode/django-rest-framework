@@ -3072,9 +3072,9 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 
 class UserViewSet(viewsets.ViewSet):
-    &quot;&quot;&quot;
+    """
     A simple ViewSet for listing or retrieving users.
-    &quot;&quot;&quot;
+    """
     def list(self, request):
         queryset = User.objects.all()
         serializer = UserSerializer(queryset, many=True)
@@ -3087,8 +3087,8 @@ class UserViewSet(viewsets.ViewSet):
         return Response(serializer.data)
 </code></pre></div>
 <p>If we need to, we can bind this viewset into two separate views, like so:</p>
-<div class="language-text highlight"><pre><span></span><code>user_list = UserViewSet.as_view({&#39;get&#39;: &#39;list&#39;})
-user_detail = UserViewSet.as_view({&#39;get&#39;: &#39;retrieve&#39;})
+<div class="language-text highlight"><pre><span></span><code>user_list = UserViewSet.as_view({'get': 'list'})
+user_detail = UserViewSet.as_view({'get': 'retrieve'})
 </code></pre></div>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -3099,7 +3099,7 @@ user_detail = UserViewSet.as_view({&#39;get&#39;: &#39;retrieve&#39;})
 from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
-router.register(r&#39;users&#39;, UserViewSet, basename=&#39;user&#39;)
+router.register(r'users', UserViewSet, basename='user')
 urlpatterns = router.urls
 </code></pre></div>
 <div class="admonition warning">
@@ -3108,9 +3108,9 @@ urlpatterns = router.urls
 </div>
 <p>Rather than writing your own viewsets, you'll often want to use the existing base classes that provide a default set of behavior.  For example:</p>
 <div class="language-text highlight"><pre><span></span><code>class UserViewSet(viewsets.ModelViewSet):
-    &quot;&quot;&quot;
+    """
     A viewset for viewing and editing user instances.
-    &quot;&quot;&quot;
+    """
     serializer_class = UserSerializer
     queryset = User.objects.all()
 </code></pre></div>
@@ -3123,13 +3123,13 @@ urlpatterns = router.urls
 <h2 id="viewset-actions">ViewSet actions<a class="headerlink" href="#viewset-actions" title="Permanent link">&para;</a></h2>
 <p>The default routers included with REST framework will provide routes for a standard set of create/retrieve/update/destroy style actions, as shown below:</p>
 <div class="language-text highlight"><pre><span></span><code>class UserViewSet(viewsets.ViewSet):
-    &quot;&quot;&quot;
+    """
     Example empty viewset demonstrating the standard
     actions that will be handled by a router class.
 
-    If you&#39;re using format suffixes, make sure to also include
+    If you're using format suffixes, make sure to also include
     the `format=None` keyword argument for each action.
-    &quot;&quot;&quot;
+    """
 
     def list(self, request):
         pass
@@ -3161,10 +3161,10 @@ urlpatterns = router.urls
 </ul>
 <p>You may inspect these attributes to adjust behavior based on the current action. For example, you could restrict permissions to everything except the <code>list</code> action similar to this:</p>
 <div class="language-text highlight"><pre><span></span><code>def get_permissions(self):
-    &quot;&quot;&quot;
+    """
     Instantiates and returns the list of permissions that this view requires.
-    &quot;&quot;&quot;
-    if self.action == &#39;list&#39;:
+    """
+    if self.action == 'list':
         permission_classes = [IsAuthenticated]
     else:
         permission_classes = [IsAdminUser]
@@ -3184,27 +3184,27 @@ from rest_framework.response import Response
 from myapp.serializers import UserSerializer, PasswordSerializer
 
 class UserViewSet(viewsets.ModelViewSet):
-    &quot;&quot;&quot;
+    """
     A viewset that provides the standard actions
-    &quot;&quot;&quot;
+    """
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
-    @action(detail=True, methods=[&#39;post&#39;])
+    @action(detail=True, methods=['post'])
     def set_password(self, request, pk=None):
         user = self.get_object()
         serializer = PasswordSerializer(data=request.data)
         if serializer.is_valid():
-            user.set_password(serializer.validated_data[&#39;password&#39;])
+            user.set_password(serializer.validated_data['password'])
             user.save()
-            return Response({&#39;status&#39;: &#39;password set&#39;})
+            return Response({'status': 'password set'})
         else:
             return Response(serializer.errors,
                             status=status.HTTP_400_BAD_REQUEST)
 
     @action(detail=False)
     def recent_users(self, request):
-        recent_users = User.objects.all().order_by(&#39;-last_login&#39;)
+        recent_users = User.objects.all().order_by('-last_login')
 
         page = self.paginate_queryset(recent_users)
         if page is not None:
@@ -3215,7 +3215,7 @@ class UserViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 </code></pre></div>
 <p>The <code>action</code> decorator will route <code>GET</code> requests by default, but may also accept other HTTP methods by setting the <code>methods</code> argument.  For example:</p>
-<div class="language-text highlight"><pre><span></span><code>    @action(detail=True, methods=[&#39;post&#39;, &#39;delete&#39;])
+<div class="language-text highlight"><pre><span></span><code>    @action(detail=True, methods=['post', 'delete'])
     def unset_password(self, request, pk=None):
        ...
 </code></pre></div>
@@ -3227,7 +3227,7 @@ class UserViewSet(viewsets.ModelViewSet):
        ...
 </code></pre></div>
 <p>The decorator allows you to override any viewset-level configuration such as <code>permission_classes</code>, <code>serializer_class</code>, <code>filter_backends</code>...:</p>
-<div class="language-text highlight"><pre><span></span><code>    @action(detail=True, methods=[&#39;post&#39;], permission_classes=[IsAdminOrIsSelf])
+<div class="language-text highlight"><pre><span></span><code>    @action(detail=True, methods=['post'], permission_classes=[IsAdminOrIsSelf])
     def set_password(self, request, pk=None):
        ...
 </code></pre></div>
@@ -3235,27 +3235,27 @@ class UserViewSet(viewsets.ModelViewSet):
 <p>To view all extra actions, call the <code>.get_extra_actions()</code> method.</p>
 <h3 id="routing-additional-http-methods-for-extra-actions">Routing additional HTTP methods for extra actions<a class="headerlink" href="#routing-additional-http-methods-for-extra-actions" title="Permanent link">&para;</a></h3>
 <p>Extra actions can map additional HTTP methods to separate <code>ViewSet</code> methods. For example, the above password set/unset methods could be consolidated into a single route. Note that additional mappings do not accept arguments.</p>
-<div class="language-python highlight"><pre><span></span><code><span class="nd">@action</span><span class="p">(</span><span class="n">detail</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;put&quot;</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Change Password&quot;</span><span class="p">)</span>
+<div class="language-python highlight"><pre><span></span><code><span class="nd">@action</span><span class="p">(</span><span class="n">detail</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">"put"</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s2">"Change Password"</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">password</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">pk</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Update the user&#39;s password.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Update the user's password."""</span>
     <span class="o">...</span>
 
 
 <span class="nd">@password</span><span class="o">.</span><span class="n">mapping</span><span class="o">.</span><span class="n">delete</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">delete_password</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">pk</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Delete the user&#39;s password.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Delete the user's password."""</span>
     <span class="o">...</span>
 </code></pre></div>
 <h2 id="reversing-action-urls">Reversing action URLs<a class="headerlink" href="#reversing-action-urls" title="Permanent link">&para;</a></h2>
 <p>If you need to get the URL of an action, use the <code>.reverse_action()</code> method. This is a convenience wrapper for <code>reverse()</code>, automatically passing the view's <code>request</code> object and prepending the <code>url_name</code> with the <code>.basename</code> attribute.</p>
 <p>Note that the <code>basename</code> is provided by the router during <code>ViewSet</code> registration. If you are not using a router, then you must provide the <code>basename</code> argument to the <code>.as_view()</code> method.</p>
 <p>Using the example from the previous section:</p>
-<div class="language-pycon highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">view</span><span class="o">.</span><span class="n">reverse_action</span><span class="p">(</span><span class="s2">&quot;set-password&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;1&quot;</span><span class="p">])</span>
-<span class="go">&#39;http://localhost:8000/api/users/1/set_password&#39;</span>
+<div class="language-pycon highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">view</span><span class="o">.</span><span class="n">reverse_action</span><span class="p">(</span><span class="s2">"set-password"</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="s2">"1"</span><span class="p">])</span>
+<span class="go">'http://localhost:8000/api/users/1/set_password'</span>
 </code></pre></div>
 <p>Alternatively, you can use the <code>url_name</code> attribute set by the <code>@action</code> decorator.</p>
-<div class="language-pycon highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">view</span><span class="o">.</span><span class="n">reverse_action</span><span class="p">(</span><span class="n">view</span><span class="o">.</span><span class="n">set_password</span><span class="o">.</span><span class="n">url_name</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;1&quot;</span><span class="p">])</span>
-<span class="go">&#39;http://localhost:8000/api/users/1/set_password&#39;</span>
+<div class="language-pycon highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">view</span><span class="o">.</span><span class="n">reverse_action</span><span class="p">(</span><span class="n">view</span><span class="o">.</span><span class="n">set_password</span><span class="o">.</span><span class="n">url_name</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="s2">"1"</span><span class="p">])</span>
+<span class="go">'http://localhost:8000/api/users/1/set_password'</span>
 </code></pre></div>
 <p>The <code>url_name</code> argument for <code>.reverse_action()</code> should match the same argument to the <code>@action</code> decorator. Additionally, this method can be used to reverse the default actions, such as <code>list</code> and <code>create</code>.</p>
 <hr />
@@ -3272,19 +3272,19 @@ class UserViewSet(viewsets.ModelViewSet):
 <h4 id="example_1">Example<a class="headerlink" href="#example_1" title="Permanent link">&para;</a></h4>
 <p>Because <code>ModelViewSet</code> extends <code>GenericAPIView</code>, you'll normally need to provide at least the <code>queryset</code> and <code>serializer_class</code> attributes.  For example:</p>
 <div class="language-text highlight"><pre><span></span><code>class AccountViewSet(viewsets.ModelViewSet):
-    &quot;&quot;&quot;
+    """
     A simple ViewSet for viewing and editing accounts.
-    &quot;&quot;&quot;
+    """
     queryset = Account.objects.all()
     serializer_class = AccountSerializer
     permission_classes = [IsAccountAdminOrReadOnly]
 </code></pre></div>
 <p>Note that you can use any of the standard attributes or method overrides provided by <code>GenericAPIView</code>.  For example, to use a <code>ViewSet</code> that dynamically determines the queryset it should operate on, you might do something like this:</p>
 <div class="language-text highlight"><pre><span></span><code>class AccountViewSet(viewsets.ModelViewSet):
-    &quot;&quot;&quot;
+    """
     A simple ViewSet for viewing and editing the accounts
     associated with the user.
-    &quot;&quot;&quot;
+    """
     serializer_class = AccountSerializer
     permission_classes = [IsAccountAdminOrReadOnly]
 
@@ -3298,9 +3298,9 @@ class UserViewSet(viewsets.ModelViewSet):
 <h4 id="example_2">Example<a class="headerlink" href="#example_2" title="Permanent link">&para;</a></h4>
 <p>As with <code>ModelViewSet</code>, you'll normally need to provide at least the <code>queryset</code> and <code>serializer_class</code> attributes.  For example:</p>
 <div class="language-text highlight"><pre><span></span><code>class AccountViewSet(viewsets.ReadOnlyModelViewSet):
-    &quot;&quot;&quot;
+    """
     A simple ViewSet for viewing accounts.
-    &quot;&quot;&quot;
+    """
     queryset = Account.objects.all()
     serializer_class = AccountSerializer
 </code></pre></div>
@@ -3315,12 +3315,12 @@ class CreateListRetrieveViewSet(mixins.CreateModelMixin,
                                 mixins.ListModelMixin,
                                 mixins.RetrieveModelMixin,
                                 viewsets.GenericViewSet):
-    &quot;&quot;&quot;
+    """
     A viewset that provides `retrieve`, `create`, and `list` actions.
 
     To use it, override the class and set the `.queryset` and
     `.serializer_class` attributes.
-    &quot;&quot;&quot;
+    """
     pass
 </code></pre></div>
 <p>By creating your own base <code>ViewSet</code> classes, you can provide common behavior that can be reused in multiple viewsets across your API.</p>

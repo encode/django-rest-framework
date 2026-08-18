@@ -2833,25 +2833,25 @@ Allow: GET, POST, HEAD, OPTIONS
 Content-Type: application/json
 
 {
-    &quot;name&quot;: &quot;To Do List&quot;,
-    &quot;description&quot;: &quot;List existing &#39;To Do&#39; items, or create a new item.&quot;,
-    &quot;renders&quot;: [
-        &quot;application/json&quot;,
-        &quot;text/html&quot;
+    "name": "To Do List",
+    "description": "List existing 'To Do' items, or create a new item.",
+    "renders": [
+        "application/json",
+        "text/html"
     ],
-    &quot;parses&quot;: [
-        &quot;application/json&quot;,
-        &quot;application/x-www-form-urlencoded&quot;,
-        &quot;multipart/form-data&quot;
+    "parses": [
+        "application/json",
+        "application/x-www-form-urlencoded",
+        "multipart/form-data"
     ],
-    &quot;actions&quot;: {
-        &quot;POST&quot;: {
-            &quot;note&quot;: {
-                &quot;type&quot;: &quot;string&quot;,
-                &quot;required&quot;: false,
-                &quot;read_only&quot;: false,
-                &quot;label&quot;: &quot;title&quot;,
-                &quot;max_length&quot;: 100
+    "actions": {
+        "POST": {
+            "note": {
+                "type": "string",
+                "required": false,
+                "read_only": false,
+                "label": "title",
+                "max_length": 100
             }
         }
     }
@@ -2860,7 +2860,7 @@ Content-Type: application/json
 <h2 id="setting-the-metadata-scheme">Setting the metadata scheme<a class="headerlink" href="#setting-the-metadata-scheme" title="Permanent link">&para;</a></h2>
 <p>You can set the metadata class globally using the <code>'DEFAULT_METADATA_CLASS'</code> settings key:</p>
 <div class="language-text highlight"><pre><span></span><code>REST_FRAMEWORK = {
-    &#39;DEFAULT_METADATA_CLASS&#39;: &#39;rest_framework.metadata.SimpleMetadata&#39;
+    'DEFAULT_METADATA_CLASS': 'rest_framework.metadata.SimpleMetadata'
 }
 </code></pre></div>
 <p>Or you can set the metadata class individually for a view:</p>
@@ -2876,7 +2876,7 @@ Content-Type: application/json
 <h2 id="creating-schema-endpoints">Creating schema endpoints<a class="headerlink" href="#creating-schema-endpoints" title="Permanent link">&para;</a></h2>
 <p>If you have specific requirements for creating schema endpoints that are accessed with regular <code>GET</code> requests, you might consider reusing the metadata API for doing so.</p>
 <p>For example, the following additional route could be used on a viewset to provide a linkable schema endpoint.</p>
-<div class="language-text highlight"><pre><span></span><code>@action(methods=[&#39;GET&#39;], detail=False)
+<div class="language-text highlight"><pre><span></span><code>@action(methods=['GET'], detail=False)
 def api_schema(self, request):
     meta = self.metadata_class()
     data = meta.determine_metadata(request, self)
@@ -2890,19 +2890,19 @@ def api_schema(self, request):
 <h3 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h3>
 <p>The following class could be used to limit the information that is returned to <code>OPTIONS</code> requests.</p>
 <div class="language-text highlight"><pre><span></span><code>class MinimalMetadata(BaseMetadata):
-    &quot;&quot;&quot;
-    Don&#39;t include field and other information for `OPTIONS` requests.
+    """
+    Don't include field and other information for `OPTIONS` requests.
     Just return the name and description.
-    &quot;&quot;&quot;
+    """
     def determine_metadata(self, request, view):
         return {
-            &#39;name&#39;: view.get_view_name(),
-            &#39;description&#39;: view.get_view_description()
+            'name': view.get_view_name(),
+            'description': view.get_view_description()
         }
 </code></pre></div>
 <p>Then configure your settings to use this custom class:</p>
 <div class="language-text highlight"><pre><span></span><code>REST_FRAMEWORK = {
-    &#39;DEFAULT_METADATA_CLASS&#39;: &#39;myproject.apps.core.MinimalMetadata&#39;
+    'DEFAULT_METADATA_CLASS': 'myproject.apps.core.MinimalMetadata'
 }
 </code></pre></div>
 <h2 id="third-party-packages">Third party packages<a class="headerlink" href="#third-party-packages" title="Permanent link">&para;</a></h2>

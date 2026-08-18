@@ -2737,7 +2737,7 @@ other cache decorators such as <a href="https://docs.djangoproject.com/en/stable
     <span class="nd">@method_decorator</span><span class="p">(</span><span class="n">vary_on_cookie</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">content</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;user_feed&quot;</span><span class="p">:</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">get_user_feed</span><span class="p">(),</span>
+            <span class="s2">"user_feed"</span><span class="p">:</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">get_user_feed</span><span class="p">(),</span>
         <span class="p">}</span>
         <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
 
@@ -2745,10 +2745,10 @@ other cache decorators such as <a href="https://docs.djangoproject.com/en/stable
 <span class="k">class</span><span class="w"> </span><span class="nc">ProfileView</span><span class="p">(</span><span class="n">APIView</span><span class="p">):</span>
     <span class="c1"># With auth: cache requested url for each user for 2 hours</span>
     <span class="nd">@method_decorator</span><span class="p">(</span><span class="n">cache_page</span><span class="p">(</span><span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">2</span><span class="p">))</span>
-    <span class="nd">@method_decorator</span><span class="p">(</span><span class="n">vary_on_headers</span><span class="p">(</span><span class="s2">&quot;Authorization&quot;</span><span class="p">))</span>
+    <span class="nd">@method_decorator</span><span class="p">(</span><span class="n">vary_on_headers</span><span class="p">(</span><span class="s2">"Authorization"</span><span class="p">))</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">content</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;user_feed&quot;</span><span class="p">:</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">get_user_feed</span><span class="p">(),</span>
+            <span class="s2">"user_feed"</span><span class="p">:</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">get_user_feed</span><span class="p">(),</span>
         <span class="p">}</span>
         <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
 
@@ -2758,8 +2758,8 @@ other cache decorators such as <a href="https://docs.djangoproject.com/en/stable
     <span class="nd">@method_decorator</span><span class="p">(</span><span class="n">cache_page</span><span class="p">(</span><span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">2</span><span class="p">))</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">content</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Post title&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;body&quot;</span><span class="p">:</span> <span class="s2">&quot;Post content&quot;</span><span class="p">,</span>
+            <span class="s2">"title"</span><span class="p">:</span> <span class="s2">"Post title"</span><span class="p">,</span>
+            <span class="s2">"body"</span><span class="p">:</span> <span class="s2">"Post content"</span><span class="p">,</span>
         <span class="p">}</span>
         <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
 </code></pre></div>
@@ -2775,9 +2775,9 @@ other cache decorators such as <a href="https://docs.djangoproject.com/en/stable
 
 <span class="nd">@cache_page</span><span class="p">(</span><span class="mi">60</span> <span class="o">*</span> <span class="mi">15</span><span class="p">)</span>
 <span class="nd">@vary_on_cookie</span>
-<span class="nd">@api_view</span><span class="p">([</span><span class="s2">&quot;GET&quot;</span><span class="p">])</span>
+<span class="nd">@api_view</span><span class="p">([</span><span class="s2">"GET"</span><span class="p">])</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_user_list</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
-    <span class="n">content</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;user_feed&quot;</span><span class="p">:</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">get_user_feed</span><span class="p">()}</span>
+    <span class="n">content</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"user_feed"</span><span class="p">:</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">get_user_feed</span><span class="p">()}</span>
     <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
 </code></pre></div>
 <div class="admonition note">

@@ -3555,9 +3555,9 @@
 <h2 id="setting-the-renderers">Setting the renderers<a class="headerlink" href="#setting-the-renderers" title="Permanent link">&para;</a></h2>
 <p>The default set of renderers may be set globally, using the <code>DEFAULT_RENDERER_CLASSES</code> setting.  For example, the following settings would use <code>JSON</code> as the main media type and also include the self describing API.</p>
 <div class="language-text highlight"><pre><span></span><code>REST_FRAMEWORK = {
-    &#39;DEFAULT_RENDERER_CLASSES&#39;: [
-        &#39;rest_framework.renderers.JSONRenderer&#39;,
-        &#39;rest_framework.renderers.BrowsableAPIRenderer&#39;,
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
     ]
 }
 </code></pre></div>
@@ -3569,25 +3569,25 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 class UserCountView(APIView):
-    &quot;&quot;&quot;
+    """
     A view that returns the count of active users in JSON.
-    &quot;&quot;&quot;
+    """
     renderer_classes = [JSONRenderer]
 
     def get(self, request, format=None):
         user_count = User.objects.filter(active=True).count()
-        content = {&#39;user_count&#39;: user_count}
+        content = {'user_count': user_count}
         return Response(content)
 </code></pre></div>
 <p>Or, if you're using the <code>@api_view</code> decorator with function based views.</p>
-<div class="language-text highlight"><pre><span></span><code>@api_view([&#39;GET&#39;])
+<div class="language-text highlight"><pre><span></span><code>@api_view(['GET'])
 @renderer_classes([JSONRenderer])
 def user_count_view(request, format=None):
-    &quot;&quot;&quot;
+    """
     A view that returns the count of active users in JSON.
-    &quot;&quot;&quot;
+    """
     user_count = User.objects.filter(active=True).count()
-    content = {&#39;user_count&#39;: user_count}
+    content = {'user_count': user_count}
     return Response(content)
 </code></pre></div>
 <h2 id="ordering-of-renderer-classes">Ordering of renderer classes<a class="headerlink" href="#ordering-of-renderer-classes" title="Permanent link">&para;</a></h2>
@@ -3599,12 +3599,12 @@ def user_count_view(request, format=None):
 <h3 id="jsonrenderer">JSONRenderer<a class="headerlink" href="#jsonrenderer" title="Permanent link">&para;</a></h3>
 <p>Renders the request data into <code>JSON</code>, using utf-8 encoding.</p>
 <p>Note that the default style is to include unicode characters, and render the response using a compact style with no unnecessary whitespace:</p>
-<div class="language-text highlight"><pre><span></span><code>{&quot;unicode black star&quot;:&quot;★&quot;,&quot;value&quot;:999}
+<div class="language-text highlight"><pre><span></span><code>{"unicode black star":"★","value":999}
 </code></pre></div>
 <p>The client may additionally include an <code>'indent'</code> media type parameter, in which case the returned <code>JSON</code> will be indented.  For example <code>Accept: application/json; indent=4</code>.</p>
 <div class="language-text highlight"><pre><span></span><code>{
-    &quot;unicode black star&quot;: &quot;★&quot;,
-    &quot;value&quot;: 999
+    "unicode black star": "★",
+    "value": 999
 }
 </code></pre></div>
 <p>The default JSON encoding style can be altered using the <code>UNICODE_JSON</code> and <code>COMPACT_JSON</code> settings keys.</p>
@@ -3618,7 +3618,7 @@ Unlike other renderers, the data passed to the <code>Response</code> does not ne
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>When used with a view that makes use of a serializer the <code>Response</code> sent for rendering may not be a dictionary and will need to be wrapped in a dict before returning to allow the <code>TemplateHTMLRenderer</code> to render it. For example:</p>
-<div class="language-text highlight"><pre><span></span><code>response.data = {&#39;results&#39;: response.data}
+<div class="language-text highlight"><pre><span></span><code>response.data = {'results': response.data}
 </code></pre></div>
 </div>
 <p>The template name is determined by (in order of preference):</p>
@@ -3629,15 +3629,15 @@ Unlike other renderers, the data passed to the <code>Response</code> does not ne
 </ol>
 <p>An example of a view that uses <code>TemplateHTMLRenderer</code>:</p>
 <div class="language-text highlight"><pre><span></span><code>class UserDetail(generics.RetrieveAPIView):
-    &quot;&quot;&quot;
+    """
     A view that returns a templated HTML representation of a given user.
-    &quot;&quot;&quot;
+    """
     queryset = User.objects.all()
     renderer_classes = [TemplateHTMLRenderer]
 
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
-        return Response({&#39;user&#39;: self.object}, template_name=&#39;user_detail.html&#39;)
+        return Response({'user': self.object}, template_name='user_detail.html')
 </code></pre></div>
 <p>You can use <code>TemplateHTMLRenderer</code> either to return regular HTML pages using REST framework, or to return both HTML and API responses from a single endpoint.</p>
 <p>If you're building websites that use <code>TemplateHTMLRenderer</code> along with other renderer classes, you should consider listing <code>TemplateHTMLRenderer</code> as the first class in the <code>renderer_classes</code> list, so that it will be prioritized first even for browsers that send poorly formed <code>ACCEPT:</code> headers.</p>
@@ -3649,10 +3649,10 @@ Unlike other renderers, the data passed to the <code>Response</code> does not ne
 <h3 id="statichtmlrenderer">StaticHTMLRenderer<a class="headerlink" href="#statichtmlrenderer" title="Permanent link">&para;</a></h3>
 <p>A simple renderer that simply returns pre-rendered HTML.  Unlike other renderers, the data passed to the response object should be a string representing the content to be returned.</p>
 <p>An example of a view that uses <code>StaticHTMLRenderer</code>:</p>
-<div class="language-text highlight"><pre><span></span><code>@api_view([&#39;GET&#39;])
+<div class="language-text highlight"><pre><span></span><code>@api_view(['GET'])
 @renderer_classes([StaticHTMLRenderer])
 def simple_html_view(request):
-    data = &#39;&lt;html&gt;&lt;body&gt;&lt;h1&gt;Hello, world&lt;/h1&gt;&lt;/body&gt;&lt;/html&gt;&#39;
+    data = '&lt;html&gt;&lt;body&gt;&lt;h1&gt;Hello, world&lt;/h1&gt;&lt;/body&gt;&lt;/html&gt;'
     return Response(data)
 </code></pre></div>
 <p>You can use <code>StaticHTMLRenderer</code> either to return regular HTML pages using REST framework, or to return both HTML and API responses from a single endpoint.</p>
@@ -3685,7 +3685,7 @@ def simple_html_view(request):
 <p>The <code>AdminRenderer</code> is only able to include links to detail pages when a properly configured <code>URL_FIELD_NAME</code> (<code>url</code> by default) attribute is present in the data. For <code>HyperlinkedModelSerializer</code> this will be the case, but for <code>ModelSerializer</code> or plain <code>Serializer</code> classes you'll need to make sure to include the field explicitly. </p>
 <p>For example here we use models <code>get_absolute_url</code> method:</p>
 <div class="language-text highlight"><pre><span></span><code>class AccountSerializer(serializers.ModelSerializer):
-    url = serializers.CharField(source=&#39;get_absolute_url&#39;, read_only=True)
+    url = serializers.CharField(source='get_absolute_url', read_only=True)
 
     class Meta:
         model = Account
@@ -3700,10 +3700,10 @@ def simple_html_view(request):
 <p>This renderer is not intended to be used directly, but can instead be used in templates by passing a serializer instance to the <code>render_form</code> template tag.</p>
 <div class="language-text highlight"><pre><span></span><code>{% load rest_framework %}
 
-&lt;form action=&quot;/submit-report/&quot; method=&quot;post&quot;&gt;
+&lt;form action="/submit-report/" method="post"&gt;
     {% csrf_token %}
     {% render_form serializer %}
-    &lt;input type=&quot;submit&quot; value=&quot;Save&quot; /&gt;
+    &lt;input type="submit" value="Save" /&gt;
 &lt;/form&gt;
 </code></pre></div>
 <p>For more information see the <a href="../../topics/html-and-forms/">HTML &amp; Forms</a> documentation.</p>
@@ -3739,8 +3739,8 @@ from rest_framework import renderers
 
 
 class PlainTextRenderer(renderers.BaseRenderer):
-    media_type = &#39;text/plain&#39;
-    format = &#39;txt&#39;
+    media_type = 'text/plain'
+    format = 'txt'
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
         return smart_str(data, encoding=self.charset)
@@ -3748,9 +3748,9 @@ class PlainTextRenderer(renderers.BaseRenderer):
 <h3 id="setting-the-character-set">Setting the character set<a class="headerlink" href="#setting-the-character-set" title="Permanent link">&para;</a></h3>
 <p>By default renderer classes are assumed to be using the <code>UTF-8</code> encoding.  To use a different encoding, set the <code>charset</code> attribute on the renderer.</p>
 <div class="language-text highlight"><pre><span></span><code>class PlainTextRenderer(renderers.BaseRenderer):
-    media_type = &#39;text/plain&#39;
-    format = &#39;txt&#39;
-    charset = &#39;iso-8859-1&#39;
+    media_type = 'text/plain'
+    format = 'txt'
+    charset = 'iso-8859-1'
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
         return data.encode(self.charset)
@@ -3759,10 +3759,10 @@ class PlainTextRenderer(renderers.BaseRenderer):
 <p>If the renderer returns a bytestring representing raw binary content, you should set a charset value of <code>None</code>, which will ensure the <code>Content-Type</code> header of the response will not have a <code>charset</code> value set.</p>
 <p>In some cases you may also want to set the <code>render_style</code> attribute to <code>'binary'</code>.  Doing so will also ensure that the browsable API will not attempt to display the binary content as a string.</p>
 <div class="language-text highlight"><pre><span></span><code>class JPEGRenderer(renderers.BaseRenderer):
-    media_type = &#39;image/jpeg&#39;
-    format = &#39;jpg&#39;
+    media_type = 'image/jpeg'
+    format = 'jpg'
     charset = None
-    render_style = &#39;binary&#39;
+    render_style = 'binary'
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
         return data
@@ -3779,21 +3779,21 @@ class PlainTextRenderer(renderers.BaseRenderer):
 <h3 id="varying-behavior-by-media-type">Varying behavior by media type<a class="headerlink" href="#varying-behavior-by-media-type" title="Permanent link">&para;</a></h3>
 <p>In some cases you might want your view to use different serialization styles depending on the accepted media type.  If you need to do this you can access <code>request.accepted_renderer</code> to determine the negotiated renderer that will be used for the response.</p>
 <p>For example:</p>
-<div class="language-text highlight"><pre><span></span><code>@api_view([&#39;GET&#39;])
+<div class="language-text highlight"><pre><span></span><code>@api_view(['GET'])
 @renderer_classes([TemplateHTMLRenderer, JSONRenderer])
 def list_users(request):
-    &quot;&quot;&quot;
+    """
     A view that can return JSON or HTML representations
     of the users in the system.
-    &quot;&quot;&quot;
+    """
     queryset = Users.objects.filter(active=True)
 
-    if request.accepted_renderer.format == &#39;html&#39;:
+    if request.accepted_renderer.format == 'html':
         # TemplateHTMLRenderer takes a context dict,
-        # and additionally requires a &#39;template_name&#39;.
+        # and additionally requires a 'template_name'.
         # It does not require serialization.
-        data = {&#39;users&#39;: queryset}
-        return Response(data, template_name=&#39;list_users.html&#39;)
+        data = {'users': queryset}
+        return Response(data, template_name='list_users.html')
 
     # JSONRenderer requires serialized data as normal.
     serializer = UserSerializer(instance=queryset)
@@ -3804,7 +3804,7 @@ def list_users(request):
 <p>In some cases you might want a renderer to serve a range of media types.
 In this case you can underspecify the media types it should respond to, by using a <code>media_type</code> value such as <code>image/*</code>, or <code>*/*</code>.</p>
 <p>If you underspecify the renderer's media type, you should make sure to specify the media type explicitly when you return the response, using the <code>content_type</code> attribute.  For example:</p>
-<div class="language-text highlight"><pre><span></span><code>return Response(data, content_type=&#39;image/png&#39;)
+<div class="language-text highlight"><pre><span></span><code>return Response(data, content_type='image/png')
 </code></pre></div>
 <h3 id="designing-your-media-types">Designing your media types<a class="headerlink" href="#designing-your-media-types" title="Permanent link">&para;</a></h3>
 <p>For the purposes of many Web APIs, simple <code>JSON</code> responses with hyperlinked relations may be sufficient.  If you want to fully embrace RESTful design and <a href="http://timelessrepo.com/haters-gonna-hateoas">HATEOAS</a> you'll need to consider the design and usage of your media types in more detail.</p>
@@ -3834,11 +3834,11 @@ In this case you can underspecify the media types it should respond to, by using
 </code></pre></div>
 <p>Modify your REST framework settings.</p>
 <div class="language-text highlight"><pre><span></span><code>REST_FRAMEWORK = {
-    &#39;DEFAULT_PARSER_CLASSES&#39;: [
-        &#39;rest_framework_yaml.parsers.YAMLParser&#39;,
+    'DEFAULT_PARSER_CLASSES': [
+        'rest_framework_yaml.parsers.YAMLParser',
     ],
-    &#39;DEFAULT_RENDERER_CLASSES&#39;: [
-        &#39;rest_framework_yaml.renderers.YAMLRenderer&#39;,
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework_yaml.renderers.YAMLRenderer',
     ],
 }
 </code></pre></div>
@@ -3850,11 +3850,11 @@ In this case you can underspecify the media types it should respond to, by using
 </code></pre></div>
 <p>Modify your REST framework settings.</p>
 <div class="language-text highlight"><pre><span></span><code>REST_FRAMEWORK = {
-    &#39;DEFAULT_PARSER_CLASSES&#39;: [
-        &#39;rest_framework_xml.parsers.XMLParser&#39;,
+    'DEFAULT_PARSER_CLASSES': [
+        'rest_framework_xml.parsers.XMLParser',
     ],
-    &#39;DEFAULT_RENDERER_CLASSES&#39;: [
-        &#39;rest_framework_xml.renderers.XMLRenderer&#39;,
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework_xml.renderers.XMLRenderer',
     ],
 }
 </code></pre></div>
@@ -3871,8 +3871,8 @@ In this case you can underspecify the media types it should respond to, by using
 </code></pre></div>
 <p>Modify your REST framework settings.</p>
 <div class="language-text highlight"><pre><span></span><code>REST_FRAMEWORK = {
-    &#39;DEFAULT_RENDERER_CLASSES&#39;: [
-        &#39;rest_framework_jsonp.renderers.JSONPRenderer&#39;,
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework_jsonp.renderers.JSONPRenderer',
     ],
 }
 </code></pre></div>
@@ -3888,10 +3888,10 @@ In this case you can underspecify the media types it should respond to, by using
 <div class="language-text highlight"><pre><span></span><code>REST_FRAMEWORK = {
     ...
 
-    &#39;DEFAULT_RENDERER_CLASSES&#39;: [
-        &#39;rest_framework.renderers.JSONRenderer&#39;,
-        &#39;rest_framework.renderers.BrowsableAPIRenderer&#39;,
-        &#39;drf_excel.renderers.XLSXRenderer&#39;,
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+        'drf_excel.renderers.XLSXRenderer',
     ],
 }
 </code></pre></div>
@@ -3907,7 +3907,7 @@ class MyExampleViewSet(XLSXFileMixin, ReadOnlyModelViewSet):
     queryset = MyExampleModel.objects.all()
     serializer_class = MyExampleSerializer
     renderer_classes = [XLSXRenderer]
-    filename = &#39;my_export.xlsx&#39;
+    filename = 'my_export.xlsx'
 </code></pre></div>
 <h3 id="csv">CSV<a class="headerlink" href="#csv" title="Permanent link">&para;</a></h3>
 <p>Comma-separated values are a plain-text tabular data format, that can be easily imported into spreadsheet applications. <a href="https://github.com/mjumbewu">Mjumbe Poe</a> maintains the <a href="https://github.com/mjumbewu/django-rest-framework-csv">djangorestframework-csv</a> package which provides CSV renderer support for REST framework.</p>

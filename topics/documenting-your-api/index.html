@@ -2985,24 +2985,24 @@ this:</p>
 <span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
   <span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
     <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>Swagger<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
-    <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">&quot;utf-8&quot;</span><span class="p">/&gt;</span>
-    <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;viewport&quot;</span> <span class="na">content</span><span class="o">=</span><span class="s">&quot;width=device-width, initial-scale=1&quot;</span><span class="p">&gt;</span>
-    <span class="p">&lt;</span><span class="nt">link</span> <span class="na">rel</span><span class="o">=</span><span class="s">&quot;stylesheet&quot;</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;text/css&quot;</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;//unpkg.com/swagger-ui-dist@3/swagger-ui.css&quot;</span> <span class="p">/&gt;</span>
+    <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">"utf-8"</span><span class="p">/&gt;</span>
+    <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">"viewport"</span> <span class="na">content</span><span class="o">=</span><span class="s">"width=device-width, initial-scale=1"</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">link</span> <span class="na">rel</span><span class="o">=</span><span class="s">"stylesheet"</span> <span class="na">type</span><span class="o">=</span><span class="s">"text/css"</span> <span class="na">href</span><span class="o">=</span><span class="s">"//unpkg.com/swagger-ui-dist@3/swagger-ui.css"</span> <span class="p">/&gt;</span>
   <span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
   <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
-    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;swagger-ui&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
-    <span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;//unpkg.com/swagger-ui-dist@3/swagger-ui-bundle.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">id</span><span class="o">=</span><span class="s">"swagger-ui"</span><span class="p">&gt;&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">"//unpkg.com/swagger-ui-dist@3/swagger-ui-bundle.js"</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
     <span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
 <span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">ui</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">SwaggerUIBundle</span><span class="p">({</span>
-<span class="w">        </span><span class="nx">url</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;{% url schema_url %}&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nx">dom_id</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;#swagger-ui&#39;</span><span class="p">,</span>
+<span class="w">        </span><span class="nx">url</span><span class="o">:</span><span class="w"> </span><span class="s2">"{% url schema_url %}"</span><span class="p">,</span>
+<span class="w">        </span><span class="nx">dom_id</span><span class="o">:</span><span class="w"> </span><span class="s1">'#swagger-ui'</span><span class="p">,</span>
 <span class="w">        </span><span class="nx">presets</span><span class="o">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">          </span><span class="nx">SwaggerUIBundle</span><span class="p">.</span><span class="nx">presets</span><span class="p">.</span><span class="nx">apis</span><span class="p">,</span>
 <span class="w">          </span><span class="nx">SwaggerUIBundle</span><span class="p">.</span><span class="nx">SwaggerUIStandalonePreset</span>
 <span class="w">        </span><span class="p">],</span>
-<span class="w">        </span><span class="nx">layout</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;BaseLayout&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nx">layout</span><span class="o">:</span><span class="w"> </span><span class="s2">"BaseLayout"</span><span class="p">,</span>
 <span class="w">        </span><span class="nx">requestInterceptor</span><span class="o">:</span><span class="w"> </span><span class="p">(</span><span class="nx">request</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
-<span class="w">          </span><span class="nx">request</span><span class="p">.</span><span class="nx">headers</span><span class="p">[</span><span class="s1">&#39;X-CSRFToken&#39;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;{{ csrf_token }}&quot;</span>
+<span class="w">          </span><span class="nx">request</span><span class="p">.</span><span class="nx">headers</span><span class="p">[</span><span class="s1">'X-CSRFToken'</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"{{ csrf_token }}"</span>
 <span class="w">          </span><span class="k">return</span><span class="w"> </span><span class="nx">request</span><span class="p">;</span>
 <span class="w">        </span><span class="p">}</span>
 <span class="w">      </span><span class="p">})</span>
@@ -3019,12 +3019,12 @@ this:</p>
     <span class="c1"># Route TemplateView to serve Swagger UI template.</span>
     <span class="c1">#   * Provide `extra_context` with view name of `SchemaView`.</span>
     <span class="n">path</span><span class="p">(</span>
-        <span class="s2">&quot;swagger-ui/&quot;</span><span class="p">,</span>
+        <span class="s2">"swagger-ui/"</span><span class="p">,</span>
         <span class="n">TemplateView</span><span class="o">.</span><span class="n">as_view</span><span class="p">(</span>
-            <span class="n">template_name</span><span class="o">=</span><span class="s2">&quot;swagger-ui.html&quot;</span><span class="p">,</span>
-            <span class="n">extra_context</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;schema_url&quot;</span><span class="p">:</span> <span class="s2">&quot;openapi-schema&quot;</span><span class="p">},</span>
+            <span class="n">template_name</span><span class="o">=</span><span class="s2">"swagger-ui.html"</span><span class="p">,</span>
+            <span class="n">extra_context</span><span class="o">=</span><span class="p">{</span><span class="s2">"schema_url"</span><span class="p">:</span> <span class="s2">"openapi-schema"</span><span class="p">},</span>
         <span class="p">),</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;swagger-ui&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"swagger-ui"</span><span class="p">,</span>
     <span class="p">),</span>
 <span class="p">]</span>
 </code></pre></div>
@@ -3038,10 +3038,10 @@ this:</p>
   <span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
     <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>ReDoc<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
     <span class="cm">&lt;!-- needed for adaptive design --&gt;</span>
-    <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">&quot;utf-8&quot;</span><span class="p">/&gt;</span>
-    <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;viewport&quot;</span> <span class="na">content</span><span class="o">=</span><span class="s">&quot;width=device-width, initial-scale=1&quot;</span><span class="p">&gt;</span>
-    <span class="p">&lt;</span><span class="nt">link</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;https://fonts.googleapis.com/css?family=Montserrat:300,400,700|Roboto:300,400,700&quot;</span> <span class="na">rel</span><span class="o">=</span><span class="s">&quot;stylesheet&quot;</span><span class="p">&gt;</span>
-    <span class="cm">&lt;!-- ReDoc doesn&#39;t change outer page styles --&gt;</span>
+    <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">"utf-8"</span><span class="p">/&gt;</span>
+    <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">"viewport"</span> <span class="na">content</span><span class="o">=</span><span class="s">"width=device-width, initial-scale=1"</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">link</span> <span class="na">href</span><span class="o">=</span><span class="s">"https://fonts.googleapis.com/css?family=Montserrat:300,400,700|Roboto:300,400,700"</span> <span class="na">rel</span><span class="o">=</span><span class="s">"stylesheet"</span><span class="p">&gt;</span>
+    <span class="cm">&lt;!-- ReDoc doesn't change outer page styles --&gt;</span>
     <span class="p">&lt;</span><span class="nt">style</span><span class="p">&gt;</span>
 <span class="w">      </span><span class="nt">body</span><span class="w"> </span><span class="p">{</span>
 <span class="w">        </span><span class="k">margin</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
@@ -3050,8 +3050,8 @@ this:</p>
 <span class="w">    </span><span class="p">&lt;/</span><span class="nt">style</span><span class="p">&gt;</span>
   <span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
   <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
-    <span class="p">&lt;</span><span class="nt">redoc</span> <span class="na">spec-url</span><span class="o">=</span><span class="s">&#39;{% url schema_url %}&#39;</span><span class="p">&gt;&lt;/</span><span class="nt">redoc</span><span class="p">&gt;</span>
-    <span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;https://cdn.jsdelivr.net/npm/redoc@next/bundles/redoc.standalone.js&quot;</span><span class="p">&gt;</span><span class="w"> </span><span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">redoc</span> <span class="na">spec-url</span><span class="o">=</span><span class="s">'{% url schema_url %}'</span><span class="p">&gt;&lt;/</span><span class="nt">redoc</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">"https://cdn.jsdelivr.net/npm/redoc@next/bundles/redoc.standalone.js"</span><span class="p">&gt;</span><span class="w"> </span><span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
   <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
 <span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
 </code></pre></div>
@@ -3064,11 +3064,11 @@ in your project's URL conf:</p>
     <span class="c1"># Route TemplateView to serve the ReDoc template.</span>
     <span class="c1">#   * Provide `extra_context` with view name of `SchemaView`.</span>
     <span class="n">path</span><span class="p">(</span>
-        <span class="s2">&quot;redoc/&quot;</span><span class="p">,</span>
+        <span class="s2">"redoc/"</span><span class="p">,</span>
         <span class="n">TemplateView</span><span class="o">.</span><span class="n">as_view</span><span class="p">(</span>
-            <span class="n">template_name</span><span class="o">=</span><span class="s2">&quot;redoc.html&quot;</span><span class="p">,</span> <span class="n">extra_context</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;schema_url&quot;</span><span class="p">:</span> <span class="s2">&quot;openapi-schema&quot;</span><span class="p">}</span>
+            <span class="n">template_name</span><span class="o">=</span><span class="s2">"redoc.html"</span><span class="p">,</span> <span class="n">extra_context</span><span class="o">=</span><span class="p">{</span><span class="s2">"schema_url"</span><span class="p">:</span> <span class="s2">"openapi-schema"</span><span class="p">}</span>
         <span class="p">),</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;redoc&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"redoc"</span><span class="p">,</span>
     <span class="p">),</span>
 <span class="p">]</span>
 </code></pre></div>
@@ -3085,13 +3085,13 @@ in your project's URL conf:</p>
 <p>The description in the browsable API is generated from the docstring of the view or viewset.</p>
 <p>If the python <code>Markdown</code> library is installed, then <a href="https://daringfireball.net/projects/markdown/syntax">markdown syntax</a> may be used in the docstring, and will be converted to HTML in the browsable API.  For example:</p>
 <div class="language-text highlight"><pre><span></span><code>class AccountListView(views.APIView):
-    &quot;&quot;&quot;
+    """
     Returns a list of all **active** accounts in the system.
 
     For more details on how accounts are activated please [see here][ref].
 
     [ref]: http://example.com/activating-accounts
-    &quot;&quot;&quot;
+    """
 </code></pre></div>
 <p>Note that when using viewsets the basic docstring is used for all generated views.  To provide descriptions for each view, such as for the list and retrieve views, use docstring sections as described in <a href="../../api-guide/schemas/#examples">Schemas as documentation: Examples</a>.</p>
 <h4 id="the-options-method">The <code>OPTIONS</code> method<a class="headerlink" href="#the-options-method" title="Permanent link">&para;</a></h4>
@@ -3099,12 +3099,12 @@ in your project's URL conf:</p>
 <p>When using the generic views, any <code>OPTIONS</code> requests will additionally respond with metadata regarding any <code>POST</code> or <code>PUT</code> actions available, describing which fields are on the serializer.</p>
 <p>You can modify the response behavior to <code>OPTIONS</code> requests by overriding the <code>options</code> view method and/or by providing a custom Metadata class.  For example:</p>
 <div class="language-text highlight"><pre><span></span><code>def options(self, request, *args, **kwargs):
-    &quot;&quot;&quot;
-    Don&#39;t include the view description in OPTIONS responses.
-    &quot;&quot;&quot;
+    """
+    Don't include the view description in OPTIONS responses.
+    """
     meta = self.metadata_class()
     data = meta.determine_metadata(request, self)
-    data.pop(&#39;description&#39;)
+    data.pop('description')
     return Response(data=data, status=status.HTTP_200_OK)
 </code></pre></div>
 <p>See <a href="../../api-guide/metadata/">the Metadata docs</a> for more details.</p>

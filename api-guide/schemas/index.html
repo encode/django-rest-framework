@@ -3301,11 +3301,11 @@ your schema on demand.</p>
     <span class="c1">#   * `title` and `description` parameters are passed to `SchemaGenerator`.</span>
     <span class="c1">#   * Provide view name for use with `reverse()`.</span>
     <span class="n">path</span><span class="p">(</span>
-        <span class="s2">&quot;openapi&quot;</span><span class="p">,</span>
+        <span class="s2">"openapi"</span><span class="p">,</span>
         <span class="n">get_schema_view</span><span class="p">(</span>
-            <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Your Project&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;API for all things …&quot;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="s2">&quot;1.0.0&quot;</span>
+            <span class="n">title</span><span class="o">=</span><span class="s2">"Your Project"</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"API for all things …"</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="s2">"1.0.0"</span>
         <span class="p">),</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;openapi-schema&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"openapi-schema"</span><span class="p">,</span>
     <span class="p">),</span>
     <span class="c1"># ...</span>
 <span class="p">]</span>
@@ -3319,8 +3319,8 @@ your schema on demand.</p>
 <li>
 <p><code>url</code>: May be used to pass a canonical base URL for the schema.</p>
 <div class="language-text highlight"><pre><span></span><code>schema_view = get_schema_view(
-    title=&#39;Server Monitoring API&#39;,
-    url=&#39;https://www.example.org/api/&#39;
+    title='Server Monitoring API',
+    url='https://www.example.org/api/'
 )
 </code></pre></div>
 </li>
@@ -3329,9 +3329,9 @@ your schema on demand.</p>
    to generate an API schema for. This defaults to the value of Django's
    <code>ROOT_URLCONF</code> setting.</p>
 <div class="language-text highlight"><pre><span></span><code>schema_view = get_schema_view(
-    title=&#39;Server Monitoring API&#39;,
-    url=&#39;https://www.example.org/api/&#39;,
-    urlconf=&#39;myproject.urls&#39;
+    title='Server Monitoring API',
+    url='https://www.example.org/api/',
+    urlconf='myproject.urls'
 )
 </code></pre></div>
 </li>
@@ -3339,12 +3339,12 @@ your schema on demand.</p>
 <p><code>patterns</code>: List of url patterns to limit the schema introspection to. If you
   only want the <code>myproject.api</code> urls to be exposed in the schema:</p>
 <div class="language-text highlight"><pre><span></span><code>schema_url_patterns = [
-    path(&#39;api/&#39;, include(&#39;myproject.api.urls&#39;)),
+    path('api/', include('myproject.api.urls')),
 ]
 
 schema_view = get_schema_view(
-    title=&#39;Server Monitoring API&#39;,
-    url=&#39;https://www.example.org/api/&#39;,
+    title='Server Monitoring API',
+    url='https://www.example.org/api/',
     patterns=schema_url_patterns,
 )
 </code></pre></div>
@@ -3373,7 +3373,7 @@ schema_view = get_schema_view(
 the schema for each view and collates the resulting OpenAPI schema.</p>
 <p>Typically you won't need to instantiate <code>SchemaGenerator</code> yourself, but you can
 do so like so:</p>
-<div class="language-text highlight"><pre><span></span><code>generator = SchemaGenerator(title=&#39;Stock Prices API&#39;)
+<div class="language-text highlight"><pre><span></span><code>generator = SchemaGenerator(title='Stock Prices API')
 </code></pre></div>
 <p>Arguments:</p>
 <ul>
@@ -3390,7 +3390,7 @@ as an argument to the <code>generateschema</code> command or <code>get_schema_vi
 function.</p>
 <h3 id="get_schemaself-requestnone-publicfalse">get_schema(self, request=None, public=False)<a class="headerlink" href="#get_schemaself-requestnone-publicfalse" title="Permanent link">&para;</a></h3>
 <p>Returns a dictionary that represents the OpenAPI schema:</p>
-<div class="language-text highlight"><pre><span></span><code>generator = SchemaGenerator(title=&#39;Stock Prices API&#39;)
+<div class="language-text highlight"><pre><span></span><code>generator = SchemaGenerator(title='Stock Prices API')
 schema = generator.get_schema()
 </code></pre></div>
 <p>The <code>request</code> argument is optional, and may be used if you want to apply
@@ -3401,7 +3401,7 @@ dictionary For example you might wish to add terms of service to the <a href="ht
 <div class="language-text highlight"><pre><span></span><code>class TOSSchemaGenerator(SchemaGenerator):
     def get_schema(self, *args, **kwargs):
         schema = super().get_schema(*args, **kwargs)
-        schema[&quot;info&quot;][&quot;termsOfService&quot;] = &quot;https://example.com/tos.html&quot;
+        schema["info"]["termsOfService"] = "https://example.com/tos.html"
         return schema
 </code></pre></div>
 <h2 id="autoschema">AutoSchema<a class="headerlink" href="#autoschema" title="Permanent link">&para;</a></h2>
@@ -3442,9 +3442,9 @@ field APIs.</p>
 views, serializers, or fields when customizing the schema generation. You might
 be tempted to do something like this:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">CustomSchema</span><span class="p">(</span><span class="n">AutoSchema</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    AutoSchema subclass using schema_extra_info on the view.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="o">...</span>
 
@@ -3459,9 +3459,9 @@ your schema logic spread out in a number of different places.</p>
 <p>Instead try to subclass <code>AutoSchema</code> such that the <code>extra_info</code> doesn't leak
 out into the view:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">BaseSchema</span><span class="p">(</span><span class="n">AutoSchema</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    AutoSchema subclass that knows how to use extra_info.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="o">...</span>
 
@@ -3482,7 +3482,7 @@ option as an <code>__init__()</code> kwarg to your base <code>AutoSchema</code> 
 <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">CustomSchema</span><span class="p">(</span><span class="n">BaseSchema</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="c1"># store extra_info for later</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">extra_info</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;extra_info&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">extra_info</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"extra_info"</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 
@@ -3515,7 +3515,7 @@ serializer-level fields.</p>
 will handle the default fields that Django REST Framework provides.</p>
 <p>For <code>SerializerMethodField</code> instances, for which the schema is unknown, or custom field subclasses you should override <code>map_field()</code> to generate the correct schema:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">CustomSchema</span><span class="p">(</span><span class="n">AutoSchema</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Extension of ``AutoSchema`` to add support for custom field schemas.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Extension of ``AutoSchema`` to add support for custom field schemas."""</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">map_field</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">):</span>
         <span class="c1"># Handle SerializerMethodFields or custom fields here...</span>
@@ -3567,9 +3567,9 @@ common customizations, if the default generated values are not appropriate.</p>
 <p>You pass the kwargs when declaring the <code>AutoSchema</code> instance on your view:</p>
 <div class="language-text highlight"><pre><span></span><code>class PetDetailView(generics.RetrieveUpdateDestroyAPIView):
     schema = AutoSchema(
-        tags=[&#39;Pets&#39;],
-        component_name=&#39;Pet&#39;,
-        operation_id_base=&#39;Pet&#39;,
+        tags=['Pets'],
+        component_name='Pet',
+        operation_id_base='Pet',
     )
     ...
 </code></pre></div>

@@ -3240,28 +3240,28 @@ class PurchaseList(generics.ListAPIView):
     serializer_class = PurchaseSerializer
 
     def get_queryset(self):
-        &quot;&quot;&quot;
+        """
         This view should return a list of all the purchases
         for the currently authenticated user.
-        &quot;&quot;&quot;
+        """
         user = self.request.user
         return Purchase.objects.filter(purchaser=user)
 </code></pre></div>
 <h2 id="filtering-against-the-url">Filtering against the URL<a class="headerlink" href="#filtering-against-the-url" title="Permanent link">&para;</a></h2>
 <p>Another style of filtering might involve restricting the queryset based on some part of the URL.</p>
 <p>For example if your URL config contained an entry like this:</p>
-<div class="language-text highlight"><pre><span></span><code>re_path(&#39;^purchases/(?P&lt;username&gt;.+)/$&#39;, PurchaseList.as_view()),
+<div class="language-text highlight"><pre><span></span><code>re_path('^purchases/(?P&lt;username&gt;.+)/$', PurchaseList.as_view()),
 </code></pre></div>
 <p>You could then write a view that returned a purchase queryset filtered by the username portion of the URL:</p>
 <div class="language-text highlight"><pre><span></span><code>class PurchaseList(generics.ListAPIView):
     serializer_class = PurchaseSerializer
 
     def get_queryset(self):
-        &quot;&quot;&quot;
+        """
         This view should return a list of all the purchases for
         the user as determined by the username portion of the URL.
-        &quot;&quot;&quot;
-        username = self.kwargs[&#39;username&#39;]
+        """
+        username = self.kwargs['username']
         return Purchase.objects.filter(purchaser__username=username)
 </code></pre></div>
 <h2 id="filtering-against-query-parameters">Filtering against query parameters<a class="headerlink" href="#filtering-against-query-parameters" title="Permanent link">&para;</a></h2>
@@ -3271,12 +3271,12 @@ class PurchaseList(generics.ListAPIView):
     serializer_class = PurchaseSerializer
 
     def get_queryset(self):
-        &quot;&quot;&quot;
+        """
         Optionally restricts the returned purchases to a given user,
         by filtering against a `username` query parameter in the URL.
-        &quot;&quot;&quot;
+        """
         queryset = Purchase.objects.all()
-        username = self.request.query_params.get(&#39;username&#39;)
+        username = self.request.query_params.get('username')
         if username is not None:
             queryset = queryset.filter(purchaser__username=username)
         return queryset
@@ -3289,7 +3289,7 @@ class PurchaseList(generics.ListAPIView):
 <h3 id="setting-filter-backends">Setting filter backends<a class="headerlink" href="#setting-filter-backends" title="Permanent link">&para;</a></h3>
 <p>The default filter backends may be set globally, using the <code>DEFAULT_FILTER_BACKENDS</code> setting. For example.</p>
 <div class="language-text highlight"><pre><span></span><code>REST_FRAMEWORK = {
-    &#39;DEFAULT_FILTER_BACKENDS&#39;: [&#39;django_filters.rest_framework.DjangoFilterBackend&#39;]
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
 }
 </code></pre></div>
 <p>You can also set the filter backends on a per-view, or per-viewset basis,
@@ -3312,10 +3312,10 @@ class UserListView(generics.ListAPIView):
 <h3 id="overriding-the-initial-queryset">Overriding the initial queryset<a class="headerlink" href="#overriding-the-initial-queryset" title="Permanent link">&para;</a></h3>
 <p>Note that you can use both an overridden <code>.get_queryset()</code> and generic filtering together, and everything will work as expected.  For example, if <code>Product</code> had a many-to-many relationship with <code>User</code>, named <code>purchase</code>, you might want to write a view like this:</p>
 <div class="language-text highlight"><pre><span></span><code>class PurchasedProductsList(generics.ListAPIView):
-    &quot;&quot;&quot;
+    """
     Return a list of all the products that the authenticated
     user has ever purchased, with optional filtering.
-    &quot;&quot;&quot;
+    """
     model = Product
     serializer_class = ProductSerializer
     filterset_class = ProductFilter
@@ -3335,13 +3335,13 @@ supports highly customizable field filtering for REST framework.</p>
 <p>Then add <code>'django_filters'</code> to Django's <code>INSTALLED_APPS</code>:</p>
 <div class="language-text highlight"><pre><span></span><code>INSTALLED_APPS = [
     ...
-    &#39;django_filters&#39;,
+    'django_filters',
     ...
 ]
 </code></pre></div>
 <p>You should now either add the filter backend to your settings:</p>
 <div class="language-text highlight"><pre><span></span><code>REST_FRAMEWORK = {
-    &#39;DEFAULT_FILTER_BACKENDS&#39;: [&#39;django_filters.rest_framework.DjangoFilterBackend&#39;]
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
 }
 </code></pre></div>
 <p>Or add the filter backend to an individual View or ViewSet.</p>
@@ -3356,7 +3356,7 @@ class UserListView(generics.ListAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = [&#39;category&#39;, &#39;in_stock&#39;]
+    filterset_fields = ['category', 'in_stock']
 </code></pre></div>
 <p>This will automatically create a <code>FilterSet</code> class for the given fields, and will allow you to make requests such as:</p>
 <div class="language-text highlight"><pre><span></span><code>http://example.com/api/products?category=clothing&amp;in_stock=True
@@ -3375,16 +3375,16 @@ class UserListView(generics.ListAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     filter_backends = [filters.SearchFilter]
-    search_fields = [&#39;username&#39;, &#39;email&#39;]
+    search_fields = ['username', 'email']
 </code></pre></div>
 <p>This will allow the client to filter the items in the list by making queries such as:</p>
 <div class="language-text highlight"><pre><span></span><code>http://example.com/api/users?search=russell
 </code></pre></div>
 <p>You can also perform a related lookup on a ForeignKey or ManyToManyField with the lookup API double-underscore notation:</p>
-<div class="language-text highlight"><pre><span></span><code>search_fields = [&#39;username&#39;, &#39;email&#39;, &#39;profile__profession&#39;]
+<div class="language-text highlight"><pre><span></span><code>search_fields = ['username', 'email', 'profile__profession']
 </code></pre></div>
 <p>For <a href="https://docs.djangoproject.com/en/stable/ref/models/fields/#django.db.models.JSONField">JSONField</a> and <a href="https://docs.djangoproject.com/en/stable/ref/contrib/postgres/fields/#hstorefield">HStoreField</a> fields you can filter based on nested values within the data structure using the same double-underscore notation:</p>
-<div class="language-text highlight"><pre><span></span><code>search_fields = [&#39;data__breed&#39;, &#39;data__owner__other_pets__0__name&#39;]
+<div class="language-text highlight"><pre><span></span><code>search_fields = ['data__breed', 'data__owner__other_pets__0__name']
 </code></pre></div>
 <p>By default, searches will use case-insensitive partial matches. The search parameter may contain multiple search terms, which should be whitespace and/or comma separated. If multiple search terms are used then objects will be returned in the list only if all the provided terms are matched. Searches may contain <em>quoted phrases</em> with spaces, each phrase is considered as a single search term.</p>
 <p>The search behavior may be specified by prefixing field names in <code>search_fields</code> with one of the following characters (which is equivalent to adding <code>__&lt;lookup&gt;</code> to the field):</p>
@@ -3410,7 +3410,7 @@ class UserListView(generics.ListAPIView):
 <tr>
 <td><code>$</code></td>
 <td><code>iregex</code></td>
-<td>Regex search.</td>
+<td>Regex search (see warning below).</td>
 </tr>
 <tr>
 <td><code>@</code></td>
@@ -3425,16 +3425,20 @@ class UserListView(generics.ListAPIView):
 </tbody>
 </table>
 <p>For example:</p>
-<div class="language-text highlight"><pre><span></span><code>search_fields = [&#39;=username&#39;, &#39;=email&#39;]
+<div class="language-text highlight"><pre><span></span><code>search_fields = ['=username', '=email']
 </code></pre></div>
 <p>By default, the search parameter is named <code>'search'</code>, but this may be overridden with the <code>SEARCH_PARAM</code> setting in the <code>REST_FRAMEWORK</code> configuration.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>When passing a regex to the filter via the <code>$</code> prefix or performing a <code>iregex</code> lookup, beware of maliciously crafted regular expressions that may lead to excessive CPU consumption and denial of service (DoS). Consider avoiding regex search for untrusted clients, and familiarize yourself with risky patterns (e.g., catastrophic backtracking).</p>
+</div>
 <h4 id="accent-insensitive-search">Accent-insensitive search<a class="headerlink" href="#accent-insensitive-search" title="Permanent link">&para;</a></h4>
 <p>The <code>UnaccentedSearchFilter</code> subclass performs accent-insensitive matching, so that a search for <code>Jeremy</code> also matches <code>Jérémy</code>. It behaves like <code>SearchFilter</code>, except the lookups are wrapped with the <code>unaccent</code> transform: the default lookup becomes <code>unaccent__icontains</code>, <code>^</code> becomes <code>unaccent__istartswith</code>, <code>=</code> becomes <code>unaccent__iexact</code>, and <code>$</code> becomes <code>unaccent__iregex</code>. The <code>@</code> (full-text search) prefix is left unchanged, as the <code>unaccent</code> transform cannot be combined with a full-text search lookup.</p>
 <div class="language-text highlight"><pre><span></span><code>from rest_framework import filters
 
 class MyView(generics.ListAPIView):
     filter_backends = [filters.UnaccentedSearchFilter]
-    search_fields = [&#39;name&#39;]
+    search_fields = ['name']
 </code></pre></div>
 <p>This is currently only supported on Django's <a href="https://docs.djangoproject.com/en/stable/ref/contrib/postgres/lookups/#unaccent">PostgreSQL backend</a>, and requires the <code>unaccent</code> extension to be installed and <code>django.contrib.postgres</code> to be present in <code>INSTALLED_APPS</code>.</p>
 <p>To dynamically change search fields based on request content, it's possible to subclass the <code>SearchFilter</code> and override the <code>get_search_fields()</code> function. For example, the following subclass will only search on <code>title</code> if the query parameter <code>title_only</code> is in the request:</p>
@@ -3442,8 +3446,8 @@ class MyView(generics.ListAPIView):
 
 class CustomSearchFilter(filters.SearchFilter):
     def get_search_fields(self, view, request):
-        if request.query_params.get(&#39;title_only&#39;):
-            return [&#39;title&#39;]
+        if request.query_params.get('title_only'):
+            return ['title']
         return super().get_search_fields(view, request)
 </code></pre></div>
 <p>For more details, see the <a href="https://docs.djangoproject.com/en/stable/ref/contrib/admin/#django.contrib.admin.ModelAdmin.search_fields">Django documentation</a>.</p>
@@ -3467,7 +3471,7 @@ class CustomSearchFilter(filters.SearchFilter):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     filter_backends = [filters.OrderingFilter]
-    ordering_fields = [&#39;username&#39;, &#39;email&#39;]
+    ordering_fields = ['username', 'email']
 </code></pre></div>
 <p>This helps prevent unexpected data leakage, such as allowing users to order against a password hash field or other sensitive data.</p>
 <p>If you <em>don't</em> specify an <code>ordering_fields</code> attribute on the view, the filter class will default to allowing the user to filter on any readable fields on the serializer specified by the <code>serializer_class</code> attribute.</p>
@@ -3476,7 +3480,7 @@ class CustomSearchFilter(filters.SearchFilter):
     queryset = Booking.objects.all()
     serializer_class = BookingSerializer
     filter_backends = [filters.OrderingFilter]
-    ordering_fields = &#39;__all__&#39;
+    ordering_fields = '__all__'
 </code></pre></div>
 <h4 id="specifying-a-default-ordering">Specifying a default ordering<a class="headerlink" href="#specifying-a-default-ordering" title="Permanent link">&para;</a></h4>
 <p>If an <code>ordering</code> attribute is set on the view, this will be used as the default ordering.</p>
@@ -3485,8 +3489,8 @@ class CustomSearchFilter(filters.SearchFilter):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     filter_backends = [filters.OrderingFilter]
-    ordering_fields = [&#39;username&#39;, &#39;email&#39;]
-    ordering = [&#39;username&#39;]
+    ordering_fields = ['username', 'email']
+    ordering = ['username']
 </code></pre></div>
 <p>The <code>ordering</code> attribute may be either a string or a list/tuple of strings.</p>
 <hr />
@@ -3497,9 +3501,9 @@ class CustomSearchFilter(filters.SearchFilter):
 <h3 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h3>
 <p>For example, you might need to restrict users to only being able to see objects they created.</p>
 <div class="language-text highlight"><pre><span></span><code>class IsOwnerFilterBackend(filters.BaseFilterBackend):
-    &quot;&quot;&quot;
+    """
     Filter that only allows users to see their own objects.
-    &quot;&quot;&quot;
+    """
     def filter_queryset(self, request, queryset, view):
         return queryset.filter(owner=request.user)
 </code></pre></div>

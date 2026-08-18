@@ -3282,19 +3282,19 @@
     tracks = serializers.SlugRelatedField(
         many=True,
         read_only=True,
-        slug_field=&#39;title&#39;
+        slug_field='title'
     )
 
     class Meta:
         model = Album
-        fields = [&#39;album_name&#39;, &#39;artist&#39;, &#39;tracks&#39;]
+        fields = ['album_name', 'artist', 'tracks']
 
 # For each album object, tracks should be fetched from database
 qs = Album.objects.all()
 print(AlbumSerializer(qs, many=True).data)
 </code></pre></div>
 <p>If <code>AlbumSerializer</code> is used to serialize a fairly large queryset with <code>many=True</code> then it could be a serious performance problem. Optimizing the queryset passed to <code>AlbumSerializer</code> with:</p>
-<div class="language-text highlight"><pre><span></span><code>qs = Album.objects.prefetch_related(&#39;tracks&#39;)
+<div class="language-text highlight"><pre><span></span><code>qs = Album.objects.prefetch_related('tracks')
 # No additional database hits required
 print(AlbumSerializer(qs, many=True).data)
 </code></pre></div>
@@ -3307,7 +3307,7 @@ print(AlbumSerializer(qs, many=True).data)
 &gt;&gt;&gt; serializer = AccountSerializer()
 &gt;&gt;&gt; print(repr(serializer))
 AccountSerializer():
-    id = IntegerField(label=&#39;ID&#39;, read_only=True)
+    id = IntegerField(label='ID', read_only=True)
     name = CharField(allow_blank=True, max_length=100, required=False)
     owner = PrimaryKeyRelatedField(queryset=User.objects.all())
 </code></pre></div>
@@ -3318,17 +3318,17 @@ AccountSerializer():
     artist = models.CharField(max_length=100)
 
 class Track(models.Model):
-    album = models.ForeignKey(Album, related_name=&#39;tracks&#39;, on_delete=models.CASCADE)
+    album = models.ForeignKey(Album, related_name='tracks', on_delete=models.CASCADE)
     order = models.IntegerField()
     title = models.CharField(max_length=100)
     duration = models.IntegerField()
 
     class Meta:
-        unique_together = [&#39;album&#39;, &#39;order&#39;]
-        ordering = [&#39;order&#39;]
+        unique_together = ['album', 'order']
+        ordering = ['order']
 
     def __str__(self):
-        return &#39;%d: %s&#39; % (self.order, self.title)
+        return '%d: %s' % (self.order, self.title)
 </code></pre></div>
 <h3 id="stringrelatedfield">StringRelatedField<a class="headerlink" href="#stringrelatedfield" title="Permanent link">&para;</a></h3>
 <p><code>StringRelatedField</code> may be used to represent the target of the relationship using its <code>__str__</code> method.</p>
@@ -3338,16 +3338,16 @@ class Track(models.Model):
 
     class Meta:
         model = Album
-        fields = [&#39;album_name&#39;, &#39;artist&#39;, &#39;tracks&#39;]
+        fields = ['album_name', 'artist', 'tracks']
 </code></pre></div>
 <p>Would serialize to the following representation:</p>
 <div class="language-text highlight"><pre><span></span><code>{
-    &#39;album_name&#39;: &#39;Things We Lost In The Fire&#39;,
-    &#39;artist&#39;: &#39;Low&#39;,
-    &#39;tracks&#39;: [
-        &#39;1: Sunflower&#39;,
-        &#39;2: Whitetail&#39;,
-        &#39;3: Dinosaur Act&#39;,
+    'album_name': 'Things We Lost In The Fire',
+    'artist': 'Low',
+    'tracks': [
+        '1: Sunflower',
+        '2: Whitetail',
+        '3: Dinosaur Act',
         ...
     ]
 }
@@ -3365,13 +3365,13 @@ class Track(models.Model):
 
     class Meta:
         model = Album
-        fields = [&#39;album_name&#39;, &#39;artist&#39;, &#39;tracks&#39;]
+        fields = ['album_name', 'artist', 'tracks']
 </code></pre></div>
 <p>Would serialize to a representation like this:</p>
 <div class="language-text highlight"><pre><span></span><code>{
-    &#39;album_name&#39;: &#39;Undun&#39;,
-    &#39;artist&#39;: &#39;The Roots&#39;,
-    &#39;tracks&#39;: [
+    'album_name': 'Undun',
+    'artist': 'The Roots',
+    'tracks': [
         89,
         90,
         91,
@@ -3394,21 +3394,21 @@ class Track(models.Model):
     tracks = serializers.HyperlinkedRelatedField(
         many=True,
         read_only=True,
-        view_name=&#39;track-detail&#39;
+        view_name='track-detail'
     )
 
     class Meta:
         model = Album
-        fields = [&#39;album_name&#39;, &#39;artist&#39;, &#39;tracks&#39;]
+        fields = ['album_name', 'artist', 'tracks']
 </code></pre></div>
 <p>Would serialize to a representation like this:</p>
 <div class="language-text highlight"><pre><span></span><code>{
-    &#39;album_name&#39;: &#39;Graceland&#39;,
-    &#39;artist&#39;: &#39;Paul Simon&#39;,
-    &#39;tracks&#39;: [
-        &#39;http://www.example.com/api/tracks/45/&#39;,
-        &#39;http://www.example.com/api/tracks/46/&#39;,
-        &#39;http://www.example.com/api/tracks/47/&#39;,
+    'album_name': 'Graceland',
+    'artist': 'Paul Simon',
+    'tracks': [
+        'http://www.example.com/api/tracks/45/',
+        'http://www.example.com/api/tracks/46/',
+        'http://www.example.com/api/tracks/47/',
         ...
     ]
 }
@@ -3437,21 +3437,21 @@ class Track(models.Model):
     tracks = serializers.SlugRelatedField(
         many=True,
         read_only=True,
-        slug_field=&#39;title&#39;
+        slug_field='title'
      )
 
     class Meta:
         model = Album
-        fields = [&#39;album_name&#39;, &#39;artist&#39;, &#39;tracks&#39;]
+        fields = ['album_name', 'artist', 'tracks']
 </code></pre></div>
 <p>Would serialize to a representation like this:</p>
 <div class="language-text highlight"><pre><span></span><code>{
-    &#39;album_name&#39;: &#39;Dear John&#39;,
-    &#39;artist&#39;: &#39;Loney Dear&#39;,
-    &#39;tracks&#39;: [
-        &#39;Airport Surroundings&#39;,
-        &#39;Everything Turns to You&#39;,
-        &#39;I Was Only Going Out&#39;,
+    'album_name': 'Dear John',
+    'artist': 'Loney Dear',
+    'tracks': [
+        'Airport Surroundings',
+        'Everything Turns to You',
+        'I Was Only Going Out',
         ...
     ]
 }
@@ -3468,17 +3468,17 @@ class Track(models.Model):
 <h3 id="hyperlinkedidentityfield">HyperlinkedIdentityField<a class="headerlink" href="#hyperlinkedidentityfield" title="Permanent link">&para;</a></h3>
 <p>This field can be applied as an identity relationship, such as the <code>'url'</code> field on a HyperlinkedModelSerializer.  It can also be used for an attribute on the object.  For example, the following serializer:</p>
 <div class="language-text highlight"><pre><span></span><code>class AlbumSerializer(serializers.HyperlinkedModelSerializer):
-    track_listing = serializers.HyperlinkedIdentityField(view_name=&#39;track-list&#39;)
+    track_listing = serializers.HyperlinkedIdentityField(view_name='track-list')
 
     class Meta:
         model = Album
-        fields = [&#39;album_name&#39;, &#39;artist&#39;, &#39;track_listing&#39;]
+        fields = ['album_name', 'artist', 'track_listing']
 </code></pre></div>
 <p>Would serialize to a representation like this:</p>
 <div class="language-text highlight"><pre><span></span><code>{
-    &#39;album_name&#39;: &#39;The Eraser&#39;,
-    &#39;artist&#39;: &#39;Thom Yorke&#39;,
-    &#39;track_listing&#39;: &#39;http://www.example.com/api/track_list/12/&#39;,
+    'album_name': 'The Eraser',
+    'artist': 'Thom Yorke',
+    'track_listing': 'http://www.example.com/api/track_list/12/',
 }
 </code></pre></div>
 <p>This field is always read-only.</p>
@@ -3500,32 +3500,32 @@ Such nested relationships can be expressed by using serializers as fields.</p>
 <div class="language-text highlight"><pre><span></span><code>class TrackSerializer(serializers.ModelSerializer):
     class Meta:
         model = Track
-        fields = [&#39;order&#39;, &#39;title&#39;, &#39;duration&#39;]
+        fields = ['order', 'title', 'duration']
 
 class AlbumSerializer(serializers.ModelSerializer):
     tracks = TrackSerializer(many=True, read_only=True)
 
     class Meta:
         model = Album
-        fields = [&#39;album_name&#39;, &#39;artist&#39;, &#39;tracks&#39;]
+        fields = ['album_name', 'artist', 'tracks']
 </code></pre></div>
 <p>Would serialize to a nested representation like this:</p>
-<div class="language-text highlight"><pre><span></span><code>&gt;&gt;&gt; album = Album.objects.create(album_name=&quot;The Gray Album&quot;, artist=&#39;Danger Mouse&#39;)
-&gt;&gt;&gt; Track.objects.create(album=album, order=1, title=&#39;Public Service Announcement&#39;, duration=245)
+<div class="language-text highlight"><pre><span></span><code>&gt;&gt;&gt; album = Album.objects.create(album_name="The Gray Album", artist='Danger Mouse')
+&gt;&gt;&gt; Track.objects.create(album=album, order=1, title='Public Service Announcement', duration=245)
 &lt;Track: Track object&gt;
-&gt;&gt;&gt; Track.objects.create(album=album, order=2, title=&#39;What More Can I Say&#39;, duration=264)
+&gt;&gt;&gt; Track.objects.create(album=album, order=2, title='What More Can I Say', duration=264)
 &lt;Track: Track object&gt;
-&gt;&gt;&gt; Track.objects.create(album=album, order=3, title=&#39;Encore&#39;, duration=159)
+&gt;&gt;&gt; Track.objects.create(album=album, order=3, title='Encore', duration=159)
 &lt;Track: Track object&gt;
 &gt;&gt;&gt; serializer = AlbumSerializer(instance=album)
 &gt;&gt;&gt; serializer.data
 {
-    &#39;album_name&#39;: &#39;The Gray Album&#39;,
-    &#39;artist&#39;: &#39;Danger Mouse&#39;,
-    &#39;tracks&#39;: [
-        {&#39;order&#39;: 1, &#39;title&#39;: &#39;Public Service Announcement&#39;, &#39;duration&#39;: 245},
-        {&#39;order&#39;: 2, &#39;title&#39;: &#39;What More Can I Say&#39;, &#39;duration&#39;: 264},
-        {&#39;order&#39;: 3, &#39;title&#39;: &#39;Encore&#39;, &#39;duration&#39;: 159},
+    'album_name': 'The Gray Album',
+    'artist': 'Danger Mouse',
+    'tracks': [
+        {'order': 1, 'title': 'Public Service Announcement', 'duration': 245},
+        {'order': 2, 'title': 'What More Can I Say', 'duration': 264},
+        {'order': 3, 'title': 'Encore', 'duration': 159},
         ...
     ],
 }
@@ -3535,29 +3535,29 @@ class AlbumSerializer(serializers.ModelSerializer):
 <div class="language-text highlight"><pre><span></span><code>class TrackSerializer(serializers.ModelSerializer):
     class Meta:
         model = Track
-        fields = [&#39;order&#39;, &#39;title&#39;, &#39;duration&#39;]
+        fields = ['order', 'title', 'duration']
 
 class AlbumSerializer(serializers.ModelSerializer):
     tracks = TrackSerializer(many=True)
 
     class Meta:
         model = Album
-        fields = [&#39;album_name&#39;, &#39;artist&#39;, &#39;tracks&#39;]
+        fields = ['album_name', 'artist', 'tracks']
 
     def create(self, validated_data):
-        tracks_data = validated_data.pop(&#39;tracks&#39;)
+        tracks_data = validated_data.pop('tracks')
         album = Album.objects.create(**validated_data)
         for track_data in tracks_data:
             Track.objects.create(album=album, **track_data)
         return album
 
 &gt;&gt;&gt; data = {
-    &#39;album_name&#39;: &#39;The Gray Album&#39;,
-    &#39;artist&#39;: &#39;Danger Mouse&#39;,
-    &#39;tracks&#39;: [
-        {&#39;order&#39;: 1, &#39;title&#39;: &#39;Public Service Announcement&#39;, &#39;duration&#39;: 245},
-        {&#39;order&#39;: 2, &#39;title&#39;: &#39;What More Can I Say&#39;, &#39;duration&#39;: 264},
-        {&#39;order&#39;: 3, &#39;title&#39;: &#39;Encore&#39;, &#39;duration&#39;: 159},
+    'album_name': 'The Gray Album',
+    'artist': 'Danger Mouse',
+    'tracks': [
+        {'order': 1, 'title': 'Public Service Announcement', 'duration': 245},
+        {'order': 2, 'title': 'What More Can I Say', 'duration': 264},
+        {'order': 3, 'title': 'Encore', 'duration': 159},
     ],
 }
 &gt;&gt;&gt; serializer = AlbumSerializer(data=data)
@@ -3580,24 +3580,24 @@ output representation should be generated from the model instance.</p>
 
 class TrackListingField(serializers.RelatedField):
     def to_representation(self, value):
-        duration = time.strftime(&#39;%M:%S&#39;, time.gmtime(value.duration))
-        return &#39;Track %d: %s (%s)&#39; % (value.order, value.name, duration)
+        duration = time.strftime('%M:%S', time.gmtime(value.duration))
+        return 'Track %d: %s (%s)' % (value.order, value.name, duration)
 
 class AlbumSerializer(serializers.ModelSerializer):
     tracks = TrackListingField(many=True)
 
     class Meta:
         model = Album
-        fields = [&#39;album_name&#39;, &#39;artist&#39;, &#39;tracks&#39;]
+        fields = ['album_name', 'artist', 'tracks']
 </code></pre></div>
 <p>This custom field would then serialize to the following representation:</p>
 <div class="language-text highlight"><pre><span></span><code>{
-    &#39;album_name&#39;: &#39;Sometimes I Wish We Were an Eagle&#39;,
-    &#39;artist&#39;: &#39;Bill Callahan&#39;,
-    &#39;tracks&#39;: [
-        &#39;Track 1: Jim Cain (04:39)&#39;,
-        &#39;Track 2: Eid Ma Clack Shaw (04:19)&#39;,
-        &#39;Track 3: The Wind and the Dove (04:34)&#39;,
+    'album_name': 'Sometimes I Wish We Were an Eagle',
+    'artist': 'Bill Callahan',
+    'tracks': [
+        'Track 1: Jim Cain (04:39)',
+        'Track 2: Eid Ma Clack Shaw (04:19)',
+        'Track 3: The Wind and the Dove (04:34)',
         ...
     ]
 }
@@ -3624,21 +3624,21 @@ attributes are not configured to correctly match the URL conf.</p>
 from rest_framework.reverse import reverse
 
 class CustomerHyperlink(serializers.HyperlinkedRelatedField):
-    # We define these as class attributes, so we don&#39;t need to pass them as arguments.
-    view_name = &#39;customer-detail&#39;
+    # We define these as class attributes, so we don't need to pass them as arguments.
+    view_name = 'customer-detail'
     queryset = Customer.objects.all()
 
     def get_url(self, obj, view_name, request, format):
         url_kwargs = {
-            &#39;organization_slug&#39;: obj.organization.slug,
-            &#39;customer_pk&#39;: obj.pk
+            'organization_slug': obj.organization.slug,
+            'customer_pk': obj.pk
         }
         return reverse(view_name, kwargs=url_kwargs, request=request, format=format)
 
     def get_object(self, view_name, view_args, view_kwargs):
         lookup_kwargs = {
-           &#39;organization__slug&#39;: view_kwargs[&#39;organization_slug&#39;],
-           &#39;pk&#39;: view_kwargs[&#39;customer_pk&#39;]
+           'organization__slug': view_kwargs['organization_slug'],
+           'pk': view_kwargs['customer_pk']
         }
         return self.get_queryset().get(**lookup_kwargs)
 </code></pre></div>
@@ -3656,7 +3656,7 @@ class CustomerHyperlink(serializers.HyperlinkedRelatedField):
 <p>To provide customized representations for such inputs, override <code>display_value()</code> of a <code>RelatedField</code> subclass. This method will receive a model object, and should return a string suitable for representing it. For example:</p>
 <div class="language-text highlight"><pre><span></span><code>class TrackPrimaryKeyRelatedField(serializers.PrimaryKeyRelatedField):
     def display_value(self, instance):
-        return &#39;Track: %s&#39; % (instance.title)
+        return 'Track: %s' % (instance.title)
 </code></pre></div>
 <h3 id="select-field-cutoffs">Select field cutoffs<a class="headerlink" href="#select-field-cutoffs" title="Permanent link">&para;</a></h3>
 <p>When rendered in the browsable API relational fields will default to only displaying a maximum of 1000 selectable items. If more items are present then a disabled option with "More than 1000 items…" will be displayed.</p>
@@ -3670,88 +3670,88 @@ class CustomerHyperlink(serializers.HyperlinkedRelatedField):
 <p>In cases where the cutoff is being enforced you may want to instead use a plain input field in the HTML form. You can do so using the <code>style</code> keyword argument. For example:</p>
 <div class="language-text highlight"><pre><span></span><code>assigned_to = serializers.SlugRelatedField(
    queryset=User.objects.all(),
-   slug_field=&#39;username&#39;,
-   style={&#39;base_template&#39;: &#39;input.html&#39;}
+   slug_field='username',
+   style={'base_template': 'input.html'}
 )
 </code></pre></div>
 <h3 id="reverse-relations">Reverse relations<a class="headerlink" href="#reverse-relations" title="Permanent link">&para;</a></h3>
 <p>Note that reverse relationships are not automatically included by the <code>ModelSerializer</code> and <code>HyperlinkedModelSerializer</code> classes.  To include a reverse relationship, you must explicitly add it to the fields list.  For example:</p>
 <div class="language-text highlight"><pre><span></span><code>class AlbumSerializer(serializers.ModelSerializer):
     class Meta:
-        fields = [&#39;tracks&#39;, ...]
+        fields = ['tracks', ...]
 </code></pre></div>
 <p>You'll normally want to ensure that you've set an appropriate <code>related_name</code> argument on the relationship, that you can use as the field name.  For example:</p>
 <div class="language-text highlight"><pre><span></span><code>class Track(models.Model):
-    album = models.ForeignKey(Album, related_name=&#39;tracks&#39;, on_delete=models.CASCADE)
+    album = models.ForeignKey(Album, related_name='tracks', on_delete=models.CASCADE)
     ...
 </code></pre></div>
 <p>If you have not set a related name for the reverse relationship, you'll need to use the automatically generated related name in the <code>fields</code> argument.  For example:</p>
 <div class="language-text highlight"><pre><span></span><code>class AlbumSerializer(serializers.ModelSerializer):
     class Meta:
-        fields = [&#39;track_set&#39;, ...]
+        fields = ['track_set', ...]
 </code></pre></div>
 <p>See the Django documentation on <a href="https://docs.djangoproject.com/en/stable/topics/db/queries/#following-relationships-backward">reverse relationships</a> for more details.</p>
 <h3 id="generic-relationships">Generic relationships<a class="headerlink" href="#generic-relationships" title="Permanent link">&para;</a></h3>
 <p>If you want to serialize a generic foreign key, you need to define a custom field, to determine explicitly how you want to serialize the targets of the relationship.</p>
 <p>For example, given the following model for a tag, which has a generic relationship with other arbitrary models:</p>
 <div class="language-text highlight"><pre><span></span><code>class TaggedItem(models.Model):
-    &quot;&quot;&quot;
+    """
     Tags arbitrary model instances using a generic relation.
 
     See: https://docs.djangoproject.com/en/stable/ref/contrib/contenttypes/
-    &quot;&quot;&quot;
+    """
     tag_name = models.SlugField()
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
-    tagged_object = GenericForeignKey(&#39;content_type&#39;, &#39;object_id&#39;)
+    tagged_object = GenericForeignKey('content_type', 'object_id')
 
     def __str__(self):
         return self.tag_name
 </code></pre></div>
 <p>And the following two models, which may have associated tags:</p>
 <div class="language-text highlight"><pre><span></span><code>class Bookmark(models.Model):
-    &quot;&quot;&quot;
+    """
     A bookmark consists of a URL, and 0 or more descriptive tags.
-    &quot;&quot;&quot;
+    """
     url = models.URLField()
     tags = GenericRelation(TaggedItem)
 
 
 class Note(models.Model):
-    &quot;&quot;&quot;
+    """
     A note consists of some text, and 0 or more descriptive tags.
-    &quot;&quot;&quot;
+    """
     text = models.CharField(max_length=1000)
     tags = GenericRelation(TaggedItem)
 </code></pre></div>
 <p>We could define a custom field that could be used to serialize tagged instances, using the type of each instance to determine how it should be serialized:</p>
 <div class="language-text highlight"><pre><span></span><code>class TaggedObjectRelatedField(serializers.RelatedField):
-    &quot;&quot;&quot;
+    """
     A custom field to use for the `tagged_object` generic relationship.
-    &quot;&quot;&quot;
+    """
 
     def to_representation(self, value):
-        &quot;&quot;&quot;
+        """
         Serialize tagged objects to a simple textual representation.
-        &quot;&quot;&quot;
+        """
         if isinstance(value, Bookmark):
-            return &#39;Bookmark: &#39; + value.url
+            return 'Bookmark: ' + value.url
         elif isinstance(value, Note):
-            return &#39;Note: &#39; + value.text
-        raise Exception(&#39;Unexpected type of tagged object&#39;)
+            return 'Note: ' + value.text
+        raise Exception('Unexpected type of tagged object')
 </code></pre></div>
 <p>If you need the target of the relationship to have a nested representation, you can use the required serializers inside the <code>.to_representation()</code> method:</p>
 <div class="language-text highlight"><pre><span></span><code>    def to_representation(self, value):
-        &quot;&quot;&quot;
+        """
         Serialize bookmark instances using a bookmark serializer,
         and note instances using a note serializer.
-        &quot;&quot;&quot;
+        """
         if isinstance(value, Bookmark):
             serializer = BookmarkSerializer(value)
         elif isinstance(value, Note):
             serializer = NoteSerializer(value)
         else:
-            raise Exception(&#39;Unexpected type of tagged object&#39;)
+            raise Exception('Unexpected type of tagged object')
 
         return serializer.data
 </code></pre></div>

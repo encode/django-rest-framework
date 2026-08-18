@@ -2879,8 +2879,8 @@
 Let's introduce a couple of essential building blocks.</p>
 <h2 id="request-objects">Request objects<a class="headerlink" href="#request-objects" title="Permanent link">&para;</a></h2>
 <p>REST framework introduces a <code>Request</code> object that extends the regular <code>HttpRequest</code>, and provides more flexible request parsing.  The core functionality of the <code>Request</code> object is the <code>request.data</code> attribute, which is similar to <code>request.POST</code>, but more useful for working with Web APIs.</p>
-<div class="language-python highlight"><pre><span></span><code><span class="n">request</span><span class="o">.</span><span class="n">POST</span>  <span class="c1"># Only handles form data.  Only works for &#39;POST&#39; method.</span>
-<span class="n">request</span><span class="o">.</span><span class="n">data</span>  <span class="c1"># Handles arbitrary data.  Works for &#39;POST&#39;, &#39;PUT&#39; and &#39;PATCH&#39; methods.</span>
+<div class="language-python highlight"><pre><span></span><code><span class="n">request</span><span class="o">.</span><span class="n">POST</span>  <span class="c1"># Only handles form data.  Only works for 'POST' method.</span>
+<span class="n">request</span><span class="o">.</span><span class="n">data</span>  <span class="c1"># Handles arbitrary data.  Works for 'POST', 'PUT' and 'PATCH' methods.</span>
 </code></pre></div>
 <h2 id="response-objects">Response objects<a class="headerlink" href="#response-objects" title="Permanent link">&para;</a></h2>
 <p>REST framework also introduces a <code>Response</code> object, which is a type of <code>TemplateResponse</code> that takes unrendered content and uses content negotiation to determine the correct content type to return to the client.</p>
@@ -2905,17 +2905,17 @@ Let's introduce a couple of essential building blocks.</p>
 <span class="kn">from</span><span class="w"> </span><span class="nn">snippets.serializers</span><span class="w"> </span><span class="kn">import</span> <span class="n">SnippetSerializer</span>
 
 
-<span class="nd">@api_view</span><span class="p">([</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="s2">&quot;POST&quot;</span><span class="p">])</span>
+<span class="nd">@api_view</span><span class="p">([</span><span class="s2">"GET"</span><span class="p">,</span> <span class="s2">"POST"</span><span class="p">])</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">snippet_list</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    List all code snippets, or create a new snippet.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;GET&quot;</span><span class="p">:</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s2">"GET"</span><span class="p">:</span>
         <span class="n">snippets</span> <span class="o">=</span> <span class="n">Snippet</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
         <span class="n">serializer</span> <span class="o">=</span> <span class="n">SnippetSerializer</span><span class="p">(</span><span class="n">snippets</span><span class="p">,</span> <span class="n">many</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">serializer</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
 
-    <span class="k">elif</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;POST&quot;</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s2">"POST"</span><span class="p">:</span>
         <span class="n">serializer</span> <span class="o">=</span> <span class="n">SnippetSerializer</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">serializer</span><span class="o">.</span><span class="n">is_valid</span><span class="p">():</span>
             <span class="n">serializer</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
@@ -2924,28 +2924,28 @@ Let's introduce a couple of essential building blocks.</p>
 </code></pre></div>
 <p>Our instance view is an improvement over the previous example.  It's a little more concise, and the code now feels very similar to if we were working with the Forms API.  We're also using named status codes, which makes the response meanings more obvious.</p>
 <p>Here is the view for an individual snippet, in the <code>views.py</code> module.</p>
-<div class="language-python highlight"><pre><span></span><code><span class="nd">@api_view</span><span class="p">([</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="s2">&quot;PUT&quot;</span><span class="p">,</span> <span class="s2">&quot;DELETE&quot;</span><span class="p">])</span>
+<div class="language-python highlight"><pre><span></span><code><span class="nd">@api_view</span><span class="p">([</span><span class="s2">"GET"</span><span class="p">,</span> <span class="s2">"PUT"</span><span class="p">,</span> <span class="s2">"DELETE"</span><span class="p">])</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">snippet_detail</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">pk</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Retrieve, update or delete a code snippet.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">snippet</span> <span class="o">=</span> <span class="n">Snippet</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="n">pk</span><span class="p">)</span>
     <span class="k">except</span> <span class="n">Snippet</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="o">.</span><span class="n">HTTP_404_NOT_FOUND</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;GET&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s2">"GET"</span><span class="p">:</span>
         <span class="n">serializer</span> <span class="o">=</span> <span class="n">SnippetSerializer</span><span class="p">(</span><span class="n">snippet</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">serializer</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
 
-    <span class="k">elif</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;PUT&quot;</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s2">"PUT"</span><span class="p">:</span>
         <span class="n">serializer</span> <span class="o">=</span> <span class="n">SnippetSerializer</span><span class="p">(</span><span class="n">snippet</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">serializer</span><span class="o">.</span><span class="n">is_valid</span><span class="p">():</span>
             <span class="n">serializer</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
             <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">serializer</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">serializer</span><span class="o">.</span><span class="n">errors</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="o">.</span><span class="n">HTTP_400_BAD_REQUEST</span><span class="p">)</span>
 
-    <span class="k">elif</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;DELETE&quot;</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s2">"DELETE"</span><span class="p">:</span>
         <span class="n">snippet</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="o">.</span><span class="n">HTTP_204_NO_CONTENT</span><span class="p">)</span>
 </code></pre></div>
@@ -2963,8 +2963,8 @@ and
 <span class="kn">from</span><span class="w"> </span><span class="nn">snippets</span><span class="w"> </span><span class="kn">import</span> <span class="n">views</span>
 
 <span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="n">path</span><span class="p">(</span><span class="s2">&quot;snippets/&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">snippet_list</span><span class="p">),</span>
-    <span class="n">path</span><span class="p">(</span><span class="s2">&quot;snippets/&lt;int:pk&gt;/&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">snippet_detail</span><span class="p">),</span>
+    <span class="n">path</span><span class="p">(</span><span class="s2">"snippets/"</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">snippet_list</span><span class="p">),</span>
+    <span class="n">path</span><span class="p">(</span><span class="s2">"snippets/&lt;int:pk&gt;/"</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">snippet_detail</span><span class="p">),</span>
 <span class="p">]</span>
 
 <span class="n">urlpatterns</span> <span class="o">=</span> <span class="n">format_suffix_patterns</span><span class="p">(</span><span class="n">urlpatterns</span><span class="p">)</span>
@@ -2979,20 +2979,20 @@ HTTP/1.1<span class="w"> </span><span class="m">200</span><span class="w"> </spa
 ...
 <span class="o">[</span>
 <span class="w">    </span><span class="o">{</span>
-<span class="w">    </span><span class="s2">&quot;id&quot;</span>:<span class="w"> </span><span class="m">1</span>,
-<span class="w">    </span><span class="s2">&quot;title&quot;</span>:<span class="w"> </span><span class="s2">&quot;&quot;</span>,
-<span class="w">    </span><span class="s2">&quot;code&quot;</span>:<span class="w"> </span><span class="s2">&quot;foo = \&quot;bar\&quot;\n&quot;</span>,
-<span class="w">    </span><span class="s2">&quot;linenos&quot;</span>:<span class="w"> </span>false,
-<span class="w">    </span><span class="s2">&quot;language&quot;</span>:<span class="w"> </span><span class="s2">&quot;python&quot;</span>,
-<span class="w">    </span><span class="s2">&quot;style&quot;</span>:<span class="w"> </span><span class="s2">&quot;friendly&quot;</span>
+<span class="w">    </span><span class="s2">"id"</span>:<span class="w"> </span><span class="m">1</span>,
+<span class="w">    </span><span class="s2">"title"</span>:<span class="w"> </span><span class="s2">""</span>,
+<span class="w">    </span><span class="s2">"code"</span>:<span class="w"> </span><span class="s2">"foo = \"bar\"\n"</span>,
+<span class="w">    </span><span class="s2">"linenos"</span>:<span class="w"> </span>false,
+<span class="w">    </span><span class="s2">"language"</span>:<span class="w"> </span><span class="s2">"python"</span>,
+<span class="w">    </span><span class="s2">"style"</span>:<span class="w"> </span><span class="s2">"friendly"</span>
 <span class="w">    </span><span class="o">}</span>,
 <span class="w">    </span><span class="o">{</span>
-<span class="w">    </span><span class="s2">&quot;id&quot;</span>:<span class="w"> </span><span class="m">2</span>,
-<span class="w">    </span><span class="s2">&quot;title&quot;</span>:<span class="w"> </span><span class="s2">&quot;&quot;</span>,
-<span class="w">    </span><span class="s2">&quot;code&quot;</span>:<span class="w"> </span><span class="s2">&quot;print(\&quot;hello, world\&quot;)\n&quot;</span>,
-<span class="w">    </span><span class="s2">&quot;linenos&quot;</span>:<span class="w"> </span>false,
-<span class="w">    </span><span class="s2">&quot;language&quot;</span>:<span class="w"> </span><span class="s2">&quot;python&quot;</span>,
-<span class="w">    </span><span class="s2">&quot;style&quot;</span>:<span class="w"> </span><span class="s2">&quot;friendly&quot;</span>
+<span class="w">    </span><span class="s2">"id"</span>:<span class="w"> </span><span class="m">2</span>,
+<span class="w">    </span><span class="s2">"title"</span>:<span class="w"> </span><span class="s2">""</span>,
+<span class="w">    </span><span class="s2">"code"</span>:<span class="w"> </span><span class="s2">"print(\"hello, world\")\n"</span>,
+<span class="w">    </span><span class="s2">"linenos"</span>:<span class="w"> </span>false,
+<span class="w">    </span><span class="s2">"language"</span>:<span class="w"> </span><span class="s2">"python"</span>,
+<span class="w">    </span><span class="s2">"style"</span>:<span class="w"> </span><span class="s2">"friendly"</span>
 <span class="w">    </span><span class="o">}</span>
 <span class="o">]</span>
 </code></pre></div>
@@ -3006,27 +3006,27 @@ http<span class="w"> </span>http://127.0.0.1:8000/snippets.api<span class="w">  
 </code></pre></div>
 <p>Similarly, we can control the format of the request that we send, using the <code>Content-Type</code> header.</p>
 <div class="language-bash highlight"><pre><span></span><code><span class="c1"># POST using form data</span>
-http<span class="w"> </span>--form<span class="w"> </span>POST<span class="w"> </span>http://127.0.0.1:8000/snippets/<span class="w"> </span><span class="nv">code</span><span class="o">=</span><span class="s2">&quot;print(123)&quot;</span>
+http<span class="w"> </span>--form<span class="w"> </span>POST<span class="w"> </span>http://127.0.0.1:8000/snippets/<span class="w"> </span><span class="nv">code</span><span class="o">=</span><span class="s2">"print(123)"</span>
 
 <span class="o">{</span>
-<span class="w">    </span><span class="s2">&quot;id&quot;</span>:<span class="w"> </span><span class="m">3</span>,
-<span class="w">    </span><span class="s2">&quot;title&quot;</span>:<span class="w"> </span><span class="s2">&quot;&quot;</span>,
-<span class="w">    </span><span class="s2">&quot;code&quot;</span>:<span class="w"> </span><span class="s2">&quot;print(123)&quot;</span>,
-<span class="w">    </span><span class="s2">&quot;linenos&quot;</span>:<span class="w"> </span>false,
-<span class="w">    </span><span class="s2">&quot;language&quot;</span>:<span class="w"> </span><span class="s2">&quot;python&quot;</span>,
-<span class="w">    </span><span class="s2">&quot;style&quot;</span>:<span class="w"> </span><span class="s2">&quot;friendly&quot;</span>
+<span class="w">    </span><span class="s2">"id"</span>:<span class="w"> </span><span class="m">3</span>,
+<span class="w">    </span><span class="s2">"title"</span>:<span class="w"> </span><span class="s2">""</span>,
+<span class="w">    </span><span class="s2">"code"</span>:<span class="w"> </span><span class="s2">"print(123)"</span>,
+<span class="w">    </span><span class="s2">"linenos"</span>:<span class="w"> </span>false,
+<span class="w">    </span><span class="s2">"language"</span>:<span class="w"> </span><span class="s2">"python"</span>,
+<span class="w">    </span><span class="s2">"style"</span>:<span class="w"> </span><span class="s2">"friendly"</span>
 <span class="o">}</span>
 
 <span class="c1"># POST using JSON</span>
-http<span class="w"> </span>--json<span class="w"> </span>POST<span class="w"> </span>http://127.0.0.1:8000/snippets/<span class="w"> </span><span class="nv">code</span><span class="o">=</span><span class="s2">&quot;print(456)&quot;</span>
+http<span class="w"> </span>--json<span class="w"> </span>POST<span class="w"> </span>http://127.0.0.1:8000/snippets/<span class="w"> </span><span class="nv">code</span><span class="o">=</span><span class="s2">"print(456)"</span>
 
 <span class="o">{</span>
-<span class="w">    </span><span class="s2">&quot;id&quot;</span>:<span class="w"> </span><span class="m">4</span>,
-<span class="w">    </span><span class="s2">&quot;title&quot;</span>:<span class="w"> </span><span class="s2">&quot;&quot;</span>,
-<span class="w">    </span><span class="s2">&quot;code&quot;</span>:<span class="w"> </span><span class="s2">&quot;print(456)&quot;</span>,
-<span class="w">    </span><span class="s2">&quot;linenos&quot;</span>:<span class="w"> </span>false,
-<span class="w">    </span><span class="s2">&quot;language&quot;</span>:<span class="w"> </span><span class="s2">&quot;python&quot;</span>,
-<span class="w">    </span><span class="s2">&quot;style&quot;</span>:<span class="w"> </span><span class="s2">&quot;friendly&quot;</span>
+<span class="w">    </span><span class="s2">"id"</span>:<span class="w"> </span><span class="m">4</span>,
+<span class="w">    </span><span class="s2">"title"</span>:<span class="w"> </span><span class="s2">""</span>,
+<span class="w">    </span><span class="s2">"code"</span>:<span class="w"> </span><span class="s2">"print(456)"</span>,
+<span class="w">    </span><span class="s2">"linenos"</span>:<span class="w"> </span>false,
+<span class="w">    </span><span class="s2">"language"</span>:<span class="w"> </span><span class="s2">"python"</span>,
+<span class="w">    </span><span class="s2">"style"</span>:<span class="w"> </span><span class="s2">"friendly"</span>
 <span class="o">}</span>
 </code></pre></div>
 <p>If you add a <code>--debug</code> switch to the <code>http</code> requests above, you will be able to see the request type in request headers.</p>

@@ -3195,8 +3195,8 @@ sending more complex data than simple forms</p>
 <h2 id="setting-the-parsers">Setting the parsers<a class="headerlink" href="#setting-the-parsers" title="Permanent link">&para;</a></h2>
 <p>The default set of parsers may be set globally, using the <code>DEFAULT_PARSER_CLASSES</code> setting. For example, the following settings would allow only requests with <code>JSON</code> content, instead of the default of JSON or form data.</p>
 <div class="language-text highlight"><pre><span></span><code>REST_FRAMEWORK = {
-    &#39;DEFAULT_PARSER_CLASSES&#39;: [
-        &#39;rest_framework.parsers.JSONParser&#39;,
+    'DEFAULT_PARSER_CLASSES': [
+        'rest_framework.parsers.JSONParser',
     ]
 }
 </code></pre></div>
@@ -3207,26 +3207,26 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 class ExampleView(APIView):
-    &quot;&quot;&quot;
+    """
     A view that can accept POST requests with JSON content.
-    &quot;&quot;&quot;
+    """
     parser_classes = [JSONParser]
 
     def post(self, request, format=None):
-        return Response({&#39;received data&#39;: request.data})
+        return Response({'received data': request.data})
 </code></pre></div>
 <p>Or, if you're using the <code>@api_view</code> decorator with function based views.</p>
 <div class="language-text highlight"><pre><span></span><code>from rest_framework.decorators import api_view
 from rest_framework.decorators import parser_classes
 from rest_framework.parsers import JSONParser
 
-@api_view([&#39;POST&#39;])
+@api_view(['POST'])
 @parser_classes([JSONParser])
 def example_view(request, format=None):
-    &quot;&quot;&quot;
+    """
     A view that can accept POST requests with JSON content.
-    &quot;&quot;&quot;
-    return Response({&#39;received data&#39;: request.data})
+    """
+    return Response({'received data': request.data})
 </code></pre></div>
 <hr />
 <h2 id="api-reference">API Reference<a class="headerlink" href="#api-reference" title="Permanent link">&para;</a></h2>
@@ -3260,7 +3260,7 @@ class FileUploadView(views.APIView):
     parser_classes = [FileUploadParser]
 
     def put(self, request, filename, format=None):
-        file_obj = request.data[&#39;file&#39;]
+        file_obj = request.data['file']
         # ...
         # do some stuff with uploaded file
         # ...
@@ -3269,7 +3269,7 @@ class FileUploadView(views.APIView):
 # urls.py
 urlpatterns = [
     # ...
-    re_path(r&#39;^upload/(?P&lt;filename&gt;[^/]+)$&#39;, FileUploadView.as_view())
+    re_path(r'^upload/(?P&lt;filename&gt;[^/]+)$', FileUploadView.as_view())
 ]
 </code></pre></div>
 <hr />
@@ -3288,15 +3288,15 @@ urlpatterns = [
 <h3 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h3>
 <p>The following is an example plaintext parser that will populate the <code>request.data</code> property with a string representing the body of the request.</p>
 <div class="language-text highlight"><pre><span></span><code>class PlainTextParser(BaseParser):
-    &quot;&quot;&quot;
+    """
     Plain text parser.
-    &quot;&quot;&quot;
-    media_type = &#39;text/plain&#39;
+    """
+    media_type = 'text/plain'
 
     def parse(self, stream, media_type=None, parser_context=None):
-        &quot;&quot;&quot;
+        """
         Simply return a string representing the body of the request.
-        &quot;&quot;&quot;
+        """
         return stream.read()
 </code></pre></div>
 <hr />
@@ -3310,11 +3310,11 @@ urlpatterns = [
 </code></pre></div>
 <p>Modify your REST framework settings.</p>
 <div class="language-text highlight"><pre><span></span><code>REST_FRAMEWORK = {
-    &#39;DEFAULT_PARSER_CLASSES&#39;: [
-        &#39;rest_framework_yaml.parsers.YAMLParser&#39;,
+    'DEFAULT_PARSER_CLASSES': [
+        'rest_framework_yaml.parsers.YAMLParser',
     ],
-    &#39;DEFAULT_RENDERER_CLASSES&#39;: [
-        &#39;rest_framework_yaml.renderers.YAMLRenderer&#39;,
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework_yaml.renderers.YAMLRenderer',
     ],
 }
 </code></pre></div>
@@ -3326,11 +3326,11 @@ urlpatterns = [
 </code></pre></div>
 <p>Modify your REST framework settings.</p>
 <div class="language-text highlight"><pre><span></span><code>REST_FRAMEWORK = {
-    &#39;DEFAULT_PARSER_CLASSES&#39;: [
-        &#39;rest_framework_xml.parsers.XMLParser&#39;,
+    'DEFAULT_PARSER_CLASSES': [
+        'rest_framework_xml.parsers.XMLParser',
     ],
-    &#39;DEFAULT_RENDERER_CLASSES&#39;: [
-        &#39;rest_framework_xml.renderers.XMLRenderer&#39;,
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework_xml.renderers.XMLRenderer',
     ],
 }
 </code></pre></div>

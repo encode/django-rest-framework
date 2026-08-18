@@ -2865,7 +2865,7 @@ update your REST framework settings to include <code>DEFAULT_SCHEMA_CLASS</code>
 <p><strong>settings.py</strong>:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">REST_FRAMEWORK</span> <span class="o">=</span> <span class="p">{</span>
     <span class="o">...</span><span class="p">:</span> <span class="o">...</span><span class="p">,</span>
-    <span class="s2">&quot;DEFAULT_SCHEMA_CLASS&quot;</span><span class="p">:</span> <span class="s2">&quot;rest_framework.schemas.coreapi.AutoSchema&quot;</span><span class="p">,</span>
+    <span class="s2">"DEFAULT_SCHEMA_CLASS"</span><span class="p">:</span> <span class="s2">"rest_framework.schemas.coreapi.AutoSchema"</span><span class="p">,</span>
 <span class="p">}</span>
 </code></pre></div>
 <p>You'll still be able to keep using CoreAPI schemas, API docs, and client for the
@@ -2889,9 +2889,9 @@ shortcut.</p>
     <span class="c1">#   * `title` and `description` parameters are passed to `SchemaGenerator`.</span>
     <span class="c1">#   * Provide view name for use with `reverse()`.</span>
     <span class="n">path</span><span class="p">(</span>
-        <span class="s2">&quot;openapi&quot;</span><span class="p">,</span>
-        <span class="n">get_schema_view</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Your Project&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;API for all things …&quot;</span><span class="p">),</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;openapi-schema&quot;</span><span class="p">,</span>
+        <span class="s2">"openapi"</span><span class="p">,</span>
+        <span class="n">get_schema_view</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">"Your Project"</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"API for all things …"</span><span class="p">),</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"openapi-schema"</span><span class="p">,</span>
     <span class="p">),</span>
     <span class="c1"># ...</span>
 <span class="p">]</span>

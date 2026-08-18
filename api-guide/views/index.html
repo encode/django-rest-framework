@@ -3413,19 +3413,19 @@ from rest_framework import authentication, permissions
 from django.contrib.auth.models import User
 
 class ListUsers(APIView):
-    &quot;&quot;&quot;
+    """
     View to list all users in the system.
 
     * Requires token authentication.
     * Only admin users are able to access this view.
-    &quot;&quot;&quot;
+    """
     authentication_classes = [authentication.TokenAuthentication]
     permission_classes = [permissions.IsAdminUser]
 
     def get(self, request, format=None):
-        &quot;&quot;&quot;
+        """
         Return a list of all users.
-        &quot;&quot;&quot;
+        """
         usernames = [user.username for user in User.objects.all()]
         return Response(usernames)
 </code></pre></div>
@@ -3487,15 +3487,15 @@ from rest_framework.response import Response
 
 @api_view()
 def hello_world(request):
-    return Response({&quot;message&quot;: &quot;Hello, world!&quot;})
+    return Response({"message": "Hello, world!"})
 </code></pre></div>
 <p>This view will use the default renderers, parsers, authentication classes etc specified in the <a href="../settings/">settings</a>.</p>
 <p>By default only <code>GET</code> methods will be accepted. Other methods will respond with "405 Method Not Allowed". To alter this behavior, specify which methods the view allows, like so:</p>
-<div class="language-text highlight"><pre><span></span><code>@api_view([&#39;GET&#39;, &#39;POST&#39;])
+<div class="language-text highlight"><pre><span></span><code>@api_view(['GET', 'POST'])
 def hello_world(request):
-    if request.method == &#39;POST&#39;:
-        return Response({&quot;message&quot;: &quot;Got some data!&quot;, &quot;data&quot;: request.data})
-    return Response({&quot;message&quot;: &quot;Hello, world!&quot;})
+    if request.method == 'POST':
+        return Response({"message": "Got some data!", "data": request.data})
+    return Response({"message": "Hello, world!"})
 </code></pre></div>
 <h3 id="api-policy-decorators">API policy decorators<a class="headerlink" href="#api-policy-decorators" title="Permanent link">&para;</a></h3>
 <p>To override the default settings, REST framework provides a set of additional decorators which can be added to your views.  These must come <em>after</em> (below) the <code>@api_view</code> decorator.  For example, to create a view that uses a <a href="../throttling/">throttle</a> to ensure it can only be called once per day by a particular user, use the <code>@throttle_classes</code> decorator, passing a list of throttle classes:</p>
@@ -3503,12 +3503,12 @@ def hello_world(request):
 from rest_framework.throttling import UserRateThrottle
 
 class OncePerDayUserThrottle(UserRateThrottle):
-    rate = &#39;1/day&#39;
+    rate = '1/day'
 
-@api_view([&#39;GET&#39;])
+@api_view(['GET'])
 @throttle_classes([OncePerDayUserThrottle])
 def view(request):
-    return Response({&quot;message&quot;: &quot;Hello for today! See you tomorrow!&quot;})
+    return Response({"message": "Hello for today! See you tomorrow!"})
 </code></pre></div>
 <p>These decorators correspond to the attributes set on <code>APIView</code> subclasses, described above.</p>
 <p>The available decorators are:</p>
@@ -3535,27 +3535,27 @@ class CustomAutoSchema(AutoSchema):
     def get_operation(self, path, method):
         # override view introspection here...
 
-@api_view([&#39;GET&#39;])
+@api_view(['GET'])
 @schema(CustomAutoSchema())
 def view(request):
-    return Response({&quot;message&quot;: &quot;Hello for today! See you tomorrow!&quot;})
+    return Response({"message": "Hello for today! See you tomorrow!"})
 </code></pre></div>
 <p>This decorator takes a single <code>AutoSchema</code> instance or an <code>AutoSchema</code> subclass
 instance as described in the <a href="../schemas/">Schemas documentation</a>.
 You may pass <code>None</code> in order to exclude the view from schema generation.</p>
-<div class="language-text highlight"><pre><span></span><code>@api_view([&#39;GET&#39;])
+<div class="language-text highlight"><pre><span></span><code>@api_view(['GET'])
 @schema(None)
 def view(request):
-    return Response({&quot;message&quot;: &quot;Will not appear in schema!&quot;})
+    return Response({"message": "Will not appear in schema!"})
 </code></pre></div>
 <h3 id="throttle-scope-decorator">Throttle scope decorator<a class="headerlink" href="#throttle-scope-decorator" title="Permanent link">&para;</a></h3>
 <p>To set the throttle scope of function based views you may use the <code>@throttle_scope</code> decorator:</p>
 <div class="language-text highlight"><pre><span></span><code>from rest_framework.decorators import api_view, throttle_scope
 
-@api_view([&#39;GET&#39;])
-@throttle_scope(&quot;hello&quot;)
+@api_view(['GET'])
+@throttle_scope("hello")
 def view(request):
-    return Response({&quot;message&quot;: &quot;Hello for today! See you tomorrow!&quot;})
+    return Response({"message": "Hello for today! See you tomorrow!"})
 </code></pre></div>
 <p>See <a href="../throttling/#scopedratethrottle">ScopedRateThrottle documentation</a> for more details.</p>
 

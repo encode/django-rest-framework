@@ -3065,10 +3065,10 @@ you to <a href="../../api-guide/schemas/#schemas-as-documentation">use the schem
 <span class="kn">from</span><span class="w"> </span><span class="nn">rest_framework_swagger.renderers</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenAPIRenderer</span><span class="p">,</span> <span class="n">SwaggerUIRenderer</span>
 
 <span class="n">schema_view</span> <span class="o">=</span> <span class="n">get_schema_view</span><span class="p">(</span>
-    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Example API&quot;</span><span class="p">,</span> <span class="n">renderer_classes</span><span class="o">=</span><span class="p">[</span><span class="n">OpenAPIRenderer</span><span class="p">,</span> <span class="n">SwaggerUIRenderer</span><span class="p">]</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">"Example API"</span><span class="p">,</span> <span class="n">renderer_classes</span><span class="o">=</span><span class="p">[</span><span class="n">OpenAPIRenderer</span><span class="p">,</span> <span class="n">SwaggerUIRenderer</span><span class="p">]</span>
 <span class="p">)</span>
 
-<span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span><span class="n">path</span><span class="p">(</span><span class="s2">&quot;swagger/&quot;</span><span class="p">,</span> <span class="n">schema_view</span><span class="p">),</span> <span class="o">...</span><span class="p">]</span>
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span><span class="n">path</span><span class="p">(</span><span class="s2">"swagger/"</span><span class="p">,</span> <span class="n">schema_view</span><span class="p">),</span> <span class="o">...</span><span class="p">]</span>
 </code></pre></div>
 <p>There have been a large number of fixes to the schema generation. These should
 resolve issues for anyone using the latest version of the <code>django-rest-swagger</code>
@@ -3085,7 +3085,7 @@ override the behavior.</p>
 <p>This exposes exactly the same interface as if you were using a standard
 requests session instance.</p>
 <div class="language-text highlight"><pre><span></span><code>client = RequestsClient()
-response = client.get(&#39;http://testserver/users/&#39;)
+response = client.get('http://testserver/users/')
 assert response.status_code == 200
 </code></pre></div>
 <p>Rather than sending any HTTP requests to the network, this interface will
@@ -3095,16 +3095,16 @@ coerce all outgoing requests into WSGI, and call into your application directly.
 client library.</p>
 <div class="language-text highlight"><pre><span></span><code># Fetch the API schema
 client = CoreAPIClient()
-schema = client.get(&#39;http://testserver/schema/&#39;)
+schema = client.get('http://testserver/schema/')
 
 # Create a new organization
-params = {&#39;name&#39;: &#39;MegaCorp&#39;, &#39;status&#39;: &#39;active&#39;}
-client.action(schema, [&#39;organizations&#39;, &#39;create&#39;], params)
+params = {'name': 'MegaCorp', 'status': 'active'}
+client.action(schema, ['organizations', 'create'], params)
 
 # Ensure that the organization exists in the listing
-data = client.action(schema, [&#39;organizations&#39;, &#39;list&#39;])
+data = client.action(schema, ['organizations', 'list'])
 assert(len(data) == 1)
-assert(data == [{&#39;name&#39;: &#39;MegaCorp&#39;, &#39;status&#39;: &#39;active&#39;}])
+assert(data == [{'name': 'MegaCorp', 'status': 'active'}])
 </code></pre></div>
 <p>Again, this will call directly into the application using the WSGI interface,
 rather than making actual network calls.</p>
@@ -3134,15 +3134,15 @@ When used together with our customizable error handling, this now allows you to
 modify the style of API error messages.</p>
 <p>As an example, this allows for the following style of error responses:</p>
 <div class="language-text highlight"><pre><span></span><code>{
-    &quot;message&quot;: &quot;You do not have permission to perform this action.&quot;,
-    &quot;code&quot;: &quot;permission_denied&quot;
+    "message": "You do not have permission to perform this action.",
+    "code": "permission_denied"
 }
 </code></pre></div>
 <p>This is particularly useful with validation errors, which use appropriate
 codes to identify differing kinds of failure...</p>
 <div class="language-text highlight"><pre><span></span><code>{
-    &quot;name&quot;: {&quot;message&quot;: &quot;This field is required.&quot;, &quot;code&quot;: &quot;required&quot;},
-    &quot;age&quot;: {&quot;message&quot;: &quot;A valid integer is required.&quot;, &quot;code&quot;: &quot;invalid&quot;}
+    "name": {"message": "This field is required.", "code": "required"},
+    "age": {"message": "A valid integer is required.", "code": "invalid"}
 }
 </code></pre></div>
 <h2 id="client-upload-download-support">Client upload &amp; download support<a class="headerlink" href="#client-upload-download-support" title="Permanent link">&para;</a></h2>
@@ -3159,11 +3159,11 @@ the <code>get_schema_view()</code> function, and include the view in your URL co
 <div class="language-text highlight"><pre><span></span><code>from rest_framework.schemas import get_schema_view
 from my_project.routers import router
 
-schema_view = get_schema_view(title=&#39;Example API&#39;)
+schema_view = get_schema_view(title='Example API')
 
 urlpatterns = [
-    path(&#39;&#39;, schema_view),
-    path(&#39;&#39;, include(router.urls)),
+    path('', schema_view),
+    path('', include(router.urls)),
 ]
 </code></pre></div>
 <h3 id="schema-path-representations">Schema path representations<a class="headerlink" href="#schema-path-representations" title="Permanent link">&para;</a></h3>

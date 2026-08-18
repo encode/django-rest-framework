@@ -2806,7 +2806,7 @@
 from rest_framework.response import Response
 
 def empty_view(self):
-    content = {&#39;please move along&#39;: &#39;nothing to see here&#39;}
+    content = {'please move along': 'nothing to see here'}
     return Response(content, status=status.HTTP_404_NOT_FOUND)
 </code></pre></div>
 <p>The full set of HTTP status codes included in the <code>status</code> module is listed below.</p>
@@ -2816,7 +2816,7 @@ from rest_framework.test import APITestCase
 
 class ExampleTestCase(APITestCase):
     def test_url_root(self):
-        url = reverse(&#39;index&#39;)
+        url = reverse('index')
         response = self.client.get(url)
         self.assertTrue(status.is_success(response.status_code))
 </code></pre></div>
