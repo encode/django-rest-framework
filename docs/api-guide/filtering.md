@@ -227,7 +227,7 @@ The search behavior may be specified by prefixing field names in `search_fields`
 | ------ | --------------| ------------------ |
 | `^`    | `istartswith` | Starts-with search.|
 | `=`    | `iexact`      | Exact matches.     |
-| `$`    | `iregex`      | Regex search.      |
+| `$`    | `iregex`      | Regex search (see warning below).      |
 | `@`    | `search`      | Full-text search (Currently only supported Django's [PostgreSQL backend][postgres-search]). |
 | None   | `icontains`   | Contains search (Default).  |
 
@@ -236,6 +236,9 @@ For example:
     search_fields = ['=username', '=email']
 
 By default, the search parameter is named `'search'`, but this may be overridden with the `SEARCH_PARAM` setting in the `REST_FRAMEWORK` configuration.
+
+!!! warning
+    When passing a regex to the filter via the `$` prefix or performing a `iregex` lookup, beware of maliciously crafted regular expressions that may lead to excessive CPU consumption and denial of service (DoS). Consider avoiding regex search for untrusted clients, and familiarize yourself with risky patterns (e.g., catastrophic backtracking).
 
 #### Accent-insensitive search
 
