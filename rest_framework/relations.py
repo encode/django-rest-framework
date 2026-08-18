@@ -198,9 +198,14 @@ class RelatedField(Field):
         if cutoff is not None:
             queryset = queryset[:cutoff]
 
-        return {
-            self.to_representation(item): self.display_value(item) for item in queryset
-        }
+        result = {}
+        for item in queryset:
+            value = self.to_representation(item)
+            try:
+                result[value] = self.display_value(item)
+            except TypeError:
+                result[str(value)] = self.display_value(item)
+        return result
 
     @property
     def choices(self):
