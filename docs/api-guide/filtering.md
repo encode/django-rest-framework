@@ -238,7 +238,7 @@ For example:
 By default, the search parameter is named `'search'`, but this may be overridden with the `SEARCH_PARAM` setting in the `REST_FRAMEWORK` configuration.
 
 !!! warning
-    When passing a regex to the filter via the `$` prefix, beware of maliciously crafted regular expressions that may lead to excessive CPU consumption and denial of service (DoS). Consider avoiding regex search for untrusted clients, and familiarize yourself with risky patterns (e.g., catastrophic backtracking).
+    When passing a regex to the filter via the `$` prefix or performing a `iregex` lookup, beware of maliciously crafted regular expressions that may lead to excessive CPU consumption and denial of service (DoS). Consider avoiding regex search for untrusted clients, and familiarize yourself with risky patterns (e.g., catastrophic backtracking).
 
 #### Accent-insensitive search
 
