@@ -153,6 +153,22 @@ class TestFieldMapping(TestCase):
         assert data['properties']['ro_field']['nullable'], "ro_field nullable must be true"
         assert data['properties']['ro_field']['readOnly'], "ro_field read_only must be true"
 
+    def test_model_field_default_in_schema(self):
+        class DefaultsModel(models.Model):
+            default_field = models.IntegerField(default=0)
+            callable_default_field = models.UUIDField(default=uuid.uuid4)
+
+        class Serializer(serializers.ModelSerializer):
+            class Meta:
+                model = DefaultsModel
+                fields = ["default_field", "callable_default_field"]
+
+        inspector = AutoSchema()
+
+        data = inspector.map_serializer(Serializer())
+        assert data['properties']['default_field']['default'] == 0, "model default must appear in schema"
+        assert 'default' not in data['properties']['callable_default_field'], "callable default must not appear in schema"
+
     def test_primary_key_related_field(self):
         class PrimaryKeyRelatedFieldSerializer(serializers.Serializer):
             basic = serializers.PrimaryKeyRelatedField(queryset=BasicModel.objects.all())

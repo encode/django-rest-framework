@@ -11,6 +11,7 @@ from django.http import Http404
 from django.utils.encoding import force_str
 
 from rest_framework import exceptions, serializers
+from rest_framework.fields import empty
 from rest_framework.request import clone_request
 from rest_framework.utils.field_mapping import ClassLookupDict
 
@@ -132,6 +133,10 @@ class SimpleMetadata(BaseMetadata):
             value = getattr(field, attr, None)
             if value is not None and value != '':
                 field_info[attr] = force_str(value, strings_only=True)
+
+        default = getattr(field, 'default', None)
+        if default is not None and default is not empty and not callable(default):
+            field_info['default'] = default
 
         if getattr(field, 'child', None):
             field_info['child'] = self.get_field_info(field.child)

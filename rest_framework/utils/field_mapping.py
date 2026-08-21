@@ -133,6 +133,9 @@ def get_field_kwargs(field_name, model_field):
     if model_field.has_default() or model_field.blank or model_field.null:
         kwargs['required'] = False
 
+    if model_field.has_default():
+        kwargs['default'] = model_field.default
+
     if model_field.blank and (isinstance(model_field, (models.CharField, models.TextField))):
         kwargs['allow_blank'] = True
 
