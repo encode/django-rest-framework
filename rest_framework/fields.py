@@ -4,6 +4,7 @@ import datetime
 import decimal
 import functools
 import inspect
+import math
 import re
 import uuid
 import warnings
@@ -967,11 +968,16 @@ class FloatField(Field):
             self.fail('max_string_length')
 
         try:
-            return float(data)
+            value = float(data)
         except (TypeError, ValueError):
             self.fail('invalid')
         except OverflowError:
             self.fail('overflow')
+
+        if not math.isfinite(value):
+            self.fail('invalid')
+
+        return value
 
     def to_representation(self, value):
         return float(value)
