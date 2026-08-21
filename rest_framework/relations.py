@@ -169,6 +169,12 @@ class RelatedField(Field):
     def use_pk_only_optimization(self):
         return False
 
+    def to_internal_value_bulk(self, data):
+        # Default (un-optimized) bulk conversion: delegate to per-item
+        # `to_internal_value`. Subclasses may override to batch DB access.
+        # Used by `ManyRelatedField` to avoid N+1 queries.
+        return [self.to_internal_value(item) for item in data]
+
     def get_attribute(self, instance):
         if self.use_pk_only_optimization() and self.source_attrs:
             # Optimized case, return a mock object only containing the pk attribute.
@@ -261,6 +267,43 @@ class PrimaryKeyRelatedField(RelatedField):
             self.fail('does_not_exist', pk_value=data)
         except (TypeError, ValueError):
             self.fail('incorrect_type', data_type=type(data).__name__)
+
+    def to_internal_value_bulk(self, data):
+        # Resolve every pk with a single query instead of one `get()` per item.
+        # Per-item error semantics (incorrect_type / does_not_exist), input
+        # ordering, and duplicates are all preserved.
+        queryset = self.get_queryset()
+        model_pk = queryset.model._meta.pk
+        # Each entry is (lookup_key, value): `value` mirrors the per-item path
+        # (post-`pk_field`) and is used for error details, while `lookup_key`
+        # is the pk-typed value used to match `in_bulk()` results.
+        entries = []
+        for item in data:
+            value = item
+            if self.pk_field is not None:
+                value = self.pk_field.to_internal_value(value)
+            try:
+                if isinstance(value, bool):
+                    raise TypeError
+                # Coerce to the pk's Python type (e.g. "1" -> 1) so the lookup
+                # below matches the keys returned by `in_bulk()`, exactly as
+                # `queryset.get(pk=value)` would have.
+                lookup_key = model_pk.get_prep_value(value)
+            except (TypeError, ValueError):
+                self.fail('incorrect_type', data_type=type(value).__name__)
+            entries.append((lookup_key, value))
+        try:
+            objects = queryset.in_bulk([lookup_key for lookup_key, _ in entries])
+        except (TypeError, ValueError):
+            # queryset doesn't support in_bulk (e.g. distinct/sliced); fall
+            # back to the per-item path so behavior is unchanged.
+            return [self.to_internal_value(item) for item in data]
+        result = []
+        for lookup_key, value in entries:
+            if lookup_key not in objects:
+                self.fail('does_not_exist', pk_value=value)
+            result.append(objects[lookup_key])
+        return result
 
     def to_representation(self, value):
         if self.pk_field is not None:
@@ -524,6 +567,11 @@ class ManyRelatedField(Field):
         if not self.allow_empty and len(data) == 0:
             self.fail('empty')
 
+        # `to_internal_value_bulk` is defined on `RelatedField`; fall back to
+        # the per-item loop for any other child field type.
+        bulk = getattr(self.child_relation, 'to_internal_value_bulk', None)
+        if bulk is not None:
+            return bulk(data)
         return [
             self.child_relation.to_internal_value(item)
             for item in data
