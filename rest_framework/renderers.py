@@ -109,7 +109,7 @@ class JSONRenderer(BaseRenderer):
         return ret.encode()
 
 
-class _DeprecatedResultsList(list):
+class _DeprecatedResultsList:
     """
     The list exposed under the legacy `details` template variable, warning on
     first use to point users at `results` instead.
