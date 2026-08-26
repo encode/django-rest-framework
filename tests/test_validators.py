@@ -248,6 +248,36 @@ class TestUniquenessTogetherValidation(TestCase):
             'position': 1
         }
 
+    def test_many_update_requires_child_instance(self):
+        class ListUpdateSerializer(serializers.ListSerializer):
+            def update(self, instance, validated_data):
+                return instance
+
+        class Serializer(UniquenessTogetherSerializer):
+            id = serializers.IntegerField()
+
+            class Meta(UniquenessTogetherSerializer.Meta):
+                list_serializer_class = ListUpdateSerializer
+
+        serializer = Serializer(
+            instance=UniquenessTogetherModel.objects.all(),
+            data=[{
+                'id': self.instance.pk,
+                'race_name': self.instance.race_name,
+                'position': self.instance.position,
+            }],
+            many=True,
+        )
+        message = (
+            '`UniqueTogetherValidator` cannot determine the current instance '
+            'during a multiple update. Override '
+            '`ListSerializer.run_child_validation()` to set `child.instance` '
+            'before validation.'
+        )
+
+        with pytest.raises(RuntimeError, match=re.escape(message)):
+            serializer.is_valid()
+
     def test_unique_together_is_required(self):
         """
         In a unique together validation, all fields are required.
@@ -613,6 +643,21 @@ class UniqueConstraintNullableModel(models.Model):
         constraints = [
             # Unique constraint on 2 nullable fields
             models.UniqueConstraint(name='unique_constraint', fields=('age', 'tag'))
+        ]
+
+
+class UniqueConstraintNullsDistinctModel(models.Model):
+    name = models.CharField(max_length=100)
+    code = models.CharField(max_length=100, null=True)
+    category = models.CharField(max_length=100, null=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                name='unique_code_category_nulls_not_distinct',
+                fields=('code', 'category'),
+                nulls_distinct=False,
+            ),
         ]
 
 
@@ -1066,3 +1111,131 @@ class ValidatorsTests(TestCase):
         assert validator == validator2
         validator2.date_field = "bar2"
         assert validator != validator2
+
+
+# Tests for `nulls_distinct` option
+# ---------------------------------
+
+class TestUniqueConstraintNullsDistinct(TestCase):
+    """
+    Tests for UniqueConstraint with nulls_distinct=False option.
+    When nulls_distinct=False, NULL values should be treated as equal
+    for uniqueness validation.
+    """
+
+    def setUp(self):
+        self.model = UniqueConstraintNullsDistinctModel
+
+        class UniqueConstraintNullsDistinctSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = UniqueConstraintNullsDistinctModel
+                fields = ('name', 'code', 'category')
+
+        self.serializer_class = UniqueConstraintNullsDistinctSerializer
+
+    def test_nulls_distinct_false_validates_null_as_duplicate(self):
+        """
+        When nulls_distinct=False, creating a second record with NULL values
+        in the constrained fields should fail validation.
+        """
+        self.model.objects.create(name='First', code=None, category=None)
+
+        serializer = self.serializer_class(data={
+            'name': 'Second',
+            'code': None,
+            'category': None
+        })
+        assert not serializer.is_valid()
+
+    def test_nulls_distinct_false_allows_different_non_null_values(self):
+        """
+        Non-NULL values should still work normally with uniqueness validation.
+        """
+        self.model.objects.create(name='First', code='A', category='X')
+
+        serializer = self.serializer_class(data={
+            'name': 'Second',
+            'code': 'B',
+            'category': 'Y'
+        })
+        assert serializer.is_valid(), serializer.errors
+
+    def test_nulls_distinct_false_rejects_duplicate_non_null_values(self):
+        """
+        Duplicate non-NULL values should still fail validation.
+        """
+        self.model.objects.create(name='First', code='A', category='X')
+
+        serializer = self.serializer_class(data={
+            'name': 'Second',
+            'code': 'A',
+            'category': 'X'
+        })
+        assert not serializer.is_valid()
+
+    def test_nulls_distinct_false_update_with_null_values(self):
+        """
+        Updating an existing instance with NULL values should not
+        raise a uniqueness error against itself.
+        """
+        instance = self.model.objects.create(name='First', code=None, category=None)
+
+        serializer = self.serializer_class(instance=instance, data={
+            'name': 'Updated',
+            'code': None,
+            'category': None
+        })
+        assert serializer.is_valid(), serializer.errors
+
+    def test_nulls_distinct_false_update_to_existing_null(self):
+        """
+        Updating an instance to NULL values that already exist in
+        another record should fail validation.
+        """
+        self.model.objects.create(name='First', code=None, category=None)
+        instance = self.model.objects.create(name='Second', code='A', category='X')
+
+        serializer = self.serializer_class(instance=instance, data={
+            'name': 'Second',
+            'code': None,
+            'category': None
+        })
+        assert not serializer.is_valid()
+
+    def test_nulls_distinct_false_partial_null(self):
+        """
+        When only one constrained field is NULL and the other is non-NULL,
+        validation should still treat NULL as equal for the NULL field.
+        """
+        self.model.objects.create(name='First', code=None, category='X')
+
+        serializer = self.serializer_class(data={
+            'name': 'Second',
+            'code': None,
+            'category': 'X'
+        })
+        assert not serializer.is_valid()
+
+    def test_unique_together_validator_nulls_distinct_equality(self):
+        """
+        Test that UniqueTogetherValidator equality considers nulls_distinct.
+        """
+        mock_queryset = MagicMock()
+        validator1 = UniqueTogetherValidator(
+            queryset=mock_queryset,
+            fields=('a', 'b'),
+            nulls_distinct=False
+        )
+        validator2 = UniqueTogetherValidator(
+            queryset=mock_queryset,
+            fields=('a', 'b'),
+            nulls_distinct=False
+        )
+        validator3 = UniqueTogetherValidator(
+            queryset=mock_queryset,
+            fields=('a', 'b'),
+            nulls_distinct=True
+        )
+
+        assert validator1 == validator2
+        assert validator1 != validator3

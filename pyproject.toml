@@ -53,7 +53,7 @@ test = [
 docs = [
   # MkDocs to build our documentation.
   "mkdocs==1.6.1",
-  "mkdocs-material[imaging]==9.7.6",
+  "mkdocs-material[imaging]==9.7.7",
   # pylinkvalidator to check for broken links in documentation.
   "pylinkvalidator==0.3",
 ]
@@ -72,7 +72,7 @@ optional = [
 ]
 django52 = [ "django>=5.2,<6.0" ]
 django60 = [ "django>=6.0,<6.1" ]
-django61 = [ "django>=6.1rc1,<6.2" ]
+django61 = [ "django>=6.1,<6.2" ]
 djangomain = [ "django @ https://github.com/django/django/archive/main.tar.gz" ]
 
 [tool.setuptools]
@@ -98,10 +98,16 @@ extra_standard_library = [ "types" ]
 known_third_party = [ "pytest", "_pytest", "django", "uritemplate" ]
 known_first_party = [ "rest_framework", "tests" ]
 
+[tool.flake8]
+extend-ignore = [ "E501", "W503", "W504", "B" ]
+extend-select = [ "B006" ]
+banned-modules = "json = use from rest_framework.utils import json!"
+
 [tool.codespell]
 # Ref: https://github.com/codespell-project/codespell#using-a-config-file
 skip = "*/kickstarter-announcement.md,*.js,*.map,*.po,*.css,locale"
 ignore-words = "codespell-ignore-words.txt"
+ignore-words-list = "commitish"
 builtin = "clear,rare,code,names,en-GB_to_en-US"
 
 [tool.pyproject-fmt]
