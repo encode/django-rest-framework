@@ -173,9 +173,9 @@ class UniqueTogetherValidator:
 
     def __call__(self, attrs, serializer):
         if (
-            serializer.instance is not None and
-            getattr(serializer.parent, 'many', False) and
-            not hasattr(serializer.instance, 'pk')
+                serializer.instance is not None and
+                getattr(serializer.parent, 'many', False) and
+                not hasattr(serializer.instance, 'pk')
         ):
             raise RuntimeError(
                 '`UniqueTogetherValidator` cannot determine the current '
@@ -189,27 +189,34 @@ class UniqueTogetherValidator:
         queryset = self.filter_queryset(attrs, queryset, serializer)
         queryset = self.exclude_current_instance(attrs, queryset, serializer.instance)
 
-        checked_names = [
-            serializer.fields[field_name].source for field_name in self.fields
-        ]
+        # Combine constraint fields and condition fields to detect changes
+        # in either set of fields. This ensures that updates to condition
+        # fields also trigger revalidation.
+        checked_names = list({
+                                 serializer.fields[field_name].source for field_name in self.fields
+                             } | {
+                                 serializer.fields[field_name].source for field_name in self.condition_fields
+                             })
+
         # Ignore validation if any field is None
         if serializer.instance is None:
-            checked_values = [attrs[field_name] for field_name in checked_names]
+            checked_values = [attrs.get(field_name) for field_name in checked_names]
         else:
             # Ignore validation if all field values are unchanged
             checked_values = [
-                attrs[field_name]
+                attrs.get(field_name)
                 for field_name in checked_names
-                if attrs[field_name] != getattr(serializer.instance, field_name)
+                if attrs.get(field_name) != getattr(serializer.instance, field_name, None)
             ]
 
         condition_sources = (serializer.fields[field_name].source for field_name in self.condition_fields)
         condition_kwargs = {
-            source: attrs[source]
+            source: attrs.get(source)
             if source in attrs
-            else getattr(serializer.instance, source)
+            else getattr(serializer.instance, source, None)
             for source in condition_sources
         }
+
         if checked_values:
             # Skip validation for None values unless nulls_distinct is False
             if self.nulls_distinct is not False and None in checked_values:

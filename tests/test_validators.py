@@ -668,6 +668,39 @@ class TestUniquenessTogetherValidation(TestCase):
         """)
         assert repr(serializer) == expected
 
+    def test_condition_field_change_triggers_revalidation(self):
+        """
+        When only a condition field changes, the validator should still
+        recheck uniqueness. Previously, the validator would skip validation
+        because it only checked changes in constraint fields.
+        """
+        # Create an initial record that satisfies the condition
+        instance = ConditionUniquenessTogetherModel.objects.create(
+            race_name='example',
+            position=1  # This matches the condition (position__lte=1)
+        )
+        # Create another record with a different race_name
+        ConditionUniquenessTogetherModel.objects.create(
+            race_name='other',
+            position=1
+        )
+
+        # Now update the first record's position from 1 to 2
+        # This changes the condition field (position) but not the constraint field (race_name)
+        data = {'race_name': 'example', 'position': 2}
+        serializer = ConditionUniquenessTogetherSerializer(instance, data=data)
+        assert serializer.is_valid()
+        assert serializer.validated_data == {
+            'race_name': 'example',
+            'position': 2
+        }
+
+        # Now create another record that would violate the constraint
+        # if the condition applied (but it shouldn't, because position=2 doesn't match)
+        new_data = {'race_name': 'example', 'position': 2}
+        new_serializer = ConditionUniquenessTogetherSerializer(data=new_data)
+        assert new_serializer.is_valid()
+
 
 class UniqueConstraintModel(models.Model):
     race_name = models.CharField(max_length=100)
