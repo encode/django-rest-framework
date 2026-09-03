@@ -1,5 +1,7 @@
+import pytest
 from django.test import TestCase
 
+from rest_framework.compat import uritemplate
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.routers import DefaultRouter
@@ -15,6 +17,7 @@ class TestViewInspectorDescriptor(TestCase):
     `@action(schema=AutoSchema())` on a method defined in a mixin, must
     not leak the `view` it was last accessed with onto other views.
     """
+    @pytest.mark.skipif(uritemplate is None, reason='uritemplate not installed.')
     def test_schema_shared_via_mixin_action_is_not_shared_between_viewsets(self):
         shared_schema = AutoSchema()
 
