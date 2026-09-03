@@ -3,6 +3,7 @@ inspectors.py   # Per-endpoint view introspection
 
 See schemas.__init__.py for package overview.
 """
+import copy
 import re
 from weakref import WeakKeyDictionary
 
@@ -48,9 +49,15 @@ class ViewInspector:
         return self
 
     def __set__(self, instance, other):
-        self.instance_schemas[instance] = other
         if other is not None:
+            # A single `ViewInspector` instance may be shared by multiple
+            # views, e.g. when `@action(schema=AutoSchema())` is used on a
+            # method defined in a mixin and reused across several ViewSets.
+            # Store an independent copy per view so that `other.view` isn't
+            # silently overwritten by whichever view is set last.
+            other = copy.copy(other)
             other.view = instance
+        self.instance_schemas[instance] = other
 
     @property
     def view(self):
