@@ -30,7 +30,6 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework.compat import (
     get_referenced_base_fields_from_q, postgres_fields
 )
-
 from rest_framework.deprecation import RemovedInDRF320Warning
 from rest_framework.exceptions import ErrorDetail, ValidationError
 from rest_framework.fields import get_error_detail
