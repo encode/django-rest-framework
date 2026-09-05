@@ -362,10 +362,10 @@ class LimitOffsetPagination(BasePagination):
     def max_limit(self) -> int:
         """Limit maximum page size.
 
-        Set to an integer to limit the maximum page size the client may request.
-        Only relevant if 'page_size_query_param' has also been set.
-        Defaults to `None`, meaning page size is unlimited.
-        It's recommended that you would set a limit to avoid api abuse.
+        Set to an integer to limit the maximum number of results the client may
+        request via the ``limit_query_param``.
+        Defaults to ``None``, meaning the limit is unrestricted.
+        It is recommended that you set a limit to avoid API abuse.
 
         """
         return api_settings.MAX_PAGE_SIZE
