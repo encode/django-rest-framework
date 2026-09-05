@@ -29,6 +29,12 @@ urlpatterns = [
 ```
 
 
+## Form rendering
+
+In order to render the HTML forms, the browsable API needs to know which fields each form should contain, so it asks the view for a serializer once per form.  Each of those calls is made with the request method overridden to match the form being rendered, rather than the method that was actually used for the request.
+
+This means that during a `GET` request the view may be called again with `self.request.method` set to `POST`, `PUT`, `PATCH`, `DELETE` or `OPTIONS`.  Any code that branches on the request method will observe the overridden value.  Two common cases are a `get_serializer_class()` implementation that returns a different serializer for read and write operations, and permission classes, which are checked for each method before its form is rendered.  This is expected behavior, and only affects rendering of the browsable API.
+
 ## Customizing
 
 The browsable API is built with [Twitter's Bootstrap][bootstrap] (v 3.4.1), making it easy to customize the look-and-feel.
