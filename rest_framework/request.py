@@ -355,6 +355,10 @@ class Request:
         if not parser:
             raise exceptions.UnsupportedMediaType(media_type)
 
+        from rest_framework.parsers import FormParser, JSONParser
+        if isinstance(parser, (JSONParser, FormParser)):
+            stream = io.BytesIO(self.body)
+
         try:
             parsed = parser.parse(stream, media_type, self.parser_context)
         except Exception:

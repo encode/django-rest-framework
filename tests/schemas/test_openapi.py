@@ -61,7 +61,15 @@ class TestFieldMapping(TestCase):
             (serializers.ListField(), {'items': {}, 'type': 'array'}),
             (serializers.ListField(child=serializers.BooleanField()), {'items': {'type': 'boolean'}, 'type': 'array'}),
             (serializers.ListField(child=serializers.FloatField()), {'items': {'type': 'number'}, 'type': 'array'}),
+            (serializers.ListField(child=serializers.FloatField(min_value=0.0)),
+             {'items': {'type': 'number', 'minimum': 0.0}, 'type': 'array'}),
+            (serializers.ListField(child=serializers.FloatField(max_value=0.0)),
+             {'items': {'type': 'number', 'maximum': 0.0}, 'type': 'array'}),
             (serializers.ListField(child=serializers.CharField()), {'items': {'type': 'string'}, 'type': 'array'}),
+            (serializers.ListField(child=serializers.IntegerField(min_value=0)),
+             {'items': {'type': 'integer', 'minimum': 0}, 'type': 'array'}),
+            (serializers.ListField(child=serializers.IntegerField(max_value=0)),
+             {'items': {'type': 'integer', 'maximum': 0}, 'type': 'array'}),
             (serializers.ListField(child=serializers.IntegerField(max_value=4294967295)),
              {'items': {'type': 'integer', 'maximum': 4294967295, 'format': 'int64'}, 'type': 'array'}),
             (serializers.ListField(child=serializers.ChoiceField(choices=[('a', 'Choice A'), ('b', 'Choice B')])),
@@ -86,6 +94,38 @@ class TestFieldMapping(TestCase):
                 {'items': {'enum': [1, 2, 3], 'type': 'integer'}, 'type': 'array'}),
             (serializers.IntegerField(min_value=2147483648),
              {'type': 'integer', 'minimum': 2147483648, 'format': 'int64'}),
+        ]
+        for field, mapping in cases:
+            with self.subTest(field=field):
+                assert inspector.map_field(field) == mapping
+
+    def test_integer_field_int64_boundary_mapping(self):
+        inspector = AutoSchema()
+        cases = [
+            (
+                serializers.IntegerField(min_value=-2147483649),
+                {'type': 'integer', 'minimum': -2147483649, 'format': 'int64'},
+            ),
+            (
+                serializers.IntegerField(max_value=-2147483649),
+                {'type': 'integer', 'maximum': -2147483649, 'format': 'int64'},
+            ),
+            (
+                serializers.IntegerField(min_value=-2147483648),
+                {'type': 'integer', 'minimum': -2147483648},
+            ),
+            (
+                serializers.IntegerField(max_value=2147483648),
+                {'type': 'integer', 'maximum': 2147483648, 'format': 'int64'},
+            ),
+            (
+                serializers.IntegerField(max_value=2147483647),
+                {'type': 'integer', 'maximum': 2147483647},
+            ),
+            (
+                serializers.IntegerField(min_value=2147483648),
+                {'type': 'integer', 'minimum': 2147483648, 'format': 'int64'},
+            ),
         ]
         for field, mapping in cases:
             with self.subTest(field=field):
