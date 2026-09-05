@@ -1,7 +1,5 @@
 import copy
-import unittest
 
-from django import VERSION as DJANGO_VERSION
 from django.test import TestCase
 from django.views.decorators.vary import vary_on_headers
 
@@ -177,7 +175,6 @@ class TestCustomSettings(TestCase):
         assert response.data == {'error': 'SyntaxError'}
 
 
-@unittest.skipUnless(DJANGO_VERSION >= (5, 1), 'Only for Django 5.1+')
 class TestLoginRequiredMiddlewareCompat(TestCase):
     def test_class_based_view_opted_out(self):
         class_based_view = BasicView.as_view()
