@@ -194,7 +194,7 @@ class PageNumberPagination(BasePagination):
         Set to an integer to limit the maximum page size the client may request.
         Only relevant if 'page_size_query_param' has also been set.
         Defaults to `None`, meaning page size is unlimited.
-        It's recommended that you would set a limit to avoid api abuse.
+        It's recommended that you set a limit to avoid API abuse.
 
         """
         return api_settings.MAX_PAGE_SIZE
