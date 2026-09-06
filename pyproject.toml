@@ -114,8 +114,13 @@ builtin = "clear,rare,code,names,en-GB_to_en-US"
 max_supported_python = "3.14"
 keep_full_version = true
 
-[tool.pytest.ini_options]
-addopts = "--tb=short --strict-markers -ra --no-migrations"
+[tool.pytest]
+addopts = [
+  "--tb=short",
+  "--strict-markers",
+  "-ra",
+  "--no-migrations",
+]
 testpaths = [ "tests" ]
 markers = [
   "requires_postgres: marks tests as requiring a PostgreSQL database backend",
