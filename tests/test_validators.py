@@ -183,6 +183,7 @@ class TestUniquenessValidation(TestCase):
         class ListUpdateSerializer(serializers.ListSerializer):
             def run_child_validation(self, data):
                 self.child.instance = self.instance.get(pk=data['id'])
+                self.child.initial_data = data
                 return super().run_child_validation(data)
 
             def update(self, instance, validated_data):
@@ -365,6 +366,7 @@ class TestUniquenessTogetherValidation(TestCase):
         class ListUpdateSerializer(serializers.ListSerializer):
             def run_child_validation(self, data):
                 self.child.instance = self.instance.get(pk=data['id'])
+                self.child.initial_data = data
                 return super().run_child_validation(data)
 
             def update(self, instance, validated_data):
@@ -386,6 +388,47 @@ class TestUniquenessTogetherValidation(TestCase):
             many=True,
         )
         assert serializer.is_valid(), serializer.errors
+
+    def test_many_partial_update_with_child_instance(self):
+        """
+        During a partial multiple update, unprovided field values are read
+        from the instance set by `run_child_validation()`.
+        """
+        class ListUpdateSerializer(serializers.ListSerializer):
+            def run_child_validation(self, data):
+                self.child.instance = self.instance.get(pk=data['id'])
+                self.child.initial_data = data
+                return super().run_child_validation(data)
+
+            def update(self, instance, validated_data):
+                return instance
+
+        class Serializer(UniquenessTogetherSerializer):
+            id = serializers.IntegerField()
+
+            class Meta(UniquenessTogetherSerializer.Meta):
+                list_serializer_class = ListUpdateSerializer
+
+        # An unchanged value is not a conflict with the instance itself.
+        serializer = Serializer(
+            instance=UniquenessTogetherModel.objects.all(),
+            data=[{'id': self.instance.pk, 'position': self.instance.position}],
+            many=True,
+            partial=True,
+        )
+        assert serializer.is_valid(), serializer.errors
+
+        # A value that collides with a different instance is rejected.
+        serializer = Serializer(
+            instance=UniquenessTogetherModel.objects.all(),
+            data=[{'id': self.instance.pk, 'position': 2}],
+            many=True,
+            partial=True,
+        )
+        assert not serializer.is_valid()
+        assert serializer.errors == {
+            0: {'non_field_errors': ['The fields race_name, position must make a unique set.']},
+        }
 
     def test_unique_together_is_required(self):
         """
@@ -1075,6 +1118,7 @@ class TestUniquenessForDateValidation(TestCase):
         class ListUpdateSerializer(serializers.ListSerializer):
             def run_child_validation(self, data):
                 self.child.instance = self.instance.get(pk=data['id'])
+                self.child.initial_data = data
                 return super().run_child_validation(data)
 
             def update(self, instance, validated_data):
