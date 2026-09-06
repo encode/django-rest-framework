@@ -1131,7 +1131,10 @@ class TestIntegerField(FieldValues):
     invalid_inputs = {
         0.5: ['A valid integer is required.'],
         'abc': ['A valid integer is required.'],
-        '0.5': ['A valid integer is required.']
+        '0.5': ['A valid integer is required.'],
+        'inf': ['A valid integer is required.'],
+        'nan': ['A valid integer is required.'],
+        '1e400': ['A valid integer is required.'],
     }
     outputs = {
         '1': 1,
