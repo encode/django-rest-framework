@@ -179,7 +179,7 @@ To deprecate a feature:
     from rest_framework.deprecation import RemovedInDRF32Warning
 
     warnings.warn(
-        "The `foo` argument is deprecated and will be removed in DRF 3.20. "
+        "The `foo` argument is deprecated and will be removed in DRF 3.2. "
         "Use `bar` instead.",
         RemovedInDRF32Warning,
         stacklevel=2,
