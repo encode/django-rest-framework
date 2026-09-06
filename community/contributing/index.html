@@ -2061,6 +2061,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#deprecating-a-feature" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deprecating a feature
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2936,6 +2947,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#deprecating-a-feature" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deprecating a feature
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -3216,6 +3238,47 @@ class MyDatabaseTest:
 <p><em>Above: build notifications</em></p>
 <h3 id="managing-compatibility-issues">Managing compatibility issues<a class="headerlink" href="#managing-compatibility-issues" title="Permanent link">&para;</a></h3>
 <p>Sometimes, in order to ensure your code works on various different versions of Django, Python or third party libraries, you'll need to run slightly different code depending on the environment.  Any code that branches in this way should be isolated into the <code>compat.py</code> module, and should provide a single common interface that the rest of the codebase can use.</p>
+<h3 id="deprecating-a-feature">Deprecating a feature<a class="headerlink" href="#deprecating-a-feature" title="Permanent link">&para;</a></h3>
+<p>REST framework follows a formal <a href="../release-notes/#deprecation-policy">deprecation policy</a>: a feature deprecated during the development of <code>3.X</code> keeps working until <code>3.X+2</code> removes it. In practice this means that a pull request that deprecates something should not change any behavior, only warn about the change to come.</p>
+<p>The warning classes live in <code>rest_framework/deprecation.py</code>, and are named after the release that removes the feature. For example, during the development of 3.0 you'll find:</p>
+<ul>
+<li><code>RemovedInDRF31Warning</code>, a <code>DeprecationWarning</code>, aliased as <code>RemovedInNextDRFVersionWarning</code>. Features flagged with it were deprecated one cycle ago, and are removed in the next release.</li>
+<li><code>RemovedInDRF32Warning</code>, a <code>PendingDeprecationWarning</code>, aliased as <code>RemovedAfterNextDRFVersionWarning</code>. This is the class <strong>new deprecations</strong> should use.</li>
+</ul>
+<p>To deprecate a feature:</p>
+<ol>
+<li>
+<p>Keep the existing behavior working, and raise the pending deprecation warning from the deprecated code path. Refer to the warning class by its concrete name rather than the alias, so that it's easy to grep for everything that has to go when the removal comes around.</p>
+<div class="language-python highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">rest_framework.deprecation</span><span class="w"> </span><span class="kn">import</span> <span class="n">RemovedInDRF32Warning</span>
+
+<span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+    <span class="s2">"The `foo` argument is deprecated and will be removed in DRF 3.2. "</span>
+    <span class="s2">"Use `bar` instead."</span><span class="p">,</span>
+    <span class="n">RemovedInDRF32Warning</span><span class="p">,</span>
+    <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+<span class="p">)</span>
+</code></pre></div>
+<p>The message should say what is deprecated, which release removes it, and what to use instead. Pick a <code>stacklevel</code> that points the warning at the user's code rather than at REST framework internals.</p>
+</li>
+<li>
+<p>If the deprecation can be worked around ahead of time, consider adding a setting that opts into the new behavior early, and mention it in the warning message.</p>
+</li>
+<li>
+<p>Add a test asserting that the warning is raised, and update the existing tests of the old behavior to expect it:</p>
+<div class="language-python highlight"><pre><span></span><code><span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">warns</span><span class="p">(</span><span class="n">RemovedInDRF32Warning</span><span class="p">,</span> <span class="n">match</span><span class="o">=</span><span class="s2">"Use `bar` instead"</span><span class="p">):</span>
+    <span class="o">...</span>
+</code></pre></div>
+</li>
+<li>
+<p>Update the documentation for the feature, flagging the deprecation with an admonition:</p>
+<div class="language-text highlight"><pre><span></span><code>!!! warning
+    The `foo` argument is deprecated and will be removed in DRF 3.2. Use `bar` instead.
+</code></pre></div>
+</li>
+</ol>
+<p>Removing a deprecated feature is the mirror image, and happens as part of the release process. When 3.1 is released, everything raising a <code>RemovedInDRF31Warning</code> is deleted, along with the class itself and the documentation of the deprecated behavior, <code>RemovedInDRF32Warning</code> is escalated to subclass <code>DeprecationWarning</code>, a fresh <code>RemovedInDRF33Warning</code> is added for the next cycle's deprecations, and the two aliases are moved on to point at them.</p>
 <h2 id="documentation">Documentation<a class="headerlink" href="#documentation" title="Permanent link">&para;</a></h2>
 <p>The documentation for REST framework is built from the <a href="https://daringfireball.net/projects/markdown/basics">Markdown</a> source files in <a href="https://github.com/encode/django-rest-framework/tree/main/docs">the docs directory</a>.</p>
 <p>There are many great Markdown editors that make working with the documentation really easy.  The <a href="http://mouapp.com/">Mou editor for Mac</a> is one such editor that comes highly recommended.</p>

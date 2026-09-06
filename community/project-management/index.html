@@ -2874,7 +2874,8 @@
 <li><code>docs</code> Python &amp; Django versions</li>
 </ul>
 </li>
-<li>Ensure the pull request increments the version to <code>*.*.*</code> in <a href="https://github.com/encode/django-rest-framework/blob/main/rest_framework/__init__.py"><code>restframework/__init__.py</code></a>.</li>
+<li>Ensure the pull request increments the version to <code>*.*.*</code> in <a href="https://github.com/encode/django-rest-framework/blob/main/rest_framework/__init__.py"><code>rest_framework/__init__.py</code></a>.</li>
+<li>Ensure the deprecation warnings in <a href="https://github.com/encode/django-rest-framework/blob/main/rest_framework/deprecation.py"><code>rest_framework/deprecation.py</code></a> have been rotated for the release, following the <a href="../release-notes/#deprecation-policy">deprecation policy</a>.</li>
 <li>Ensure documentation validates<ul>
 <li>Build and serve docs <code>mkdocs serve</code></li>
 <li>Validate links <code>pylinkvalidate.py -P http://127.0.0.1:8000</code></li>
