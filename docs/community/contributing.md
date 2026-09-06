@@ -164,7 +164,7 @@ Sometimes, in order to ensure your code works on various different versions of D
 
 REST framework follows a formal [deprecation policy][deprecation-policy]: a feature deprecated during the development of `3.X` keeps working until `3.X+2` removes it. In practice this means that a pull request that deprecates something should not change any behavior, only warn about the change to come.
 
-The warning classes live in `rest_framework/deprecation.py`, and are named after the release that removes the feature. During the development of 3.0 you'll find:
+The warning classes live in `rest_framework/deprecation.py`, and are named after the release that removes the feature. For example, during the development of 3.0 you'll find:
 
 * `RemovedInDRF31Warning`, a `DeprecationWarning`, aliased as `RemovedInNextDRFVersionWarning`. Features flagged with it were deprecated one cycle ago, and are removed in the next release.
 * `RemovedInDRF32Warning`, a `PendingDeprecationWarning`, aliased as `RemovedAfterNextDRFVersionWarning`. This is the class **new deprecations** should use.
