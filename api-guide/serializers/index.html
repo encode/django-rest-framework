@@ -5270,6 +5270,29 @@ class BookSerializer(serializers.Serializer):
     class Meta:
         list_serializer_class = BookListSerializer
 </code></pre></div>
+<p>If the child serializer includes uniqueness validators (<code>UniqueValidator</code>, <code>UniqueTogetherValidator</code>, or the
+<code>UniqueForDateValidator</code> family), they need to know which object each item in the list is updating, so
+that the object itself is not reported as a uniqueness conflict. By default the child serializer's
+<code>.instance</code> is the whole queryset or list that was passed to the list serializer, so these validators will
+raise a <code>RuntimeError</code> during a multiple update. To support this, override <code>run_child_validation()</code> on
+your <code>ListSerializer</code> subclass to set the child's <code>.instance</code> and <code>.initial_data</code> for each item before
+validation. For example, if <code>self.instance</code> is a queryset:</p>
+<div class="language-text highlight"><pre><span></span><code>class BookListSerializer(serializers.ListSerializer):
+    def run_child_validation(self, data):
+        # `.instance` stays `None` for items that do not exist yet, and
+        # for malformed items, which child validation will then reject
+        # as usual.
+        self.child.instance = None
+        try:
+            self.child.instance = self.instance.filter(pk=data['id']).first()
+        except (TypeError, KeyError, ValueError):
+            pass
+        self.child.initial_data = data
+        return super().run_child_validation(data)
+
+    def update(self, instance, validated_data):
+        ...
+</code></pre></div>
 <h3 id="customizing-listserializer-initialization">Customizing ListSerializer initialization<a class="headerlink" href="#customizing-listserializer-initialization" title="Permanent link">&para;</a></h3>
 <p>When a serializer with <code>many=True</code> is instantiated, we need to determine which arguments and keyword arguments should be passed to the <code>.__init__()</code> method for both the child <code>Serializer</code> class, and for the parent <code>ListSerializer</code> class.</p>
 <p>The default implementation is to pass all arguments to both classes, except for <code>validators</code>, and any custom keyword arguments, both of which are assumed to be intended for the child serializer class.</p>
