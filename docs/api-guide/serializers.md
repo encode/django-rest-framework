@@ -860,8 +860,14 @@ If the child serializer includes uniqueness validators (`UniqueValidator`, `Uniq
 
     class BookListSerializer(serializers.ListSerializer):
         def run_child_validation(self, data):
-            # `.instance` is `None` for items that do not exist yet.
-            self.child.instance = self.instance.filter(pk=data.get('id')).first()
+            # `.instance` stays `None` for items that do not exist yet, and
+            # for malformed items, which child validation will then reject
+            # as usual.
+            self.child.instance = None
+            try:
+                self.child.instance = self.instance.filter(pk=data['id']).first()
+            except (TypeError, KeyError, ValueError):
+                pass
             self.child.initial_data = data
             return super().run_child_validation(data)
 
