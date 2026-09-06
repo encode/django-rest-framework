@@ -828,25 +828,24 @@ class TestUniquenessTogetherValidation(TestCase):
         recheck uniqueness. Previously, the validator would skip validation
         because it only checked changes in constraint fields.
         """
-        # Create an initial record that satisfies the condition
+        # Start outside the condition, with a conflicting constrained value already present.
         instance = ConditionUniquenessTogetherModel.objects.create(
             race_name='example',
-            position=1  # This matches the condition (position__lte=1)
+            position=2,
         )
-        # Create another record with a different race_name
         ConditionUniquenessTogetherModel.objects.create(
-            race_name='other',
-            position=1
+            race_name='example',
+            position=1,
         )
 
-        # Now update the first record's position from 1 to 2
-        # This changes the condition field (position) but not the constraint field (race_name)
-        data = {'race_name': 'example', 'position': 2}
+        # Changing only the condition field so the condition starts applying must revalidate.
+        data = {'race_name': 'example', 'position': 1}
         serializer = ConditionUniquenessTogetherSerializer(instance, data=data)
-        assert serializer.is_valid()
-        assert serializer.validated_data == {
-            'race_name': 'example',
-            'position': 2
+        assert not serializer.is_valid()
+        assert serializer.errors == {
+            'non_field_errors': [
+                'The fields race_name must make a unique set.'
+            ]
         }
 
         # Now create another record that would violate the constraint
