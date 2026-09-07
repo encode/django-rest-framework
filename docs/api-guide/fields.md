@@ -63,7 +63,7 @@ For example:
 
 When serializing the instance, default will be used if the object attribute or dictionary key is not present in the instance.
 
-Note that setting a `default` value implies that the field is not required. Including both the `default` and `required` keyword arguments is invalid and will raise an error.
+Note that setting a `default` value implies that the field is not required. Combining `default` with `required=True` is invalid and will raise an error. An explicit `required=False` alongside `default` is allowed, but redundant.
 
 ### `allow_null`
 
@@ -83,6 +83,22 @@ When serializing fields with dotted notation, it may be necessary to provide a `
         email = serializers.EmailField(source="user.email")
 
 This case would require user object to be fetched from database when it is not prefetched. If that is not wanted, be sure to be using `prefetch_related` and `select_related` methods appropriately. For more information about the methods refer to [django documentation][django-docs-select-related].
+
+Also note that when dotted notation is used, after serializer validation the `.validated_data` attribute will _not_ include a flat `"<fieldname>": <value>` item. Instead, it will include a nested dictionary derived by expanding the dotted path value of the `source` argument. So, for the previous serializer example, `.validated_data` would be:
+
+    {
+        "user": {
+            "email": ...
+        }
+    }
+
+instead of:
+
+    {
+        "email": ...
+    }
+
+This works this way because, in DRF's philosophy, the `.data` attribute represents the external API representation (where key names equal field names), while the `.validated_data` attribute represents the internal object structure (where the nesting and key names follow the `source` path).
 
 The value `source='*'` has a special meaning, and is used to indicate that the entire object should be passed through to the field.  This can be useful for creating nested representations, or for fields which require access to the complete object in order to determine the output representation.
 
