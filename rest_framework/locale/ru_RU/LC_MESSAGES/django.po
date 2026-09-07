@@ -53,7 +53,7 @@ msgstr ""
 
 #: authentication.py:203
 msgid "Invalid token."
-msgstr ""
+msgstr "Недействительный токен."
 
 #: authtoken/apps.py:7
 msgid "Auth Token"

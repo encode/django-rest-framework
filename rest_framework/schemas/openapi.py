@@ -86,7 +86,7 @@ class SchemaGenerator(BaseSchemaGenerator):
 
             components_schemas.update(components)
 
-            # Normalise path for any provided mount url.
+            # Normalize path for any provided mount url.
             if path.startswith('/'):
                 path = path[1:]
             path = urljoin(self.url or '/', path)
@@ -428,7 +428,7 @@ class AutoSchema(ViewInspector):
             }
 
         # "Formats such as "email", "uuid", and so on, MAY be used even though undefined by this specification."
-        # see: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#data-types
+        # see: https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.2.md#data-types
         # see also: https://swagger.io/docs/specification/data-models/data-types/#string
         if isinstance(field, serializers.EmailField):
             return {
@@ -487,8 +487,17 @@ class AutoSchema(ViewInspector):
                 'type': 'integer'
             }
             self._map_min_max(field, content)
-            # 2147483647 is max for int32_size, so we use int64 for format
-            if int(content.get('maximum', 0)) > 2147483647 or int(content.get('minimum', 0)) > 2147483647:
+            # Use int64 format when the value range exceeds signed int32 bounds.
+            maximum = content.get('maximum')
+            minimum = content.get('minimum')
+            if (
+                (maximum is not None and (
+                    int(maximum) > 2147483647 or int(maximum) < -2147483648
+                )) or
+                (minimum is not None and (
+                    int(minimum) > 2147483647 or int(minimum) < -2147483648
+                ))
+            ):
                 content['format'] = 'int64'
             return content
 
@@ -508,9 +517,9 @@ class AutoSchema(ViewInspector):
         return {'type': FIELD_CLASS_SCHEMA_TYPE.get(field.__class__, 'string')}
 
     def _map_min_max(self, field, content):
-        if field.max_value:
+        if field.max_value is not None:
             content['maximum'] = field.max_value
-        if field.min_value:
+        if field.min_value is not None:
             content['minimum'] = field.min_value
 
     def map_serializer(self, serializer):
@@ -555,7 +564,7 @@ class AutoSchema(ViewInspector):
         """
         for v in field.validators:
             # "Formats such as "email", "uuid", and so on, MAY be used even though undefined by this specification."
-            # https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#data-types
+            # https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.2.md#data-types
             if isinstance(v, EmailValidator):
                 schema['format'] = 'email'
             if isinstance(v, URLValidator):

@@ -121,6 +121,9 @@ def get_field_kwargs(field_name, model_field):
     if model_field.null:
         kwargs['allow_null'] = True
 
+    if model_field.choices:
+        kwargs['choices'] = model_field.choices
+
     if isinstance(model_field, models.AutoField) or not model_field.editable:
         # If this field is read-only, then return early.
         # Further keyword arguments are not valid.
@@ -151,9 +154,7 @@ def get_field_kwargs(field_name, model_field):
         if model_field.allow_folders is not False:
             kwargs['allow_folders'] = model_field.allow_folders
 
-    if model_field.choices:
-        kwargs['choices'] = model_field.choices
-    else:
+    if not model_field.choices:
         # Ensure that max_value is passed explicitly as a keyword arg,
         # rather than as a validator.
         max_value = next((
@@ -203,11 +204,17 @@ def get_field_kwargs(field_name, model_field):
                 if validator is not validators.validate_slug
             ]
 
-        # IPAddressField do not need to include the 'validate_ipv46_address' argument,
+        # IPAddressField does not need to include the IP address validators,
+        # as it adds its own based on the 'protocol' argument.
         if isinstance(model_field, models.GenericIPAddressField):
+            kwargs['protocol'] = model_field.protocol
             validator_kwarg = [
                 validator for validator in validator_kwarg
-                if validator is not validators.validate_ipv46_address
+                if validator not in (
+                    validators.validate_ipv46_address,
+                    validators.validate_ipv4_address,
+                    validators.validate_ipv6_address,
+                )
             ]
         # Our decimal validation is handled in the field code, not validator code.
         if isinstance(model_field, models.DecimalField):

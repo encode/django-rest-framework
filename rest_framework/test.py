@@ -1,11 +1,14 @@
 # Note that we import as `DjangoRequestFactory` and `DjangoClient` in order
 # to make it harder for the user to import the wrong thing without realizing.
 import io
+from contextlib import contextmanager
 from importlib import import_module
 
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.core.handlers.wsgi import WSGIHandler
+from django.core.signals import request_finished, request_started
+from django.db import close_old_connections
 from django.test import override_settings, testcases
 from django.test.client import Client as DjangoClient
 from django.test.client import ClientHandler
@@ -13,13 +16,28 @@ from django.test.client import RequestFactory as DjangoRequestFactory
 from django.utils.encoding import force_bytes
 from django.utils.http import urlencode
 
-from rest_framework.compat import coreapi, requests
+from rest_framework.compat import requests
 from rest_framework.settings import api_settings
 
 
 def force_authenticate(request, user=None, token=None):
     request._force_auth_user = user
     request._force_auth_token = token
+
+
+@contextmanager
+def _keep_connections_open():
+    """
+    Prevent Django from closing the database connection while a request
+    is dispatched, matching the behavior of Django's ClientHandler.
+    """
+    request_started.disconnect(close_old_connections)
+    request_finished.disconnect(close_old_connections)
+    try:
+        yield
+    finally:
+        request_started.connect(close_old_connections)
+        request_finished.connect(close_old_connections)
 
 
 if requests is not None:
@@ -90,7 +108,8 @@ if requests is not None:
 
             # Make the outgoing request via WSGI.
             environ = self.get_environ(request)
-            wsgi_response = self.app(environ, start_response)
+            with _keep_connections_open():
+                wsgi_response = self.app(environ, start_response)
 
             # Build the underlying urllib3.HTTPResponse
             raw_kwargs['body'] = io.BytesIO(b''.join(wsgi_response))
@@ -117,22 +136,6 @@ if requests is not None:
 else:
     def RequestsClient(*args, **kwargs):
         raise ImproperlyConfigured('requests must be installed in order to use RequestsClient.')
-
-
-if coreapi is not None:
-    class CoreAPIClient(coreapi.Client):
-        def __init__(self, *args, **kwargs):
-            self._session = RequestsClient()
-            kwargs['transports'] = [coreapi.transports.HTTPTransport(session=self.session)]
-            super().__init__(*args, **kwargs)
-
-        @property
-        def session(self):
-            return self._session
-
-else:
-    def CoreAPIClient(*args, **kwargs):
-        raise ImproperlyConfigured('coreapi must be installed in order to use CoreAPIClient.')
 
 
 class APIRequestFactory(DjangoRequestFactory):

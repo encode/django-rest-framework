@@ -5,6 +5,7 @@ Helper classes for parsers.
 import contextlib
 import datetime
 import decimal
+import ipaddress
 import json  # noqa
 import uuid
 
@@ -12,8 +13,6 @@ from django.db.models.query import QuerySet
 from django.utils import timezone
 from django.utils.encoding import force_str
 from django.utils.functional import Promise
-
-from rest_framework.compat import coreapi
 
 
 class JSONEncoder(json.JSONEncoder):
@@ -45,6 +44,15 @@ class JSONEncoder(json.JSONEncoder):
             return float(obj)
         elif isinstance(obj, uuid.UUID):
             return str(obj)
+        elif isinstance(obj, (
+            ipaddress.IPv4Address,
+            ipaddress.IPv6Address,
+            ipaddress.IPv4Network,
+            ipaddress.IPv6Network,
+            ipaddress.IPv4Interface,
+            ipaddress.IPv6Interface)
+        ):
+            return str(obj)
         elif isinstance(obj, QuerySet):
             return tuple(obj)
         elif isinstance(obj, bytes):
@@ -53,11 +61,6 @@ class JSONEncoder(json.JSONEncoder):
         elif hasattr(obj, 'tolist'):
             # Numpy arrays and array scalars.
             return obj.tolist()
-        elif (coreapi is not None) and isinstance(obj, (coreapi.Document, coreapi.Error)):
-            raise RuntimeError(
-                'Cannot return a coreapi object from a JSON view. '
-                'You should be using a schema renderer instead for this view.'
-            )
         elif hasattr(obj, '__getitem__'):
             cls = (list if isinstance(obj, (list, tuple)) else dict)
             with contextlib.suppress(Exception):

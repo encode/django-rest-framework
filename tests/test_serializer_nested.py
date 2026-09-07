@@ -199,14 +199,14 @@ class TestNestedSerializerWithList:
         serializer = self.Serializer(data=input_data)
 
         assert serializer.is_valid()
-        assert serializer.validated_data['nested']['example'] == {1, 2}
+        assert serializer.validated_data['nested']['example'] == [1, 2]
 
     def test_nested_serializer_with_list_multipart(self):
         input_data = QueryDict('nested.example=1&nested.example=2')
         serializer = self.Serializer(data=input_data)
 
         assert serializer.is_valid()
-        assert serializer.validated_data['nested']['example'] == {1, 2}
+        assert serializer.validated_data['nested']['example'] == [1, 2]
 
 
 class TestNotRequiredNestedSerializerWithMany:
@@ -315,7 +315,7 @@ if postgres_fields:
             required_db_features = {'supports_json_field'}
 
 
-@pytest.mark.skipif(not postgres_fields, reason='psycopg2 is not installed')
+@pytest.mark.skipif(not postgres_fields, reason='psycopg is not installed')
 class TestNestedNonRelationalFieldWrite:
     """
     Test that raise_errors_on_nested_writes does not raise `AssertionError` when the

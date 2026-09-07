@@ -1,5 +1,5 @@
 """
-Generic views that provide commonly needed behaviour.
+Generic views that provide commonly needed behavior.
 """
 from django.core.exceptions import ValidationError
 from django.db.models.query import QuerySet

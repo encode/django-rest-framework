@@ -81,6 +81,7 @@ urlpatterns = [
 @override_settings(ROOT_URLCONF=__name__)
 class BasicAuthTests(TestCase):
     """Basic authentication"""
+
     def setUp(self):
         self.csrf_client = APIClient(enforce_csrf_checks=True)
         self.username = 'john'
@@ -198,6 +199,7 @@ class BasicAuthTests(TestCase):
 @override_settings(ROOT_URLCONF=__name__)
 class SessionAuthTests(TestCase):
     """User session authentication"""
+
     def setUp(self):
         self.csrf_client = APIClient(enforce_csrf_checks=True)
         self.non_csrf_client = APIClient(enforce_csrf_checks=False)
@@ -418,6 +420,41 @@ class TokenAuthTests(BaseTokenAuthTests, TestCase):
         key = self.model.generate_key()
         assert isinstance(key, str)
 
+    def test_generate_key_returns_valid_format(self):
+        """Ensure generate_key returns a valid token format"""
+        key = self.model.generate_key()
+        assert len(key) == 40
+        # Should contain only valid hexadecimal characters
+        assert all(c in '0123456789abcdef' for c in key)
+
+    def test_generate_key_produces_unique_values(self):
+        """Ensure generate_key produces unique values across multiple calls"""
+        keys = set()
+        for _ in range(100):
+            key = self.model.generate_key()
+            assert key not in keys, f"Duplicate key generated: {key}"
+            keys.add(key)
+
+    def test_generate_key_collision_resistance(self):
+        """Test collision resistance with reasonable sample size"""
+        keys = set()
+        for _ in range(500):
+            key = self.model.generate_key()
+            assert key not in keys, f"Collision found: {key}"
+            keys.add(key)
+        assert len(keys) == 500, f"Expected 500 unique keys, got {len(keys)}"
+
+    def test_generate_key_randomness_quality(self):
+        """Test basic randomness properties of generated keys"""
+        keys = [self.model.generate_key() for _ in range(10)]
+        # Consecutive keys should be different
+        for i in range(len(keys) - 1):
+            assert keys[i] != keys[i + 1], "Consecutive keys should be different"
+        # Keys should not follow obvious patterns
+        for key in keys:
+            # Should not be all same character
+            assert not all(c == key[0] for c in key), f"Key has all same characters: {key}"
+
     def test_token_login_json(self):
         """Ensure token login view using JSON POST works."""
         client = APIClient(enforce_csrf_checks=True)
@@ -480,6 +517,7 @@ class IncorrectCredentialsTests(TestCase):
         authentication should run and error, even if no permissions
         are set on the view.
         """
+
         class IncorrectCredentialsAuth(BaseAuthentication):
             def authenticate(self, request):
                 raise exceptions.AuthenticationFailed('Bad credentials')
@@ -571,6 +609,7 @@ class BasicAuthenticationUnitTests(TestCase):
 
         class MockUser:
             is_active = False
+
         old_authenticate = authentication.authenticate
         authentication.authenticate = lambda **kwargs: MockUser()
         try:

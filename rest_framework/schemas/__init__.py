@@ -13,7 +13,6 @@ basic use-cases:
 
     from rest_framework.schemas import (
         AutoSchema,
-        ManualSchema,
         get_schema_view,
         SchemaGenerator,
     )
@@ -22,9 +21,9 @@ Other access should target the submodules directly
 """
 from rest_framework.settings import api_settings
 
-from . import coreapi, openapi
-from .coreapi import AutoSchema, ManualSchema, SchemaGenerator  # noqa
+from . import openapi
 from .inspectors import DefaultSchema  # noqa
+from .openapi import AutoSchema, SchemaGenerator  # noqa
 
 
 def get_schema_view(
@@ -37,10 +36,7 @@ def get_schema_view(
     Return a schema view.
     """
     if generator_class is None:
-        if coreapi.is_enabled():
-            generator_class = coreapi.SchemaGenerator
-        else:
-            generator_class = openapi.SchemaGenerator
+        generator_class = openapi.SchemaGenerator
 
     generator = generator_class(
         title=title, url=url, description=description,

@@ -6,16 +6,13 @@ There are a wide range of resources available for learning and using Django REST
 
 <div class="book-covers">
   <a class="book-cover" href="https://hellowebapp.com/order/">
-    <img src="../../img/books/hwa-cover.png"/>
+    <img src="../../img/books/hwa-cover.png" style="height: 300px"/>
   </a>
   <a class="book-cover" href="https://www.twoscoopspress.com/products/two-scoops-of-django-1-11">
-    <img src="../../img/books/tsd-cover.png"/>
+    <img src="../../img/books/tsd-cover.png" style="height: 300px"/>
   </a>
   <a class="book-cover" href="https://djangoforapis.com">
-    <img src="../../img/books/dfa-40-cover.jpg"/>
-  </a>
-  <a class="book-cover" href="https://books.agiliq.com/projects/django-api-polls-tutorial/en/latest/">
-    <img src="../../img/books/bda-cover.png"/>
+    <img src="../../img/books/dfa-40-cover.jpg" style="height: 300px"/>
   </a>
 </div>
 
@@ -43,7 +40,7 @@ There are a wide range of resources available for learning and using Django REST
 * [Django Polls Tutorial API][django-polls-api]
 * [Django REST Framework Tutorial: Todo API][django-rest-framework-todo-api]
 * [Tutorial: Django REST with React (Django 2.0)][django-rest-react-valentinog]
-
+* [Building APIs with Django and Django REST framework](https://books.agiliq.com/projects/django-api-polls-tutorial/en/latest/)
 
 ## Videos
 
@@ -78,12 +75,12 @@ There are a wide range of resources available for learning and using Django REST
 * [OAuth2 Authentication with Django REST Framework and Custom Third-Party OAuth2 Backends][oauth2-authentication-with-drf]
 * [Nested Resources with Django REST Framework][nested-resources-with-drf]
 * [Image Fields with Django REST Framework][image-fields-with-drf]
-* [Chatbot Using Django REST Framework + api.ai + Slack — Part 1/3][chatbot-using-drf-part1]
+* [Chatbot Using Django REST Framework + api.ai + Slack - Part 1/3][chatbot-using-drf-part1]
 * [New Django Admin with DRF and EmberJS... What are the News?][new-django-admin-with-drf-and-emberjs]
 * [Blog posts about Django REST Framework][medium-django-rest-framework]
 * [Implementing Rest APIs With Embedded Privacy][doordash-implementing-rest-apis]
 
-### Documentations
+## Documentations
 * [Classy Django REST Framework][cdrf.co]
 * [DRF-schema-adapter][drf-schema]
 

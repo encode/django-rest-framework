@@ -17,11 +17,12 @@ from rest_framework.response import Response
 from rest_framework.test import (
     APIClient, APIRequestFactory, URLPatternsTestCase, force_authenticate
 )
+from rest_framework.views import APIView
 
 
 @api_view(['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'])
 def view(request):
-    data = {'auth': request.META.get('HTTP_AUTHORIZATION', b'')}
+    data = {'auth': request.headers.get('authorization', b'')}
     if request.user:
         data['user'] = request.user.username
     if request.auth:
@@ -294,6 +295,28 @@ class TestAPIRequestFactory(TestCase):
         assert response.status_code == 403
         assert response.data == expected
 
+    def test_transform_factory_django_request_to_drf_request(self):
+        """
+        ref: GH-3608, GH-4440 & GH-6488.
+        """
+
+        factory = APIRequestFactory()
+
+        class DummyView(APIView):  # Your custom view.
+            ...
+
+        request = factory.get('/', {'demo': 'test'})
+        drf_request = DummyView().initialize_request(request)
+        assert drf_request.query_params == {'demo': ['test']}
+
+        assert hasattr(drf_request, 'accepted_media_type') is False
+        DummyView().initial(drf_request)
+        assert drf_request.accepted_media_type == 'application/json'
+
+        request = factory.post('/', {'example': 'test'})
+        drf_request = DummyView().initialize_request(request)
+        assert drf_request.data.get('example') == 'test'
+
     def test_invalid_format(self):
         """
         Attempting to use a format that is not configured will raise an
@@ -347,7 +370,7 @@ class TestAPIRequestFactory(TestCase):
             data=None,
             content_type='application/json',
         )
-        assert request.META['CONTENT_TYPE'] == 'application/json'
+        assert request.headers['content-type'] == 'application/json'
 
 
 class TestUrlPatternTestCase(URLPatternsTestCase):

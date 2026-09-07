@@ -9,6 +9,7 @@ import datetime
 import decimal
 import json  # noqa
 import re
+import sys
 import tempfile
 
 import pytest
@@ -16,7 +17,8 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ImproperlyConfigured
 from django.core.serializers.json import DjangoJSONEncoder
 from django.core.validators import (
-    MaxValueValidator, MinLengthValidator, MinValueValidator
+    MaxLengthValidator, MaxValueValidator, MinLengthValidator,
+    MinValueValidator
 )
 from django.db import models
 from django.db.models.signals import m2m_changed
@@ -25,6 +27,7 @@ from django.test import TestCase
 
 from rest_framework import serializers
 from rest_framework.compat import postgres_fields
+from rest_framework.fields import ChoiceField
 
 from .models import NestedForeignKeySource
 
@@ -95,6 +98,7 @@ class FieldOptionsModel(models.Model):
 
 class ChoicesModel(models.Model):
     choices_field_with_nonstandard_args = models.DecimalField(max_digits=3, decimal_places=1, choices=DECIMAL_CHOICES, verbose_name='A label')
+    non_editable_choice_field = models.CharField(choices=COLOR_CHOICES, default=COLOR_CHOICES[0][0], editable=False, max_length=5)
 
 
 class Issue3674ParentModel(models.Model):
@@ -160,6 +164,7 @@ class TestModelSerializer(TestCase):
 
 
 class TestRegularFieldMappings(TestCase):
+    @pytest.mark.skipif(sys.platform.startswith("win"), reason="Test not supported on Windows")
     def test_regular_fields(self):
         """
         Model fields should map to their equivalent serializer fields.
@@ -172,7 +177,7 @@ class TestRegularFieldMappings(TestCase):
         expected = dedent(r"""
             TestSerializer\(\):
                 auto_field = IntegerField\(read_only=True\)
-                big_integer_field = IntegerField\(.*\)
+                big_integer_field = BigIntegerField\(.*\)
                 boolean_field = BooleanField\(required=False\)
                 char_field = CharField\(max_length=100\)
                 comma_separated_integer_field = CharField\(max_length=100, validators=\[<django.core.validators.RegexValidator object>\]\)
@@ -359,7 +364,23 @@ class TestRegularFieldMappings(TestCase):
                 model = ChoicesModel
                 fields = '__all__'
 
-        ExampleSerializer()
+        serializer = ExampleSerializer()
+        choices_field_with_nonstandard_args = serializer.get_fields()['choices_field_with_nonstandard_args']
+        assert isinstance(choices_field_with_nonstandard_args, ChoiceField)
+        assert choices_field_with_nonstandard_args.choices
+        assert choices_field_with_nonstandard_args.read_only is False
+
+    def test_non_editable_choice_field(self):
+        class ExampleSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = ChoicesModel
+                fields = '__all__'
+
+        serializer = ExampleSerializer()
+        non_editable_choice_field = serializer.get_fields()['non_editable_choice_field']
+        assert isinstance(non_editable_choice_field, ChoiceField)
+        assert non_editable_choice_field.read_only is True
+        assert non_editable_choice_field.choices
 
 
 class TestDurationFieldMapping(TestCase):
@@ -416,9 +437,90 @@ class TestGenericIPAddressFieldValidation(TestCase):
 
         s = TestSerializer(data={'address': 'not an ip address'})
         self.assertFalse(s.is_valid())
-        self.assertEqual(1, len(s.errors['address']),
-                         'Unexpected number of validation errors: '
-                         '{}'.format(s.errors))
+        self.assertEqual(s.errors['address'],
+                         ['Enter a valid IPv4 or IPv6 address.'])
+
+    def test_ip_address_validation_with_custom_validator(self):
+        class IPAddressFieldModel(models.Model):
+            address = models.GenericIPAddressField(
+                # MaxLengthValidator is an unhashable type
+                validators=[MaxLengthValidator(15)],
+            )
+
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = IPAddressFieldModel
+                fields = '__all__'
+
+        s = TestSerializer(data={'address': 'not an ip address'})
+        self.assertFalse(s.is_valid())
+        self.assertEqual(
+            s.errors['address'],
+            [
+                'Ensure this value has at most 15 characters (it has 17).',
+                'Enter a valid IPv4 or IPv6 address.',
+            ],
+        )
+
+    def test_ip_address_validation_with_protocol_ipv4(self):
+        class IPv4AddressFieldModel(models.Model):
+            address = models.GenericIPAddressField(protocol='IPv4')
+
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = IPv4AddressFieldModel
+                fields = '__all__'
+
+        expected = dedent("""
+            TestSerializer():
+                id = IntegerField(label='ID', read_only=True)
+                address = IPAddressField(protocol='IPv4')
+        """)
+        self.assertEqual(repr(TestSerializer()), expected)
+
+        s = TestSerializer(data={'address': 'not an ip address'})
+        self.assertFalse(s.is_valid())
+        self.assertEqual(s.errors['address'],
+                         ['Enter a valid IPv4 address.'])
+
+        # An IPv6 address is not valid for an IPv4-only field.
+        s = TestSerializer(data={'address': '2001:db8::1'})
+        self.assertFalse(s.is_valid())
+        self.assertEqual(s.errors['address'],
+                         ['Enter a valid IPv4 address.'])
+
+        s = TestSerializer(data={'address': '192.0.2.1'})
+        self.assertTrue(s.is_valid(), s.errors)
+
+    def test_ip_address_validation_with_protocol_ipv6(self):
+        class IPv6AddressFieldModel(models.Model):
+            address = models.GenericIPAddressField(protocol='IPv6')
+
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = IPv6AddressFieldModel
+                fields = '__all__'
+
+        expected = dedent("""
+            TestSerializer():
+                id = IntegerField(label='ID', read_only=True)
+                address = IPAddressField(protocol='IPv6')
+        """)
+        self.assertEqual(repr(TestSerializer()), expected)
+
+        s = TestSerializer(data={'address': 'not an ip address'})
+        self.assertFalse(s.is_valid())
+        self.assertEqual(s.errors['address'],
+                         ['Enter a valid IPv6 address.'])
+
+        # An IPv4 address is not valid for an IPv6-only field.
+        s = TestSerializer(data={'address': '192.0.2.1'})
+        self.assertFalse(s.is_valid())
+        self.assertEqual(s.errors['address'],
+                         ['Enter a valid IPv6 address.'])
+
+        s = TestSerializer(data={'address': '2001:db8::1'})
+        self.assertTrue(s.is_valid(), s.errors)
 
 
 @pytest.mark.skipif('not postgres_fields')
@@ -787,6 +889,7 @@ class DisplayValueModel(models.Model):
     color = models.ForeignKey(DisplayValueTargetModel, on_delete=models.CASCADE)
 
 
+@pytest.mark.usefixtures("reset_sequences")
 class TestRelationalFieldDisplayValue(TestCase):
     def setUp(self):
         DisplayValueTargetModel.objects.bulk_create([

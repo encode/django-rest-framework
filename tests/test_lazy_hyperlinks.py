@@ -39,7 +39,7 @@ class TestLazyHyperlinkNames(TestCase):
         self.example = Example.objects.create(text='foo')
 
     def test_lazy_hyperlink_names(self):
-        global str_called
+        global str_called  # noqa: F824
         context = {'request': None}
         serializer = ExampleSerializer(self.example, context=context)
         JSONRenderer().render(serializer.data)

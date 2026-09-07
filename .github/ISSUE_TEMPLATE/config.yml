@@ -1,0 +1,7 @@
+blank_issues_enabled: false
+contact_links:
+- name: Discussions
+  url: https://github.com/encode/django-rest-framework/discussions
+  about: >
+    The "Discussions" forum is where you want to start. 💖
+    Please note that at this point in its lifespan, we consider Django REST framework to be feature-complete.
