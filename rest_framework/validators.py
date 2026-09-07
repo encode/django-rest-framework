@@ -43,6 +43,29 @@ def qs_filter(queryset, **kwargs):
         return queryset.none()
 
 
+def _check_single_instance(serializer, instance, validator):
+    """
+    Uniqueness validators need a single model instance in order to exclude
+    the object being updated from the uniqueness check.
+
+    When a serializer is used with `many=True` and a queryset or list is
+    passed as the `instance`, the child serializer's `instance` will be that
+    queryset or list, unless `ListSerializer.run_child_validation()` has been
+    overridden to set `child.instance` for each item. Raise a clear error in
+    that case rather than an `AttributeError` when accessing `instance.pk`.
+    """
+    if (
+        instance is not None and
+        getattr(serializer.parent, 'many', False) and
+        not hasattr(instance, 'pk')
+    ):
+        raise RuntimeError(
+            '`%s` cannot determine the current instance during a multiple '
+            'update. Override `ListSerializer.run_child_validation()` to set '
+            '`child.instance` before validation.' % validator.__class__.__name__
+        )
+
+
 class UniqueValidator:
     """
     Validator that corresponds to `unique=True` on a model field.
@@ -78,7 +101,9 @@ class UniqueValidator:
         # same as the serializer field name if `source=<>` is set.
         field_name = serializer_field.source_attrs[-1]
         # Determine the existing instance, if this is an update operation.
-        instance = getattr(serializer_field.parent, 'instance', None)
+        serializer = serializer_field.parent
+        instance = getattr(serializer, 'instance', None)
+        _check_single_instance(serializer, instance, self)
 
         queryset = self.queryset
         queryset = self.filter_queryset(value, queryset, field_name)
@@ -172,18 +197,7 @@ class UniqueTogetherValidator:
         return queryset
 
     def __call__(self, attrs, serializer):
-        if (
-            serializer.instance is not None and
-            getattr(serializer.parent, 'many', False) and
-            not hasattr(serializer.instance, 'pk')
-        ):
-            raise RuntimeError(
-                '`UniqueTogetherValidator` cannot determine the current '
-                'instance during a multiple update. Override '
-                '`ListSerializer.run_child_validation()` to set '
-                '`child.instance` before validation.'
-            )
-
+        _check_single_instance(serializer, serializer.instance, self)
         self.enforce_required_fields(attrs, serializer)
         queryset = self.queryset
         queryset = self.filter_queryset(attrs, queryset, serializer)
@@ -301,6 +315,7 @@ class BaseUniqueForValidator:
         field_name = serializer.fields[self.field].source_attrs[-1]
         date_field_name = serializer.fields[self.date_field].source_attrs[-1]
 
+        _check_single_instance(serializer, serializer.instance, self)
         self.enforce_required_fields(attrs)
         queryset = self.queryset
         queryset = self.filter_queryset(attrs, queryset, field_name, date_field_name)
