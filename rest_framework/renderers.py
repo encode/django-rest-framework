@@ -144,6 +144,10 @@ class _DeprecatedResultsList(list):
         self._warn()
         return super().__getitem__(item)
 
+    def __contains__(self, item):
+        self._warn()
+        return super().__contains__(item)
+
     def __repr__(self):
         self._warn()
         return super().__repr__()
