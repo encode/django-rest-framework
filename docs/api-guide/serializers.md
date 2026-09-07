@@ -159,7 +159,9 @@ When deserializing data, you always need to call `is_valid()` before attempting 
 
 Each key in the dictionary will be the field name, and the values will be lists of strings of any error messages corresponding to that field.  The `non_field_errors` key may also be present, and will list any general validation errors. The name of the `non_field_errors` key may be customized using the `NON_FIELD_ERRORS_KEY` REST framework setting.
 
-When deserializing a list of items, errors will be returned as a list of dictionaries representing each of the deserialized items.
+When deserializing a list of items, errors are returned as a dictionary keyed by the indexes of invalid items. Valid items are omitted from the dictionary.
+
+To temporarily use the list-based format from versions before REST framework 3.18, set `LIST_SERIALIZER_ERRORS_AS_DICT` to `False`. This format includes an empty dictionary for each valid item and is deprecated. It will be removed in REST framework 3.20.
 
 #### Raising an exception on invalid data
 
@@ -213,6 +215,26 @@ To do any other validation that requires access to multiple fields, add a method
             if data['start'] > data['finish']:
                 raise serializers.ValidationError("finish must occur after start")
             return data
+
+!!! note
+    **Object-Level Validation and Partial Updates**
+
+    When performing a **partial update** (`PATCH`), the `data` dictionary passed to the `validate()` method will **only contain the fields** provided in the request. If your validation logic depends on multiple fields, you must account for cases where some fields are missing from `data`.
+
+    To access fields not included in the partial update, you should retrieve them from the existing object instance using `self.instance`:
+
+    ```python
+    def validate(self, data):
+        # Check if "status" is being updated, or use the existing value
+        status = data.get("status", self.instance.status)
+
+        # Check if "price" is being updated, or use the existing value
+        price = data.get("price", self.instance.price)
+
+        if status == "active" and price <= 0:
+            raise serializers.ValidationError("Active products must have a price.")
+        return data
+    ```
 
 #### Validators
 
@@ -539,6 +561,8 @@ This option should be a list or tuple of field names, and is declared as follows
 
 Model fields which have `editable=False` set, and `AutoField` fields will be set to read-only by default, and do not need to be added to the `read_only_fields` option.
 
+Please keep in mind that, if a field has already been explicitly declared on the serializer class (or a parent class), then the `read_only_fields` option will not apply to that field. Set `read_only=True` on the field itself instead.
+
 !!! note
     There is a special-case where a read-only field is part of a `unique_together` constraint at the model level. In this case the field is required by the serializer class in order to validate the constraint, but should also not be editable by the user.
 
@@ -571,7 +595,7 @@ This option is a dictionary, mapping field names to a dictionary of keyword argu
             user.save()
             return user
 
-Please keep in mind that, if the field has already been explicitly declared on the serializer class, then the `extra_kwargs` option will be ignored.
+Please keep in mind that, if the field has already been explicitly declared on the serializer class, then the `extra_kwargs` option will be ignored. The same is true of `read_only_fields`, which is implemented using `extra_kwargs`.
 
 ### Relational fields
 
@@ -834,6 +858,30 @@ Here's an example of how you might choose to implement multiple updates:
         class Meta:
             list_serializer_class = BookListSerializer
             lookup_field = 'id'
+
+If the child serializer includes uniqueness validators (`UniqueValidator`, `UniqueTogetherValidator`, or the
+`UniqueForDateValidator` family), they need to know which object each item in the list is updating, so
+that the object itself is not reported as a uniqueness conflict. By default the child serializer's
+`.instance` is the whole queryset or list that was passed to the list serializer, so these validators will
+raise a `RuntimeError` during a multiple update. To support this, override `run_child_validation()` on
+your `ListSerializer` subclass to set the child's `.instance` and `.initial_data` for each item before
+validation. For example, if `self.instance` is a queryset:
+
+    class BookListSerializer(serializers.ListSerializer):
+        def run_child_validation(self, data):
+            # `.instance` stays `None` for items that do not exist yet, and
+            # for malformed items, which child validation will then reject
+            # as usual.
+            self.child.instance = None
+            try:
+                self.child.instance = self.instance.filter(pk=data['id']).first()
+            except (TypeError, KeyError, ValueError):
+                pass
+            self.child.initial_data = data
+            return super().run_child_validation(data)
+
+        def update(self, instance, validated_data):
+            ...
 
 ### Customizing ListSerializer initialization
 

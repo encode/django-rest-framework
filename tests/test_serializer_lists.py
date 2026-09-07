@@ -1064,7 +1064,6 @@ class TestToRepresentationManagerCheck:
         serializer = self.serializer(queryset, many=True)
         assert serializer.data
 
-
 def test_many_true_instance_level_validation_uses_matched_instance():
     class Obj:
         def __init__(self, id, valid):
@@ -1094,10 +1093,8 @@ def test_many_true_instance_level_validation_uses_matched_instance():
     )
 
     assert not serializer.is_valid()
-    assert serializer.errors == [{}, {'status': ['Invalid instance']}]
     assert serializer.errors == {1: {'status': ['Invalid instance']}}
-
-
+    
 class TestListSerializerErrorBehavior:
     """
     Tests both ListSerializer error formats and consistency with ListField.

@@ -735,7 +735,7 @@ class ListSerializer(BaseSerializer):
         ret = []
         errors = {}
 
-        # Build a primary key lookup for instance matching in many=True updates.
+# Build a primary key lookup for instance matching in many=True updates.
         instance_map = None
         if self.instance is not None:
             if isinstance(self.instance, Mapping):
@@ -746,6 +746,43 @@ class ListSerializer(BaseSerializer):
 
                 for obj in self.instance:
                     pk = getattr(obj, lookup_field, None)
+                    if pk is not None:
+                        key = str(pk)
+                        instance_map[key] = obj
+
+        has_instance_map = hasattr(self, '_list_serializer_instance_map')
+        if has_instance_map:
+            original_instance_map = self._list_serializer_instance_map
+        self._list_serializer_instance_map = instance_map
+
+        try:
+            for index, item in enumerate(data):
+                try:
+                    validated = self.run_child_validation(item)
+                except ValidationError as exc:
+                    errors[index] = exc.detail
+                else:
+                    ret.append(validated)
+
+            if errors:
+                if not api_settings.LIST_SERIALIZER_ERRORS_AS_DICT:
+                    warnings.warn(
+                        'The list-based error format for `ListSerializer` is '
+                        'deprecated and will be removed in DRF 3.20. Set '
+                        '`REST_FRAMEWORK["LIST_SERIALIZER_ERRORS_AS_DICT"]` to '
+                        '`True` to use the dictionary-based error format.',
+                        RemovedInDRF320Warning,
+                        stacklevel=4,
+                    )
+                    errors = [errors.get(index, {}) for index in range(len(data))]
+                raise ValidationError(errors)
+
+            return ret
+        finally:
+            if has_instance_map:
+                self._list_serializer_instance_map = original_instance_map
+            else:
+                delattr(self, '_list_serializer_instance_map')
 
                     if pk is not None:
                         key = str(pk)

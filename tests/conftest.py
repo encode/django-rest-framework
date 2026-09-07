@@ -1,3 +1,4 @@
+import contextlib
 import os
 
 import dj_database_url
@@ -141,3 +142,24 @@ def pytest_collection_modifyitems(config, items):
         for item in items:
             if 'requires_postgres' in item.keywords:
                 item.add_marker(skip_postgres)
+
+
+@contextlib.contextmanager
+def _postgres_extension(extension_name):
+    """Helper to enable a PostgreSQL extension in tests."""
+    with connection.schema_editor(atomic=False) as schema_editor:
+        schema_editor.execute(
+            'CREATE EXTENSION IF NOT EXISTS %s' % schema_editor.quote_name(extension_name)
+        )
+    yield
+    with connection.schema_editor(atomic=False) as schema_editor:
+        schema_editor.execute(
+            'DROP EXTENSION IF EXISTS %s' % schema_editor.quote_name(extension_name)
+        )
+
+
+@pytest.fixture
+def unaccent_extension(db):
+    """Enable the unaccent PostgreSQL extension in tests."""
+    with _postgres_extension('unaccent'):
+        yield

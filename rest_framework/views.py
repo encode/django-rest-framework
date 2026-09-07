@@ -1,18 +1,18 @@
 """
 Provides an APIView class that is the base of all views in REST framework.
 """
-from django import VERSION as DJANGO_VERSION
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
 from django.db import connections, models
 from django.http import Http404
 from django.http.response import HttpResponseBase
-from django.utils.cache import cc_delim_re, patch_vary_headers
+from django.utils.cache import patch_vary_headers
 from django.utils.encoding import smart_str
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View
 
 from rest_framework import exceptions, status
+from rest_framework.compat import split_header_value
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.schemas import DefaultSchema
@@ -64,7 +64,7 @@ def get_view_description(view, html=False):
 
 
 def set_rollback():
-    for db in connections.all():
+    for db in connections.all(initialized_only=True):
         if db.settings_dict['ATOMIC_REQUESTS'] and db.in_atomic_block:
             db.set_rollback(True)
 
@@ -142,8 +142,7 @@ class APIView(View):
 
         # Exempt all DRF views from Django's LoginRequiredMiddleware. Users should set
         # DEFAULT_PERMISSION_CLASSES to 'rest_framework.permissions.IsAuthenticated' instead
-        if DJANGO_VERSION >= (5, 1):
-            view.login_required = False
+        view.login_required = False
 
         # Note: session based authentication is explicitly CSRF validated,
         # all other authentication is CSRF exempt.
@@ -444,7 +443,7 @@ class APIView(View):
         # Add new vary headers to the response instead of overwriting.
         vary_headers = self.headers.pop('Vary', None)
         if vary_headers is not None:
-            patch_vary_headers(response, cc_delim_re.split(vary_headers))
+            patch_vary_headers(response, list(split_header_value(vary_headers)))
 
         for key, value in self.headers.items():
             response[key] = value
@@ -490,8 +489,20 @@ class APIView(View):
     # be overridden.
     def dispatch(self, request, *args, **kwargs):
         """
-        `.dispatch()` is pretty much the same as Django's regular dispatch,
-        but with extra hooks for startup, finalize, and exception handling.
+        Dispatch the incoming request to the appropriate handler method.
+
+        This method implements the core request/response lifecycle for
+        Django REST Framework views:
+
+        1. Wraps the incoming Django HttpRequest in a REST framework Request.
+        2. Performs content negotiation, authentication, permission, and
+            throttling checks.
+        3. Resolves and calls the appropriate HTTP method handler
+            (e.g. get(), post(), put()).
+        4. Handles any exceptions raised during processing and converts
+            them into appropriate Response objects.
+        5. Finalizes and returns the response with proper rendering
+            and headers applied.
         """
         self.args = args
         self.kwargs = kwargs
