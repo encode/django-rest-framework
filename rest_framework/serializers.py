@@ -1138,10 +1138,6 @@ class ModelSerializer(Serializer):
                 source = field_name
 
             # Get the right model and info for source with attributes
-            source_attrs = source.split('.')
-            source_info = info
-            source_model = model
-
             source_info = info
             source_model = model
 
@@ -1154,7 +1150,11 @@ class ModelSerializer(Serializer):
                     if attr not in attr_info.relations:
                         break
 
-                    attr_model = attr_info.relations[attr].related_model
+relation_info = attr_info.relations[attr]
+                    if relation_info.to_many:
+                        break
+
+                    attr_model = relation_info.related_model
                     attr_info = model_meta.get_field_info(attr_model)
                 else:
                     attr = source_attrs[-1]

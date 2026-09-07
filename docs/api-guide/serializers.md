@@ -598,7 +598,7 @@ This option is a dictionary, mapping field names to a dictionary of keyword argu
 Please keep in mind that, if the field has already been explicitly declared on the serializer class, then the `extra_kwargs` option will be ignored.
 The same is true of `read_only_fields`, which is implemented using `extra_kwargs`.
 
-It is also possible to create new serializer fields from any related model fields using the `extra_kwargs` option. For example:
+It is also possible to create new serializer fields from fields on models reached through to-one relationships using the `extra_kwargs` option. For example:
 
     class UserProfile(models.Model):
         birthdate = models.DateField()

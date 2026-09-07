@@ -870,14 +870,15 @@ class TestRelationalFieldMappings(TestCase):
             user = models.ForeignKey(User, on_delete=models.CASCADE)
 
         class InvalidUserProfileSerializer(serializers.ModelSerializer):
-            groups = serializers.CharField(source='user.groups.name')
-
             class Meta:
                 model = UserProfile
                 fields = ('groups',)
+                extra_kwargs = {
+                    'groups': {'source': 'user.groups.name'},
+                }
 
         with self.assertRaises(ImproperlyConfigured):
-            InvalidUserProfileSerializer()
+            InvalidUserProfileSerializer().fields
 class DisplayValueTargetModel(models.Model):
     name = models.CharField(max_length=100)
 
