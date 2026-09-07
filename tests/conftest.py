@@ -1,9 +1,34 @@
+import contextlib
 import os
 
 import dj_database_url
 import django
 import pytest
+from django.apps import apps
 from django.core import management
+from django.core.management.color import no_style
+from django.db import connection
+
+
+@pytest.fixture
+def reset_sequences():
+    """
+    Reset all database sequences so PKs start from 1.
+
+    PostgreSQL sequences are non-transactional and persist across
+    TestCase's transaction rollbacks. Apply this fixture to test
+    classes that rely on hardcoded PKs to keep them predictable
+    regardless of execution order. No-op on SQLite.
+    """
+    if connection.vendor != 'postgresql':
+        return
+    table_names = set(connection.introspection.table_names())
+    models = [m for m in apps.get_models() if m._meta.db_table in table_names]
+    sql_list = connection.ops.sequence_reset_sql(no_style(), models)
+    if sql_list:
+        with connection.cursor() as cursor:
+            for sql in sql_list:
+                cursor.execute(sql)
 
 
 def pytest_addoption(parser):
@@ -117,3 +142,24 @@ def pytest_collection_modifyitems(config, items):
         for item in items:
             if 'requires_postgres' in item.keywords:
                 item.add_marker(skip_postgres)
+
+
+@contextlib.contextmanager
+def _postgres_extension(extension_name):
+    """Helper to enable a PostgreSQL extension in tests."""
+    with connection.schema_editor(atomic=False) as schema_editor:
+        schema_editor.execute(
+            'CREATE EXTENSION IF NOT EXISTS %s' % schema_editor.quote_name(extension_name)
+        )
+    yield
+    with connection.schema_editor(atomic=False) as schema_editor:
+        schema_editor.execute(
+            'DROP EXTENSION IF EXISTS %s' % schema_editor.quote_name(extension_name)
+        )
+
+
+@pytest.fixture
+def unaccent_extension(db):
+    """Enable the unaccent PostgreSQL extension in tests."""
+    with _postgres_extension('unaccent'):
+        yield

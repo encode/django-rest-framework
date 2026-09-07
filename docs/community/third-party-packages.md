@@ -143,7 +143,8 @@ To submit new content, [create a pull request][drf-create-pr].
 * [drf-extensions][drf-extensions] - A collection of custom extensions
 * [ember-django-adapter][ember-django-adapter] - An adapter for working with Ember.js
 * [django-versatileimagefield][django-versatileimagefield] - Provides a drop-in replacement for Django's stock `ImageField` that makes it easy to serve images in multiple sizes/renditions from a single field. For DRF-specific implementation docs, [click here][django-versatileimagefield-drf-docs].
-* [drf-tracking][drf-tracking] - Utilities to track requests to DRF API views.
+* [drf-api-logger][drf-api-logger] - Provides configurable request and response logging for Django REST Framework, with data masking, optional profiling, and Django admin views.
+* [drf-api-tracking][drf-api-tracking] - Utilities to track requests to DRF API views.
 * [drf_tweaks][drf_tweaks] - Serializers with one-step validation (and more), pagination without counts and other tweaks.
 * [django-rest-framework-braces][django-rest-framework-braces] - Collection of utilities for working with Django Rest Framework. The most notable ones are [FormSerializer](https://django-rest-framework-braces.readthedocs.io/en/latest/overview.html#formserializer) and [SerializerForm](https://django-rest-framework-braces.readthedocs.io/en/latest/overview.html#serializerform), which are adapters between DRF serializers and Django forms.
 * [drf-haystack][drf-haystack] - Haystack search for Django Rest Framework
@@ -222,7 +223,8 @@ To submit new content, [create a pull request][drf-create-pr].
 [dj-rest-auth]: https://github.com/iMerica/dj-rest-auth
 [django-versatileimagefield]: https://github.com/WGBH/django-versatileimagefield
 [django-versatileimagefield-drf-docs]:https://django-versatileimagefield.readthedocs.io/en/latest/drf_integration.html
-[drf-tracking]: https://github.com/aschn/drf-tracking
+[drf-api-logger]: https://github.com/vishalanandl177/DRF-API-Logger
+[drf-api-tracking]: https://github.com/lingster/drf-api-tracking
 [django-rest-framework-braces]: https://github.com/dealertrack/django-rest-framework-braces
 [dry-rest-permissions]: https://github.com/FJNR-inc/dry-rest-permissions
 [django-url-filter]: https://github.com/miki725/django-url-filter

@@ -1,8 +1,12 @@
+import warnings
+
 import pytest
 from django.http import QueryDict
+from django.test import override_settings
 from django.utils.datastructures import MultiValueDict
 
 from rest_framework import serializers
+from rest_framework.deprecation import RemovedInDRF320Warning
 from rest_framework.exceptions import ErrorDetail
 from tests.models import (
     CustomManagerModel, NullableOneToOneSource, OneToOneTarget
@@ -883,3 +887,103 @@ class TestToRepresentationManagerCheck:
         queryset = NullableOneToOneSource.objects.all()
         serializer = self.serializer(queryset, many=True)
         assert serializer.data
+
+
+class TestListSerializerErrorBehavior:
+    """
+    Tests both ListSerializer error formats and consistency with ListField.
+
+    https://github.com/encode/django-rest-framework/issues/7279
+    """
+
+    def setup_method(self):
+        class SampleSerializer(serializers.Serializer):
+            num = serializers.BooleanField()
+
+        class ChildSerializer(serializers.Serializer):
+            num = serializers.BooleanField()
+
+        class WrapperSerializer(serializers.Serializer):
+            list_serializer = ChildSerializer(many=True)
+            list_field = serializers.ListField(
+                child=serializers.DictField(allow_empty=False)
+            )
+
+        self.SampleSerializer = SampleSerializer
+        self.WrapperSerializer = WrapperSerializer
+
+    def test_listserializer_dict_error_format_by_default(self):
+        data = [
+            {"num": "1"},
+            {"num": "x"},
+            {"num": "0"},
+            {"num": "hello"},
+        ]
+
+        serializer = self.SampleSerializer(data=data, many=True)
+        with warnings.catch_warnings():
+            warnings.simplefilter('error', RemovedInDRF320Warning)
+            assert not serializer.is_valid()
+
+        errors = serializer.errors
+        assert isinstance(errors, dict)
+        assert set(errors.keys()) == {1, 3}
+        assert errors[1] == {"num": [ErrorDetail(string="Must be a valid boolean.", code="invalid")]}
+        assert errors[3] == {"num": [ErrorDetail(string="Must be a valid boolean.", code="invalid")]}
+
+    @override_settings(REST_FRAMEWORK={'LIST_SERIALIZER_ERRORS_AS_DICT': False})
+    def test_listserializer_explicit_legacy_error_format(self):
+        data = [
+            {"num": "1"},
+            {"num": "wrong"},
+            {"num": "0"},
+        ]
+
+        serializer = self.SampleSerializer(data=data, many=True)
+        with pytest.warns(
+            RemovedInDRF320Warning,
+            match='LIST_SERIALIZER_ERRORS_AS_DICT'
+        ) as warning:
+            assert not serializer.is_valid()
+
+        assert isinstance(serializer.errors, list)
+        assert serializer.errors == [
+            {},
+            {"num": [ErrorDetail(string="Must be a valid boolean.", code="invalid")]},
+            {},
+        ]
+        assert warning[0].filename == __file__
+
+    def test_listserializer_and_listfield_consistency(self):
+
+        data = {
+            "list_serializer": [
+                {"num": "1"},
+                {"num": "wrong"},
+                {"num": "0"},
+                {"num": ""},
+            ],
+            "list_field": [
+                {"ok": "x"},
+                {},
+                {"valid": "y"},
+                {},
+            ],
+        }
+
+        serializer = self.WrapperSerializer(data=data)
+        assert not serializer.is_valid()
+
+        errors = serializer.errors
+
+        assert isinstance(errors["list_serializer"], dict)
+        assert isinstance(errors["list_field"], dict)
+
+        assert set(errors["list_serializer"].keys()) == {1, 3}
+        assert set(errors["list_field"].keys()) == {1, 3}
+
+        assert errors["list_serializer"][1] == {"num": [ErrorDetail(string="Must be a valid boolean.", code="invalid")]}
+        assert errors["list_serializer"][3] == {"num": [ErrorDetail(string="Must be a valid boolean.", code="invalid")]}
+
+        assert errors["list_field"][1] == [ErrorDetail(string='This dictionary may not be empty.', code='empty')]
+        assert errors["list_field"][3] == [ErrorDetail(string='This dictionary may not be empty.', code='empty')]
