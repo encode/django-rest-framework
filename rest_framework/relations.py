@@ -201,7 +201,7 @@ class RelatedField(Field):
         result = {}
         for item in queryset:
             value = self.to_representation(item)
-display = self.display_value(item)
+            display = self.display_value(item)
             try:
                 result[value] = display
             except TypeError:
