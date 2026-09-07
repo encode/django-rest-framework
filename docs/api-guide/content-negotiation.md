@@ -15,8 +15,10 @@ Content negotiation is the process of selecting one of multiple possible represe
 
 REST framework uses a simple style of content negotiation to determine which media type should be returned to a client, based on the available renderers, the priorities of each of those renderers, and the client's `Accept:` header.  The style used is partly client-driven, and partly server-driven.
 
-1. More specific media types are given preference to less specific media types.
-2. If multiple media types have the same specificity, then preference is given to based on the ordering of the renderers configured for the given view.
+1. Media ranges with `q=0` are treated as unacceptable.
+2. Higher `q` values are given preference to lower `q` values.
+3. If multiple media types have the same `q` value, more specific media types are given preference to less specific media types.
+4. If multiple media types have the same `q` value and specificity, then preference is based on the ordering of the renderers configured for the given view.
 
 For example, given the following `Accept` header:
 
@@ -32,11 +34,6 @@ If the requested view was only configured with renderers for `YAML` and `HTML`, 
 
 For more information on the `HTTP Accept` header, see [RFC 2616][accept-header]
 
-
-!!! note
-    "q" values are not taken into account by REST framework when determining preference.  The use of "q" values negatively impacts caching, and in the author's opinion they are an unnecessary and overcomplicated approach to content negotiation.
-
-    This is a valid approach as the HTTP spec deliberately underspecifies how a server should weight server-based preferences against client-based preferences.
 
 ## Custom content negotiation
 
