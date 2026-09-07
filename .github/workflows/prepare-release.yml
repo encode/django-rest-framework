@@ -119,6 +119,9 @@ jobs:
               f.write(content)
           EOF
 
+      - name: Install gettext
+        run: sudo apt install -y gettext
+
       - name: Ensure translations are up to date
         run: uv tool run --from django django-admin compilemessages
 
