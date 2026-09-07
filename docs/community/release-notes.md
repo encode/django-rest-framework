@@ -59,6 +59,31 @@ You can determine your currently installed version using `pip show`:
 
 ## 3.18.x series
 
+### 3.18.1
+
+**Date**: 7th September 2026
+
+#### Bug fixes
+
+* Fix duplicate validation errors for GenericIPAddressField with protocol by [@browniebroke](https://github.com/browniebroke) in [#10011](https://github.com/encode/django-rest-framework/pull/10011)
+* Fix int64 format detection for negative `IntegerField` minimums in OpenAPI schema definition by [@zainnadeem786](https://github.com/zainnadeem786) in [#9989](https://github.com/encode/django-rest-framework/pull/9989)
+* Fix list serializer on unique constraint validator by [@MehrazRumman](https://github.com/MehrazRumman) in [#10033](https://github.com/encode/django-rest-framework/pull/10033)
+* Reject non-finite values (nan, inf) in FloatField by [@winklemad](https://github.com/winklemad) in [#9998](https://github.com/encode/django-rest-framework/pull/9998)
+
+#### Other changes
+
+* Add a compatibility setting for `ListSerializer` error formats by [@Kub-AT](https://github.com/Kub-AT) in [#10027](https://github.com/encode/django-rest-framework/pull/10027)
+* Expand deprecation classes and review deprecation policy by [@browniebroke](https://github.com/browniebroke) in [#10034](https://github.com/encode/django-rest-framework/pull/10034)
+
+#### New Contributors
+
+* [@abidaliamanat9](https://github.com/abidaliamanat9) made their first contribution in [#10028](https://github.com/encode/django-rest-framework/pull/10028)
+* [@epuronta](https://github.com/epuronta) made their first contribution in [#10030](https://github.com/encode/django-rest-framework/pull/10030)
+* [@Kub-AT](https://github.com/Kub-AT) made their first contribution in [#10027](https://github.com/encode/django-rest-framework/pull/10027)
+* [@winklemad](https://github.com/winklemad) made their first contribution in [#9998](https://github.com/encode/django-rest-framework/pull/9998)
+
+**Full Changelog**: [3.18.0...3.18.1](https://github.com/encode/django-rest-framework/compare/3.18.0...3.18.1)
+
 ### 3.18.0
 
 **Date**: 7th August 2026
