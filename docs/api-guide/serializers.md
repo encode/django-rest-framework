@@ -856,6 +856,30 @@ Here's an example of how you might choose to implement multiple updates:
         class Meta:
             list_serializer_class = BookListSerializer
 
+If the child serializer includes uniqueness validators (`UniqueValidator`, `UniqueTogetherValidator`, or the
+`UniqueForDateValidator` family), they need to know which object each item in the list is updating, so
+that the object itself is not reported as a uniqueness conflict. By default the child serializer's
+`.instance` is the whole queryset or list that was passed to the list serializer, so these validators will
+raise a `RuntimeError` during a multiple update. To support this, override `run_child_validation()` on
+your `ListSerializer` subclass to set the child's `.instance` and `.initial_data` for each item before
+validation. For example, if `self.instance` is a queryset:
+
+    class BookListSerializer(serializers.ListSerializer):
+        def run_child_validation(self, data):
+            # `.instance` stays `None` for items that do not exist yet, and
+            # for malformed items, which child validation will then reject
+            # as usual.
+            self.child.instance = None
+            try:
+                self.child.instance = self.instance.filter(pk=data['id']).first()
+            except (TypeError, KeyError, ValueError):
+                pass
+            self.child.initial_data = data
+            return super().run_child_validation(data)
+
+        def update(self, instance, validated_data):
+            ...
+
 ### Customizing ListSerializer initialization
 
 When a serializer with `many=True` is instantiated, we need to determine which arguments and keyword arguments should be passed to the `.__init__()` method for both the child `Serializer` class, and for the parent `ListSerializer` class.
