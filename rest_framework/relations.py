@@ -249,6 +249,8 @@ class PrimaryKeyRelatedField(RelatedField):
 
     @classmethod
     def many_init(cls, *args, **kwargs):
+        if cls is not PrimaryKeyRelatedField:
+            return super().many_init(*args, **kwargs)
         # Use PrimaryKeyManyRelatedField so many=True validates with one
         # in_bulk() query. Slug/Hyperlinked keep RelatedField.many_init.
         list_kwargs = {'child_relation': cls(*args, **kwargs)}
