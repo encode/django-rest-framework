@@ -1106,30 +1106,31 @@ class ModelSerializer(Serializer):
             source_info = info
             source_model = model
 
-            attr_info = info
-            attr_model = model
+            source_info = info
+            source_model = model
 
-            for attr in source_attrs[:-1]:
-                relation_info = attr_info.relations.get(attr)
-                if relation_info is None:
-                    break
-                if getattr(relation_info, 'to_many', False):
-                    # Do not rewrite sources that traverse to-many relations.
-                    break
+            if '.' in source:
+                source_attrs = source.split('.')
+                attr_info = info
+                attr_model = model
 
-                attr_model = relation_info.related_model
-                attr_info = model_meta.get_field_info(attr_model)
-            else:
-                attr = source_attrs[-1]
-                if (
-                    attr in attr_info.fields_and_pk
-                    or attr in attr_info.relations
-                    or hasattr(attr_model, attr)
-                    or attr == self.url_field_name
-                ):
-                    source = attr
-                    source_info = attr_info
-                    source_model = attr_model
+                for attr in source_attrs[:-1]:
+                    if attr not in attr_info.relations:
+                        break
+
+                    attr_model = attr_info.relations[attr].related_model
+                    attr_info = model_meta.get_field_info(attr_model)
+                else:
+                    attr = source_attrs[-1]
+                    if (
+                        attr in attr_info.fields_and_pk
+                        or attr in attr_info.relations
+                        or hasattr(attr_model, attr)
+                        or attr == self.url_field_name
+                    ):
+                        source = attr
+                        source_info = attr_info
+                        source_model = attr_model
 
             # Determine the serializer field class and keyword arguments.
             field_class, field_kwargs = self.build_field(
