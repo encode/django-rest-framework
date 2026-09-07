@@ -823,7 +823,7 @@ To support multiple updates you'll need to do so explicitly. When writing your m
 
 You will need to add an explicit `id` field to the instance serializer. The default implicitly-generated `id` field is marked as `read_only`. This causes it to be removed on updates. Once you declare it explicitly, it will be available in the list serializer's `update` method.
 
-During validation, `ListSerializer` matches each input item to an existing instance using `pk` by default. To use another identifier, such as `id` or `uuid`, set `lookup_field` on the child serializer's `Meta` class.
+During validation, `ListSerializer` matches each input item to an existing instance using `id` or `pk`. To use another identifier, such as `uuid`, set `lookup_field` on the child serializer's `Meta` class.
 
 Here's an example of how you might choose to implement multiple updates:
 
@@ -861,11 +861,9 @@ Here's an example of how you might choose to implement multiple updates:
 
 If the child serializer includes uniqueness validators (`UniqueValidator`, `UniqueTogetherValidator`, or the
 `UniqueForDateValidator` family), they need to know which object each item in the list is updating, so
-that the object itself is not reported as a uniqueness conflict. By default the child serializer's
-`.instance` is the whole queryset or list that was passed to the list serializer, so these validators will
-raise a `RuntimeError` during a multiple update. To support this, override `run_child_validation()` on
-your `ListSerializer` subclass to set the child's `.instance` and `.initial_data` for each item before
-validation. For example, if `self.instance` is a queryset:
+that the object itself is not reported as a uniqueness conflict. `ListSerializer` sets the child's
+`.instance` and `.initial_data` for each matched item before validation. For custom matching behavior,
+override `run_child_validation()` on your `ListSerializer` subclass. For example, if `self.instance` is a queryset:
 
     class BookListSerializer(serializers.ListSerializer):
         def run_child_validation(self, data):

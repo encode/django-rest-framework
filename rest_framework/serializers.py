@@ -673,17 +673,23 @@ class ListSerializer(BaseSerializer):
         ):
             return self.child.run_validation(data)
 
-        lookup_field = getattr(getattr(self.child, 'Meta', None), 'lookup_field', 'pk')
-        data_pk = data.get(lookup_field)
-
-        if data_pk is None:
-            return self.child.run_validation(data)
-
-        child_instance = self._list_serializer_instance_map.get(str(data_pk))
-        if child_instance is None:
-            return self.child.run_validation(data)
-
+        lookup_field = getattr(getattr(self.child, 'Meta', None), 'lookup_field', None)
         original_instance = self.child.instance
+        if original_instance is not self.instance:
+            return self.child.run_validation(data)
+
+        if lookup_field is not None:
+            data_pk = data.get(lookup_field)
+        else:
+            data_pk = data.get('id')
+            if data_pk is None:
+                data_pk = data.get('pk')
+
+        child_instance = (
+            self._list_serializer_instance_map.get(str(data_pk))
+            if data_pk is not None else None
+        )
+
         has_initial_data = hasattr(self.child, 'initial_data')
         if has_initial_data:
             original_initial_data = self.child.initial_data
@@ -740,15 +746,29 @@ class ListSerializer(BaseSerializer):
         if self.instance is not None:
             if isinstance(self.instance, Mapping):
                 instance_map = {str(k): v for k, v in self.instance.items()}
-            elif isinstance(self.instance, (list, tuple, models.query.QuerySet)):
-                instance_map = {}
-                lookup_field = getattr(getattr(self.child, 'Meta', None), 'lookup_field', 'pk')
+            else:
+                instance_iterable = self.instance
+                if isinstance(instance_iterable, models.manager.BaseManager):
+                    instance_iterable = instance_iterable.all()
+                if not isinstance(instance_iterable, (list, tuple, models.query.QuerySet)):
+                    instance_iterable = None
 
-                for obj in self.instance:
-                    pk = getattr(obj, lookup_field, None)
-                    if pk is not None:
-                        key = str(pk)
-                        instance_map[key] = obj
+                if instance_iterable is not None:
+                    instance_map = {}
+                    lookup_field = getattr(getattr(self.child, 'Meta', None), 'lookup_field', None)
+
+                    for obj in instance_iterable:
+                        if lookup_field is not None:
+                            lookup_values = [getattr(obj, lookup_field, None)]
+                        else:
+                            lookup_values = [
+                                getattr(obj, 'id', None),
+                                getattr(obj, 'pk', None),
+                            ]
+
+                        for lookup_value in lookup_values:
+                            if lookup_value is not None:
+                                instance_map[str(lookup_value)] = obj
 
         has_instance_map = hasattr(self, '_list_serializer_instance_map')
         if has_instance_map:

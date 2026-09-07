@@ -147,30 +147,22 @@ class TestUniquenessValidation(TestCase):
             0: {'username': ['uniqueness model with this username already exists.']},
         }
 
-    def test_many_update_requires_child_instance(self):
+    def test_many_update_matches_child_instance(self):
         serializer = UniquenessSerializer(
             instance=UniquenessModel.objects.all(),
-            data=[{'username': 'existing'}],
+            data=[{'id': self.instance.pk, 'username': 'existing'}],
             many=True,
         )
-        message = (
-            '`UniqueValidator` cannot determine the current instance during '
-            'a multiple update. Override '
-            '`ListSerializer.run_child_validation()` to set `child.instance` '
-            'before validation.'
-        )
-        with pytest.raises(RuntimeError, match=re.escape(message)):
-            serializer.is_valid()
+        assert serializer.is_valid()
 
-    def test_many_update_with_list_instance_requires_child_instance(self):
+    def test_many_update_with_list_instance_matches_child_instance(self):
         instances = [self.instance]
         serializer = UniquenessSerializer(
             instance=instances,
-            data=[{'username': 'existing'}],
+            data=[{'id': self.instance.pk, 'username': 'existing'}],
             many=True,
         )
-        with pytest.raises(RuntimeError, match='`UniqueValidator` cannot determine'):
-            serializer.is_valid()
+        assert serializer.is_valid()
 
     def test_many_update_with_child_instance(self):
         """
@@ -328,7 +320,7 @@ class TestUniquenessTogetherValidation(TestCase):
             'position': 1
         }
 
-    def test_many_update_requires_child_instance(self):
+    def test_many_update_matches_child_instance(self):
         class ListUpdateSerializer(serializers.ListSerializer):
             def update(self, instance, validated_data):
                 return instance
@@ -348,15 +340,7 @@ class TestUniquenessTogetherValidation(TestCase):
             }],
             many=True,
         )
-        message = (
-            '`UniqueTogetherValidator` cannot determine the current instance '
-            'during a multiple update. Override '
-            '`ListSerializer.run_child_validation()` to set `child.instance` '
-            'before validation.'
-        )
-
-        with pytest.raises(RuntimeError, match=re.escape(message)):
-            serializer.is_valid()
+        assert serializer.is_valid()
 
     def test_many_update_with_child_instance(self):
         """
@@ -1099,20 +1083,17 @@ class TestUniquenessForDateValidation(TestCase):
             'published': datetime.date(2000, 1, 1)
         }
 
-    def test_many_update_requires_child_instance(self):
+    def test_many_update_matches_child_instance(self):
         serializer = UniqueForDateSerializer(
             instance=UniqueForDateModel.objects.all(),
-            data=[{'slug': 'existing', 'published': '2000-01-01'}],
+            data=[{
+                'id': self.instance.pk,
+                'slug': 'existing',
+                'published': '2000-01-01',
+            }],
             many=True,
         )
-        message = (
-            '`UniqueForDateValidator` cannot determine the current instance '
-            'during a multiple update. Override '
-            '`ListSerializer.run_child_validation()` to set `child.instance` '
-            'before validation.'
-        )
-        with pytest.raises(RuntimeError, match=re.escape(message)):
-            serializer.is_valid()
+        assert serializer.is_valid()
 
     def test_many_update_with_child_instance(self):
         class ListUpdateSerializer(serializers.ListSerializer):

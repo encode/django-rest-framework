@@ -231,6 +231,24 @@ class TestListSerializerInstanceMatching:
         assert serializer.is_valid()
         assert seen_instances == instance
 
+    def test_matching_with_id_by_default(self):
+        seen_instances = []
+
+        class TestSerializer(serializers.Serializer):
+            id = serializers.IntegerField()
+
+            def validate(self, attrs):
+                seen_instances.append(self.instance)
+                return attrs
+
+        instance = [BasicObject(id=1), BasicObject(id=2)]
+        serializer = TestSerializer(
+            instance, data=[{'id': 1}, {'id': 2}], many=True
+        )
+
+        assert serializer.is_valid()
+        assert seen_instances == instance
+
     def test_field_validation_receives_item_initial_data(self):
         seen_initial_data = []
 
@@ -324,6 +342,73 @@ class TestListSerializerInstanceMatching:
         serializer = TestSerializer(instance=123, data=[{'pk': 1}], many=True)
         assert serializer.is_valid()
         assert seen_instances == [123]
+
+    def test_unmatched_instance_is_none(self):
+        seen_instances = []
+
+        class TestSerializer(serializers.Serializer):
+            id = serializers.IntegerField()
+
+            def validate(self, attrs):
+                seen_instances.append(self.instance)
+                return attrs
+
+        serializer = TestSerializer(
+            [BasicObject(id=1)], data=[{'id': 2}], many=True
+        )
+
+        assert serializer.is_valid()
+        assert seen_instances == [None]
+
+    def test_custom_run_child_validation_instance_is_preserved(self):
+        seen_instances = []
+
+        class TestSerializer(serializers.Serializer):
+            id = serializers.IntegerField()
+
+            def validate(self, attrs):
+                seen_instances.append(self.instance)
+                return attrs
+
+        class TestListSerializer(serializers.ListSerializer):
+            def run_child_validation(self, data):
+                self.child.instance = 'custom instance'
+                return super().run_child_validation(data)
+
+        serializer = TestListSerializer(
+            child=TestSerializer(),
+            instance=[BasicObject(id=1)],
+            data=[{'id': 1}],
+        )
+
+        assert serializer.is_valid()
+        assert seen_instances == ['custom instance']
+
+    @pytest.mark.django_db
+    def test_manager_instance_matching(self):
+        seen_instances = []
+
+        class TestSerializer(serializers.ModelSerializer):
+            def validate(self, attrs):
+                seen_instances.append(self.instance)
+                return attrs
+
+            class Meta:
+                model = CustomManagerModel
+                fields = ['id']
+
+        o2o_target = OneToOneTarget.objects.create(name='target')
+        instance = CustomManagerModel.objects.create(
+            text='text', o2o_target=o2o_target
+        )
+        serializer = TestSerializer(
+            CustomManagerModel.objects,
+            data=[{'id': instance.pk}],
+            many=True,
+        )
+
+        assert serializer.is_valid()
+        assert seen_instances == [instance]
 
     def test_missing_lookup_field_in_data_does_not_assign_instance(self):
         seen_instances = []
@@ -1074,9 +1159,6 @@ def test_many_true_instance_level_validation_uses_matched_instance():
     class TestSerializer(serializers.Serializer):
         id = serializers.IntegerField()
         status = serializers.CharField()
-
-        class Meta:
-            lookup_field = 'id'
 
         def validate_status(self, value):
             if self.instance is None:
