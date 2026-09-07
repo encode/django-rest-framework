@@ -1110,10 +1110,14 @@ class ModelSerializer(Serializer):
             attr_model = model
 
             for attr in source_attrs[:-1]:
-                if attr not in attr_info.relations:
+                relation_info = attr_info.relations.get(attr)
+                if relation_info is None:
+                    break
+                if getattr(relation_info, 'to_many', False):
+                    # Do not rewrite sources that traverse to-many relations.
                     break
 
-                attr_model = attr_info.relations[attr].related_model
+                attr_model = relation_info.related_model
                 attr_info = model_meta.get_field_info(attr_model)
             else:
                 attr = source_attrs[-1]
