@@ -22,7 +22,28 @@ The timeline for deprecation of a feature present in version 1.0 would work as f
 
 * Version 1.3 would remove the deprecated bits of API entirely.
 
+Two aliases always point at the warning classes for the current release cycle, so you can refer to them without updating your configuration on every release:
+
+* `RemovedInNextDRFVersionWarning` — features that the next feature release removes. Always a `DeprecationWarning`.
+* `RemovedAfterNextDRFVersionWarning` — features that the release after next removes. Always a `PendingDeprecationWarning`.
+
 Note that in line with Django's policy, any parts of the framework not mentioned in the documentation should generally be considered private API, and may be subject to change.
+
+### Surfacing deprecations in your test suite
+
+Deprecations are much easier to deal with one release at a time, so it's worth failing your test suite on anything that is due to be removed in the next release, while keeping the earlier warnings visible.
+
+If you run your tests with pytest, add the following to your `pyproject.toml`:
+
+```toml
+[tool.pytest]
+filterwarnings = [
+  "error::rest_framework.deprecation.RemovedInNextDRFVersionWarning",
+  "always::rest_framework.deprecation.RemovedAfterNextDRFVersionWarning",
+]
+```
+
+When a warning does fire, the message names the release that removes the feature and what to use instead. Once you have dealt with them all, drop the `always` filter down to `error` too, and you'll be ready for the release after next as well.
 
 ## Upgrading
 

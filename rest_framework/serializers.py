@@ -15,6 +15,7 @@ import contextlib
 import copy
 import inspect
 import traceback
+import warnings
 from collections import defaultdict
 from collections.abc import Mapping
 
@@ -27,6 +28,7 @@ from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework.compat import postgres_fields
+from rest_framework.deprecation import RemovedInDRF320Warning
 from rest_framework.exceptions import ErrorDetail, ValidationError
 from rest_framework.fields import get_error_detail
 from rest_framework.settings import api_settings
@@ -709,6 +711,16 @@ class ListSerializer(BaseSerializer):
                 ret.append(validated)
 
         if errors:
+            if not api_settings.LIST_SERIALIZER_ERRORS_AS_DICT:
+                warnings.warn(
+                    'The list-based error format for `ListSerializer` is '
+                    'deprecated and will be removed in DRF 3.20. Set '
+                    '`REST_FRAMEWORK["LIST_SERIALIZER_ERRORS_AS_DICT"]` to '
+                    '`True` to use the dictionary-based error format.',
+                    RemovedInDRF320Warning,
+                    stacklevel=4,
+                )
+                errors = [errors.get(index, {}) for index in range(len(data))]
             raise ValidationError(errors)
 
         return ret

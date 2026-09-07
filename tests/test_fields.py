@@ -1131,7 +1131,10 @@ class TestIntegerField(FieldValues):
     invalid_inputs = {
         0.5: ['A valid integer is required.'],
         'abc': ['A valid integer is required.'],
-        '0.5': ['A valid integer is required.']
+        '0.5': ['A valid integer is required.'],
+        'inf': ['A valid integer is required.'],
+        'nan': ['A valid integer is required.'],
+        '1e400': ['A valid integer is required.'],
     }
     outputs = {
         '1': 1,
@@ -1241,7 +1244,13 @@ class TestFloatField(FieldValues):
         0.0: 0.0,
     }
     invalid_inputs = {
-        'abc': ["A valid number is required."]
+        'abc': ["A valid number is required."],
+        'nan': ["A valid number is required."],
+        'inf': ["A valid number is required."],
+        '-inf': ["A valid number is required."],
+        '1e400': ["A valid number is required."],
+        float('nan'): ["A valid number is required."],
+        float('inf'): ["A valid number is required."],
     }
     outputs = {
         '1': 1.0,
