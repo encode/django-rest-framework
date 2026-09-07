@@ -1150,7 +1150,7 @@ class ModelSerializer(Serializer):
                     if attr not in attr_info.relations:
                         break
 
-relation_info = attr_info.relations[attr]
+                    relation_info = attr_info.relations[attr]
                     if relation_info.to_many:
                         break
 
