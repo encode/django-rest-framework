@@ -763,7 +763,19 @@ class TestRelationalFieldMappings(TestCase):
         """)
         self.assertEqual(repr(UserProfileSerializer()), expected)
 
+    def test_source_with_to_many_raises_improperly_configured(self):
+        class UserProfile(models.Model):
+            user = models.ForeignKey(User, on_delete=models.CASCADE)
 
+        class InvalidUserProfileSerializer(serializers.ModelSerializer):
+            groups = serializers.CharField(source='user.groups.name')
+
+            class Meta:
+                model = UserProfile
+                fields = ('groups',)
+
+        with self.assertRaises(ImproperlyConfigured):
+            InvalidUserProfileSerializer()
 class DisplayValueTargetModel(models.Model):
     name = models.CharField(max_length=100)
 
