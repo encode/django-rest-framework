@@ -66,7 +66,7 @@ You can determine your currently installed version using `pip show`:
 #### Bug fixes
 
 * Fix duplicate validation errors for GenericIPAddressField with protocol by [@browniebroke](https://github.com/browniebroke) in [#10011](https://github.com/encode/django-rest-framework/pull/10011)
-* Fix int64 format detection for negative `IntegerField` minimums in Open API schema definition by [@zainnadeem786](https://github.com/zainnadeem786) in [#9989](https://github.com/encode/django-rest-framework/pull/9989)
+* Fix int64 format detection for negative `IntegerField` minimums in OpenAPI schema definition by [@zainnadeem786](https://github.com/zainnadeem786) in [#9989](https://github.com/encode/django-rest-framework/pull/9989)
 * Fix list serializer on unique constraint validator by [@MehrazRumman](https://github.com/MehrazRumman) in [#10033](https://github.com/encode/django-rest-framework/pull/10033)
 * Reject non-finite values (nan, inf) in FloatField by [@winklemad](https://github.com/winklemad) in [#9998](https://github.com/encode/django-rest-framework/pull/9998)
 
