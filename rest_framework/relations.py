@@ -648,29 +648,98 @@ class PrimaryKeyManyRelatedField(ManyRelatedField):
                     errors[idx] = exc.detail
                 continue
             entries.append((idx, lookup_key, value))
+
+        objects = self._resolve_objects(queryset, entries)
+        if objects is None:
+            return self._collecting_per_item(child, data)
+
+        resolved = {}
+        unmatched = []
+        for idx, lookup_key, value in entries:
+            if lookup_key in objects:
+                resolved[idx] = objects[lookup_key]
+            else:
+                unmatched.append((idx, lookup_key, value))
+
+        if unmatched:
+            if queryset.query.is_sliced:
+                # Allowed set is the slice; do not call get() on a sliced QS.
+                for idx, lookup_key, value in unmatched:
+                    try:
+                        child.fail('does_not_exist', pk_value=value)
+                    except ValidationError as exc:
+                        errors[idx] = exc.detail
+            else:
+                self._recover_unmatched(
+                    queryset, child, unmatched, resolved, errors
+                )
+
+        if errors:
+            raise ValidationError(errors)
+        return [resolved[idx] for idx, _, _ in entries]
+
+    def _resolve_objects(self, queryset, entries):
+        """
+        Return {pk: obj} for `entries`, or None to signal collecting per-item.
+
+        Sliced querysets cannot use in_bulk/get; materialize the slice once.
+        Other in_bulk TypeErrors (e.g. values()/values_list()) fall back to
+        collecting per-item to_internal_value.
+        """
         lookup_keys = [lookup_key for _, lookup_key, _ in entries]
         try:
-            objects = queryset.in_bulk(lookup_keys) if lookup_keys else {}
+            return queryset.in_bulk(lookup_keys) if lookup_keys else {}
         except (TypeError, ValueError):
-            # queryset doesn't support in_bulk (e.g. distinct/sliced); fall
-            # back to a collecting per-item loop so mixed lists still report
-            # every invalid item.
-            errors = {}
-            result = []
-            for idx, item in enumerate(data):
+            if queryset.query.is_sliced:
                 try:
-                    result.append(child.to_internal_value(item))
-                except ValidationError as exc:
-                    errors[idx] = exc.detail
-            if errors:
-                raise ValidationError(errors)
-            return result
-        for idx, lookup_key, value in entries:
-            if lookup_key not in objects:
+                    return {obj.pk: obj for obj in queryset}
+                except (TypeError, AttributeError):
+                    return None
+            return None
+
+    def _collecting_per_item(self, child, data):
+        errors = {}
+        result = []
+        for idx, item in enumerate(data):
+            try:
+                result.append(child.to_internal_value(item))
+            except ValidationError as exc:
+                errors[idx] = exc.detail
+        if errors:
+            raise ValidationError(errors)
+        return result
+
+    def _recover_unmatched(self, queryset, child, unmatched, resolved, errors):
+        """
+        Recover keys missed by Python equality against in_bulk() results.
+
+        One filter(pk__in=...) probe first: empty means true misses. Non-empty
+        means possible CI-collation / prep mismatch — resolve each unmatched
+        value with get(pk=value), collecting DoesNotExist like the per-item
+        path.
+        """
+        probe = list(queryset.filter(
+            pk__in=[value for _, _, value in unmatched]
+        ))
+        if not probe:
+            for idx, lookup_key, value in unmatched:
                 try:
                     child.fail('does_not_exist', pk_value=value)
                 except ValidationError as exc:
                     errors[idx] = exc.detail
-        if errors:
-            raise ValidationError(errors)
-        return [objects[lookup_key] for _, lookup_key, _ in entries]
+            return
+        for idx, lookup_key, value in unmatched:
+            try:
+                resolved[idx] = queryset.get(pk=value)
+            except ObjectDoesNotExist:
+                try:
+                    child.fail('does_not_exist', pk_value=value)
+                except ValidationError as exc:
+                    errors[idx] = exc.detail
+            except (TypeError, ValueError):
+                try:
+                    child.fail(
+                        'incorrect_type', data_type=type(value).__name__
+                    )
+                except ValidationError as exc:
+                    errors[idx] = exc.detail
