@@ -753,7 +753,8 @@ class ListSerializer(BaseSerializer):
         has_instance_map = hasattr(self, '_list_serializer_instance_map')
         if has_instance_map:
             original_instance_map = self._list_serializer_instance_map
-        self._list_serializer_instance_map = instance_map
+        if instance_map is not None:
+            self._list_serializer_instance_map = instance_map
 
         try:
             for index, item in enumerate(data):
@@ -779,9 +780,9 @@ class ListSerializer(BaseSerializer):
 
             return ret
         finally:
-            if has_instance_map:
+            if instance_map is not None and has_instance_map:
                 self._list_serializer_instance_map = original_instance_map
-            else:
+            elif instance_map is not None and hasattr(self, '_list_serializer_instance_map'):
                 delattr(self, '_list_serializer_instance_map')
 
     def to_representation(self, data):
