@@ -201,10 +201,11 @@ class RelatedField(Field):
         result = {}
         for item in queryset:
             value = self.to_representation(item)
+display = self.display_value(item)
             try:
-                result[value] = self.display_value(item)
+                result[value] = display
             except TypeError:
-                result[str(value)] = self.display_value(item)
+                result[str(value)] = display
         return result
 
     @property
