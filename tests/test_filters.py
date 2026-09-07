@@ -45,7 +45,7 @@ class BaseFilterTests(TestCase):
 
 
 class SearchFilterModel(models.Model):
-    title = models.CharField(max_length=20)
+    title = models.CharField(max_length=25)
     text = models.CharField(max_length=100)
 
 
@@ -247,6 +247,33 @@ class SearchFilterTests(TestCase):
                 {'id': 2, 'title': 'zz', 'text': 'bcd'},
             ]
 
+    @pytest.mark.requires_postgres
+    @pytest.mark.usefixtures("unaccent_extension")
+    def test_unaccented_search_lookups(self):
+        for title in ('Jérémy', 'Jeremy', 'Jérémie', 'Amélie'):
+            SearchFilterModel.objects.create(title=title, text=title.lower())
+
+        # (search field, term, expected titles) for each prefix. All but '@'
+        # are accent-insensitive, so an unaccented term matches accented titles.
+        cases = [
+            ('title', 'rem', {'Jérémy', 'Jeremy', 'Jérémie'}),       # unaccent__icontains
+            ('^title', 'jer', {'Jérémy', 'Jeremy', 'Jérémie'}),      # unaccent__istartswith
+            ('=title', 'jeremy', {'Jérémy', 'Jeremy'}),              # unaccent__iexact
+            ('$title', 'jerem.+', {'Jérémy', 'Jeremy', 'Jérémie'}),  # unaccent__iregex
+            ('@title', 'Jeremy', {'Jeremy'}),                        # search (accent-sensitive)
+        ]
+
+        for search_field, term, expected in cases:
+            with self.subTest(search_field=search_field):
+                class SearchListView(generics.ListAPIView):
+                    queryset = SearchFilterModel.objects.all()
+                    serializer_class = SearchFilterSerializer
+                    filter_backends = (filters.UnaccentedSearchFilter,)
+                    search_fields = (search_field,)
+
+                response = SearchListView.as_view()(factory.get('/', {'search': term}))
+                assert {item['title'] for item in response.data} == expected
+
     def test_search_field_with_multiple_words(self):
         class SearchListView(generics.ListAPIView):
             queryset = SearchFilterModel.objects.all()
@@ -289,6 +316,109 @@ class SearchFilterTests(TestCase):
         assert response.data == [
             {'id': 11, 'title': 'A title', 'text': 'The long text'},
         ]
+
+
+@pytest.mark.requires_postgres
+class SearchFilterFullTextTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        SearchFilterModel.objects.create(title='The quick brown fox', text='jumps over the lazy dog')
+        SearchFilterModel.objects.create(title='The slow brown turtle', text='crawls under the fence')
+        SearchFilterModel.objects.create(title='A bright sunny day', text='in the park with friends')
+
+    def test_full_text_search_single_term(self):
+        class SearchListView(generics.ListAPIView):
+            queryset = SearchFilterModel.objects.all()
+            serializer_class = SearchFilterSerializer
+            filter_backends = (filters.SearchFilter,)
+            search_fields = ('@title',)
+
+        view = SearchListView.as_view()
+        request = factory.get('/', {'search': 'fox'})
+        response = view(request)
+        assert len(response.data) == 1
+        assert response.data[0]['title'] == 'The quick brown fox'
+
+    def test_full_text_search_multiple_results(self):
+        class SearchListView(generics.ListAPIView):
+            queryset = SearchFilterModel.objects.all()
+            serializer_class = SearchFilterSerializer
+            filter_backends = (filters.SearchFilter,)
+            search_fields = ('@title',)
+
+        view = SearchListView.as_view()
+        request = factory.get('/', {'search': 'brown'})
+        response = view(request)
+        assert len(response.data) == 2
+        titles = {item['title'] for item in response.data}
+        assert titles == {'The quick brown fox', 'The slow brown turtle'}
+
+    def test_full_text_search_no_results(self):
+        class SearchListView(generics.ListAPIView):
+            queryset = SearchFilterModel.objects.all()
+            serializer_class = SearchFilterSerializer
+            filter_backends = (filters.SearchFilter,)
+            search_fields = ('@title',)
+
+        view = SearchListView.as_view()
+        request = factory.get('/', {'search': 'elephant'})
+        response = view(request)
+        assert len(response.data) == 0
+
+    def test_full_text_search_multiple_fields(self):
+        class SearchListView(generics.ListAPIView):
+            queryset = SearchFilterModel.objects.all()
+            serializer_class = SearchFilterSerializer
+            filter_backends = (filters.SearchFilter,)
+            search_fields = ('@title', '@text')
+
+        view = SearchListView.as_view()
+        request = factory.get('/', {'search': 'lazy'})
+        response = view(request)
+        assert len(response.data) == 1
+        assert response.data[0]['title'] == 'The quick brown fox'
+
+    def test_full_text_search_stemming(self):
+        """Full text search should match stemmed words (e.g. 'jumping' matches 'jumps')."""
+        class SearchListView(generics.ListAPIView):
+            queryset = SearchFilterModel.objects.all()
+            serializer_class = SearchFilterSerializer
+            filter_backends = (filters.SearchFilter,)
+            search_fields = ('@text',)
+
+        view = SearchListView.as_view()
+        request = factory.get('/', {'search': 'jumping'})
+        response = view(request)
+        assert len(response.data) == 1
+        assert response.data[0]['text'] == 'jumps over the lazy dog'
+
+    def test_full_text_search_multiple_terms(self):
+        """Each search term must match (AND semantics across terms)."""
+        class SearchListView(generics.ListAPIView):
+            queryset = SearchFilterModel.objects.all()
+            serializer_class = SearchFilterSerializer
+            filter_backends = (filters.SearchFilter,)
+            search_fields = ('@title', '@text')
+
+        view = SearchListView.as_view()
+        request = factory.get('/', {'search': 'brown lazy'})
+        response = view(request)
+        assert len(response.data) == 1
+        assert response.data[0]['title'] == 'The quick brown fox'
+
+    def test_full_text_search_mixed_with_icontains(self):
+        """Full text search fields can be mixed with regular icontains fields."""
+        class SearchListView(generics.ListAPIView):
+            queryset = SearchFilterModel.objects.all()
+            serializer_class = SearchFilterSerializer
+            filter_backends = (filters.SearchFilter,)
+            search_fields = ('@title', 'text')
+
+        view = SearchListView.as_view()
+        request = factory.get('/', {'search': 'park'})
+        response = view(request)
+        assert len(response.data) == 1
+        assert response.data[0]['title'] == 'A bright sunny day'
 
 
 class AttributeModel(models.Model):
@@ -339,6 +469,10 @@ class SearchFilterFkTests(TestCase):
         assert 'attribute__label__icontains' == filter_.construct_search('attribute__label', SearchFilterModelFk._meta)
         assert 'attribute__label__iendswith' == filter_.construct_search('attribute__label__iendswith', SearchFilterModelFk._meta)
 
+    def test_construct_search_with_at_prefix(self):
+        filter_ = filters.SearchFilter()
+        assert 'title__search' == filter_.construct_search('@title', SearchFilterModelFk._meta)
+
 
 class SearchFilterModelM2M(models.Model):
     title = models.CharField(max_length=20)
@@ -352,6 +486,7 @@ class SearchFilterM2MSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+@pytest.mark.usefixtures("reset_sequences")
 class SearchFilterM2MTests(TestCase):
     def setUp(self):
         # Sequence of title/text/attributes is:
@@ -550,6 +685,7 @@ class DjangoFilterOrderingSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+@pytest.mark.usefixtures("reset_sequences")
 class OrderingFilterTests(TestCase):
     def setUp(self):
         # Sequence of title/text is:
@@ -867,6 +1003,7 @@ class SensitiveDataSerializer3(serializers.ModelSerializer):
         fields = ('id', 'user')
 
 
+@pytest.mark.usefixtures("reset_sequences")
 class SensitiveOrderingFilterTests(TestCase):
     def setUp(self):
         for idx in range(3):

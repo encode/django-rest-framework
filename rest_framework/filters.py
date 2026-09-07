@@ -59,6 +59,7 @@ class SearchFilter(BaseFilterBackend):
         '@': 'search',
         '$': 'iregex',
     }
+    default_lookup = 'icontains'
     search_title = _('Search')
     search_description = _('A search term.')
 
@@ -104,8 +105,8 @@ class SearchFilter(BaseFilterBackend):
                     if hasattr(field, "path_infos"):
                         # Update opts to follow the relation.
                         opts = field.path_infos[-1].to_opts
-            # Otherwise, use the field with icontains.
-            lookup = 'icontains'
+            # Otherwise, use the field with the default lookup.
+            lookup = self.default_lookup
         return LOOKUP_SEP.join([field_name, lookup])
 
     def must_call_distinct(self, queryset, search_fields):
@@ -188,6 +189,25 @@ class SearchFilter(BaseFilterBackend):
                 },
             },
         ]
+
+
+class UnaccentedSearchFilter(SearchFilter):
+    """
+    A SearchFilter that performs accent-insensitive matching.
+
+    Requires PostgreSQL with the ``unaccent`` extension installed and
+    ``django.contrib.postgres`` in ``INSTALLED_APPS``. See
+    https://docs.djangoproject.com/en/stable/ref/contrib/postgres/lookups/#unaccent
+    """
+    lookup_prefixes = {
+        '^': 'unaccent__istartswith',
+        '=': 'unaccent__iexact',
+        # '@' stays accent-sensitive: unaccent can't be applied to full-text
+        # search.
+        '@': 'search',
+        '$': 'unaccent__iregex',
+    }
+    default_lookup = 'unaccent__icontains'
 
 
 class OrderingFilter(BaseFilterBackend):
