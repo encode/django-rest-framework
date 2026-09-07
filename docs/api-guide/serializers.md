@@ -592,8 +592,8 @@ It is also possible to create new serializer fields from any related model field
             fields = ['date_of_birth', 'first_name', 'last_name']
             extra_kwargs = {
                 'date_of_birth': {'source': 'birthdate'},
-                'first_name': {'source': 'user.first_name'},
-                'last_name': {'source': 'user.last_name'}
+                'first_name': {'source': 'user.first_name', 'read_only': True},
+                'last_name': {'source': 'user.last_name', 'read_only': True},
             }
 
 ## Relational fields
