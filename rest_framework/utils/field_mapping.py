@@ -8,9 +8,7 @@ from django.core import validators
 from django.db import models
 from django.utils.text import capfirst
 
-from rest_framework.compat import (
-    get_referenced_base_fields_from_q, postgres_fields
-)
+from rest_framework.compat import postgres_fields
 from rest_framework.validators import UniqueValidator
 
 NUMERIC_FIELD_TYPES = (
@@ -82,7 +80,7 @@ def get_unique_validators(field_name, model_field):
     queryset = model_field.model._default_manager
     for condition in conditions:
         condition_fields = (
-            get_referenced_base_fields_from_q(condition)
+            set(condition.referenced_base_fields)
             if condition is not None
             else set()
         )

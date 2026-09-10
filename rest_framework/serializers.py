@@ -27,9 +27,7 @@ from django.utils import timezone
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 
-from rest_framework.compat import (
-    get_referenced_base_fields_from_q, postgres_fields
-)
+from rest_framework.compat import postgres_fields
 from rest_framework.deprecation import RemovedInDRF320Warning
 from rest_framework.exceptions import ErrorDetail, ValidationError
 from rest_framework.fields import get_error_detail
@@ -1486,7 +1484,7 @@ class ModelSerializer(Serializer):
                         condition_fields = []
                     else:
                         condition_fields = list(
-                            get_referenced_base_fields_from_q(constraint.condition)
+                            constraint.condition.referenced_base_fields
                         )
 
                     # Combine constraint fields and condition fields. If the union

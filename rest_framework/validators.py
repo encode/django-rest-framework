@@ -218,21 +218,22 @@ class UniqueTogetherValidator:
         # Combine constraint fields and condition fields to detect changes
         # in either set of fields. This ensures that updates to condition
         # fields also trigger revalidation.
-        checked_names = list({
-                                 serializer.fields[field_name].source for field_name in self.fields
-                             } | {
-                                 serializer.fields[field_name].source for field_name in self.condition_fields
-                             })
+        checked_names = list(
+            {serializer.fields[field_name].source for field_name in self.fields}
+            | {serializer.fields[field_name].source for field_name in self.condition_fields}
+        )
 
         # Ignore validation if any field is None
         if serializer.instance is None:
             checked_values = [attrs.get(field_name) for field_name in checked_names]
         else:
-            # Ignore validation if all field values are unchanged
+            # Ignore validation if all field values are unchanged.
+            # Omitted fields are treated as unchanged; their value comes
+            # from the instance (as done for condition_kwargs below).
             checked_values = [
-                attrs.get(field_name)
+                attrs[field_name]
                 for field_name in checked_names
-                if attrs.get(field_name) != getattr(serializer.instance, field_name, None)
+                if field_name in attrs and attrs[field_name] != getattr(serializer.instance, field_name, None)
             ]
 
         condition_sources = (serializer.fields[field_name].source for field_name in self.condition_fields)
