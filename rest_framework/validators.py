@@ -203,6 +203,18 @@ class UniqueTogetherValidator:
         queryset = self.filter_queryset(attrs, queryset, serializer)
         queryset = self.exclude_current_instance(attrs, queryset, serializer.instance)
 
+        # Values of constraint fields only, resolved from attrs or instance.
+        # Used solely for the nulls_distinct guard, so condition fields
+        # do not accidentally cause validation to be skipped.
+        constraint_field_sources = [
+            serializer.fields[field_name].source for field_name in self.fields
+        ]
+        constraint_field_values = [
+            attrs[source] if source in attrs
+            else getattr(serializer.instance, source, None)
+            for source in constraint_field_sources
+        ]
+
         # Combine constraint fields and condition fields to detect changes
         # in either set of fields. This ensures that updates to condition
         # fields also trigger revalidation.
@@ -232,8 +244,10 @@ class UniqueTogetherValidator:
         }
 
         if checked_values:
-            # Skip validation for None values unless nulls_distinct is False
-            if self.nulls_distinct is not False and None in checked_values:
+            # Skip validation for None values in *constraint* fields unless
+            # nulls_distinct is False. Condition fields are intentionally
+            # excluded here.
+            if self.nulls_distinct is not False and any(v is None for v in constraint_field_values):
                 return
             if qs_exists_with_condition(queryset, self.condition, condition_kwargs):
                 field_names = ', '.join(self.fields)

@@ -1465,9 +1465,17 @@ class ModelSerializer(Serializer):
 
     def get_unique_together_constraints(self, model):
         """
-        Returns iterator of (fields, queryset, condition_fields, condition, nulls_distinct),
-        each entry describes an unique together constraint on `fields` in `queryset`
-        with respect of constraint's `condition` and `nulls_distinct` option.
+        Returns iterator of (
+            fields,
+            queryset,
+            condition_fields,
+            condition,
+            nulls_distinct,
+            constraint,
+        ),
+        each entry describes a unique together constraint on `fields` in `queryset`
+        with respect of constraint's `condition`, `nulls_distinct` option, and
+        the original constraint object (for custom error messages/codes).
         """
         for parent_class in [model] + list(model._meta.parents):
             for unique_together in parent_class._meta.unique_together:
