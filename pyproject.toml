@@ -60,7 +60,7 @@ docs = [
 optional = [
   # Optional packages which may be used with REST framework.
   "django-filter",
-  "django-guardian>=2.4.0,<3.4",
+  "django-guardian>=2.4.0,<3.5",
   "inflection==0.5.1",
   "legacy-cgi; python_version>='3.13'",
   "markdown>=3.3.7",
