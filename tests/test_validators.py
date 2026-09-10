@@ -1056,16 +1056,25 @@ class TestUniqueConstraintValidation(TestCase):
         self.assertIsInstance(result, UniqueConstraintBlankModel)
         self.assertEqual(result.tag, '')
 
-    def test_conditional_unique_constraint_allows_repeated_blank_values(self):
-        # The condition `~Q(tag='')` excludes blank tags from the constraint,
-        # so several rows may share the same `age` with an omitted or empty tag.
+    def test_multiple_blank_values_are_allowed(self):
+        """
+        The scenario from issue #9750: the constraint's condition `~Q(tag='')`
+        excludes blank tags, so multiple rows may share the same `age` as long
+        as their tag is empty, whether the tag is omitted or sent as ''.
+        """
         UniqueConstraintBlankModel.objects.create(title='Alice', age=1, tag='')
 
-        serializer = UniqueConstraintBlankSerializer(data={'title': 'Bob', 'age': 1})
+        serializer = UniqueConstraintBlankSerializer(data={'title': 'Bob', 'age': 1, 'tag': ''})
         self.assertTrue(serializer.is_valid(), serializer.errors)
+        serializer.save()
 
-        serializer = UniqueConstraintBlankSerializer(data={'title': 'Carol', 'age': 1, 'tag': ''})
+        serializer = UniqueConstraintBlankSerializer(data={'title': 'Carol', 'age': 1})
         self.assertTrue(serializer.is_valid(), serializer.errors)
+        serializer.save()
+
+        self.assertEqual(
+            UniqueConstraintBlankModel.objects.filter(age=1, tag='').count(), 3
+        )
 
     def test_conditional_unique_constraint_rejects_repeated_non_blank_values(self):
         UniqueConstraintBlankModel.objects.create(title='Alice', age=1, tag='vip')
