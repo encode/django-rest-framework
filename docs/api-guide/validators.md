@@ -102,7 +102,7 @@ The validator should be applied to *serializer classes*, like so:
             ]
 
 !!! note
-    The `UniqueTogetherValidator` class always imposes an implicit constraint that all the fields it applies to are always treated as required. Fields with `default` values are an exception to this as they always supply a value even when omitted from user input.
+    The `UniqueTogetherValidator` class always imposes an implicit constraint that all the fields it applies to are always treated as required. Fields with `default` values are an exception to this as they always supply a value even when omitted from user input. When using `ModelSerializer`, model fields with `null=True` default to `None`, and `CharField` or `TextField` model fields with `blank=True` default to an empty string, so these are not treated as required either.
 
 ## UniqueForDateValidator
 
