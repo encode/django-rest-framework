@@ -1277,6 +1277,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#uniqueconstraint-with-conditions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        UniqueConstraint with conditions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#updating-nested-serializers" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3065,6 +3076,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#uniqueconstraint-with-conditions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        UniqueConstraint with conditions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#updating-nested-serializers" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3409,6 +3431,24 @@ in the <code>.validate()</code> method, or else in the view.</p>
         fields = ['client', 'date', 'amount']
         extra_kwargs = {'client': {'required': False}}
         validators = []  # Remove a default "unique together" constraint.
+</code></pre></div>
+<h3 id="uniqueconstraint-with-conditions">UniqueConstraint with conditions<a class="headerlink" href="#uniqueconstraint-with-conditions" title="Permanent link">&para;</a></h3>
+<p>When using Django's <code>UniqueConstraint</code> with conditions that reference other model fields, DRF will automatically use
+<code>UniqueTogetherValidator</code> instead of field-level <code>UniqueValidator</code>. This ensures proper validation behavior when the constraint
+effectively involves multiple fields.</p>
+<p>For example, a single-field constraint with a condition becomes a multi-field validation when the condition references other fields.</p>
+<div class="language-text highlight"><pre><span></span><code>class MyModel(models.Model):
+    name = models.CharField(max_length=100)
+    status = models.CharField(max_length=20)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['name'],
+                condition=models.Q(status='active'),
+                name='unique_active_name'
+            )
+        ]
 </code></pre></div>
 <h3 id="updating-nested-serializers">Updating nested serializers<a class="headerlink" href="#updating-nested-serializers" title="Permanent link">&para;</a></h3>
 <p>When applying an update to an existing instance, uniqueness validators will
