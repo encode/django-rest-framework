@@ -61,7 +61,8 @@ from rest_framework.fields import (  # NOQA # isort:skip
 )
 from rest_framework.relations import (  # NOQA # isort:skip
     HyperlinkedIdentityField, HyperlinkedRelatedField, ManyRelatedField,
-    PrimaryKeyRelatedField, RelatedField, SlugRelatedField, StringRelatedField,
+    PrimaryKeyManyRelatedField, PrimaryKeyRelatedField, RelatedField,
+    SlugRelatedField, StringRelatedField,
 )
 
 # Non-field imports, but public API
