@@ -284,11 +284,15 @@ class BaseUniqueForValidator:
         self.date_field = date_field
         self.message = message or self.message
 
-    def enforce_required_fields(self, attrs):
+    def enforce_required_fields(self, attrs, serializer=None):
         """
         The `UniqueFor<Range>Validator` classes always force an implied
-        'required' state on the fields they are applied to.
+        'required' state on the fields they are applied to during creates.
+        On partial updates, missing fields are bypassed.
         """
+        if serializer is not None and serializer.instance is not None:
+            return
+
         missing_items = {
             field_name: self.missing_message
             for field_name in [self.field, self.date_field]
@@ -316,7 +320,38 @@ class BaseUniqueForValidator:
         date_field_name = serializer.fields[self.date_field].source_attrs[-1]
 
         _check_single_instance(serializer, serializer.instance, self)
-        self.enforce_required_fields(attrs)
+        self.enforce_required_fields(attrs, serializer)
+
+        if serializer.instance is not None:
+            # On update: if neither field is present in attrs, skip validation
+            if self.field not in attrs and self.date_field not in attrs:
+                return
+
+            # If only one field is provided, resolve the other from the existing instance
+            attrs = attrs.copy()
+            if self.field not in attrs:
+                attrs[self.field] = getattr(serializer.instance, field_name)
+            if self.date_field not in attrs:
+                date_val = getattr(serializer.instance, date_field_name)
+                if date_val is not None and isinstance(date_val, str):
+                    try:
+                        date_val = serializer.fields[self.date_field].to_internal_value(date_val)
+                    except Exception:
+                        pass
+                attrs[self.date_field] = date_val
+
+            # If both fields are unchanged on the instance, skip validation
+            instance_date = getattr(serializer.instance, date_field_name)
+            if (attrs[self.field] == getattr(serializer.instance, field_name) and
+                    (attrs[self.date_field] == instance_date or
+                     (isinstance(instance_date, str) and str(attrs[self.date_field]) == instance_date))):
+                return
+
+
+        # If date_field is None, skip validation
+        if attrs.get(self.date_field) is None:
+            return
+
         queryset = self.queryset
         queryset = self.filter_queryset(attrs, queryset, field_name, date_field_name)
         queryset = self.exclude_current_instance(attrs, queryset, serializer.instance)

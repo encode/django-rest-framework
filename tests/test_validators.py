@@ -1099,6 +1099,71 @@ class TestUniquenessForDateValidation(TestCase):
             'published': datetime.date(2000, 1, 1)
         }
 
+    def test_partial_update_without_fields(self):
+        """
+        A partial update that changes neither the field nor the date field
+        should not raise validation errors.
+        """
+        serializer = UniqueForDateSerializer(instance=self.instance, data={}, partial=True)
+        assert serializer.is_valid(), serializer.errors
+
+    def test_partial_update_single_field_unique(self):
+        """
+        A partial update changing only the slug should resolve the date
+        from the instance and succeed if unique.
+        """
+        serializer = UniqueForDateSerializer(
+            instance=self.instance,
+            data={'slug': 'brand-new-slug'},
+            partial=True
+        )
+        assert serializer.is_valid(), serializer.errors
+        assert serializer.validated_data['slug'] == 'brand-new-slug'
+
+    def test_partial_update_single_field_conflict(self):
+        """
+        A partial update changing only the slug should conflict if another
+        record already exists with that slug on the same date.
+        """
+        UniqueForDateModel.objects.create(slug='other-slug', published='2000-01-01')
+        serializer = UniqueForDateSerializer(
+            instance=self.instance,
+            data={'slug': 'other-slug'},
+            partial=True
+        )
+        assert not serializer.is_valid()
+        assert serializer.errors == {
+            'slug': ['This field must be unique for the "published" date.']
+        }
+
+    def test_partial_update_date_field_conflict(self):
+        """
+        A partial update changing only the date field should conflict if another
+        record already exists with that slug on the new date.
+        """
+        UniqueForDateModel.objects.create(slug='existing', published='2000-01-02')
+        serializer = UniqueForDateSerializer(
+            instance=self.instance,
+            data={'published': '2000-01-02'},
+            partial=True
+        )
+        assert not serializer.is_valid()
+        assert serializer.errors == {
+            'slug': ['This field must be unique for the "published" date.']
+        }
+
+    def test_partial_update_unchanged_values(self):
+        """
+        A partial update that submits the same values should not fail uniqueness.
+        """
+        serializer = UniqueForDateSerializer(
+            instance=self.instance,
+            data={'slug': 'existing', 'published': '2000-01-01'},
+            partial=True
+        )
+        assert serializer.is_valid(), serializer.errors
+
+
     def test_many_update_requires_child_instance(self):
         serializer = UniqueForDateSerializer(
             instance=UniqueForDateModel.objects.all(),
@@ -1176,6 +1241,15 @@ class UniqueForMonthTests(TestCase):
             'published': datetime.date(2017, 2, 1)
         }
 
+    def test_partial_update_unique_for_month(self):
+        serializer = UniqueForMonthSerializer(
+            instance=self.instance,
+            data={'slug': 'updated'},
+            partial=True
+        )
+        assert serializer.is_valid(), serializer.errors
+
+
 # Tests for `UniqueForYearValidator`
 # ----------------------------------
 
@@ -1214,6 +1288,15 @@ class UniqueForYearTests(TestCase):
             'slug': 'existing',
             'published': datetime.date(2018, 1, 1)
         }
+
+    def test_partial_update_unique_for_year(self):
+        serializer = UniqueForYearSerializer(
+            instance=self.instance,
+            data={'slug': 'updated'},
+            partial=True
+        )
+        assert serializer.is_valid(), serializer.errors
+
 
 
 class HiddenFieldUniqueForDateModel(models.Model):
@@ -1255,6 +1338,20 @@ class TestHiddenFieldUniquenessForDateValidation(TestCase):
                     validators = [<UniqueForDateValidator(queryset=HiddenFieldUniqueForDateModel.objects.all(), field='slug', date_field='published')>]
         """)
         assert repr(serializer) == expected
+
+    def test_hidden_field_partial_update(self):
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = HiddenFieldUniqueForDateModel
+                fields = ('id', 'slug')
+
+        instance = HiddenFieldUniqueForDateModel.objects.create(slug='initial')
+        serializer = TestSerializer(instance=instance, data={'slug': 'updated'}, partial=True)
+        assert serializer.is_valid(), serializer.errors
+        serializer.save()
+        instance.refresh_from_db()
+        assert instance.slug == 'updated'
+
 
 
 class ValidatorsTests(TestCase):
