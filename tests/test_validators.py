@@ -286,6 +286,27 @@ class ConditionUniquenessTogetherSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class BlankUniquenessTogetherModel(models.Model):
+    """
+    Used to ensure that `blank=True` text fields which are part of a
+    unique_together constraint are not treated as required.
+
+    Django stores an omitted blank text field as an empty string, so the
+    serializer should default to '' and still validate uniqueness against it.
+    """
+    race_name = models.CharField(max_length=100, blank=True)
+    position = models.IntegerField()
+
+    class Meta:
+        unique_together = ('race_name', 'position')
+
+
+class BlankUniquenessTogetherSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BlankUniquenessTogetherModel
+        fields = '__all__'
+
+
 class TestUniquenessTogetherValidation(TestCase):
     def setUp(self):
         self.instance = UniquenessTogetherModel.objects.create(
@@ -718,6 +739,47 @@ class TestUniquenessTogetherValidation(TestCase):
         serializer = NullUniquenessTogetherSerializer(data=data)
         assert serializer.is_valid(), serializer.errors
 
+    def test_blank_fields_are_not_required(self):
+        # A `blank=True` text field that is part of the uniqueness constraint
+        # should not become required; it defaults to an empty string.
+        serializer = BlankUniquenessTogetherSerializer()
+        field = serializer.fields['race_name']
+        assert field.required is False
+        assert field.default == ''
+
+        serializer = BlankUniquenessTogetherSerializer(data={'position': 1})
+        assert serializer.is_valid(), serializer.errors
+        instance = serializer.save()
+        assert instance.race_name == ''
+
+    def test_validation_for_missing_blank_fields(self):
+        # An omitted blank field is validated using its empty string default,
+        # matching what the database would store and reject as a duplicate.
+        BlankUniquenessTogetherModel.objects.create(race_name='', position=1)
+        serializer = BlankUniquenessTogetherSerializer(data={'position': 1})
+        assert not serializer.is_valid()
+        assert serializer.errors == {
+            'non_field_errors': [
+                'The fields race_name, position must make a unique set.'
+            ]
+        }
+
+    def test_validation_for_provided_blank_fields(self):
+        BlankUniquenessTogetherModel.objects.create(race_name='', position=1)
+        data = {'race_name': '', 'position': 1}
+        serializer = BlankUniquenessTogetherSerializer(data=data)
+        assert not serializer.is_valid()
+        assert serializer.errors == {
+            'non_field_errors': [
+                'The fields race_name, position must make a unique set.'
+            ]
+        }
+
+    def test_ignore_validation_for_missing_blank_fields_without_duplicate(self):
+        BlankUniquenessTogetherModel.objects.create(race_name='', position=1)
+        serializer = BlankUniquenessTogetherSerializer(data={'position': 2})
+        assert serializer.is_valid(), serializer.errors
+
     def test_do_not_ignore_validation_for_null_fields(self):
         # None values that are not on fields part of the uniqueness constraint
         # do not cause the instance to skip validation.
@@ -917,6 +979,26 @@ class UniqueConstraintNullableModel(models.Model):
         ]
 
 
+class UniqueConstraintBlankModel(models.Model):
+    """
+    Mirrors the model from issue #9750: a conditional UniqueConstraint on a
+    `blank=True` text field, where empty strings are excluded from the
+    constraint and should be allowed to repeat.
+    """
+    title = models.CharField(max_length=100)
+    age = models.IntegerField()
+    tag = models.CharField(max_length=100, blank=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                name='unique_age_tag_when_tag_not_blank',
+                fields=('age', 'tag'),
+                condition=~models.Q(tag=''),
+            ),
+        ]
+
+
 class UniqueConstraintNullsDistinctModel(models.Model):
     name = models.CharField(max_length=100)
     code = models.CharField(max_length=100, null=True)
@@ -961,6 +1043,12 @@ class UniqueConstraintSerializer(serializers.ModelSerializer):
 class UniqueConstraintNullableSerializer(serializers.ModelSerializer):
     class Meta:
         model = UniqueConstraintNullableModel
+        fields = ('title', 'age', 'tag')
+
+
+class UniqueConstraintBlankSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UniqueConstraintBlankModel
         fields = ('title', 'age', 'tag')
 
 
@@ -1079,6 +1167,46 @@ class TestUniqueConstraintValidation(TestCase):
         self.assertTrue(serializer.is_valid(), serializer.errors)
         result = serializer.save()
         self.assertIsInstance(result, UniqueConstraintNullableModel)
+
+    def test_blank_unique_constraint_fields_are_not_required(self):
+        serializer = UniqueConstraintBlankSerializer(data={'title': 'Bob', 'age': 1})
+        self.assertTrue(serializer.is_valid(), serializer.errors)
+        result = serializer.save()
+        self.assertIsInstance(result, UniqueConstraintBlankModel)
+        self.assertEqual(result.tag, '')
+
+    def test_multiple_blank_values_are_allowed(self):
+        """
+        The scenario from issue #9750: the constraint's condition `~Q(tag='')`
+        excludes blank tags, so multiple rows may share the same `age` as long
+        as their tag is empty, whether the tag is omitted or sent as ''.
+        """
+        UniqueConstraintBlankModel.objects.create(title='Alice', age=1, tag='')
+
+        serializer = UniqueConstraintBlankSerializer(data={'title': 'Bob', 'age': 1, 'tag': ''})
+        self.assertTrue(serializer.is_valid(), serializer.errors)
+        serializer.save()
+
+        serializer = UniqueConstraintBlankSerializer(data={'title': 'Carol', 'age': 1})
+        self.assertTrue(serializer.is_valid(), serializer.errors)
+        serializer.save()
+
+        self.assertEqual(
+            UniqueConstraintBlankModel.objects.filter(age=1, tag='').count(), 3
+        )
+
+    def test_conditional_unique_constraint_rejects_repeated_non_blank_values(self):
+        UniqueConstraintBlankModel.objects.create(title='Alice', age=1, tag='vip')
+
+        serializer = UniqueConstraintBlankSerializer(data={'title': 'Bob', 'age': 1, 'tag': 'vip'})
+        self.assertFalse(serializer.is_valid())
+        self.assertEqual(
+            serializer.errors,
+            {'non_field_errors': ['The fields age, tag must make a unique set.']},
+        )
+
+        serializer = UniqueConstraintBlankSerializer(data={'title': 'Bob', 'age': 1, 'tag': 'other'})
+        self.assertTrue(serializer.is_valid(), serializer.errors)
 
     def test_unique_constraint_source(self):
         class SourceUniqueConstraintSerializer(serializers.ModelSerializer):
