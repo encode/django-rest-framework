@@ -1538,6 +1538,11 @@ class ModelSerializer(Serializer):
                 default = unique_constraint_field.default
             elif unique_constraint_field.null:
                 default = None
+            elif unique_constraint_field.blank and isinstance(unique_constraint_field, (models.CharField, models.TextField)):
+                # Django saves an omitted `blank=True` text field as an
+                # empty string, so use that as the default rather than
+                # making the field required.
+                default = ''
             else:
                 default = empty
 
