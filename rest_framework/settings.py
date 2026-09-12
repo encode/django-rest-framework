@@ -19,10 +19,12 @@ REST framework settings, checking for user settings first, then falling
 back to the defaults.
 """
 from django.conf import settings
-from django.test.signals import setting_changed
+# Import from `django.core.signals` instead of the official location
+# `django.test.signals` to avoid importing the test module unnecessarily.
+from django.core.signals import setting_changed
 from django.utils.module_loading import import_string
 
-from rest_framework import ISO_8601
+from rest_framework import DJANGO_DURATION_FORMAT, ISO_8601
 
 DEFAULTS = {
     # Base API policies
@@ -84,6 +86,7 @@ DEFAULTS = {
     # Exception handling
     'EXCEPTION_HANDLER': 'rest_framework.views.exception_handler',
     'NON_FIELD_ERRORS_KEY': 'non_field_errors',
+    'LIST_SERIALIZER_ERRORS_AS_DICT': True,
 
     # Testing
     'TEST_REQUEST_RENDERER_CLASSES': [
@@ -107,14 +110,17 @@ DEFAULTS = {
     'TIME_FORMAT': ISO_8601,
     'TIME_INPUT_FORMATS': [ISO_8601],
 
+    'DURATION_FORMAT': DJANGO_DURATION_FORMAT,
+
     # Encoding
     'UNICODE_JSON': True,
     'COMPACT_JSON': True,
     'STRICT_JSON': True,
     'COERCE_DECIMAL_TO_STRING': True,
+    'COERCE_BIGINT_TO_STRING': False,
     'UPLOADED_FILES_USE_URL': True,
 
-    # Browseable API
+    # Browsable API
     'HTML_SELECT_CUTOFF': 1000,
     'HTML_SELECT_CUTOFF_TEXT': "More than {count} items...",
 
@@ -182,14 +188,19 @@ def import_from_string(val, setting_name):
 
 class APISettings:
     """
-    A settings object, that allows API settings to be accessed as properties.
-    For example:
+    A settings object that allows REST Framework settings to be accessed as
+    properties. For example:
 
         from rest_framework.settings import api_settings
         print(api_settings.DEFAULT_RENDERER_CLASSES)
 
     Any setting with string import paths will be automatically resolved
     and return the class, rather than the string literal.
+
+    Note:
+    This is an internal class that is only compatible with settings namespaced
+    under the REST_FRAMEWORK name. It is not intended to be used by 3rd-party
+    apps, and test helpers like `override_settings` may not work as expected.
     """
     def __init__(self, user_settings=None, defaults=None, import_strings=None):
         if user_settings:

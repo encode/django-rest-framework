@@ -42,4 +42,4 @@ class Command(BaseCommand):
                     username)
             )
         self.stdout.write(
-            'Generated token {} for user {}'.format(token.key, username))
+            f'Generated token {token.key} for user {username}')

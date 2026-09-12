@@ -6,12 +6,14 @@ from collections.abc import Mapping
 
 import pytest
 from django.db import models
+from django.test import TestCase
 
 from rest_framework import exceptions, fields, relations, serializers
 from rest_framework.fields import Field
 
 from .models import (
-    ForeignKeyTarget, NestedForeignKeySource, NullableForeignKeySource
+    ForeignKeyTarget, ManyToManySource, ManyToManyTarget,
+    NestedForeignKeySource, NullableForeignKeySource
 )
 from .utils import MockObject
 
@@ -60,10 +62,11 @@ class TestFieldImports:
 # -----------------------------
 
 class TestSerializer:
-    def setup(self):
+    def setup_method(self):
         class ExampleSerializer(serializers.Serializer):
             char = serializers.CharField()
             integer = serializers.IntegerField()
+
         self.Serializer = ExampleSerializer
 
     def test_valid_serializer(self):
@@ -204,6 +207,9 @@ class TestSerializer:
                 exceptions.ErrorDetail(string='Raised error', code='invalid')
             ]}
 
+    def test_serializer_is_subscriptable(self):
+        assert serializers.Serializer is serializers.Serializer["foo"]
+
 
 class TestValidateMethod:
     def test_non_field_error_validate_method(self):
@@ -232,7 +238,7 @@ class TestValidateMethod:
 
 
 class TestBaseSerializer:
-    def setup(self):
+    def setup_method(self):
         class ExampleSerializer(serializers.BaseSerializer):
             def to_representation(self, obj):
                 return {
@@ -329,7 +335,7 @@ class TestStarredSource:
         'nested2': {'c': 3, 'd': 4}
     }
 
-    def setup(self):
+    def setup_method(self):
         class NestedSerializer1(serializers.Serializer):
             a = serializers.IntegerField()
             b = serializers.IntegerField()
@@ -455,7 +461,7 @@ class TestNotRequiredOutput:
 
 
 class TestDefaultOutput:
-    def setup(self):
+    def setup_method(self):
         class ExampleSerializer(serializers.Serializer):
             has_default = serializers.CharField(default='x')
             has_default_callable = serializers.CharField(default=lambda: 'y')
@@ -546,6 +552,26 @@ class TestDefaultOutput:
         assert Serializer({'nested': {'a': '3', 'b': {}}}).data == {'nested': {'a': '3', 'c': '2'}}
         assert Serializer({'nested': {'a': '3', 'b': {'c': '4'}}}).data == {'nested': {'a': '3', 'c': '4'}}
 
+    def test_nested_serializer_not_required_with_querydict(self):
+        """
+        When a nested serializer is not required and the QueryDict does
+        not contain any matching prefixed keys, the nested serializer
+        should be omitted from validated_data. Regression test for #6234.
+        """
+        from django.http import QueryDict
+
+        class NestedSerializer(serializers.Serializer):
+            x = serializers.CharField()
+
+        class ParentSerializer(serializers.Serializer):
+            name = serializers.CharField()
+            nested = NestedSerializer(required=False)
+
+        serializer = ParentSerializer(data=QueryDict("name=test"))
+        assert serializer.is_valid(), serializer.errors
+        assert serializer.validated_data == {"name": "test"}
+        assert "nested" not in serializer.validated_data
+
     def test_default_for_allow_null(self):
         """
         Without an explicit default, allow_null implies default=None when serializing. #5518 #5708
@@ -576,7 +602,7 @@ class TestCacheSerializerData:
 
 
 class TestDefaultInclusions:
-    def setup(self):
+    def setup_method(self):
         class ExampleSerializer(serializers.Serializer):
             char = serializers.CharField(default='abc')
             integer = serializers.IntegerField()
@@ -604,7 +630,7 @@ class TestDefaultInclusions:
 
 
 class TestSerializerValidationWithCompiledRegexField:
-    def setup(self):
+    def setup_method(self):
         class ExampleSerializer(serializers.Serializer):
             name = serializers.RegexField(re.compile(r'\d'), required=True)
         self.Serializer = ExampleSerializer
@@ -633,7 +659,7 @@ class Test2555Regression:
 
 
 class Test4606Regression:
-    def setup(self):
+    def setup_method(self):
         class ExampleSerializer(serializers.Serializer):
             name = serializers.CharField(required=True)
             choices = serializers.CharField(required=True)
@@ -732,3 +758,74 @@ class TestDeclaredFieldInheritance:
             'f4': serializers.CharField,
             'f5': serializers.CharField,
         }
+
+
+class Test8301Regression:
+    def test_ReturnDict_merging(self):
+        # Serializer.data returns ReturnDict, this is essentially a test for that.
+
+        class TestSerializer(serializers.Serializer):
+            char = serializers.CharField()
+
+        s = TestSerializer(data={'char': 'x'})
+        assert s.is_valid()
+        assert s.data | {} == {'char': 'x'}
+        assert s.data | {'other': 'y'} == {'char': 'x', 'other': 'y'}
+        assert {} | s.data == {'char': 'x'}
+        assert {'other': 'y'} | s.data == {'char': 'x', 'other': 'y'}
+
+        assert (s.data | {}).__class__ == s.data.__class__
+        assert ({} | s.data).__class__ == s.data.__class__
+
+
+class TestSetValueMethod:
+    # Serializer.set_value() modifies the first parameter in-place.
+
+    s = serializers.Serializer()
+
+    def test_no_keys(self):
+        ret = {'a': 1}
+        self.s.set_value(ret, [], {'b': 2})
+        assert ret == {'a': 1, 'b': 2}
+
+    def test_one_key(self):
+        ret = {'a': 1}
+        self.s.set_value(ret, ['x'], 2)
+        assert ret == {'a': 1, 'x': 2}
+
+    def test_nested_key(self):
+        ret = {'a': 1}
+        self.s.set_value(ret, ['x', 'y'], 2)
+        assert ret == {'a': 1, 'x': {'y': 2}}
+
+
+class TestWarningManyToMany(TestCase):
+    def test_warning_many_to_many(self):
+        """Tests that using a PrimaryKeyRelatedField for a ManyToMany field breaks with default=None."""
+        class ManyToManySourceSerializer(serializers.ModelSerializer):
+            targets = serializers.PrimaryKeyRelatedField(
+                many=True,
+                queryset=ManyToManyTarget.objects.all(),
+                default=None
+            )
+
+            class Meta:
+                model = ManyToManySource
+                fields = '__all__'
+
+        # Instantiates serializer without 'value' field to force using the default=None for the ManyToMany relation
+        serializer = ManyToManySourceSerializer(data={
+            "name": "Invalid Example",
+        })
+
+        error_msg = "The field 'targets' on serializer 'ManyToManySourceSerializer' is a ManyToMany field and cannot have a default value of None."
+
+        # Calls to get_fields() should raise a ValueError
+        with pytest.raises(ValueError) as exc_info:
+            serializer.get_fields()
+        assert str(exc_info.value) == error_msg
+
+        # Calls to is_valid() should behave the same
+        with pytest.raises(ValueError) as exc_info:
+            serializer.is_valid(raise_exception=True)
+        assert str(exc_info.value) == error_msg

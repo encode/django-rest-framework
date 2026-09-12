@@ -1,6 +1,7 @@
 from django.http import QueryDict
 
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 
 
 class TestSimpleBoundField:
@@ -91,6 +92,10 @@ class TestSimpleBoundField:
         assert rendered_packed == expected_packed
 
 
+class CustomJSONField(serializers.JSONField):
+    pass
+
+
 class TestNestedBoundField:
     def test_nested_empty_bound_field(self):
         class Nested(serializers.Serializer):
@@ -117,14 +122,31 @@ class TestNestedBoundField:
         class Nested(serializers.Serializer):
             bool_field = serializers.BooleanField()
             null_field = serializers.IntegerField(allow_null=True)
+            json_field = serializers.JSONField()
+            custom_json_field = CustomJSONField()
 
         class ExampleSerializer(serializers.Serializer):
             nested = Nested()
 
-        serializer = ExampleSerializer(data={'nested': {'bool_field': False, 'null_field': None}})
+        serializer = ExampleSerializer(
+            data={'nested': {
+                'bool_field': False, 'null_field': None,
+                'json_field': {'bool_item': True, 'number': 1, 'text_item': 'text'},
+                'custom_json_field': {'bool_item': True, 'number': 1, 'text_item': 'text'},
+            }})
         assert serializer.is_valid()
         assert serializer['nested']['bool_field'].as_form_field().value == ''
         assert serializer['nested']['null_field'].as_form_field().value == ''
+        assert serializer['nested']['json_field'].as_form_field().value == '''{
+    "bool_item": true,
+    "number": 1,
+    "text_item": "text"
+}'''
+        assert serializer['nested']['custom_json_field'].as_form_field().value == '''{
+    "bool_item": true,
+    "number": 1,
+    "text_item": "text"
+}'''
 
     def test_rendering_nested_fields_with_none_value(self):
         from rest_framework.renderers import HTMLFormRenderer
@@ -162,6 +184,55 @@ class TestNestedBoundField:
             )
             rendered_packed = ''.join(rendered.split())
             assert rendered_packed == expected_packed
+
+    def test_rendering_nested_fields_with_not_mappable_value(self):
+        from rest_framework.renderers import HTMLFormRenderer
+
+        class Nested(serializers.Serializer):
+            text_field = serializers.CharField()
+
+        class ExampleSerializer(serializers.Serializer):
+            nested = Nested()
+
+        serializer = ExampleSerializer(data={'nested': 1})
+        assert not serializer.is_valid()
+        renderer = HTMLFormRenderer()
+        for field in serializer:
+            rendered = renderer.render_field(field, {})
+            expected_packed = (
+                '<fieldset>'
+                '<legend>Nested</legend>'
+                '<divclass="form-group">'
+                '<label>Textfield</label>'
+                '<inputname="nested.text_field"class="form-control"type="text"value="">'
+                '</div>'
+                '</fieldset>'
+            )
+
+            rendered_packed = ''.join(rendered.split())
+            assert rendered_packed == expected_packed
+
+    def test_child_bound_field_after_parent_validation_error(self):
+        class ChildSerializer(serializers.Serializer):
+            value = serializers.CharField()
+
+        class ParentSerializer(serializers.Serializer):
+            nested = ChildSerializer()
+
+            def validate_nested(self, nested):
+                # Raise parent-level (non-field) validation error
+                raise ValidationError(["parent-level nested error"])
+
+        serializer = ParentSerializer(data={"nested": {"value": "ignored"}})
+        assert not serializer.is_valid()
+
+        # Parent-level error is a list (current problematic case)
+        assert serializer.errors["nested"] == ["parent-level nested error"]
+        parent_bound = serializer["nested"]
+        child_bound = parent_bound["value"]
+        assert child_bound.errors is None
+        assert child_bound.value == "ignored"
+        assert child_bound.name == "nested.value"
 
 
 class TestJSONBoundField:

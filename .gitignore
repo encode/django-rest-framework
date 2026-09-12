@@ -1,7 +1,8 @@
 *.pyc
 *.db
 *~
-.*
+*.py.bak
+
 
 /site/
 /htmlcov/
@@ -12,7 +13,11 @@
 /env/
 MANIFEST
 coverage.*
+.coverage
+.cache/
 
+!.github
 !.gitignore
-!.travis.yml
-!.isort.cfg
+!.pre-commit-config.yaml
+
+.idea

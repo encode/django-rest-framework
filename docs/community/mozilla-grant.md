@@ -37,7 +37,7 @@ at the end of May 2016.
 I have formed a UK limited company, [Encode](https://www.encode.io/), which will
 act as the business entity behind REST framework. I will be issuing monthly reports
 from Encode on progress both towards the Mozilla grant, and for development time
-funded via the [REST framework paid plans](funding.md).
+funded via the REST framework paid plans.
 
 <!-- Begin MailChimp Signup Form -->
 <link href="//cdn-images.mailchimp.com/embedcode/classic-10_7.css" rel="stylesheet" type="text/css">

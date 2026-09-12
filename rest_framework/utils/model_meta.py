@@ -5,9 +5,9 @@ relationships and their associated metadata.
 
 Usage: `get_field_info(model)` returns a `FieldInfo` instance.
 """
-from collections import OrderedDict, namedtuple
+from collections import namedtuple
 
-FieldInfo = namedtuple('FieldResult', [
+FieldInfo = namedtuple('FieldInfo', [
     'pk',  # Model field instance
     'fields',  # Dict of field name -> model field instance
     'forward_relations',  # Dict of field name -> RelationInfo
@@ -58,7 +58,7 @@ def _get_pk(opts):
 
 
 def _get_fields(opts):
-    fields = OrderedDict()
+    fields = {}
     for field in [field for field in opts.fields if field.serialize and not field.remote_field]:
         fields[field.name] = field
 
@@ -71,9 +71,9 @@ def _get_to_field(field):
 
 def _get_forward_relationships(opts):
     """
-    Returns an `OrderedDict` of field names to `RelationInfo`.
+    Returns a dict of field names to `RelationInfo`.
     """
-    forward_relations = OrderedDict()
+    forward_relations = {}
     for field in [field for field in opts.fields if field.serialize and field.remote_field]:
         forward_relations[field.name] = RelationInfo(
             model_field=field,
@@ -103,9 +103,9 @@ def _get_forward_relationships(opts):
 
 def _get_reverse_relationships(opts):
     """
-    Returns an `OrderedDict` of field names to `RelationInfo`.
+    Returns a dict of field names to `RelationInfo`.
     """
-    reverse_relations = OrderedDict()
+    reverse_relations = {}
     all_related_objects = [r for r in opts.related_objects if not r.field.many_to_many]
     for relation in all_related_objects:
         accessor_name = relation.get_accessor_name()
@@ -139,19 +139,14 @@ def _get_reverse_relationships(opts):
 
 
 def _merge_fields_and_pk(pk, fields):
-    fields_and_pk = OrderedDict()
-    fields_and_pk['pk'] = pk
-    fields_and_pk[pk.name] = pk
+    fields_and_pk = {'pk': pk, pk.name: pk}
     fields_and_pk.update(fields)
 
     return fields_and_pk
 
 
 def _merge_relationships(forward_relations, reverse_relations):
-    return OrderedDict(
-        list(forward_relations.items()) +
-        list(reverse_relations.items())
-    )
+    return {**forward_relations, **reverse_relations}
 
 
 def is_abstract_model(model):

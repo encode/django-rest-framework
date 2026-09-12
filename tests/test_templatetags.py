@@ -1,14 +1,12 @@
-import unittest
-
 from django.template import Context, Template
-from django.test import TestCase
+from django.test import TestCase, override_settings
+from django.utils.html import urlize
 
-from rest_framework.compat import coreapi, coreschema
 from rest_framework.relations import Hyperlink
 from rest_framework.templatetags import rest_framework
 from rest_framework.templatetags.rest_framework import (
-    add_nested_class, add_query_param, as_string, break_long_headers,
-    format_value, get_pagination_html, schema_links, urlize_quoted_links
+    add_nested_class, add_query_param, as_string, format_value,
+    get_pagination_html
 )
 from rest_framework.test import APIRequestFactory
 
@@ -233,20 +231,16 @@ class TemplateTagTests(TestCase):
         get_pagination_html(pager)
         assert pager.called is True
 
-    def test_break_long_lines(self):
-        header = 'long test header,' * 20
-        expected_header = '<br> ' + ', <br>'.join(header.split(','))
-        assert break_long_headers(header) == expected_header
-
 
 class Issue1386Tests(TestCase):
     """
     Covers #1386
     """
 
+    @override_settings(URLIZE_ASSUME_HTTPS=True)
     def test_issue_1386(self):
         """
-        Test function urlize_quoted_links with different args
+        Test function urlize with different args
         """
         correct_urls = [
             "asdf.com",
@@ -255,7 +249,7 @@ class Issue1386Tests(TestCase):
             "as.d8f.ghj8.gov",
         ]
         for i in correct_urls:
-            res = urlize_quoted_links(i)
+            res = urlize(i)
             self.assertNotEqual(res, i)
             self.assertIn(i, res)
 
@@ -264,11 +258,11 @@ class Issue1386Tests(TestCase):
             "asdf.netnet",
         ]
         for i in incorrect_urls:
-            res = urlize_quoted_links(i)
+            res = urlize(i)
             self.assertEqual(i, res)
 
         # example from issue #1386, this shouldn't raise an exception
-        urlize_quoted_links("asdf:[/p]zxcv.com")
+        urlize("asdf:[/p]zxcv.com")
 
     def test_smart_urlquote_wrapper_handles_value_error(self):
         def mock_smart_urlquote(url):
@@ -289,7 +283,7 @@ class URLizerTests(TestCase):
         For all items in dict test assert that the value is urlized key
         """
         for original, urlized in data.items():
-            assert urlize_quoted_links(original, nofollow=False) == urlized
+            assert urlize(original, nofollow=False) == urlized
 
     def test_json_with_url(self):
         """
@@ -297,336 +291,26 @@ class URLizerTests(TestCase):
         """
         data = {}
         data['"url": "http://api/users/1/", '] = \
-            '&quot;url&quot;: &quot;<a href="http://api/users/1/">http://api/users/1/</a>&quot;, '
+            '"url": "<a href="http://api/users/1/">http://api/users/1/</a>", '
         data['"foo_set": [\n    "http://api/foos/1/"\n], '] = \
-            '&quot;foo_set&quot;: [\n    &quot;<a href="http://api/foos/1/">http://api/foos/1/</a>&quot;\n], '
+            '"foo_set": [\n    "<a href="http://api/foos/1/">http://api/foos/1/</a>"\n], '
         self._urlize_dict_check(data)
 
     def test_template_render_with_autoescape(self):
         """
         Test that HTML is correctly escaped in Browsable API views.
         """
-        template = Template("{% load rest_framework %}{{ content|urlize_quoted_links }}")
+        template = Template("{% load rest_framework %}{{ content|urlize }}")
         rendered = template.render(Context({'content': '<script>alert()</script> http://example.com'}))
         assert rendered == '&lt;script&gt;alert()&lt;/script&gt;' \
                            ' <a href="http://example.com" rel="nofollow">http://example.com</a>'
 
     def test_template_render_with_noautoescape(self):
         """
-        Test if the autoescape value is getting passed to urlize_quoted_links filter.
+        Test if the autoescape value is getting passed to urlize filter.
         """
         template = Template("{% load rest_framework %}"
-                            "{% autoescape off %}{{ content|urlize_quoted_links }}"
+                            "{% autoescape off %}{{ content|urlize }}"
                             "{% endautoescape %}")
         rendered = template.render(Context({'content': '<b> "http://example.com" </b>'}))
         assert rendered == '<b> "<a href="http://example.com" rel="nofollow">http://example.com</a>" </b>'
-
-
-@unittest.skipUnless(coreapi, 'coreapi is not installed')
-class SchemaLinksTests(TestCase):
-
-    def test_schema_with_empty_links(self):
-        schema = coreapi.Document(
-            url='',
-            title='Example API',
-            content={
-                'users': {
-                    'list': {}
-                }
-            }
-        )
-        section = schema['users']
-        flat_links = schema_links(section)
-        assert len(flat_links) == 0
-
-    def test_single_action(self):
-        schema = coreapi.Document(
-            url='',
-            title='Example API',
-            content={
-                'users': {
-                    'list': coreapi.Link(
-                        url='/users/',
-                        action='get',
-                        fields=[]
-                    )
-                }
-            }
-        )
-        section = schema['users']
-        flat_links = schema_links(section)
-        assert len(flat_links) == 1
-        assert 'list' in flat_links
-
-    def test_default_actions(self):
-        schema = coreapi.Document(
-            url='',
-            title='Example API',
-            content={
-                'users': {
-                    'create': coreapi.Link(
-                        url='/users/',
-                        action='post',
-                        fields=[]
-                    ),
-                    'list': coreapi.Link(
-                        url='/users/',
-                        action='get',
-                        fields=[]
-                    ),
-                    'read': coreapi.Link(
-                        url='/users/{id}/',
-                        action='get',
-                        fields=[
-                            coreapi.Field('id', required=True, location='path', schema=coreschema.String())
-                        ]
-                    ),
-                    'update': coreapi.Link(
-                        url='/users/{id}/',
-                        action='patch',
-                        fields=[
-                            coreapi.Field('id', required=True, location='path', schema=coreschema.String())
-                        ]
-                    )
-                }
-            }
-        )
-        section = schema['users']
-        flat_links = schema_links(section)
-        assert len(flat_links) == 4
-        assert 'list' in flat_links
-        assert 'create' in flat_links
-        assert 'read' in flat_links
-        assert 'update' in flat_links
-
-    def test_default_actions_and_single_custom_action(self):
-        schema = coreapi.Document(
-            url='',
-            title='Example API',
-            content={
-                'users': {
-                    'create': coreapi.Link(
-                        url='/users/',
-                        action='post',
-                        fields=[]
-                    ),
-                    'list': coreapi.Link(
-                        url='/users/',
-                        action='get',
-                        fields=[]
-                    ),
-                    'read': coreapi.Link(
-                        url='/users/{id}/',
-                        action='get',
-                        fields=[
-                            coreapi.Field('id', required=True, location='path', schema=coreschema.String())
-                        ]
-                    ),
-                    'update': coreapi.Link(
-                        url='/users/{id}/',
-                        action='patch',
-                        fields=[
-                            coreapi.Field('id', required=True, location='path', schema=coreschema.String())
-                        ]
-                    ),
-                    'friends': coreapi.Link(
-                        url='/users/{id}/friends',
-                        action='get',
-                        fields=[
-                            coreapi.Field('id', required=True, location='path', schema=coreschema.String())
-                        ]
-                    )
-                }
-            }
-        )
-        section = schema['users']
-        flat_links = schema_links(section)
-        assert len(flat_links) == 5
-        assert 'list' in flat_links
-        assert 'create' in flat_links
-        assert 'read' in flat_links
-        assert 'update' in flat_links
-        assert 'friends' in flat_links
-
-    def test_default_actions_and_single_custom_action_two_methods(self):
-        schema = coreapi.Document(
-            url='',
-            title='Example API',
-            content={
-                'users': {
-                    'create': coreapi.Link(
-                        url='/users/',
-                        action='post',
-                        fields=[]
-                    ),
-                    'list': coreapi.Link(
-                        url='/users/',
-                        action='get',
-                        fields=[]
-                    ),
-                    'read': coreapi.Link(
-                        url='/users/{id}/',
-                        action='get',
-                        fields=[
-                            coreapi.Field('id', required=True, location='path', schema=coreschema.String())
-                        ]
-                    ),
-                    'update': coreapi.Link(
-                        url='/users/{id}/',
-                        action='patch',
-                        fields=[
-                            coreapi.Field('id', required=True, location='path', schema=coreschema.String())
-                        ]
-                    ),
-                    'friends': {
-                        'list': coreapi.Link(
-                            url='/users/{id}/friends',
-                            action='get',
-                            fields=[
-                                coreapi.Field('id', required=True, location='path', schema=coreschema.String())
-                            ]
-                        ),
-                        'create': coreapi.Link(
-                            url='/users/{id}/friends',
-                            action='post',
-                            fields=[
-                                coreapi.Field('id', required=True, location='path', schema=coreschema.String())
-                            ]
-                        )
-                    }
-                }
-            }
-        )
-        section = schema['users']
-        flat_links = schema_links(section)
-        assert len(flat_links) == 6
-        assert 'list' in flat_links
-        assert 'create' in flat_links
-        assert 'read' in flat_links
-        assert 'update' in flat_links
-        assert 'friends > list' in flat_links
-        assert 'friends > create' in flat_links
-
-    def test_multiple_nested_routes(self):
-        schema = coreapi.Document(
-            url='',
-            title='Example API',
-            content={
-                'animals': {
-                    'dog': {
-                        'vet': {
-                            'list': coreapi.Link(
-                                url='/animals/dog/{id}/vet',
-                                action='get',
-                                fields=[
-                                    coreapi.Field('id', required=True, location='path', schema=coreschema.String())
-                                ]
-                            )
-                        },
-                        'read': coreapi.Link(
-                            url='/animals/dog/{id}',
-                            action='get',
-                            fields=[
-                                coreapi.Field('id', required=True, location='path', schema=coreschema.String())
-                            ]
-                        )
-                    },
-                    'cat': {
-                        'list': coreapi.Link(
-                            url='/animals/cat/',
-                            action='get',
-                            fields=[
-                                coreapi.Field('id', required=True, location='path', schema=coreschema.String())
-                            ]
-                        ),
-                        'create': coreapi.Link(
-                            url='/animals/cat',
-                            action='post',
-                            fields=[]
-                        )
-                    }
-                }
-            }
-        )
-        section = schema['animals']
-        flat_links = schema_links(section)
-        assert len(flat_links) == 4
-        assert 'cat > create' in flat_links
-        assert 'cat > list' in flat_links
-        assert 'dog > read' in flat_links
-        assert 'dog > vet > list' in flat_links
-
-    def test_multiple_resources_with_multiple_nested_routes(self):
-        schema = coreapi.Document(
-            url='',
-            title='Example API',
-            content={
-                'animals': {
-                    'dog': {
-                        'vet': {
-                            'list': coreapi.Link(
-                                url='/animals/dog/{id}/vet',
-                                action='get',
-                                fields=[
-                                    coreapi.Field('id', required=True, location='path', schema=coreschema.String())
-                                ]
-                            )
-                        },
-                        'read': coreapi.Link(
-                            url='/animals/dog/{id}',
-                            action='get',
-                            fields=[
-                                coreapi.Field('id', required=True, location='path', schema=coreschema.String())
-                            ]
-                        )
-                    },
-                    'cat': {
-                        'list': coreapi.Link(
-                            url='/animals/cat/',
-                            action='get',
-                            fields=[
-                                coreapi.Field('id', required=True, location='path', schema=coreschema.String())
-                            ]
-                        ),
-                        'create': coreapi.Link(
-                            url='/animals/cat',
-                            action='post',
-                            fields=[]
-                        )
-                    }
-                },
-                'farmers': {
-                    'silo': {
-                        'soy': {
-                            'list': coreapi.Link(
-                                url='/farmers/silo/{id}/soy',
-                                action='get',
-                                fields=[
-                                    coreapi.Field('id', required=True, location='path', schema=coreschema.String())
-                                ]
-                            )
-                        },
-                        'list': coreapi.Link(
-                            url='/farmers/silo',
-                            action='get',
-                            fields=[
-                                coreapi.Field('id', required=True, location='path', schema=coreschema.String())
-                            ]
-                        )
-                    }
-                }
-            }
-        )
-        section = schema['animals']
-        flat_links = schema_links(section)
-        assert len(flat_links) == 4
-        assert 'cat > create' in flat_links
-        assert 'cat > list' in flat_links
-        assert 'dog > read' in flat_links
-        assert 'dog > vet > list' in flat_links
-
-        section = schema['farmers']
-        flat_links = schema_links(section)
-        assert len(flat_links) == 2
-        assert 'silo > list' in flat_links
-        assert 'silo > soy > list' in flat_links

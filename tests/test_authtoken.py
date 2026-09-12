@@ -1,15 +1,18 @@
+import importlib
 from io import StringIO
+from unittest.mock import patch
 
 import pytest
 from django.contrib.admin import site
 from django.contrib.auth.models import User
 from django.core.management import CommandError, call_command
-from django.test import TestCase
+from django.db import IntegrityError
+from django.test import TestCase, modify_settings
 
 from rest_framework.authtoken.admin import TokenAdmin
 from rest_framework.authtoken.management.commands.drf_create_token import \
     Command as AuthTokenCommand
-from rest_framework.authtoken.models import Token
+from rest_framework.authtoken.models import Token, TokenProxy
 from rest_framework.authtoken.serializers import AuthTokenSerializer
 from rest_framework.exceptions import ValidationError
 
@@ -21,10 +24,41 @@ class AuthTokenTests(TestCase):
         self.user = User.objects.create_user(username='test_user')
         self.token = Token.objects.create(key='test token', user=self.user)
 
+    def test_authtoken_can_be_imported_when_not_included_in_installed_apps(self):
+        import rest_framework.authtoken.models
+        with modify_settings(INSTALLED_APPS={'remove': 'rest_framework.authtoken'}):
+            importlib.reload(rest_framework.authtoken.models)
+        # Set the proxy and abstract properties back to the version,
+        # where authtoken is among INSTALLED_APPS.
+        importlib.reload(rest_framework.authtoken.models)
+
     def test_model_admin_displayed_fields(self):
         mock_request = object()
         token_admin = TokenAdmin(self.token, self.site)
         assert token_admin.get_fields(mock_request) == ('user',)
+
+    @patch('django.contrib.admin.site.register')  # avoid duplicate registrations
+    def test_model_admin__username_field(self, mock_register):
+        import rest_framework.authtoken.admin as authtoken_admin_m
+
+        class EmailUser(User):
+            USERNAME_FIELD = 'email'
+            username = None
+
+        for user_model in (User, EmailUser):
+            with (
+                self.subTest(user_model=user_model),
+                patch('django.contrib.auth.get_user_model', return_value=user_model) as get_user_model
+            ):
+                importlib.reload(authtoken_admin_m)  # reload after patching
+                assert get_user_model.call_count == 1
+
+                mock_request = object()
+                token_admin = authtoken_admin_m.TokenAdmin(TokenProxy, self.site)
+                assert token_admin.get_search_fields(mock_request) == (f'user__{user_model.USERNAME_FIELD}',)
+                assert token_admin.get_ordering(mock_request) == (f'user__{user_model.USERNAME_FIELD}',)
+
+        importlib.reload(authtoken_admin_m)  # restore after testing
 
     def test_token_string_representation(self):
         assert str(self.token) == 'test token'
@@ -38,6 +72,45 @@ class AuthTokenTests(TestCase):
         self.user.set_password(data['password'])
         self.user.save()
         assert AuthTokenSerializer(data=data).is_valid()
+
+    def test_token_creation_collision_raises_integrity_error(self):
+        user2 = User.objects.create_user('user2', 'user2@example.com', 'p')
+        existing_token = Token.objects.create(user=user2)
+
+        # Try to create another token with the same key
+        with self.assertRaises(IntegrityError):
+            Token.objects.create(key=existing_token.key, user=self.user)
+
+    def test_key_generated_on_save_when_cleared(self):
+        # Create a new user for this test to avoid conflicts with setUp token
+        user2 = User.objects.create_user('test_user2', 'test2@example.com', 'password')
+
+        # Create a token without a key - it should generate one automatically
+        token = Token(user=user2)
+        token.key = ""  # Explicitly clear the key
+        token.save()
+
+        # Verify the key was generated
+        self.assertEqual(len(token.key), 40)
+        self.assertEqual(token.user, user2)
+
+    def test_clearing_key_on_existing_token_raises_integrity_error(self):
+        """Test that clearing the key on an existing token raises IntegrityError."""
+        user = User.objects.create_user('test_user3', 'test3@example.com', 'password')
+        token = Token.objects.create(user=user)
+        token.key = ""
+
+        # This should raise IntegrityError because:
+        # 1. We're trying to update a record with an empty primary key
+        # 2. The OneToOneField constraint would be violated
+        with self.assertRaises(Exception):  # Could be IntegrityError or DatabaseError
+            token.save()
+
+    def test_saving_existing_token_without_changes_does_not_alter_key(self):
+        original_key = self.token.key
+
+        self.token.save()
+        self.assertEqual(self.token.key, original_key)
 
 
 class AuthTokenCommandTests(TestCase):

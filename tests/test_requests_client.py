@@ -1,10 +1,10 @@
 import unittest
 
-from django.conf.urls import url
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from django.shortcuts import redirect
 from django.test import override_settings
+from django.urls import path
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect, ensure_csrf_cookie
 
@@ -28,7 +28,7 @@ class Root(APIView):
         }
         post = request.POST
         json = None
-        if request.META.get('CONTENT_TYPE') == 'application/json':
+        if request.headers.get('content-type') == 'application/json':
             json = request.data
 
         return Response({
@@ -90,10 +90,10 @@ class AuthView(APIView):
 
 
 urlpatterns = [
-    url(r'^$', Root.as_view(), name='root'),
-    url(r'^headers/$', HeadersView.as_view(), name='headers'),
-    url(r'^session/$', SessionView.as_view(), name='session'),
-    url(r'^auth/$', AuthView.as_view(), name='auth'),
+    path('', Root.as_view(), name='root'),
+    path('headers/', HeadersView.as_view(), name='headers'),
+    path('session/', SessionView.as_view(), name='session'),
+    path('auth/', AuthView.as_view(), name='auth'),
 ]
 
 

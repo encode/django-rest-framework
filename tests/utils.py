@@ -1,3 +1,5 @@
+from operator import attrgetter
+
 from django.core.exceptions import ObjectDoesNotExist
 from django.urls import NoReverseMatch
 
@@ -26,7 +28,7 @@ class MockQueryset:
     def get(self, **lookup):
         for item in self.items:
             if all([
-                getattr(item, key, None) == value
+                attrgetter(key.replace('__', '.'))(item) == value
                 for key, value in lookup.items()
             ]):
                 return item
@@ -39,6 +41,7 @@ class BadType:
     will raise a `TypeError`, as occurs in Django when making
     queryset lookups with an incorrect type for the lookup value.
     """
+
     def __eq__(self):
         raise TypeError()
 

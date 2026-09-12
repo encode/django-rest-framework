@@ -1,0 +1,574 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# 
+# Translators:
+# Shrawan Poudel <shrwnkr@gmail.com>, 2018
+# Xavier Ordoquy <xordoquy@linovia.com>, 2020
+msgid ""
+msgstr ""
+"Project-Id-Version: Django REST framework\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-10-13 21:45+0200\n"
+"PO-Revision-Date: 2020-10-13 19:59+0000\n"
+"Last-Translator: Xavier Ordoquy <xordoquy@linovia.com>\n"
+"Language-Team: Nepali (Nepal) (http://www.transifex.com/django-rest-framework-1/django-rest-framework/language/ne_NP/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: ne_NP\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: authentication.py:70
+msgid "Invalid basic header. No credentials provided."
+msgstr "अमान्य हेडरहरू, क्रेडेन्सियलहरू प्रदान गरिएको छैन |"
+
+#: authentication.py:73
+msgid "Invalid basic header. Credentials string should not contain spaces."
+msgstr "अमान्य हेडरहरू, क्रेडेन्सियलहरूमा स्पेस हुनु हुँदैन |"
+
+#: authentication.py:83
+msgid "Invalid basic header. Credentials not correctly base64 encoded."
+msgstr "अमान्य हेडरहरू, क्रेडेन्सियलहरूमा सही तरिकाले base64 एन्कोड गरिएको छैन |"
+
+#: authentication.py:101
+msgid "Invalid username/password."
+msgstr "अमान्य प्रयोगकर्तानाम/पासवर्ड |"
+
+#: authentication.py:104 authentication.py:206
+msgid "User inactive or deleted."
+msgstr "प्रयोगकर्ता निष्क्रिय वा मेटायिएको छ |"
+
+#: authentication.py:184
+msgid "Invalid token header. No credentials provided."
+msgstr "अमान्य टोकन हेडर । कुनै क्रेडेन्सियल प्रदान गरिएको छैन ।"
+
+#: authentication.py:187
+msgid "Invalid token header. Token string should not contain spaces."
+msgstr "अमान्य टोकन हेडर | टोकनमा स्पेस हुनु हुँदैन |"
+
+#: authentication.py:193
+msgid ""
+"Invalid token header. Token string should not contain invalid characters."
+msgstr "अमान्य टोकन हेडर | टोकनमा अवैध अक्षरहरू हुनु हुँदैन |"
+
+#: authentication.py:203
+msgid "Invalid token."
+msgstr "अमान्य टोकन |"
+
+#: authtoken/apps.py:7
+msgid "Auth Token"
+msgstr "प्रयोगकर्ता प्रमाणिकरण टोकन "
+
+#: authtoken/models.py:13
+msgid "Key"
+msgstr "मूल"
+
+#: authtoken/models.py:16
+msgid "User"
+msgstr "प्रयोगकर्ता"
+
+#: authtoken/models.py:18
+msgid "Created"
+msgstr "सिर्जना गरियो"
+
+#: authtoken/models.py:27 authtoken/serializers.py:19
+msgid "Token"
+msgstr "टोकन"
+
+#: authtoken/models.py:28
+msgid "Tokens"
+msgstr "टोकेनहरु"
+
+#: authtoken/serializers.py:9
+msgid "Username"
+msgstr "प्रयोगकर्ताको नाम"
+
+#: authtoken/serializers.py:13
+msgid "Password"
+msgstr "पासवर्ड"
+
+#: authtoken/serializers.py:35
+msgid "Unable to log in with provided credentials."
+msgstr "प्रदान गरिएको क्रेडेन्सियलसँग लग इन गर्न सकिएन |"
+
+#: authtoken/serializers.py:38
+msgid "Must include \"username\" and \"password\"."
+msgstr "\"प्रयोगकर्ताको नाम\" र \"पासवर्ड\" सामेल हुनु पर्छ |"
+
+#: exceptions.py:102
+msgid "A server error occurred."
+msgstr "सर्भर त्रुटि देखापर्यो |"
+
+#: exceptions.py:142
+msgid "Invalid input."
+msgstr ""
+
+#: exceptions.py:161
+msgid "Malformed request."
+msgstr "विकृत अनुरोध |"
+
+#: exceptions.py:167
+msgid "Incorrect authentication credentials."
+msgstr "गलत प्रमाणीकरण क्रेडेन्सियलहरू |"
+
+#: exceptions.py:173
+msgid "Authentication credentials were not provided."
+msgstr "प्रमाणीकरण क्रेडेन्सियलहरू पयिएन | "
+
+#: exceptions.py:179
+msgid "You do not have permission to perform this action."
+msgstr "तपाइँसँग यो कार्य गर्न अनुमति छैन |"
+
+#: exceptions.py:185
+msgid "Not found."
+msgstr "फेला परेन |"
+
+#: exceptions.py:191
+#, python-brace-format
+msgid "Method \"{method}\" not allowed."
+msgstr "\"{method}\" गर्ने अनुमती छैन |"
+
+#: exceptions.py:202
+msgid "Could not satisfy the request Accept header."
+msgstr "Accept Header अनुरोधलाई सन्तुष्ट गर्ने सकिएन |"
+
+#: exceptions.py:212
+#, python-brace-format
+msgid "Unsupported media type \"{media_type}\" in request."
+msgstr "असमर्थित मिडिया टाईप \"{media_type}\" अनुरोधको | "
+
+#: exceptions.py:223
+msgid "Request was throttled."
+msgstr "अनुरोध प्रतिबन्दित गरियो |"
+
+#: exceptions.py:224
+#, python-brace-format
+msgid "Expected available in {wait} second."
+msgstr ""
+
+#: exceptions.py:225
+#, python-brace-format
+msgid "Expected available in {wait} seconds."
+msgstr ""
+
+#: fields.py:316 relations.py:245 relations.py:279 validators.py:90
+#: validators.py:183
+msgid "This field is required."
+msgstr "यो फिल्ड आवश्यक छ |"
+
+#: fields.py:317
+msgid "This field may not be null."
+msgstr "यो फिल्ड खाली हुनु हुँदैन |"
+
+#: fields.py:701
+msgid "Must be a valid boolean."
+msgstr ""
+
+#: fields.py:766
+msgid "Not a valid string."
+msgstr ""
+
+#: fields.py:767
+msgid "This field may not be blank."
+msgstr "यो फिल्ड खाली हुन सक्दैन |"
+
+#: fields.py:768 fields.py:1881
+#, python-brace-format
+msgid "Ensure this field has no more than {max_length} characters."
+msgstr "यो फिल्डसँग {max_length} अक्षरहरू भन्दा बढी छ छैन सुनिश्चित गर्नुहोस् |"
+
+#: fields.py:769
+#, python-brace-format
+msgid "Ensure this field has at least {min_length} characters."
+msgstr "यो फिल्डमा कम से कम {min_length} अक्षरहरू छ छैन सुनिश्चित गर्नुहोस् |"
+
+#: fields.py:816
+msgid "Enter a valid email address."
+msgstr "मान्य इमेल ठेगाना प्रविष्ट गर्नुहोस् |"
+
+#: fields.py:827
+msgid "This value does not match the required pattern."
+msgstr "यो परिमाण आवश्यक ढाँचा मेल खाँदैन ।"
+
+#: fields.py:838
+msgid ""
+"Enter a valid \"slug\" consisting of letters, numbers, underscores or "
+"hyphens."
+msgstr "अक्षरहरू, अङ्कहरू, अन्डरसेर्सहरू वा हाइफनहरू समावेश भएका एक मान्य \"slug\" प्रविष्टि गर्नुहोस् ।"
+
+#: fields.py:839
+msgid ""
+"Enter a valid \"slug\" consisting of Unicode letters, numbers, underscores, "
+"or hyphens."
+msgstr ""
+
+#: fields.py:854
+msgid "Enter a valid URL."
+msgstr "मान्य यूआरएल प्रविष्ट गर्नुहोस् ।"
+
+#: fields.py:867
+msgid "Must be a valid UUID."
+msgstr ""
+
+#: fields.py:903
+msgid "Enter a valid IPv4 or IPv6 address."
+msgstr "मान्य IPv4 वा IPv6 ठेगाना प्रविष्टि गर्नुहोस् ।"
+
+#: fields.py:931
+msgid "A valid integer is required."
+msgstr "एक मान्य पूर्णांक आवश्यक छ ।"
+
+#: fields.py:932 fields.py:969 fields.py:1005 fields.py:1366
+#, python-brace-format
+msgid "Ensure this value is less than or equal to {max_value}."
+msgstr "यो परिमाण {max_value} को भन्दा कम वा बराबर छ  सुनिश्चित गर्नुहोस् ।"
+
+#: fields.py:933 fields.py:970 fields.py:1006 fields.py:1367
+#, python-brace-format
+msgid "Ensure this value is greater than or equal to {min_value}."
+msgstr "यो परिमाण {min_value} भन्दा बढी वा बराबर छ सुनिश्चित गर्नुहोस् ।"
+
+#: fields.py:934 fields.py:971 fields.py:1010
+msgid "String value too large."
+msgstr "स्ट्रिङ परिमाण धेरै ठूलो छ ।"
+
+#: fields.py:968 fields.py:1004
+msgid "A valid number is required."
+msgstr "एउटा मान्य अङ्कहरू आवश्यक छ ।"
+
+#: fields.py:1007
+#, python-brace-format
+msgid "Ensure that there are no more than {max_digits} digits in total."
+msgstr "सुनिश्चित गर्नुहोस् कि {max_digits} अङ्कहरू भन्दा अधिक नहोस् ।"
+
+#: fields.py:1008
+#, python-brace-format
+msgid ""
+"Ensure that there are no more than {max_decimal_places} decimal places."
+msgstr "सुनिश्चित गर्नुहोस् कि {max_decimal_places} दशमलव स्थानहरू भन्दा अधिक नहोस् ।"
+
+#: fields.py:1009
+#, python-brace-format
+msgid ""
+"Ensure that there are no more than {max_whole_digits} digits before the "
+"decimal point."
+msgstr "सुनिश्चित गर्नुहोस् कि दशमलव बिन्दुभन्दा पहिले {max_whole_digits} अङ्कहरू भन्दा अधिक नहोस् ।"
+
+#: fields.py:1148
+#, python-brace-format
+msgid "Datetime has wrong format. Use one of these formats instead: {format}."
+msgstr "डेटटाइममा गलत ढाँचा छ । यसको सट्टामा यी मध्ये एक ढाँचा प्रयोग गर्नुहोस्: {format} ।"
+
+#: fields.py:1149
+msgid "Expected a datetime but got a date."
+msgstr "डेटटाइम अपेक्षित भए तर मिति प्राप्त भयो ।"
+
+#: fields.py:1150
+#, python-brace-format
+msgid "Invalid datetime for the timezone \"{timezone}\"."
+msgstr ""
+
+#: fields.py:1151
+msgid "Datetime value out of range."
+msgstr ""
+
+#: fields.py:1236
+#, python-brace-format
+msgid "Date has wrong format. Use one of these formats instead: {format}."
+msgstr "डेटमा गलत ढाँचा छ । यसको सट्टामा यी मध्ये एक ढाँचा प्रयोग गर्नुहोस्: {format} ।"
+
+#: fields.py:1237
+msgid "Expected a date but got a datetime."
+msgstr "डेट अपेक्षित भए तर डेटाटाइम प्राप्त भयो ।"
+
+#: fields.py:1303
+#, python-brace-format
+msgid "Time has wrong format. Use one of these formats instead: {format}."
+msgstr "समयमा गलत ढाँचा छ । यसको सट्टामा यी मध्ये एक ढाँचा प्रयोग गर्नुहोस्: {format} ।"
+
+#: fields.py:1365
+#, python-brace-format
+msgid "Duration has wrong format. Use one of these formats instead: {format}."
+msgstr "अवधिमा गलत ढाँचा छ । यसको सट्टामा यी मध्ये एक ढाँचा प्रयोग गर्नुहोस्: {format} ।"
+
+#: fields.py:1399 fields.py:1456
+#, python-brace-format
+msgid "\"{input}\" is not a valid choice."
+msgstr "\"{input}\" मान्य छनौट छैन ।"
+
+#: fields.py:1402
+#, python-brace-format
+msgid "More than {count} items..."
+msgstr "{count} वस्तुहरू भन्दा बढी ..."
+
+#: fields.py:1457 fields.py:1603 relations.py:485 serializers.py:570
+#, python-brace-format
+msgid "Expected a list of items but got type \"{input_type}\"."
+msgstr "वस्तुहरूको सूची अपेक्षित तर \"{input_type}\" टाइप प्राप्त भयो ।"
+
+#: fields.py:1458
+msgid "This selection may not be empty."
+msgstr "यो चयन रिक्त हुन सक्दैन ।"
+
+#: fields.py:1495
+#, python-brace-format
+msgid "\"{input}\" is not a valid path choice."
+msgstr "\"{input}\" मान्य मार्गको विकल्प होइन ।"
+
+#: fields.py:1514
+msgid "No file was submitted."
+msgstr "कुनै फाइल पेश गरिएको छैन ।"
+
+#: fields.py:1515
+msgid ""
+"The submitted data was not a file. Check the encoding type on the form."
+msgstr "पेश गरिएको डेटा फाईल थिएन । एन्कोडिङ प्रकार फारममा जाँच्नुहोस् ।"
+
+#: fields.py:1516
+msgid "No filename could be determined."
+msgstr "कुनै फाइल नाम निर्धारण गर्न सकिएन ।"
+
+#: fields.py:1517
+msgid "The submitted file is empty."
+msgstr "पेश गरिएको फाइल खाली छ ।"
+
+#: fields.py:1518
+#, python-brace-format
+msgid ""
+"Ensure this filename has at most {max_length} characters (it has {length})."
+msgstr "यो फाइल नाममा अधिक {max_length} अक्षरहरू छ छैन (यसमा {length} छ) सुनिश्चित गर्नुहोस् ।"
+
+#: fields.py:1566
+msgid ""
+"Upload a valid image. The file you uploaded was either not an image or a "
+"corrupted image."
+msgstr "मान्य चित्र अपलोड गर्नुहोस् । तपाईंले अपलोड गर्नुभएको फाइल होइन वा चित्र वा भ्रष्ट चित्र हो ।"
+
+#: fields.py:1604 relations.py:486 serializers.py:571
+msgid "This list may not be empty."
+msgstr "यो सूची खाली हुन सक्दैन ।"
+
+#: fields.py:1605
+#, python-brace-format
+msgid "Ensure this field has at least {min_length} elements."
+msgstr ""
+
+#: fields.py:1606
+#, python-brace-format
+msgid "Ensure this field has no more than {max_length} elements."
+msgstr ""
+
+#: fields.py:1682
+#, python-brace-format
+msgid "Expected a dictionary of items but got type \"{input_type}\"."
+msgstr "वस्तुहरूको शब्दकोशको अपेक्षित तर \"{input_type}\" टाइप प्राप्त भयो ।"
+
+#: fields.py:1683
+msgid "This dictionary may not be empty."
+msgstr ""
+
+#: fields.py:1755
+msgid "Value must be valid JSON."
+msgstr "परिमाण मान्य JSON हुनु पर्छ ।"
+
+#: filters.py:49 templates/rest_framework/filters/search.html:2
+msgid "Search"
+msgstr "खोजी गर्नुहोस्"
+
+#: filters.py:50
+msgid "A search term."
+msgstr ""
+
+#: filters.py:180 templates/rest_framework/filters/ordering.html:3
+msgid "Ordering"
+msgstr "क्रम"
+
+#: filters.py:181
+msgid "Which field to use when ordering the results."
+msgstr ""
+
+#: filters.py:287
+msgid "ascending"
+msgstr "आरोहण"
+
+#: filters.py:288
+msgid "descending"
+msgstr "अवरोहण"
+
+#: pagination.py:174
+msgid "A page number within the paginated result set."
+msgstr ""
+
+#: pagination.py:179 pagination.py:372 pagination.py:590
+msgid "Number of results to return per page."
+msgstr ""
+
+#: pagination.py:189
+msgid "Invalid page."
+msgstr "अमान्य पृष्ठ ।"
+
+#: pagination.py:374
+msgid "The initial index from which to return the results."
+msgstr ""
+
+#: pagination.py:581
+msgid "The pagination cursor value."
+msgstr ""
+
+#: pagination.py:583
+msgid "Invalid cursor"
+msgstr "अमान्य कर्सर"
+
+#: relations.py:246
+#, python-brace-format
+msgid "Invalid pk \"{pk_value}\" - object does not exist."
+msgstr "अमान्य pk \"{pk_value}\" - वस्तुको अस्तित्व छैन ।"
+
+#: relations.py:247
+#, python-brace-format
+msgid "Incorrect type. Expected pk value, received {data_type}."
+msgstr "गलत प्रकार। अपेक्षित pk परिमाण, {data_type} प्राप्त भयो ।"
+
+#: relations.py:280
+msgid "Invalid hyperlink - No URL match."
+msgstr "अमान्य हाइपरलिंक - कुनै यूआरएलको मेल छैन ।"
+
+#: relations.py:281
+msgid "Invalid hyperlink - Incorrect URL match."
+msgstr "अमान्य हाइपरलिंक - गलत यूआरएलको मेल छ ।"
+
+#: relations.py:282
+msgid "Invalid hyperlink - Object does not exist."
+msgstr "अमान्य हाइपरलिंक - वस्तुको अस्तित्व छैन ।"
+
+#: relations.py:283
+#, python-brace-format
+msgid "Incorrect type. Expected URL string, received {data_type}."
+msgstr "गलत प्रकार। अपेक्षित यूआरएल स्ट्रिङ, {data_type} प्राप्त भयो ।"
+
+#: relations.py:448
+#, python-brace-format
+msgid "Object with {slug_name}={value} does not exist."
+msgstr "वस्तु {slug_name} = {value} सँग अस्तित्व छैन ।"
+
+#: relations.py:449
+msgid "Invalid value."
+msgstr "अमान्य परिमाण ।"
+
+#: schemas/utils.py:32
+msgid "unique integer value"
+msgstr ""
+
+#: schemas/utils.py:34
+msgid "UUID string"
+msgstr ""
+
+#: schemas/utils.py:36
+msgid "unique value"
+msgstr ""
+
+#: schemas/utils.py:38
+#, python-brace-format
+msgid "A {value_type} identifying this {name}."
+msgstr ""
+
+#: serializers.py:337
+#, python-brace-format
+msgid "Invalid data. Expected a dictionary, but got {datatype}."
+msgstr "अमान्य डेटा । एक शब्दकोश अपेक्षित, तर {datatype} प्राप्त भयो ।"
+
+#: templates/rest_framework/admin.html:116
+#: templates/rest_framework/base.html:136
+msgid "Extra Actions"
+msgstr ""
+
+#: templates/rest_framework/admin.html:130
+#: templates/rest_framework/base.html:150
+msgid "Filters"
+msgstr "फिल्टरहरू"
+
+#: templates/rest_framework/base.html:37
+msgid "navbar"
+msgstr ""
+
+#: templates/rest_framework/base.html:75
+msgid "content"
+msgstr ""
+
+#: templates/rest_framework/base.html:78
+msgid "request form"
+msgstr ""
+
+#: templates/rest_framework/base.html:157
+msgid "main content"
+msgstr ""
+
+#: templates/rest_framework/base.html:173
+msgid "request info"
+msgstr ""
+
+#: templates/rest_framework/base.html:177
+msgid "response info"
+msgstr ""
+
+#: templates/rest_framework/horizontal/radio.html:4
+#: templates/rest_framework/inline/radio.html:3
+#: templates/rest_framework/vertical/radio.html:3
+msgid "None"
+msgstr "कुनै पनि होइन"
+
+#: templates/rest_framework/horizontal/select_multiple.html:4
+#: templates/rest_framework/inline/select_multiple.html:3
+#: templates/rest_framework/vertical/select_multiple.html:3
+msgid "No items to select."
+msgstr "चयन गर्न वस्तुहरू छैनन् ।"
+
+#: validators.py:39
+msgid "This field must be unique."
+msgstr "यो फिल्ड अद्वितीय हुनुपर्छ ।"
+
+#: validators.py:89
+#, python-brace-format
+msgid "The fields {field_names} must make a unique set."
+msgstr "फिल्ड {field_names} ले एक अद्वितीय सेट गर्नु पर्छ ।"
+
+#: validators.py:171
+#, python-brace-format
+msgid "Surrogate characters are not allowed: U+{code_point:X}."
+msgstr ""
+
+#: validators.py:243
+#, python-brace-format
+msgid "This field must be unique for the \"{date_field}\" date."
+msgstr "यो फिल्ड \"{date_field}\" मितिको लागि अद्वितीय हुनुपर्छ ।"
+
+#: validators.py:258
+#, python-brace-format
+msgid "This field must be unique for the \"{date_field}\" month."
+msgstr "यो फिल्ड \"{date_field}\" महिनाको लागि अद्वितीय हुनुपर्छ ।"
+
+#: validators.py:271
+#, python-brace-format
+msgid "This field must be unique for the \"{date_field}\" year."
+msgstr "यो फिल्ड \"{date_field}\" वर्षको लागि अद्वितीय हुनुपर्छ ।"
+
+#: versioning.py:40
+msgid "Invalid version in \"Accept\" header."
+msgstr "\"Accept\" हेडरमा अमान्य संस्करण ।"
+
+#: versioning.py:71
+msgid "Invalid version in URL path."
+msgstr "यूआरएल मार्गमा अमान्य संस्करण ।"
+
+#: versioning.py:116
+msgid "Invalid version in URL path. Does not match any version namespace."
+msgstr "यूआरएल मार्गमा अमान्य संस्करण । कुनै पनि संस्करणको नामसँग मेल खाँदैन ।"
+
+#: versioning.py:148
+msgid "Invalid version in hostname."
+msgstr "होस्ट नाममा अमान्य संस्करण ।"
+
+#: versioning.py:170
+msgid "Invalid version in query parameter."
+msgstr " क्वेरी परिमितिमा अमान्य संस्करण ।"

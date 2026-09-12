@@ -1,8 +1,8 @@
-from django.conf.urls import include, url
+from django.urls import include, path
 
 from .views import MockView
 
 urlpatterns = [
-    url(r'^$', MockView.as_view()),
-    url(r'^auth/', include('rest_framework.urls', namespace='rest_framework')),
+    path('', MockView.as_view()),
+    path('auth/', include('rest_framework.urls', namespace='rest_framework')),
 ]

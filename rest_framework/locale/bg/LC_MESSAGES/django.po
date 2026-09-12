@@ -1,0 +1,572 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# 
+# Translators:
+msgid ""
+msgstr ""
+"Project-Id-Version: Django REST framework\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-10-13 21:45+0200\n"
+"PO-Revision-Date: 2020-10-13 19:45+0000\n"
+"Last-Translator: Xavier Ordoquy <xordoquy@linovia.com>\n"
+"Language-Team: Bulgarian (http://www.transifex.com/django-rest-framework-1/django-rest-framework/language/bg/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: bg\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: authentication.py:70
+msgid "Invalid basic header. No credentials provided."
+msgstr "Невалиден header за базово удостоверение (basic authentication). Не се предоставени удостоверения."
+
+#: authentication.py:73
+msgid "Invalid basic header. Credentials string should not contain spaces."
+msgstr "Невалиден header за базово удостоверение (basic authentication). Носителите на удостоверение не трябва да съдържат интервали."
+
+#: authentication.py:83
+msgid "Invalid basic header. Credentials not correctly base64 encoded."
+msgstr "Невалиден header за базово удостоверение (basic authentication). Носителите на удостоверение не са кодирани в base64."
+
+#: authentication.py:101
+msgid "Invalid username/password."
+msgstr "Невалидни потребителско име/парола."
+
+#: authentication.py:104 authentication.py:206
+msgid "User inactive or deleted."
+msgstr "Потребителят е неактивен или изтрит."
+
+#: authentication.py:184
+msgid "Invalid token header. No credentials provided."
+msgstr "Невалиден token header. Не са предоставени носители на удостоверение."
+
+#: authentication.py:187
+msgid "Invalid token header. Token string should not contain spaces."
+msgstr "Невалиден token header. Жетона (token-a) не трябва да съдържа интервали."
+
+#: authentication.py:193
+msgid ""
+"Invalid token header. Token string should not contain invalid characters."
+msgstr "Невалиден token header. Жетона (token-a) не трябва да съдържа невалидни символи."
+
+#: authentication.py:203
+msgid "Invalid token."
+msgstr "Невалиден жетон."
+
+#: authtoken/apps.py:7
+msgid "Auth Token"
+msgstr "Жетон за удостоверение"
+
+#: authtoken/models.py:13
+msgid "Key"
+msgstr "Ключ"
+
+#: authtoken/models.py:16
+msgid "User"
+msgstr "Потребител"
+
+#: authtoken/models.py:18
+msgid "Created"
+msgstr "Създаден"
+
+#: authtoken/models.py:27 authtoken/serializers.py:19
+msgid "Token"
+msgstr "Жетон"
+
+#: authtoken/models.py:28
+msgid "Tokens"
+msgstr "Жетони"
+
+#: authtoken/serializers.py:9
+msgid "Username"
+msgstr "Потребителско име"
+
+#: authtoken/serializers.py:13
+msgid "Password"
+msgstr "Парола"
+
+#: authtoken/serializers.py:35
+msgid "Unable to log in with provided credentials."
+msgstr "Не е възможен вход с предоставените удостоверения."
+
+#: authtoken/serializers.py:38
+msgid "Must include \"username\" and \"password\"."
+msgstr "Трябва да съдържа \"username\" (потребителско име) и \"password\" (парола)."
+
+#: exceptions.py:102
+msgid "A server error occurred."
+msgstr "Сървърна грешка."
+
+#: exceptions.py:142
+msgid "Invalid input."
+msgstr ""
+
+#: exceptions.py:161
+msgid "Malformed request."
+msgstr "Неправилно оформена заявка."
+
+#: exceptions.py:167
+msgid "Incorrect authentication credentials."
+msgstr "Невалидни носители на удостоверение."
+
+#: exceptions.py:173
+msgid "Authentication credentials were not provided."
+msgstr "Носители на удостоверение не са предоставени."
+
+#: exceptions.py:179
+msgid "You do not have permission to perform this action."
+msgstr "Нямате права да се направи това действие."
+
+#: exceptions.py:185
+msgid "Not found."
+msgstr "Обектът не е намерен."
+
+#: exceptions.py:191
+#, python-brace-format
+msgid "Method \"{method}\" not allowed."
+msgstr "Метод \"{method}\" не е позволен."
+
+#: exceptions.py:202
+msgid "Could not satisfy the request Accept header."
+msgstr "Не може да бъде удовлетворен Accept header."
+
+#: exceptions.py:212
+#, python-brace-format
+msgid "Unsupported media type \"{media_type}\" in request."
+msgstr "Неподдържан тип на документа \"{media_type}\" в заявката."
+
+#: exceptions.py:223
+msgid "Request was throttled."
+msgstr "Заявката е ограничена."
+
+#: exceptions.py:224
+#, python-brace-format
+msgid "Expected available in {wait} second."
+msgstr ""
+
+#: exceptions.py:225
+#, python-brace-format
+msgid "Expected available in {wait} seconds."
+msgstr ""
+
+#: fields.py:316 relations.py:245 relations.py:279 validators.py:90
+#: validators.py:183
+msgid "This field is required."
+msgstr "Това поле е задължително."
+
+#: fields.py:317
+msgid "This field may not be null."
+msgstr "Това поле не може да има празна стойност."
+
+#: fields.py:701
+msgid "Must be a valid boolean."
+msgstr ""
+
+#: fields.py:766
+msgid "Not a valid string."
+msgstr ""
+
+#: fields.py:767
+msgid "This field may not be blank."
+msgstr "Това поле не може да е празно."
+
+#: fields.py:768 fields.py:1881
+#, python-brace-format
+msgid "Ensure this field has no more than {max_length} characters."
+msgstr "Това поле не трябва да съдържа повече от {max_length} символа."
+
+#: fields.py:769
+#, python-brace-format
+msgid "Ensure this field has at least {min_length} characters."
+msgstr "Това поле трябва да съдържа поде {min_length} символа."
+
+#: fields.py:816
+msgid "Enter a valid email address."
+msgstr "Въведете валиден имейл адрес."
+
+#: fields.py:827
+msgid "This value does not match the required pattern."
+msgstr "Тази стойност не съответства на изисквания шаблон."
+
+#: fields.py:838
+msgid ""
+"Enter a valid \"slug\" consisting of letters, numbers, underscores or "
+"hyphens."
+msgstr "Въведете валиден \"slug\" съдържащ латински букви, цифри, долни черти или тирета."
+
+#: fields.py:839
+msgid ""
+"Enter a valid \"slug\" consisting of Unicode letters, numbers, underscores, "
+"or hyphens."
+msgstr ""
+
+#: fields.py:854
+msgid "Enter a valid URL."
+msgstr "Въведете валиден URL."
+
+#: fields.py:867
+msgid "Must be a valid UUID."
+msgstr ""
+
+#: fields.py:903
+msgid "Enter a valid IPv4 or IPv6 address."
+msgstr "Въведете валиден IPv4 или IPv6 адрес."
+
+#: fields.py:931
+msgid "A valid integer is required."
+msgstr "Необходимо е валидно цяло число."
+
+#: fields.py:932 fields.py:969 fields.py:1005 fields.py:1366
+#, python-brace-format
+msgid "Ensure this value is less than or equal to {max_value}."
+msgstr "Тази стойност трябва да е не повече от {max_value}."
+
+#: fields.py:933 fields.py:970 fields.py:1006 fields.py:1367
+#, python-brace-format
+msgid "Ensure this value is greater than or equal to {min_value}."
+msgstr "Тази стойност трябва да е поне {min_value}."
+
+#: fields.py:934 fields.py:971 fields.py:1010
+msgid "String value too large."
+msgstr "Низът е прекалено голям."
+
+#: fields.py:968 fields.py:1004
+msgid "A valid number is required."
+msgstr "Необходимо е валидно число."
+
+#: fields.py:1007
+#, python-brace-format
+msgid "Ensure that there are no more than {max_digits} digits in total."
+msgstr "Допустими са не повече от {max_digits} цифри."
+
+#: fields.py:1008
+#, python-brace-format
+msgid ""
+"Ensure that there are no more than {max_decimal_places} decimal places."
+msgstr "Допустими са не повече от {max_decimal_places} цифри след десетичната запетая."
+
+#: fields.py:1009
+#, python-brace-format
+msgid ""
+"Ensure that there are no more than {max_whole_digits} digits before the "
+"decimal point."
+msgstr "Допустими са не повече от {max_whole_digits} цифри преди десетичната запетая."
+
+#: fields.py:1148
+#, python-brace-format
+msgid "Datetime has wrong format. Use one of these formats instead: {format}."
+msgstr "Датата и часът са в невалиден формат. Валидни са следните формати: {format}."
+
+#: fields.py:1149
+msgid "Expected a datetime but got a date."
+msgstr "Очаква се дата и час, но е намерена само дата."
+
+#: fields.py:1150
+#, python-brace-format
+msgid "Invalid datetime for the timezone \"{timezone}\"."
+msgstr ""
+
+#: fields.py:1151
+msgid "Datetime value out of range."
+msgstr ""
+
+#: fields.py:1236
+#, python-brace-format
+msgid "Date has wrong format. Use one of these formats instead: {format}."
+msgstr "Дата е в невалиден формат. Валидни са следните формати: {format}."
+
+#: fields.py:1237
+msgid "Expected a date but got a datetime."
+msgstr "Очаква се дата, но са подадени дата и час."
+
+#: fields.py:1303
+#, python-brace-format
+msgid "Time has wrong format. Use one of these formats instead: {format}."
+msgstr "Времето е в невалиден формат. Валидни са следните формати: {format}."
+
+#: fields.py:1365
+#, python-brace-format
+msgid "Duration has wrong format. Use one of these formats instead: {format}."
+msgstr "Отрязъкът от време е в невалиден формат. Валидни са следните формати: {format}."
+
+#: fields.py:1399 fields.py:1456
+#, python-brace-format
+msgid "\"{input}\" is not a valid choice."
+msgstr "\"{input}\" не е валиден избор."
+
+#: fields.py:1402
+#, python-brace-format
+msgid "More than {count} items..."
+msgstr "Повече от {count} неща..."
+
+#: fields.py:1457 fields.py:1603 relations.py:485 serializers.py:570
+#, python-brace-format
+msgid "Expected a list of items but got type \"{input_type}\"."
+msgstr "Очаква се списък от неща, но е получен тип \"{input_type}\"."
+
+#: fields.py:1458
+msgid "This selection may not be empty."
+msgstr "Този избор не може да е празен."
+
+#: fields.py:1495
+#, python-brace-format
+msgid "\"{input}\" is not a valid path choice."
+msgstr "\"{input}\" не е валиден избор за път."
+
+#: fields.py:1514
+msgid "No file was submitted."
+msgstr "Не е подаден файл."
+
+#: fields.py:1515
+msgid ""
+"The submitted data was not a file. Check the encoding type on the form."
+msgstr "Подадените данни не са файл. Проверете кодировката на формата."
+
+#: fields.py:1516
+msgid "No filename could be determined."
+msgstr "Не може да бъде определено името на файла."
+
+#: fields.py:1517
+msgid "The submitted file is empty."
+msgstr "Подадения файл е празен."
+
+#: fields.py:1518
+#, python-brace-format
+msgid ""
+"Ensure this filename has at most {max_length} characters (it has {length})."
+msgstr "Името на файла може да е до {max_length} символа (то е {length})."
+
+#: fields.py:1566
+msgid ""
+"Upload a valid image. The file you uploaded was either not an image or a "
+"corrupted image."
+msgstr "Невалидно изображение. Подадения файл не е изображение или е повредено изображение."
+
+#: fields.py:1604 relations.py:486 serializers.py:571
+msgid "This list may not be empty."
+msgstr "Този списък не може да е празен."
+
+#: fields.py:1605
+#, python-brace-format
+msgid "Ensure this field has at least {min_length} elements."
+msgstr ""
+
+#: fields.py:1606
+#, python-brace-format
+msgid "Ensure this field has no more than {max_length} elements."
+msgstr ""
+
+#: fields.py:1682
+#, python-brace-format
+msgid "Expected a dictionary of items but got type \"{input_type}\"."
+msgstr "Очаква се асоциативен масив, но е получен \"{input_type}\"."
+
+#: fields.py:1683
+msgid "This dictionary may not be empty."
+msgstr ""
+
+#: fields.py:1755
+msgid "Value must be valid JSON."
+msgstr "Стойността трябва да е валиден JSON."
+
+#: filters.py:49 templates/rest_framework/filters/search.html:2
+msgid "Search"
+msgstr "Търсене"
+
+#: filters.py:50
+msgid "A search term."
+msgstr ""
+
+#: filters.py:180 templates/rest_framework/filters/ordering.html:3
+msgid "Ordering"
+msgstr "Подредба"
+
+#: filters.py:181
+msgid "Which field to use when ordering the results."
+msgstr ""
+
+#: filters.py:287
+msgid "ascending"
+msgstr "в нарастващ ред"
+
+#: filters.py:288
+msgid "descending"
+msgstr "в намаляващ ред"
+
+#: pagination.py:174
+msgid "A page number within the paginated result set."
+msgstr ""
+
+#: pagination.py:179 pagination.py:372 pagination.py:590
+msgid "Number of results to return per page."
+msgstr ""
+
+#: pagination.py:189
+msgid "Invalid page."
+msgstr "Невалидна страница."
+
+#: pagination.py:374
+msgid "The initial index from which to return the results."
+msgstr ""
+
+#: pagination.py:581
+msgid "The pagination cursor value."
+msgstr ""
+
+#: pagination.py:583
+msgid "Invalid cursor"
+msgstr "Невалиден курсор"
+
+#: relations.py:246
+#, python-brace-format
+msgid "Invalid pk \"{pk_value}\" - object does not exist."
+msgstr "Невалиден идентификатор \"{pk_value}\" - обектът не съществува."
+
+#: relations.py:247
+#, python-brace-format
+msgid "Incorrect type. Expected pk value, received {data_type}."
+msgstr "Неправилен тип. Очакван е тип за основен ключ, получен е {data_type}."
+
+#: relations.py:280
+msgid "Invalid hyperlink - No URL match."
+msgstr "Невалидна връзка (hyperlink) - няма намерен URL."
+
+#: relations.py:281
+msgid "Invalid hyperlink - Incorrect URL match."
+msgstr "Невалидна връзка (hyperlink) - неправилно съвпадение на URL."
+
+#: relations.py:282
+msgid "Invalid hyperlink - Object does not exist."
+msgstr "Невалидна връзка (hyperlink) - обектът не съществува."
+
+#: relations.py:283
+#, python-brace-format
+msgid "Incorrect type. Expected URL string, received {data_type}."
+msgstr "Невалиден тип. Очаква се URL низ, получен е {data_type}."
+
+#: relations.py:448
+#, python-brace-format
+msgid "Object with {slug_name}={value} does not exist."
+msgstr "Обект с {slug_name}={value} не съществува."
+
+#: relations.py:449
+msgid "Invalid value."
+msgstr "Невалидна стойност."
+
+#: schemas/utils.py:32
+msgid "unique integer value"
+msgstr ""
+
+#: schemas/utils.py:34
+msgid "UUID string"
+msgstr ""
+
+#: schemas/utils.py:36
+msgid "unique value"
+msgstr ""
+
+#: schemas/utils.py:38
+#, python-brace-format
+msgid "A {value_type} identifying this {name}."
+msgstr ""
+
+#: serializers.py:337
+#, python-brace-format
+msgid "Invalid data. Expected a dictionary, but got {datatype}."
+msgstr "Невалидни данни. Очаква се асоциативен масив, но е получен {datatype}."
+
+#: templates/rest_framework/admin.html:116
+#: templates/rest_framework/base.html:136
+msgid "Extra Actions"
+msgstr ""
+
+#: templates/rest_framework/admin.html:130
+#: templates/rest_framework/base.html:150
+msgid "Filters"
+msgstr "Филтри"
+
+#: templates/rest_framework/base.html:37
+msgid "navbar"
+msgstr ""
+
+#: templates/rest_framework/base.html:75
+msgid "content"
+msgstr ""
+
+#: templates/rest_framework/base.html:78
+msgid "request form"
+msgstr ""
+
+#: templates/rest_framework/base.html:157
+msgid "main content"
+msgstr ""
+
+#: templates/rest_framework/base.html:173
+msgid "request info"
+msgstr ""
+
+#: templates/rest_framework/base.html:177
+msgid "response info"
+msgstr ""
+
+#: templates/rest_framework/horizontal/radio.html:4
+#: templates/rest_framework/inline/radio.html:3
+#: templates/rest_framework/vertical/radio.html:3
+msgid "None"
+msgstr "Нищо"
+
+#: templates/rest_framework/horizontal/select_multiple.html:4
+#: templates/rest_framework/inline/select_multiple.html:3
+#: templates/rest_framework/vertical/select_multiple.html:3
+msgid "No items to select."
+msgstr "Няма неща за избиране."
+
+#: validators.py:39
+msgid "This field must be unique."
+msgstr "Това поле трябва да е уникално."
+
+#: validators.py:89
+#, python-brace-format
+msgid "The fields {field_names} must make a unique set."
+msgstr "Полетата {field_names} трябва да образуват уникална комбинация."
+
+#: validators.py:171
+#, python-brace-format
+msgid "Surrogate characters are not allowed: U+{code_point:X}."
+msgstr ""
+
+#: validators.py:243
+#, python-brace-format
+msgid "This field must be unique for the \"{date_field}\" date."
+msgstr "Това поле трябва да е уникално за \"{date_field}\" дата."
+
+#: validators.py:258
+#, python-brace-format
+msgid "This field must be unique for the \"{date_field}\" month."
+msgstr "Това поле трябва да е уникално за \"{date_field}\" месец."
+
+#: validators.py:271
+#, python-brace-format
+msgid "This field must be unique for the \"{date_field}\" year."
+msgstr "Това поле трябва да е уникално за \"{date_field}\" година."
+
+#: versioning.py:40
+msgid "Invalid version in \"Accept\" header."
+msgstr "Невалидна версия в \"Accept\" header."
+
+#: versioning.py:71
+msgid "Invalid version in URL path."
+msgstr "Невалидна версия в URL пътя."
+
+#: versioning.py:116
+msgid "Invalid version in URL path. Does not match any version namespace."
+msgstr "Невалидна версия в URL пътя. Няма съвпадение с пространството от имена на версии."
+
+#: versioning.py:148
+msgid "Invalid version in hostname."
+msgstr "Невалидна версия в името на сървъра (hostname)."
+
+#: versioning.py:170
+msgid "Invalid version in query parameter."
+msgstr "Невалидна версия в GET параметър."

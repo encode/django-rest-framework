@@ -1,15 +1,37 @@
+import contextlib
 import os
-import sys
 
+import dj_database_url
 import django
+import pytest
+from django.apps import apps
 from django.core import management
+from django.core.management.color import no_style
+from django.db import connection
+
+
+@pytest.fixture
+def reset_sequences():
+    """
+    Reset all database sequences so PKs start from 1.
+
+    PostgreSQL sequences are non-transactional and persist across
+    TestCase's transaction rollbacks. Apply this fixture to test
+    classes that rely on hardcoded PKs to keep them predictable
+    regardless of execution order. No-op on SQLite.
+    """
+    if connection.vendor != 'postgresql':
+        return
+    table_names = set(connection.introspection.table_names())
+    models = [m for m in apps.get_models() if m._meta.db_table in table_names]
+    sql_list = connection.ops.sequence_reset_sql(no_style(), models)
+    if sql_list:
+        with connection.cursor() as cursor:
+            for sql in sql_list:
+                cursor.execute(sql)
 
 
 def pytest_addoption(parser):
-    parser.addoption('--no-pkgroot', action='store_true', default=False,
-                     help='Remove package root directory from sys.path, ensuring that '
-                          'rest_framework is imported from the installed site-packages. '
-                          'Used for testing the distribution.')
     parser.addoption('--staticfiles', action='store_true', default=False,
                      help='Run tests with static files collection, using manifest '
                           'staticfiles storage. Used for testing the distribution.')
@@ -18,18 +40,30 @@ def pytest_addoption(parser):
 def pytest_configure(config):
     from django.conf import settings
 
-    settings.configure(
-        DEBUG_PROPAGATE_EXCEPTIONS=True,
-        DATABASES={
+    if os.getenv('DATABASE_URL'):
+        databases = {
+            'default': dj_database_url.config(),
+            'secondary': dj_database_url.config(),
+        }
+    else:
+        databases = {
             'default': {
                 'ENGINE': 'django.db.backends.sqlite3',
                 'NAME': ':memory:'
-            }
-        },
+            },
+            'secondary': {
+                'ENGINE': 'django.db.backends.sqlite3',
+                'NAME': ':memory:'
+            },
+        }
+
+    settings.configure(
+        DEBUG_PROPAGATE_EXCEPTIONS=True,
+        DEFAULT_AUTO_FIELD="django.db.models.AutoField",
+        DATABASES=databases,
         SITE_ID=1,
         SECRET_KEY='not very secret in tests',
         USE_I18N=True,
-        USE_L10N=True,
         STATIC_URL='/static/',
         ROOT_URLCONF='tests.urls',
         TEMPLATES=[
@@ -66,39 +100,66 @@ def pytest_configure(config):
         ),
     )
 
+    # Add django.contrib.postgres when using a PostgreSQL database
+    if settings.DATABASES['default']['ENGINE'] == 'django.db.backends.postgresql':
+        settings.INSTALLED_APPS += (
+            'django.contrib.postgres',
+        )
+
     # guardian is optional
-    # Note that for the test cases we're installing a version of django-guardian
-    # that's only compatible with Django 2.0+.
-    if django.VERSION >= (2, 0, 0):
-        try:
-            import guardian  # NOQA
-        except ImportError:
-            pass
-        else:
-            settings.ANONYMOUS_USER_ID = -1
-            settings.AUTHENTICATION_BACKENDS = (
-                'django.contrib.auth.backends.ModelBackend',
-                'guardian.backends.ObjectPermissionBackend',
-            )
-            settings.INSTALLED_APPS += (
-                'guardian',
-            )
-
-    if config.getoption('--no-pkgroot'):
-        sys.path.pop(0)
-
-        # import rest_framework before pytest re-adds the package root directory.
-        import rest_framework
-        package_dir = os.path.join(os.getcwd(), 'rest_framework')
-        assert not rest_framework.__file__.startswith(package_dir)
+    try:
+        import guardian  # NOQA
+    except ImportError:
+        pass
+    else:
+        settings.ANONYMOUS_USER_ID = -1
+        settings.AUTHENTICATION_BACKENDS = (
+            'django.contrib.auth.backends.ModelBackend',
+            'guardian.backends.ObjectPermissionBackend',
+        )
+        settings.INSTALLED_APPS += (
+            'guardian',
+        )
 
     # Manifest storage will raise an exception if static files are not present (ie, a packaging failure).
     if config.getoption('--staticfiles'):
         import rest_framework
         settings.STATIC_ROOT = os.path.join(os.path.dirname(rest_framework.__file__), 'static-root')
-        settings.STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
+        backend = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
+        settings.STORAGES['staticfiles']['BACKEND'] = backend
 
     django.setup()
 
     if config.getoption('--staticfiles'):
         management.call_command('collectstatic', verbosity=0, interactive=False)
+
+
+def pytest_collection_modifyitems(config, items):
+    from django.conf import settings
+
+    if settings.DATABASES['default']['ENGINE'] != 'django.db.backends.postgresql':
+        skip_postgres = pytest.mark.skip(reason='Requires PostgreSQL database backend')
+        for item in items:
+            if 'requires_postgres' in item.keywords:
+                item.add_marker(skip_postgres)
+
+
+@contextlib.contextmanager
+def _postgres_extension(extension_name):
+    """Helper to enable a PostgreSQL extension in tests."""
+    with connection.schema_editor(atomic=False) as schema_editor:
+        schema_editor.execute(
+            'CREATE EXTENSION IF NOT EXISTS %s' % schema_editor.quote_name(extension_name)
+        )
+    yield
+    with connection.schema_editor(atomic=False) as schema_editor:
+        schema_editor.execute(
+            'DROP EXTENSION IF EXISTS %s' % schema_editor.quote_name(extension_name)
+        )
+
+
+@pytest.fixture
+def unaccent_extension(db):
+    """Enable the unaccent PostgreSQL extension in tests."""
+    with _postgres_extension('unaccent'):
+        yield

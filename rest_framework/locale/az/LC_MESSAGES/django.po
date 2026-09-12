@@ -1,0 +1,573 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# 
+# Translators:
+# Emin Mastizada <emin@linux.com>, 2020
+msgid ""
+msgstr ""
+"Project-Id-Version: Django REST framework\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-10-13 21:45+0200\n"
+"PO-Revision-Date: 2020-10-13 19:45+0000\n"
+"Last-Translator: Xavier Ordoquy <xordoquy@linovia.com>\n"
+"Language-Team: Azerbaijani (http://www.transifex.com/django-rest-framework-1/django-rest-framework/language/az/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: az\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: authentication.py:70
+msgid "Invalid basic header. No credentials provided."
+msgstr "Xətalı sadə başlıq. İstifadəçi məlumatları təchiz edilməyib."
+
+#: authentication.py:73
+msgid "Invalid basic header. Credentials string should not contain spaces."
+msgstr "Xətalı sadə başlıq. İstifadəçi məlumatlarında boşluq olmamalıdır."
+
+#: authentication.py:83
+msgid "Invalid basic header. Credentials not correctly base64 encoded."
+msgstr "Xətalı sadə başlıq. İstifadəçi məlumatları base64 ilə düzgün şifrələnməyib."
+
+#: authentication.py:101
+msgid "Invalid username/password."
+msgstr "Xətalı istifadəçi adı/parol."
+
+#: authentication.py:104 authentication.py:206
+msgid "User inactive or deleted."
+msgstr "İstifadəçi aktiv deyil və ya silinib."
+
+#: authentication.py:184
+msgid "Invalid token header. No credentials provided."
+msgstr "Xətalı token başlığı. İstifadəçi məlumatları təchiz edilməyib."
+
+#: authentication.py:187
+msgid "Invalid token header. Token string should not contain spaces."
+msgstr "Xətalı token başlığı. Token mətnində boşluqlar olmamalıdır."
+
+#: authentication.py:193
+msgid ""
+"Invalid token header. Token string should not contain invalid characters."
+msgstr "Xətalı token başlığı. Token mətnində xətalı simvollar olmamalıdır."
+
+#: authentication.py:203
+msgid "Invalid token."
+msgstr "Xətalı token."
+
+#: authtoken/apps.py:7
+msgid "Auth Token"
+msgstr "Təsdiqləmə Tokeni"
+
+#: authtoken/models.py:13
+msgid "Key"
+msgstr "Açar"
+
+#: authtoken/models.py:16
+msgid "User"
+msgstr "İstifadəçi"
+
+#: authtoken/models.py:18
+msgid "Created"
+msgstr "Yaradılıb"
+
+#: authtoken/models.py:27 authtoken/serializers.py:19
+msgid "Token"
+msgstr "Token"
+
+#: authtoken/models.py:28
+msgid "Tokens"
+msgstr "Tokenlər"
+
+#: authtoken/serializers.py:9
+msgid "Username"
+msgstr "İstifadəçi adı"
+
+#: authtoken/serializers.py:13
+msgid "Password"
+msgstr "Parol"
+
+#: authtoken/serializers.py:35
+msgid "Unable to log in with provided credentials."
+msgstr "Təchiz edilən istifadəçi məlumatları ilə daxil olmaq mümkün olmadı."
+
+#: authtoken/serializers.py:38
+msgid "Must include \"username\" and \"password\"."
+msgstr "Mütləq \"username\" və \"password\" olmalıdır."
+
+#: exceptions.py:102
+msgid "A server error occurred."
+msgstr "Server xətası yaşandı."
+
+#: exceptions.py:142
+msgid "Invalid input."
+msgstr ""
+
+#: exceptions.py:161
+msgid "Malformed request."
+msgstr "Qüsurlu istək."
+
+#: exceptions.py:167
+msgid "Incorrect authentication credentials."
+msgstr "Səhv təsdiqləmə məlumatları."
+
+#: exceptions.py:173
+msgid "Authentication credentials were not provided."
+msgstr "Təsdiqləmə məlumatları təchiz edilməyib."
+
+#: exceptions.py:179
+msgid "You do not have permission to perform this action."
+msgstr "Bu əməliyyat üçün icazəniz yoxdur."
+
+#: exceptions.py:185
+msgid "Not found."
+msgstr "Tapılmadı."
+
+#: exceptions.py:191
+#, python-brace-format
+msgid "Method \"{method}\" not allowed."
+msgstr "\"{method}\" yöntəminə icazə verilmir."
+
+#: exceptions.py:202
+msgid "Could not satisfy the request Accept header."
+msgstr "İstəyin Accept başlığını qane etmək mümkün olmadı."
+
+#: exceptions.py:212
+#, python-brace-format
+msgid "Unsupported media type \"{media_type}\" in request."
+msgstr "İstəkdə dəstəklənməyən \"{media_type}\" mediya növü."
+
+#: exceptions.py:223
+msgid "Request was throttled."
+msgstr "İstək nəzərə alınmadı."
+
+#: exceptions.py:224
+#, python-brace-format
+msgid "Expected available in {wait} second."
+msgstr ""
+
+#: exceptions.py:225
+#, python-brace-format
+msgid "Expected available in {wait} seconds."
+msgstr ""
+
+#: fields.py:316 relations.py:245 relations.py:279 validators.py:90
+#: validators.py:183
+msgid "This field is required."
+msgstr "Bu sahə tələb edilir."
+
+#: fields.py:317
+msgid "This field may not be null."
+msgstr "Bu sahə null ola bilməz."
+
+#: fields.py:701
+msgid "Must be a valid boolean."
+msgstr ""
+
+#: fields.py:766
+msgid "Not a valid string."
+msgstr ""
+
+#: fields.py:767
+msgid "This field may not be blank."
+msgstr "Bu sahə boş ola bilməz."
+
+#: fields.py:768 fields.py:1881
+#, python-brace-format
+msgid "Ensure this field has no more than {max_length} characters."
+msgstr "Bu sahənin ən çox {max_length} simvolu olduğuna əmin olun."
+
+#: fields.py:769
+#, python-brace-format
+msgid "Ensure this field has at least {min_length} characters."
+msgstr "Bu sahənin ən az {min_length} simvolu olduğuna əmin olun."
+
+#: fields.py:816
+msgid "Enter a valid email address."
+msgstr "Keçərli e-poçt ünvanı daxil edin."
+
+#: fields.py:827
+msgid "This value does not match the required pattern."
+msgstr "Bu dəyər tələb edilən formaya uyğun gəlmir."
+
+#: fields.py:838
+msgid ""
+"Enter a valid \"slug\" consisting of letters, numbers, underscores or "
+"hyphens."
+msgstr "Hərf, rəqəm, alt xətt və defislərdən ibarət keçərli \"slug\" daxil edin."
+
+#: fields.py:839
+msgid ""
+"Enter a valid \"slug\" consisting of Unicode letters, numbers, underscores, "
+"or hyphens."
+msgstr ""
+
+#: fields.py:854
+msgid "Enter a valid URL."
+msgstr "Keçərli URL daxil edin."
+
+#: fields.py:867
+msgid "Must be a valid UUID."
+msgstr ""
+
+#: fields.py:903
+msgid "Enter a valid IPv4 or IPv6 address."
+msgstr "Keçərli IPv4 və ya IPv6 ünvanı daxil edin."
+
+#: fields.py:931
+msgid "A valid integer is required."
+msgstr "Keçərli tam ədəd tələb edilir."
+
+#: fields.py:932 fields.py:969 fields.py:1005 fields.py:1366
+#, python-brace-format
+msgid "Ensure this value is less than or equal to {max_value}."
+msgstr "Bu dəyərin uzunluğunun ən çox {max_value} olduğuna əmin olun."
+
+#: fields.py:933 fields.py:970 fields.py:1006 fields.py:1367
+#, python-brace-format
+msgid "Ensure this value is greater than or equal to {min_value}."
+msgstr "Bu dəyərin uzunluğunun ən az {min_value} olduğuna əmin olun."
+
+#: fields.py:934 fields.py:971 fields.py:1010
+msgid "String value too large."
+msgstr "Yazı dəyəri çox uzundur."
+
+#: fields.py:968 fields.py:1004
+msgid "A valid number is required."
+msgstr "Keçərli rəqəm tələb edilir."
+
+#: fields.py:1007
+#, python-brace-format
+msgid "Ensure that there are no more than {max_digits} digits in total."
+msgstr "Ən çox {max_digits} rəqəm olduğuna əmin olun."
+
+#: fields.py:1008
+#, python-brace-format
+msgid ""
+"Ensure that there are no more than {max_decimal_places} decimal places."
+msgstr "Ən çox {max_decimal_places} onluq kəsr hissəsi olduğuna əmin olun."
+
+#: fields.py:1009
+#, python-brace-format
+msgid ""
+"Ensure that there are no more than {max_whole_digits} digits before the "
+"decimal point."
+msgstr "Onluq kərsdən əvvəl ən çox {max_whole_digits} rəqəm olduğuna əmin olun."
+
+#: fields.py:1148
+#, python-brace-format
+msgid "Datetime has wrong format. Use one of these formats instead: {format}."
+msgstr "Datetime dəyəri səhvdir. Əvəzinə bu formatlardan birini işlədin: {format}."
+
+#: fields.py:1149
+msgid "Expected a datetime but got a date."
+msgstr "Datetime gözlənirdi amma date gəldi."
+
+#: fields.py:1150
+#, python-brace-format
+msgid "Invalid datetime for the timezone \"{timezone}\"."
+msgstr ""
+
+#: fields.py:1151
+msgid "Datetime value out of range."
+msgstr ""
+
+#: fields.py:1236
+#, python-brace-format
+msgid "Date has wrong format. Use one of these formats instead: {format}."
+msgstr "Date dəyəri səhvdir. Əvəzinə bu formatlardan birini işlədin: {format}."
+
+#: fields.py:1237
+msgid "Expected a date but got a datetime."
+msgstr "Date gözlənirdi amma datetime gəldi."
+
+#: fields.py:1303
+#, python-brace-format
+msgid "Time has wrong format. Use one of these formats instead: {format}."
+msgstr "Vaxt formatı səhvdir. Əvəzinə bu formatlardan birini işlədin: {format}."
+
+#: fields.py:1365
+#, python-brace-format
+msgid "Duration has wrong format. Use one of these formats instead: {format}."
+msgstr "Müddət formatı səhvdir. Əvəzinə bu formatlardan birini işlədin: {format}."
+
+#: fields.py:1399 fields.py:1456
+#, python-brace-format
+msgid "\"{input}\" is not a valid choice."
+msgstr "\"{input}\" keçərli seçim deyil."
+
+#: fields.py:1402
+#, python-brace-format
+msgid "More than {count} items..."
+msgstr "{count} elementdən daha çoxdur..."
+
+#: fields.py:1457 fields.py:1603 relations.py:485 serializers.py:570
+#, python-brace-format
+msgid "Expected a list of items but got type \"{input_type}\"."
+msgstr "Elementlər siyahısı gözlənirdi, amma \"{input_type}\" növü gəldi."
+
+#: fields.py:1458
+msgid "This selection may not be empty."
+msgstr "Bu seçim boş ola bilməz."
+
+#: fields.py:1495
+#, python-brace-format
+msgid "\"{input}\" is not a valid path choice."
+msgstr "\"{input}\" keçərli yol seçimi deyil."
+
+#: fields.py:1514
+msgid "No file was submitted."
+msgstr "Heç bir fayl göndərilmədi."
+
+#: fields.py:1515
+msgid ""
+"The submitted data was not a file. Check the encoding type on the form."
+msgstr "Göndərilən məlumat fayl deyildi. Anketin şifrələmə (encoding) növünü yoxlayın."
+
+#: fields.py:1516
+msgid "No filename could be determined."
+msgstr "Faylın adı təyin edilə bilmədi."
+
+#: fields.py:1517
+msgid "The submitted file is empty."
+msgstr "Göndərilən fayl boşdur."
+
+#: fields.py:1518
+#, python-brace-format
+msgid ""
+"Ensure this filename has at most {max_length} characters (it has {length})."
+msgstr "Fayl adının ən çox {max_length} simvoldan ibarət olduğuna əmin olun (hazırki: {length})."
+
+#: fields.py:1566
+msgid ""
+"Upload a valid image. The file you uploaded was either not an image or a "
+"corrupted image."
+msgstr "Keçərli şəkil yükləyin. Yüklədiyiniz fayl ya şəkil deyil, ya da ola bilsin zədələnib."
+
+#: fields.py:1604 relations.py:486 serializers.py:571
+msgid "This list may not be empty."
+msgstr "Bu siyahı boş ola bilməz."
+
+#: fields.py:1605
+#, python-brace-format
+msgid "Ensure this field has at least {min_length} elements."
+msgstr ""
+
+#: fields.py:1606
+#, python-brace-format
+msgid "Ensure this field has no more than {max_length} elements."
+msgstr ""
+
+#: fields.py:1682
+#, python-brace-format
+msgid "Expected a dictionary of items but got type \"{input_type}\"."
+msgstr "Elementlərin kitabçası (dictionary) gözlənirdi amma \"{input_type}\" növü gəldi."
+
+#: fields.py:1683
+msgid "This dictionary may not be empty."
+msgstr ""
+
+#: fields.py:1755
+msgid "Value must be valid JSON."
+msgstr "Dəyər keçərli JSON olmalıdır."
+
+#: filters.py:49 templates/rest_framework/filters/search.html:2
+msgid "Search"
+msgstr "Axtarış"
+
+#: filters.py:50
+msgid "A search term."
+msgstr ""
+
+#: filters.py:180 templates/rest_framework/filters/ordering.html:3
+msgid "Ordering"
+msgstr "Sıralama"
+
+#: filters.py:181
+msgid "Which field to use when ordering the results."
+msgstr ""
+
+#: filters.py:287
+msgid "ascending"
+msgstr "artan"
+
+#: filters.py:288
+msgid "descending"
+msgstr "azalan"
+
+#: pagination.py:174
+msgid "A page number within the paginated result set."
+msgstr ""
+
+#: pagination.py:179 pagination.py:372 pagination.py:590
+msgid "Number of results to return per page."
+msgstr ""
+
+#: pagination.py:189
+msgid "Invalid page."
+msgstr "Xətalı səhifə."
+
+#: pagination.py:374
+msgid "The initial index from which to return the results."
+msgstr ""
+
+#: pagination.py:581
+msgid "The pagination cursor value."
+msgstr ""
+
+#: pagination.py:583
+msgid "Invalid cursor"
+msgstr "Xətalı kursor"
+
+#: relations.py:246
+#, python-brace-format
+msgid "Invalid pk \"{pk_value}\" - object does not exist."
+msgstr "Xətalı pk \"{pk_value}\" - obyekt mövcud deyil."
+
+#: relations.py:247
+#, python-brace-format
+msgid "Incorrect type. Expected pk value, received {data_type}."
+msgstr "Xətalı növ. PK dəyəri gözlənirdi, {data_type} alındı."
+
+#: relations.py:280
+msgid "Invalid hyperlink - No URL match."
+msgstr "Xətalı hiperkeçid - Heç bir URL uyğun gəlmir."
+
+#: relations.py:281
+msgid "Invalid hyperlink - Incorrect URL match."
+msgstr "Xətalı hiperkeçid - Xətalı URL uyğunluğu."
+
+#: relations.py:282
+msgid "Invalid hyperlink - Object does not exist."
+msgstr "Xətalı hiperkeçid - Obyekt mövcud deyil."
+
+#: relations.py:283
+#, python-brace-format
+msgid "Incorrect type. Expected URL string, received {data_type}."
+msgstr "Xətalı növ. URL yazısı gözlənirdi, {data_type} gəldi."
+
+#: relations.py:448
+#, python-brace-format
+msgid "Object with {slug_name}={value} does not exist."
+msgstr "{slug_name}={value} üçün uyğun obyekt mövcud deyil."
+
+#: relations.py:449
+msgid "Invalid value."
+msgstr "Xətalı dəyər."
+
+#: schemas/utils.py:32
+msgid "unique integer value"
+msgstr ""
+
+#: schemas/utils.py:34
+msgid "UUID string"
+msgstr ""
+
+#: schemas/utils.py:36
+msgid "unique value"
+msgstr ""
+
+#: schemas/utils.py:38
+#, python-brace-format
+msgid "A {value_type} identifying this {name}."
+msgstr ""
+
+#: serializers.py:337
+#, python-brace-format
+msgid "Invalid data. Expected a dictionary, but got {datatype}."
+msgstr "Xətalı məlumat. Kitabça (dictionary) gözlənirdi, {datatype} gəldi."
+
+#: templates/rest_framework/admin.html:116
+#: templates/rest_framework/base.html:136
+msgid "Extra Actions"
+msgstr ""
+
+#: templates/rest_framework/admin.html:130
+#: templates/rest_framework/base.html:150
+msgid "Filters"
+msgstr "Filterlər"
+
+#: templates/rest_framework/base.html:37
+msgid "navbar"
+msgstr ""
+
+#: templates/rest_framework/base.html:75
+msgid "content"
+msgstr ""
+
+#: templates/rest_framework/base.html:78
+msgid "request form"
+msgstr ""
+
+#: templates/rest_framework/base.html:157
+msgid "main content"
+msgstr ""
+
+#: templates/rest_framework/base.html:173
+msgid "request info"
+msgstr ""
+
+#: templates/rest_framework/base.html:177
+msgid "response info"
+msgstr ""
+
+#: templates/rest_framework/horizontal/radio.html:4
+#: templates/rest_framework/inline/radio.html:3
+#: templates/rest_framework/vertical/radio.html:3
+msgid "None"
+msgstr "Heç nə"
+
+#: templates/rest_framework/horizontal/select_multiple.html:4
+#: templates/rest_framework/inline/select_multiple.html:3
+#: templates/rest_framework/vertical/select_multiple.html:3
+msgid "No items to select."
+msgstr "Seçiləcək element yoxdur."
+
+#: validators.py:39
+msgid "This field must be unique."
+msgstr "Bu sahə unikal olmalıdır."
+
+#: validators.py:89
+#, python-brace-format
+msgid "The fields {field_names} must make a unique set."
+msgstr "{field_names} sahələri birlikdə unikal dəst olmalıdırlar."
+
+#: validators.py:171
+#, python-brace-format
+msgid "Surrogate characters are not allowed: U+{code_point:X}."
+msgstr ""
+
+#: validators.py:243
+#, python-brace-format
+msgid "This field must be unique for the \"{date_field}\" date."
+msgstr "Bu sahə \"{date_field}\" günü üçün unikal olmalıdır."
+
+#: validators.py:258
+#, python-brace-format
+msgid "This field must be unique for the \"{date_field}\" month."
+msgstr "Bu sahə \"{date_field}\" ayı üçün unikal olmalıdır."
+
+#: validators.py:271
+#, python-brace-format
+msgid "This field must be unique for the \"{date_field}\" year."
+msgstr "Bu sahə \"{date_field}\" ili üçün unikal olmalıdır."
+
+#: versioning.py:40
+msgid "Invalid version in \"Accept\" header."
+msgstr "\"Accept\" başlığında xətalı versiya."
+
+#: versioning.py:71
+msgid "Invalid version in URL path."
+msgstr "URL yolunda xətalı versiya."
+
+#: versioning.py:116
+msgid "Invalid version in URL path. Does not match any version namespace."
+msgstr "URL yolunda xətalı versiya. Heç bir versiya namespace-inə uyğun gəlmir."
+
+#: versioning.py:148
+msgid "Invalid version in hostname."
+msgstr "Hostname-də xətalı versiya."
+
+#: versioning.py:170
+msgid "Invalid version in query parameter."
+msgstr "Sorğu parametrində xətalı versiya."

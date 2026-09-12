@@ -1,23 +1,23 @@
 import re
-from collections import OrderedDict
 from collections.abc import MutableMapping
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
 import pytest
-from django.conf.urls import include, url
 from django.core.cache import cache
 from django.db import models
 from django.http.request import HttpRequest
-from django.template import loader
 from django.test import TestCase, override_settings
+from django.urls import include, path, re_path
 from django.utils.safestring import SafeText
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework import permissions, serializers, status
-from rest_framework.compat import coreapi
 from rest_framework.decorators import action
+from rest_framework.permissions import BasePermission
 from rest_framework.renderers import (
-    AdminRenderer, BaseRenderer, BrowsableAPIRenderer, DocumentationRenderer,
-    HTMLFormRenderer, JSONRenderer, SchemaJSRenderer, StaticHTMLRenderer
+    AdminRenderer, BaseRenderer, BrowsableAPIRenderer, HTMLFormRenderer,
+    JSONRenderer, StaticHTMLRenderer
 )
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -111,14 +111,14 @@ class HTMLView1(APIView):
 
 
 urlpatterns = [
-    url(r'^.*\.(?P<format>.+)$', MockView.as_view(renderer_classes=[RendererA, RendererB])),
-    url(r'^$', MockView.as_view(renderer_classes=[RendererA, RendererB])),
-    url(r'^cache$', MockGETView.as_view()),
-    url(r'^parseerror$', MockPOSTView.as_view(renderer_classes=[JSONRenderer, BrowsableAPIRenderer])),
-    url(r'^html$', HTMLView.as_view()),
-    url(r'^html1$', HTMLView1.as_view()),
-    url(r'^empty$', EmptyGETView.as_view()),
-    url(r'^api', include('rest_framework.urls', namespace='rest_framework'))
+    re_path(r'^.*\.(?P<format>.+)$', MockView.as_view(renderer_classes=[RendererA, RendererB])),
+    path('', MockView.as_view(renderer_classes=[RendererA, RendererB])),
+    path('cache', MockGETView.as_view()),
+    path('parseerror', MockPOSTView.as_view(renderer_classes=[JSONRenderer, BrowsableAPIRenderer])),
+    path('html', HTMLView.as_view()),
+    path('html1', HTMLView1.as_view()),
+    path('empty', EmptyGETView.as_view()),
+    path('api', include('rest_framework.urls', namespace='rest_framework'))
 ]
 
 
@@ -175,7 +175,7 @@ class RendererEndToEndTests(TestCase):
 
     def test_default_renderer_serializes_content_on_accept_any(self):
         """If the Accept header is set to */* the default renderer should serialize the response."""
-        resp = self.client.get('/', HTTP_ACCEPT='*/*')
+        resp = self.client.get('/', headers={"accept": '*/*'})
         self.assertEqual(resp['Content-Type'], RendererA.media_type + '; charset=utf-8')
         self.assertEqual(resp.content, RENDERER_A_SERIALIZER(DUMMYCONTENT))
         self.assertEqual(resp.status_code, DUMMYSTATUS)
@@ -183,7 +183,7 @@ class RendererEndToEndTests(TestCase):
     def test_specified_renderer_serializes_content_default_case(self):
         """If the Accept header is set the specified renderer should serialize the response.
         (In this case we check that works for the default renderer)"""
-        resp = self.client.get('/', HTTP_ACCEPT=RendererA.media_type)
+        resp = self.client.get('/', headers={"accept": RendererA.media_type})
         self.assertEqual(resp['Content-Type'], RendererA.media_type + '; charset=utf-8')
         self.assertEqual(resp.content, RENDERER_A_SERIALIZER(DUMMYCONTENT))
         self.assertEqual(resp.status_code, DUMMYSTATUS)
@@ -191,14 +191,14 @@ class RendererEndToEndTests(TestCase):
     def test_specified_renderer_serializes_content_non_default_case(self):
         """If the Accept header is set the specified renderer should serialize the response.
         (In this case we check that works for a non-default renderer)"""
-        resp = self.client.get('/', HTTP_ACCEPT=RendererB.media_type)
+        resp = self.client.get('/', headers={"accept": RendererB.media_type})
         self.assertEqual(resp['Content-Type'], RendererB.media_type + '; charset=utf-8')
         self.assertEqual(resp.content, RENDERER_B_SERIALIZER(DUMMYCONTENT))
         self.assertEqual(resp.status_code, DUMMYSTATUS)
 
     def test_unsatisfiable_accept_header_on_request_returns_406_status(self):
         """If the Accept header is unsatisfiable we should return a 406 Not Acceptable response."""
-        resp = self.client.get('/', HTTP_ACCEPT='foo/bar')
+        resp = self.client.get('/', headers={"accept": 'foo/bar'})
         self.assertEqual(resp.status_code, status.HTTP_406_NOT_ACCEPTABLE)
 
     def test_specified_renderer_serializes_content_on_format_query(self):
@@ -229,14 +229,14 @@ class RendererEndToEndTests(TestCase):
             RendererB.format
         )
         resp = self.client.get('/' + param,
-                               HTTP_ACCEPT=RendererB.media_type)
+                               headers={"accept": RendererB.media_type})
         self.assertEqual(resp['Content-Type'], RendererB.media_type + '; charset=utf-8')
         self.assertEqual(resp.content, RENDERER_B_SERIALIZER(DUMMYCONTENT))
         self.assertEqual(resp.status_code, DUMMYSTATUS)
 
     def test_parse_error_renderers_browsable_api(self):
         """Invalid data should still render the browsable API correctly."""
-        resp = self.client.post('/parseerror', data='foobar', content_type='application/json', HTTP_ACCEPT='text/html')
+        resp = self.client.post('/parseerror', data='foobar', content_type='application/json', headers={"accept": 'text/html'})
         self.assertEqual(resp['Content-Type'], 'text/html; charset=utf-8')
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
@@ -409,7 +409,7 @@ class UnicodeJSONRendererTests(TestCase):
         obj = {'should_escape': '\u2028\u2029'}
         renderer = JSONRenderer()
         content = renderer.render(obj, 'application/json')
-        self.assertEqual(content, '{"should_escape":"\\u2028\\u2029"}'.encode())
+        self.assertEqual(content, b'{"should_escape":"\\u2028\\u2029"}')
 
 
 class AsciiJSONRendererTests(TestCase):
@@ -422,7 +422,7 @@ class AsciiJSONRendererTests(TestCase):
         obj = {'countries': ['United Kingdom', 'France', 'España']}
         renderer = AsciiJSONRenderer()
         content = renderer.render(obj, 'application/json')
-        self.assertEqual(content, '{"countries":["United Kingdom","France","Espa\\u00f1a"]}'.encode())
+        self.assertEqual(content, b'{"countries":["United Kingdom","France","Espa\\u00f1a"]}')
 
 
 # Tests for caching issue, #346
@@ -457,12 +457,12 @@ class CacheRenderTest(TestCase):
 class TestJSONIndentationStyles:
     def test_indented(self):
         renderer = JSONRenderer()
-        data = OrderedDict([('a', 1), ('b', 2)])
+        data = {"a": 1, "b": 2}
         assert renderer.render(data) == b'{"a":1,"b":2}'
 
     def test_compact(self):
         renderer = JSONRenderer()
-        data = OrderedDict([('a', 1), ('b', 2)])
+        data = {"a": 1, "b": 2}
         context = {'indent': 4}
         assert (
             renderer.render(data, renderer_context=context) ==
@@ -472,7 +472,7 @@ class TestJSONIndentationStyles:
     def test_long_form(self):
         renderer = JSONRenderer()
         renderer.compact = False
-        data = OrderedDict([('a', 1), ('b', 2)])
+        data = {"a": 1, "b": 2}
         assert renderer.render(data) == b'{"a": 1, "b": 2}'
 
 
@@ -487,6 +487,101 @@ class TestHiddenFieldHTMLFormRenderer(TestCase):
         field = serializer['published']
         rendered = renderer.render_field(field, {})
         assert rendered == ''
+
+
+class TestDateTimeFieldHTMLFormRender(TestCase):
+    """
+    Default USE_TZ is True.
+    Default TIME_ZONE is 'America/Chicago'.
+    """
+
+    def _assert_datetime_rendering(self, appointment, expected, datetimefield_kwargs=None):
+        datetimefield_kwargs = datetimefield_kwargs or {}
+
+        class TestSerializer(serializers.Serializer):
+            appointment = serializers.DateTimeField(**datetimefield_kwargs)
+
+        serializer = TestSerializer(data={"appointment": appointment})
+        serializer.is_valid()
+        renderer = HTMLFormRenderer()
+        field = serializer['appointment']
+        rendered = renderer.render_field(field, {})
+        expected_html = (
+            '<input name="appointment" class="form-control" '
+            f'type="datetime-local" value="{expected}">'
+        )
+
+        self.assertInHTML(expected_html, rendered)
+
+    def test_datetime_field_rendering_milliseconds(self):
+        self._assert_datetime_rendering(
+            datetime(2024, 12, 24, 0, 55, 30, 345678), "2024-12-24T00:55:30.345"
+        )
+
+    def test_datetime_field_rendering_no_seconds_and_no_milliseconds(self):
+        self._assert_datetime_rendering(
+            datetime(2024, 12, 24, 0, 55, 0, 0), "2024-12-24T00:55:00.000"
+        )
+
+    def test_datetime_field_rendering_with_format_as_none(self):
+        self._assert_datetime_rendering(
+            datetime(2024, 12, 24, 0, 55, 30, 345678),
+            "2024-12-24T00:55:30.345",
+            {"format": None}
+        )
+
+    def test_datetime_field_rendering_with_format(self):
+        self._assert_datetime_rendering(
+            datetime(2024, 12, 24, 0, 55, 30, 345678),
+            "2024-12-24T00:55:00.000",
+            {"format": "%a %d %b %Y, %I:%M%p"}
+        )
+
+    # New project templates default to 'UTC'.
+    @override_settings(TIME_ZONE='UTC')
+    def test_datetime_field_rendering_utc(self):
+        self._assert_datetime_rendering(
+            datetime(2024, 12, 24, 0, 55, 30, 345678),
+            "2024-12-24T00:55:30.345"
+        )
+
+    @override_settings(REST_FRAMEWORK={'DATETIME_FORMAT': '%a %d %b %Y, %I:%M%p'})
+    def test_datetime_field_rendering_with_custom_datetime_format(self):
+        self._assert_datetime_rendering(
+            datetime(2024, 12, 24, 0, 55, 30, 345678),
+            "2024-12-24T00:55:00.000"
+        )
+
+    @override_settings(REST_FRAMEWORK={'DATETIME_FORMAT': None})
+    def test_datetime_field_rendering_datetime_format_is_none(self):
+        self._assert_datetime_rendering(
+            datetime(2024, 12, 24, 0, 55, 30, 345678),
+            "2024-12-24T00:55:30.345"
+        )
+
+    # Enforce it in True because in Django versions under 4.2 was False by default.
+    @override_settings(USE_TZ=True)
+    def test_datetime_field_rendering_timezone_aware_datetime(self):
+        self._assert_datetime_rendering(
+            datetime(2024, 12, 24, 0, 55, 30, 345678, tzinfo=ZoneInfo('Asia/Tokyo')),  # +09:00
+            "2024-12-23T09:55:30.345"  # Rendered in -06:00
+        )
+
+    def test_datetime_field_rendering_empty_string_raises_no_error(self):
+        """
+        Regression test for #9927 (issue):
+        Ensures that an empty string value doesn't cause a ValueError
+        when the HTMLFormRenderer tries to parse it via fromisoformat.
+        """
+        self._assert_datetime_rendering("", "")
+
+    def test_datetime_field_rendering_none_value_raises_no_error(self):
+        """
+        Additional regression coverage for #9927:
+        Ensures that a None value, which is converted to an empty string
+        by as_form_field(), doesn't cause a ValueError when rendered.
+        """
+        self._assert_datetime_rendering(None, "")
 
 
 class TestHTMLFormRenderer(TestCase):
@@ -634,13 +729,97 @@ class BrowsableAPIRendererTests(URLPatternsTestCase):
     class AuthExampleViewSet(ExampleViewSet):
         permission_classes = [permissions.IsAuthenticated]
 
+    class SimpleSerializer(serializers.Serializer):
+        name = serializers.CharField()
+
+    class CrashOnObjectPermission(permissions.BasePermission):
+        def has_permission(self, request, view):
+            return True
+
+        def has_object_permission(self, request, view, obj):
+            return obj.user.is_staff
+
+    class Issue6855Serializer(serializers.Serializer):
+        name = serializers.CharField()
+
+    class Issue6855Object:
+        def __init__(self, name):
+            self.name = name
+
+    class Issue6855ViewSet(ViewSet):
+        @action(detail=True)
+        def extra_action(self, request, pk=None):
+            serializer = BrowsableAPIRendererTests.Issue6855Serializer(
+                BrowsableAPIRendererTests.Issue6855Object(name='demo')
+            )
+            return Response(serializer.data)
+
+    Issue6855ViewSet.permission_classes = [CrashOnObjectPermission]
+
     router = SimpleRouter()
     router.register('examples', ExampleViewSet, basename='example')
     router.register('auth-examples', AuthExampleViewSet, basename='auth-example')
-    urlpatterns = [url(r'^api/', include(router.urls))]
+    router.register('issue-6855', Issue6855ViewSet, basename='issue-6855')
+    urlpatterns = [path('api/', include(router.urls))]
 
     def setUp(self):
         self.renderer = BrowsableAPIRenderer()
+        self.renderer.accepted_media_type = ''
+        self.renderer.renderer_context = {}
+
+    def test_render_form_for_serializer(self):
+        with self.subTest('Serializer'):
+            serializer = BrowsableAPIRendererTests.SimpleSerializer(data={'name': 'Name'})
+            form = self.renderer.render_form_for_serializer(serializer)
+            assert isinstance(form, str), 'Must return form for serializer'
+
+        with self.subTest('ListSerializer'):
+            list_serializer = BrowsableAPIRendererTests.SimpleSerializer(data=[{'name': 'Name'}], many=True)
+            form = self.renderer.render_form_for_serializer(list_serializer)
+            assert form is None, 'Must not return form for list serializer'
+
+    def test_get_raw_data_form(self):
+        with self.subTest('Serializer'):
+            class DummyGenericViewsetLike(APIView):
+                def get_serializer(self, **kwargs):
+                    return BrowsableAPIRendererTests.SimpleSerializer(**kwargs)
+
+                def get(self, request):
+                    response = Response()
+                    response.view = self
+                    return response
+
+                post = get
+
+            view = DummyGenericViewsetLike.as_view()
+            _request = APIRequestFactory().get('/')
+            request = Request(_request)
+            response = view(_request)
+            view = response.view
+
+            raw_data_form = self.renderer.get_raw_data_form({'name': 'Name'}, view, 'POST', request)
+            assert raw_data_form['_content'].initial == '{\n    "name": ""\n}'
+
+        with self.subTest('ListSerializer'):
+            class DummyGenericViewsetLike(APIView):
+                def get_serializer(self, **kwargs):
+                    return BrowsableAPIRendererTests.SimpleSerializer(many=True, **kwargs)  # returns ListSerializer
+
+                def get(self, request):
+                    response = Response()
+                    response.view = self
+                    return response
+
+                post = get
+
+            view = DummyGenericViewsetLike.as_view()
+            _request = APIRequestFactory().get('/')
+            request = Request(_request)
+            response = view(_request)
+            view = response.view
+
+            raw_data_form = self.renderer.get_raw_data_form([{'name': 'Name'}], view, 'POST', request)
+            assert raw_data_form['_content'].initial == '[\n    {\n        "name": ""\n    }\n]'
 
     def test_get_description_returns_empty_string_for_401_and_403_statuses(self):
         assert self.renderer.get_description({}, status_code=401) == ''
@@ -656,16 +835,44 @@ class BrowsableAPIRendererTests(URLPatternsTestCase):
         assert result is None
 
     def test_extra_actions_dropdown(self):
-        resp = self.client.get('/api/examples/', HTTP_ACCEPT='text/html')
+        resp = self.client.get('/api/examples/', headers={"accept": 'text/html'})
         assert 'id="extra-actions-menu"' in resp.content.decode()
         assert '/api/examples/list_action/' in resp.content.decode()
         assert '>Extra list action<' in resp.content.decode()
 
     def test_extra_actions_dropdown_not_authed(self):
-        resp = self.client.get('/api/unauth-examples/', HTTP_ACCEPT='text/html')
+        resp = self.client.get('/api/unauth-examples/', headers={"accept": 'text/html'})
         assert 'id="extra-actions-menu"' not in resp.content.decode()
         assert '/api/examples/list_action/' not in resp.content.decode()
         assert '>Extra list action<' not in resp.content.decode()
+
+    def test_options_form_does_not_check_object_permissions_for_extra_action(self):
+        resp = self.client.get('/api/issue-6855/1/extra_action/', headers={"accept": 'text/html'})
+        assert resp.status_code == status.HTTP_200_OK
+
+    def test_delete_form_still_checks_object_permissions(self):
+        class ObjectPermissionDenied(permissions.BasePermission):
+            def has_permission(self, request, view):
+                return True
+
+            def has_object_permission(self, request, view, obj):
+                return False
+
+        class DummyObject:
+            name = 'Name'
+
+        class DummyDeleteView(APIView):
+            permission_classes = [ObjectPermissionDenied]
+
+            def delete(self, request):
+                return Response()
+
+        request = Request(APIRequestFactory().get('/'))
+        serializer = BrowsableAPIRendererTests.SimpleSerializer(instance=DummyObject())
+        delete_form = self.renderer.get_rendered_html_form(
+            serializer.data, DummyDeleteView(), 'DELETE', request
+        )
+        assert delete_form is None
 
 
 class AdminRendererTests(TestCase):
@@ -741,6 +948,11 @@ class AdminRendererTests(TestCase):
         class DummyGenericViewsetLike(APIView):
             lookup_field = 'test'
 
+            def get(self, request):
+                response = Response()
+                response.view = self
+                return response
+
             def reverse_action(view, *args, **kwargs):
                 self.assertEqual(kwargs['kwargs']['test'], 1)
                 return '/example/'
@@ -749,7 +961,7 @@ class AdminRendererTests(TestCase):
         view = DummyGenericViewsetLike.as_view()
         request = factory.get('/')
         response = view(request)
-        view = response.renderer_context['view']
+        view = response.view
 
         self.assertEqual(self.renderer.get_result_url({'test': 1}, view), '/example/')
         self.assertIsNone(self.renderer.get_result_url({}, view))
@@ -760,11 +972,16 @@ class AdminRendererTests(TestCase):
         class DummyView(APIView):
             lookup_field = 'test'
 
+            def get(self, request):
+                response = Response()
+                response.view = self
+                return response
+
         # get the view instance instead of the view function
         view = DummyView.as_view()
         request = factory.get('/')
         response = view(request)
-        view = response.renderer_context['view']
+        view = response.view
 
         self.assertIsNone(self.renderer.get_result_url({'test': 1}, view))
         self.assertIsNone(self.renderer.get_result_url({}, view))
@@ -804,60 +1021,99 @@ class AdminRendererTests(TestCase):
         self.assertEqual(results[2]['url'], None)
         self.assertNotIn('url', results[3])
 
-
-@pytest.mark.skipif(not coreapi, reason='coreapi is not installed')
-class TestDocumentationRenderer(TestCase):
-
-    def test_document_with_link_named_data(self):
-        """
-        Ref #5395: Doc's `document.data` would fail with a Link named "data".
-            As per #4972, use templatetag instead.
-        """
-        document = coreapi.Document(
-            title='Data Endpoint API',
-            url='https://api.example.org/',
-            content={
-                'data': coreapi.Link(
-                    url='/data/',
-                    action='get',
-                    fields=[],
-                    description='Return data.'
-                )
-            }
-        )
-
+    def test_invalid_post_request_shows_validation_error(self):
         factory = APIRequestFactory()
-        request = factory.get('/')
 
-        renderer = DocumentationRenderer()
+        class DummySerializer(serializers.Serializer):
+            name = serializers.CharField()
 
-        html = renderer.render(document, accepted_media_type="text/html", renderer_context={"request": request})
-        assert '<h1>Data Endpoint API</h1>' in html
+            def validate_name(self, value):
+                raise serializers.ValidationError("any-post-is-invalid")
 
-    def test_shell_code_example_rendering(self):
-        template = loader.get_template('rest_framework/docs/langs/shell.html')
-        context = {
-            'document': coreapi.Document(url='https://api.example.org/'),
-            'link_key': 'testcases > list',
-            'link': coreapi.Link(url='/data/', action='get', fields=[]),
-        }
-        html = template.render(context)
-        assert 'testcases list' in html
+        class DummyView(APIView):
+            renderer_classes = (AdminRenderer,)
+            serializer_class = DummySerializer
 
+            def get(self, request):
+                return Response({'content': 'page-content-on-get'})
 
-@pytest.mark.skipif(not coreapi, reason='coreapi is not installed')
-class TestSchemaJSRenderer(TestCase):
+            def post(self, request):
+                serializer = DummySerializer(data=request.data)
+                serializer.is_valid(raise_exception=True)
+                return Response(serializer.data)
 
-    def test_schemajs_output(self):
-        """
-        Test output of the SchemaJS renderer as per #5608. Django 2.0 on Py3 prints binary data as b'xyz' in templates,
-        and the base64 encoding used by SchemaJSRenderer outputs base64 as binary. Test fix.
-        """
+        view = DummyView.as_view()
+        request = factory.post('/', {'name': 'anything'})
+        response = view(request)
+        response.render()
+
+        # Render normal page
+        self.assertContains(response, 'page-content-on-get', status_code=400)
+        # The validation error is surfaced through the bound error form
+        self.assertContains(response, 'any-post-is-invalid', status_code=400)
+
+    def test_invalid_post_request_missing_get_permissions(self):
         factory = APIRequestFactory()
-        request = factory.get('/')
 
-        renderer = SchemaJSRenderer()
+        class PostOnlyPermission(BasePermission):
+            def has_permission(self, request, view):
+                return request.method == "POST"
 
-        output = renderer.render('data', renderer_context={"request": request})
-        assert "'ImRhdGEi'" in output
-        assert "'b'ImRhdGEi''" not in output
+        class DummyView(APIView):
+            renderer_classes = (AdminRenderer,)
+            permission_classes = (PostOnlyPermission,)
+
+            def get(self, request):
+                return Response({'content': 'super-duper-secret'})
+
+            def post(self, request):
+                raise serializers.ValidationError("any-post-is-invalid")
+
+        view = DummyView.as_view()
+        request = factory.post('/')
+        response = view(request)
+        response.render()
+
+        # We should not leak private data
+        self.assertNotContains(response, 'super-duper-secret', status_code=400)
+
+        # We should show the validation error instead
+        self.assertContains(response, 'any-post-is-invalid', status_code=400)
+
+    def test_invalid_post_request_missing_get_permissions_with_serializer(self):
+        factory = APIRequestFactory()
+
+        class PostOnlyPermission(BasePermission):
+            def has_permission(self, request, view):
+                return request.method == "POST"
+
+        class DummySerializer(serializers.Serializer):
+            name = serializers.CharField()
+
+            def validate_name(self, value):
+                raise serializers.ValidationError("any-post-is-invalid")
+
+        class DummyView(APIView):
+            renderer_classes = (AdminRenderer,)
+            permission_classes = (PostOnlyPermission,)
+            serializer_class = DummySerializer
+
+            def get(self, request):
+                return Response({'content': 'super-duper-secret'})
+
+            def post(self, request):
+                serializer = DummySerializer(data=request.data)
+                serializer.is_valid(raise_exception=True)
+                return Response(serializer.data)
+
+        view = DummyView.as_view()
+        request = factory.post('/', {'name': 'anything'})
+        response = view(request)
+        response.render()
+
+        # Even with a serializer (and its bound error form), the denied GET
+        # representation must not leak.
+        self.assertNotContains(response, 'super-duper-secret', status_code=400)
+
+        # We should still show the validation error.
+        self.assertContains(response, 'any-post-is-invalid', status_code=400)

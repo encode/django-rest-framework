@@ -2,10 +2,10 @@ import base64
 
 import pytest
 from django.conf import settings
-from django.conf.urls import include, url
 from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.test import TestCase, override_settings
+from django.urls import include, path
 
 from rest_framework import (
     HTTP_HEADER_ENCODING, exceptions, permissions, renderers, status
@@ -47,40 +47,41 @@ class MockView(APIView):
 
 
 urlpatterns = [
-    url(
-        r'^session/$',
+    path(
+        'session/',
         MockView.as_view(authentication_classes=[SessionAuthentication])
     ),
-    url(
-        r'^basic/$',
+    path(
+        'basic/',
         MockView.as_view(authentication_classes=[BasicAuthentication])
     ),
-    url(
-        r'^remote-user/$',
+    path(
+        'remote-user/',
         MockView.as_view(authentication_classes=[RemoteUserAuthentication])
     ),
-    url(
-        r'^token/$',
+    path(
+        'token/',
         MockView.as_view(authentication_classes=[TokenAuthentication])
     ),
-    url(
-        r'^customtoken/$',
+    path(
+        'customtoken/',
         MockView.as_view(authentication_classes=[CustomTokenAuthentication])
     ),
-    url(
-        r'^customkeywordtoken/$',
+    path(
+        'customkeywordtoken/',
         MockView.as_view(
             authentication_classes=[CustomKeywordTokenAuthentication]
         )
     ),
-    url(r'^auth-token/$', obtain_auth_token),
-    url(r'^auth/', include('rest_framework.urls', namespace='rest_framework')),
+    path('auth-token/', obtain_auth_token),
+    path('auth/', include('rest_framework.urls', namespace='rest_framework')),
 ]
 
 
 @override_settings(ROOT_URLCONF=__name__)
 class BasicAuthTests(TestCase):
     """Basic authentication"""
+
     def setUp(self):
         self.csrf_client = APIClient(enforce_csrf_checks=True)
         self.username = 'john'
@@ -118,6 +119,22 @@ class BasicAuthTests(TestCase):
             HTTP_AUTHORIZATION=auth
         )
         assert response.status_code == status.HTTP_200_OK
+
+    def test_post_json_without_password_failing_basic_auth(self):
+        """Ensure POSTing json without password (even if password is empty string) returns 401"""
+        self.user.set_password("")
+        credentials = ('%s' % (self.username))
+        base64_credentials = base64.b64encode(
+            credentials.encode(HTTP_HEADER_ENCODING)
+        ).decode(HTTP_HEADER_ENCODING)
+        auth = 'Basic %s' % base64_credentials
+        response = self.csrf_client.post(
+            '/basic/',
+            {'example': 'example'},
+            format='json',
+            HTTP_AUTHORIZATION=auth
+        )
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
     def test_regression_handle_bad_base64_basic_auth_header(self):
         """Ensure POSTing JSON over basic auth with incorrectly padded Base64 string is handled correctly"""
@@ -159,10 +176,30 @@ class BasicAuthTests(TestCase):
         )
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
+    def test_decoding_of_utf8_credentials(self):
+        username = 'walterwhité'
+        email = 'walterwhite@example.com'
+        password = 'pässwörd'
+        User.objects.create_user(
+            username, email, password
+        )
+        credentials = ('%s:%s' % (username, password))
+        base64_credentials = base64.b64encode(
+            credentials.encode('utf-8')
+        ).decode(HTTP_HEADER_ENCODING)
+        auth = 'Basic %s' % base64_credentials
+        response = self.csrf_client.post(
+            '/basic/',
+            {'example': 'example'},
+            HTTP_AUTHORIZATION=auth
+        )
+        assert response.status_code == status.HTTP_200_OK
+
 
 @override_settings(ROOT_URLCONF=__name__)
 class SessionAuthTests(TestCase):
     """User session authentication"""
+
     def setUp(self):
         self.csrf_client = APIClient(enforce_csrf_checks=True)
         self.non_csrf_client = APIClient(enforce_csrf_checks=False)
@@ -199,12 +236,13 @@ class SessionAuthTests(TestCase):
         Ensure POSTing form over session authentication with CSRF token succeeds.
         Regression test for #6088
         """
-        from django.middleware.csrf import _get_new_csrf_token
-
         self.csrf_client.login(username=self.username, password=self.password)
 
         # Set the csrf_token cookie so that CsrfViewMiddleware._get_token() works
-        token = _get_new_csrf_token()
+        from django.middleware.csrf import (
+            _get_new_csrf_string, _mask_cipher_secret
+        )
+        token = _mask_cipher_secret(_get_new_csrf_string())
         self.csrf_client.cookies[settings.CSRF_COOKIE_NAME] = token
 
         # Post the token matching the cookie value
@@ -378,6 +416,45 @@ class TokenAuthTests(BaseTokenAuthTests, TestCase):
         key = token.generate_key()
         assert isinstance(key, str)
 
+    def test_generate_key_accessible_as_classmethod(self):
+        key = self.model.generate_key()
+        assert isinstance(key, str)
+
+    def test_generate_key_returns_valid_format(self):
+        """Ensure generate_key returns a valid token format"""
+        key = self.model.generate_key()
+        assert len(key) == 40
+        # Should contain only valid hexadecimal characters
+        assert all(c in '0123456789abcdef' for c in key)
+
+    def test_generate_key_produces_unique_values(self):
+        """Ensure generate_key produces unique values across multiple calls"""
+        keys = set()
+        for _ in range(100):
+            key = self.model.generate_key()
+            assert key not in keys, f"Duplicate key generated: {key}"
+            keys.add(key)
+
+    def test_generate_key_collision_resistance(self):
+        """Test collision resistance with reasonable sample size"""
+        keys = set()
+        for _ in range(500):
+            key = self.model.generate_key()
+            assert key not in keys, f"Collision found: {key}"
+            keys.add(key)
+        assert len(keys) == 500, f"Expected 500 unique keys, got {len(keys)}"
+
+    def test_generate_key_randomness_quality(self):
+        """Test basic randomness properties of generated keys"""
+        keys = [self.model.generate_key() for _ in range(10)]
+        # Consecutive keys should be different
+        for i in range(len(keys) - 1):
+            assert keys[i] != keys[i + 1], "Consecutive keys should be different"
+        # Keys should not follow obvious patterns
+        for key in keys:
+            # Should not be all same character
+            assert not all(c == key[0] for c in key), f"Key has all same characters: {key}"
+
     def test_token_login_json(self):
         """Ensure token login view using JSON POST works."""
         client = APIClient(enforce_csrf_checks=True)
@@ -440,6 +517,7 @@ class IncorrectCredentialsTests(TestCase):
         authentication should run and error, even if no permissions
         are set on the view.
         """
+
         class IncorrectCredentialsAuth(BaseAuthentication):
             def authenticate(self, request):
                 raise exceptions.AuthenticationFailed('Bad credentials')
@@ -531,6 +609,7 @@ class BasicAuthenticationUnitTests(TestCase):
 
         class MockUser:
             is_active = False
+
         old_authenticate = authentication.authenticate
         authentication.authenticate = lambda **kwargs: MockUser()
         try:

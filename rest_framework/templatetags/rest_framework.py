@@ -1,12 +1,11 @@
 import re
-from collections import OrderedDict
 
 from django import template
 from django.template import loader
 from django.urls import NoReverseMatch, reverse
-from django.utils.encoding import force_str, iri_to_uri
+from django.utils.encoding import iri_to_uri
 from django.utils.html import escape, format_html, smart_urlquote
-from django.utils.safestring import SafeData, mark_safe
+from django.utils.safestring import mark_safe
 
 from rest_framework.compat import apply_markdown, pygments_highlight
 from rest_framework.renderers import HTMLFormRenderer
@@ -36,30 +35,6 @@ class CodeNode(template.Node):
     def render(self, context):
         text = self.nodelist.render(context)
         return pygments_highlight(text, self.lang, self.style)
-
-
-@register.filter()
-def with_location(fields, location):
-    return [
-        field for field in fields
-        if field.location == location
-    ]
-
-
-@register.simple_tag
-def form_for_link(link):
-    import coreschema
-    properties = OrderedDict([
-        (field.name, field.schema or coreschema.String())
-        for field in link.fields
-    ])
-    required = [
-        field.name
-        for field in link.fields
-        if field.required
-    ]
-    schema = coreschema.Object(properties=properties, required=required)
-    return mark_safe(coreschema.render_to_form(schema))
 
 
 @register.simple_tag
@@ -120,7 +95,7 @@ def optional_docs_login(request):
 
 
 @register.simple_tag
-def optional_logout(request, user):
+def optional_logout(request, user, csrf_token):
     """
     Include a logout snippet if REST framework's logout view is in the URLconf.
     """
@@ -136,11 +111,16 @@ def optional_logout(request, user):
             <b class="caret"></b>
         </a>
         <ul class="dropdown-menu">
-            <li><a href='{href}?next={next}'>Log out</a></li>
+            <form id="logoutForm" method="post" action="{href}?next={next}">
+                <input type="hidden" name="csrfmiddlewaretoken" value="{csrf_token}">
+            </form>
+            <li>
+                <a href="#" onclick='document.getElementById("logoutForm").submit()'>Log out</a>
+            </li>
         </ul>
     </li>"""
-    snippet = format_html(snippet, user=escape(user), href=logout_url, next=escape(request.path))
-
+    snippet = format_html(snippet, user=escape(user), href=logout_url,
+                          next=escape(request.path), csrf_token=csrf_token)
     return mark_safe(snippet)
 
 
@@ -206,7 +186,7 @@ def format_value(value):
     if value is None or isinstance(value, bool):
         return mark_safe('<code>%s</code>' % {True: 'true', False: 'false', None: 'null'}[value])
     elif isinstance(value, list):
-        if any([isinstance(item, (list, dict)) for item in value]):
+        if any(isinstance(item, (list, dict)) for item in value):
             template = loader.get_template('rest_framework/admin/list_value.html')
         else:
             template = loader.get_template('rest_framework/admin/simple_list_value.html')
@@ -218,7 +198,7 @@ def format_value(value):
         return template.render(context)
     elif isinstance(value, str):
         if (
-            (value.startswith('http:') or value.startswith('https:')) and not
+            (value.startswith('http:') or value.startswith('https:') or value.startswith('/')) and not
             re.search(r'\s', value)
         ):
             return mark_safe('<a href="{value}">{value}</a>'.format(value=escape(value)))
@@ -245,47 +225,10 @@ def items(value):
 
 
 @register.filter
-def data(value):
-    """
-    Simple filter to access `data` attribute of object,
-    specifically coreapi.Document.
-
-    As per `items` filter above, allows accessing `document.data` when
-    Document contains Link keyed-at "data".
-
-    See issue #5395
-    """
-    return value.data
-
-
-@register.filter
-def schema_links(section, sec_key=None):
-    """
-    Recursively find every link in a schema, even nested.
-    """
-    NESTED_FORMAT = '%s > %s'  # this format is used in docs/js/api.js:normalizeKeys
-    links = section.links
-    if section.data:
-        data = section.data.items()
-        for sub_section_key, sub_section in data:
-            new_links = schema_links(sub_section, sec_key=sub_section_key)
-            links.update(new_links)
-
-    if sec_key is not None:
-        new_links = OrderedDict()
-        for link_key, link in links.items():
-            new_key = NESTED_FORMAT % (sec_key, link_key)
-            new_links.update({new_key: link})
-        return new_links
-
-    return links
-
-
-@register.filter
 def add_nested_class(value):
     if isinstance(value, dict):
         return 'class=nested'
-    if isinstance(value, list) and any([isinstance(item, (list, dict)) for item in value]):
+    if isinstance(value, list) and any(isinstance(item, (list, dict)) for item in value):
         return 'class=nested'
     return ''
 
@@ -309,93 +252,3 @@ def smart_urlquote_wrapper(matched_url):
         return smart_urlquote(matched_url)
     except ValueError:
         return None
-
-
-@register.filter(needs_autoescape=True)
-def urlize_quoted_links(text, trim_url_limit=None, nofollow=True, autoescape=True):
-    """
-    Converts any URLs in text into clickable links.
-
-    Works on http://, https://, www. links, and also on links ending in one of
-    the original seven gTLDs (.com, .edu, .gov, .int, .mil, .net, and .org).
-    Links can have trailing punctuation (periods, commas, close-parens) and
-    leading punctuation (opening parens) and it'll still do the right thing.
-
-    If trim_url_limit is not None, the URLs in link text longer than this limit
-    will truncated to trim_url_limit-3 characters and appended with an ellipsis.
-
-    If nofollow is True, the URLs in link text will get a rel="nofollow"
-    attribute.
-
-    If autoescape is True, the link text and URLs will get autoescaped.
-    """
-    def trim_url(x, limit=trim_url_limit):
-        return limit is not None and (len(x) > limit and ('%s...' % x[:max(0, limit - 3)])) or x
-
-    safe_input = isinstance(text, SafeData)
-
-    # Unfortunately, Django built-in cannot be used here, because escaping
-    # is to be performed on words, which have been forcibly coerced to text
-    def conditional_escape(text):
-        return escape(text) if autoescape and not safe_input else text
-
-    words = word_split_re.split(force_str(text))
-    for i, word in enumerate(words):
-        if '.' in word or '@' in word or ':' in word:
-            # Deal with punctuation.
-            lead, middle, trail = '', word, ''
-            for punctuation in TRAILING_PUNCTUATION:
-                if middle.endswith(punctuation):
-                    middle = middle[:-len(punctuation)]
-                    trail = punctuation + trail
-            for opening, closing in WRAPPING_PUNCTUATION:
-                if middle.startswith(opening):
-                    middle = middle[len(opening):]
-                    lead = lead + opening
-                # Keep parentheses at the end only if they're balanced.
-                if (
-                    middle.endswith(closing) and
-                    middle.count(closing) == middle.count(opening) + 1
-                ):
-                    middle = middle[:-len(closing)]
-                    trail = closing + trail
-
-            # Make URL we want to point to.
-            url = None
-            nofollow_attr = ' rel="nofollow"' if nofollow else ''
-            if simple_url_re.match(middle):
-                url = smart_urlquote_wrapper(middle)
-            elif simple_url_2_re.match(middle):
-                url = smart_urlquote_wrapper('http://%s' % middle)
-            elif ':' not in middle and simple_email_re.match(middle):
-                local, domain = middle.rsplit('@', 1)
-                try:
-                    domain = domain.encode('idna').decode('ascii')
-                except UnicodeError:
-                    continue
-                url = 'mailto:%s@%s' % (local, domain)
-                nofollow_attr = ''
-
-            # Make link.
-            if url:
-                trimmed = trim_url(middle)
-                lead, trail = conditional_escape(lead), conditional_escape(trail)
-                url, trimmed = conditional_escape(url), conditional_escape(trimmed)
-                middle = '<a href="%s"%s>%s</a>' % (url, nofollow_attr, trimmed)
-                words[i] = '%s%s%s' % (lead, middle, trail)
-            else:
-                words[i] = conditional_escape(word)
-        else:
-            words[i] = conditional_escape(word)
-    return mark_safe(''.join(words))
-
-
-@register.filter
-def break_long_headers(header):
-    """
-    Breaks headers longer than 160 characters (~page length)
-    when possible (are comma separated)
-    """
-    if len(header) > 160 and ',' in header:
-        header = mark_safe('<br> ' + ', <br>'.join(header.split(',')))
-    return header

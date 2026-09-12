@@ -79,8 +79,9 @@ class ViewInspector:
         view = self.view
 
         method_name = getattr(view, 'action', method.lower())
-        method_docstring = getattr(view, method_name, None).__doc__
-        if method_docstring:
+        method_func = getattr(view, method_name, None)
+        method_docstring = method_func.__doc__
+        if method_func and method_docstring:
             # An explicit docstring on the method or action.
             return self._get_description_section(view, method.lower(), formatting.dedent(smart_str(method_docstring)))
         else:
@@ -88,7 +89,7 @@ class ViewInspector:
                                                  view.get_view_description())
 
     def _get_description_section(self, view, header, description):
-        lines = [line for line in description.splitlines()]
+        lines = description.splitlines()
         current_section = ''
         sections = {'': ''}
 

@@ -1,6 +1,6 @@
-from django.conf.urls import url
 from django.test import TestCase
 from django.test.utils import override_settings
+from django.urls import path
 
 from rest_framework import serializers
 from rest_framework.generics import ListCreateAPIView
@@ -23,12 +23,12 @@ class NestedSerializersView(ListCreateAPIView):
 
 
 urlpatterns = [
-    url(r'^api/$', NestedSerializersView.as_view(), name='api'),
+    path('api/', NestedSerializersView.as_view(), name='api'),
 ]
 
 
 class DropdownWithAuthTests(TestCase):
-    """Tests correct dropdown behaviour with Auth views enabled."""
+    """Tests correct dropdown behavior with Auth views enabled."""
 
     @override_settings(ROOT_URLCONF='tests.browsable_api.test_browsable_nested_api')
     def test_login(self):

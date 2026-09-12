@@ -1,9 +1,9 @@
-from django.conf.urls import url
 from django.test import TestCase, override_settings
-from django.urls import NoReverseMatch
+from django.urls import NoReverseMatch, path
 
 from rest_framework.reverse import reverse
 from rest_framework.test import APIRequestFactory
+from rest_framework.versioning import BaseVersioning
 
 factory = APIRequestFactory()
 
@@ -13,11 +13,11 @@ def null_view(request):
 
 
 urlpatterns = [
-    url(r'^view$', null_view, name='view'),
+    path('view', null_view, name='view'),
 ]
 
 
-class MockVersioningScheme:
+class MockVersioningScheme(BaseVersioning):
 
     def __init__(self, raise_error=False):
         self.raise_error = raise_error

@@ -1,12 +1,12 @@
-from collections import OrderedDict
-from collections.abc import MutableMapping
+import contextlib
+from collections.abc import Mapping, MutableMapping
 
 from django.utils.encoding import force_str
 
 from rest_framework.utils import json
 
 
-class ReturnDict(OrderedDict):
+class ReturnDict(dict):
     """
     Return object from `serializer.data` for the `Serializer` class.
     Includes a backlink to the serializer instance for renderers
@@ -27,6 +27,21 @@ class ReturnDict(OrderedDict):
         # Pickling these objects will drop the .serializer backlink,
         # but preserve the raw data.
         return (dict, (dict(self),))
+
+    # These are basically copied from OrderedDict, with `serializer` added.
+    def __or__(self, other):
+        if not isinstance(other, dict):
+            return NotImplemented
+        new = self.__class__(self, serializer=self.serializer)
+        new.update(other)
+        return new
+
+    def __ror__(self, other):
+        if not isinstance(other, dict):
+            return NotImplemented
+        new = self.__class__(other, serializer=self.serializer)
+        new.update(self)
+        return new
 
 
 class ReturnList(list):
@@ -86,10 +101,13 @@ class JSONBoundField(BoundField):
         # When HTML form input is used and the input is not valid
         # value will be a JSONString, rather than a JSON primitive.
         if not getattr(value, 'is_json_string', False):
-            try:
-                value = json.dumps(self.value, sort_keys=True, indent=4)
-            except (TypeError, ValueError):
-                pass
+            with contextlib.suppress(TypeError, ValueError):
+                value = json.dumps(
+                    self.value,
+                    sort_keys=True,
+                    indent=4,
+                    separators=(',', ': '),
+                )
         return self.__class__(self._field, value, self.errors, self._prefix)
 
 
@@ -101,7 +119,7 @@ class NestedBoundField(BoundField):
     """
 
     def __init__(self, field, value, errors, prefix=''):
-        if value is None or value == '':
+        if value is None or value == '' or not isinstance(value, Mapping):
             value = {}
         super().__init__(field, value, errors, prefix)
 
@@ -115,6 +133,8 @@ class NestedBoundField(BoundField):
         error = self.errors.get(key) if isinstance(self.errors, dict) else None
         if hasattr(field, 'fields'):
             return NestedBoundField(field, value, error, prefix=self.name + '.')
+        elif getattr(field, '_is_jsonfield', False):
+            return JSONBoundField(field, value, error, prefix=self.name + '.')
         return BoundField(field, value, error, prefix=self.name + '.')
 
     def as_form_field(self):
@@ -138,7 +158,7 @@ class BindingDict(MutableMapping):
 
     def __init__(self, serializer):
         self.serializer = serializer
-        self.fields = OrderedDict()
+        self.fields = {}
 
     def __setitem__(self, key, field):
         self.fields[key] = field

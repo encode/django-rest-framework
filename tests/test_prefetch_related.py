@@ -1,3 +1,4 @@
+import pytest
 from django.contrib.auth.models import Group, User
 from django.test import TestCase
 
@@ -18,6 +19,7 @@ class UserUpdate(generics.UpdateAPIView):
     serializer_class = UserSerializer
 
 
+@pytest.mark.usefixtures("reset_sequences")
 class TestPrefetchRelatedUpdates(TestCase):
     def setUp(self):
         self.user = User.objects.create(username='tom', email='tom@example.com')
@@ -56,3 +58,17 @@ class TestPrefetchRelatedUpdates(TestCase):
             'email': 'tom@example.com'
         }
         assert response.data == expected
+
+    def test_can_update_without_queryset_on_class_view(self):
+        class UserUpdateWithoutQuerySet(generics.UpdateAPIView):
+            serializer_class = UserSerializer
+
+            def get_object(self):
+                return User.objects.get(pk=self.kwargs['pk'])
+
+        request = factory.patch('/', {'username': 'new'})
+        response = UserUpdateWithoutQuerySet.as_view()(request, pk=self.user.pk)
+        assert response.data['id'] == self.user.id
+        assert response.data['username'] == 'new'
+        self.user.refresh_from_db()
+        assert self.user.username == 'new'

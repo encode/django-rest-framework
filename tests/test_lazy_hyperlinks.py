@@ -1,6 +1,6 @@
-from django.conf.urls import url
 from django.db import models
 from django.test import TestCase, override_settings
+from django.urls import path
 
 from rest_framework import serializers
 from rest_framework.renderers import JSONRenderer
@@ -29,7 +29,7 @@ def dummy_view(request):
 
 
 urlpatterns = [
-    url(r'^example/(?P<pk>[0-9]+)/$', dummy_view, name='example-detail'),
+    path('example/<int:pk>/', dummy_view, name='example-detail'),
 ]
 
 
@@ -39,7 +39,7 @@ class TestLazyHyperlinkNames(TestCase):
         self.example = Example.objects.create(text='foo')
 
     def test_lazy_hyperlink_names(self):
-        global str_called
+        global str_called  # noqa: F824
         context = {'request': None}
         serializer = ExampleSerializer(self.example, context=context)
         JSONRenderer().render(serializer.data)
