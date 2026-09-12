@@ -347,7 +347,6 @@ class BaseUniqueForValidator:
                      (isinstance(instance_date, str) and str(attrs[self.date_field]) == instance_date))):
                 return
 
-
         # If date_field is None, skip validation
         if attrs.get(self.date_field) is None:
             return

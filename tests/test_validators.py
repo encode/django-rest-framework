@@ -1163,7 +1163,6 @@ class TestUniquenessForDateValidation(TestCase):
         )
         assert serializer.is_valid(), serializer.errors
 
-
     def test_many_update_requires_child_instance(self):
         serializer = UniqueForDateSerializer(
             instance=UniqueForDateModel.objects.all(),
@@ -1298,7 +1297,6 @@ class UniqueForYearTests(TestCase):
         assert serializer.is_valid(), serializer.errors
 
 
-
 class HiddenFieldUniqueForDateModel(models.Model):
     slug = models.CharField(max_length=100, unique_for_date='published')
     published = models.DateTimeField(auto_now_add=True)
@@ -1351,7 +1349,6 @@ class TestHiddenFieldUniquenessForDateValidation(TestCase):
         serializer.save()
         instance.refresh_from_db()
         assert instance.slug == 'updated'
-
 
 
 class ValidatorsTests(TestCase):
