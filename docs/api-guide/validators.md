@@ -102,7 +102,7 @@ The validator should be applied to *serializer classes*, like so:
             ]
 
 !!! note
-    The `UniqueTogetherValidator` class always imposes an implicit constraint that all the fields it applies to are always treated as required. Fields with `default` values are an exception to this as they always supply a value even when omitted from user input.
+    The `UniqueTogetherValidator` class always imposes an implicit constraint that all the fields it applies to are always treated as required. Fields with `default` values are an exception to this as they always supply a value even when omitted from user input. When using `ModelSerializer`, model fields with `null=True` default to `None`, and `CharField` or `TextField` model fields with `blank=True` default to an empty string, so these are not treated as required either.
 
 ## UniqueForDateValidator
 
@@ -221,6 +221,28 @@ For example:
             fields = ['client', 'date', 'amount']
             extra_kwargs = {'client': {'required': False}}
             validators = []  # Remove a default "unique together" constraint.
+
+### UniqueConstraint with conditions
+
+When using Django's `UniqueConstraint` with conditions that reference other model fields, DRF will automatically use
+`UniqueTogetherValidator` instead of field-level `UniqueValidator`. This ensures proper validation behavior when the constraint
+effectively involves multiple fields.
+
+For example, a single-field constraint with a condition becomes a multi-field validation when the condition references other fields.
+
+    class MyModel(models.Model):
+        name = models.CharField(max_length=100)
+        status = models.CharField(max_length=20)
+
+        class Meta:
+            constraints = [
+                models.UniqueConstraint(
+                    fields=['name'],
+                    condition=models.Q(status='active'),
+                    name='unique_active_name'
+                )
+            ]
+
 
 ### Updating nested serializers
 
