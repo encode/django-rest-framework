@@ -3315,7 +3315,7 @@ class ExampleSerializer(serializers.Serializer):
 </code></pre></div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The <code>UniqueTogetherValidator</code> class always imposes an implicit constraint that all the fields it applies to are always treated as required. Fields with <code>default</code> values are an exception to this as they always supply a value even when omitted from user input.</p>
+<p>The <code>UniqueTogetherValidator</code> class always imposes an implicit constraint that all the fields it applies to are always treated as required. Fields with <code>default</code> values are an exception to this as they always supply a value even when omitted from user input. When using <code>ModelSerializer</code>, model fields with <code>null=True</code> default to <code>None</code>, and <code>CharField</code> or <code>TextField</code> model fields with <code>blank=True</code> default to an empty string, so these are not treated as required either.</p>
 </div>
 <h2 id="uniquefordatevalidator">UniqueForDateValidator<a class="headerlink" href="#uniquefordatevalidator" title="Permanent link">&para;</a></h2>
 <h2 id="uniqueformonthvalidator">UniqueForMonthValidator<a class="headerlink" href="#uniqueformonthvalidator" title="Permanent link">&para;</a></h2>
