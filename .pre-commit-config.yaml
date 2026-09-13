@@ -9,7 +9,7 @@ repos:
   - id: check-symlinks
   - id: check-toml
 - repo: https://github.com/PyCQA/isort
-  rev: 7.0.0
+  rev: 9.0.1
   hooks:
   - id: isort
 - repo: https://github.com/PyCQA/flake8
@@ -28,7 +28,7 @@ repos:
     - black==26.1.0
 - repo: https://github.com/codespell-project/codespell
   # Configuration for codespell is in pyproject.toml
-  rev: v2.4.1
+  rev: v2.4.3
   hooks:
   - id: codespell
     additional_dependencies:
@@ -40,10 +40,10 @@ repos:
   - id: pyupgrade
     args: ["--py310-plus", "--keep-percent-format"]
 - repo: https://github.com/tox-dev/pyproject-fmt
-  rev: v2.11.1
+  rev: v2.29.4
   hooks:
   - id: pyproject-fmt
 - repo: https://github.com/adamchainz/django-upgrade
-  rev: 1.24.0
+  rev: 1.32.0
   hooks:
   - id: django-upgrade
