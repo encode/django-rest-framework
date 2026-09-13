@@ -78,6 +78,7 @@ DEFAULTS = {
     # Authentication
     'UNAUTHENTICATED_USER': 'django.contrib.auth.models.AnonymousUser',
     'UNAUTHENTICATED_TOKEN': None,
+    'WWW_AUTHENTICATE_BEHAVIOR': 'first',
 
     # View configuration
     'VIEW_NAME_FUNCTION': 'rest_framework.views.get_view_name',
