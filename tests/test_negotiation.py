@@ -59,6 +59,56 @@ class TestAcceptedMediaType(TestCase):
         assert accepted_media_type == 'application/openapi+json;version=2.0'
         assert accepted_renderer.format == 'swagger'
 
+    def test_client_excludes_zero_quality_media_type(self):
+        request = Request(factory.get('/', HTTP_ACCEPT='text/html;q=0, */*;q=1'))
+        renderers = [MockHTMLRenderer(), MockJSONRenderer()]
+        accepted_renderer, accepted_media_type = self.negotiator.select_renderer(
+            request, renderers
+        )
+        assert accepted_renderer.media_type == 'application/json'
+        assert accepted_media_type.startswith('application/json')
+
+    def test_client_prefers_nonzero_quality_media_type(self):
+        request = Request(
+            factory.get('/', HTTP_ACCEPT='application/json;q=0, text/html;q=1')
+        )
+        accepted_renderer, accepted_media_type = self.select_renderer(request)
+        assert accepted_renderer.media_type == 'text/html'
+        assert accepted_media_type.startswith('text/html')
+
+    def test_client_prefers_higher_quality_media_type(self):
+        request = Request(
+            factory.get('/', HTTP_ACCEPT='application/json;q=0.5, text/*;q=1')
+        )
+        accepted_renderer, accepted_media_type = self.select_renderer(request)
+        assert accepted_renderer.media_type == 'text/html'
+        assert accepted_media_type.startswith('text/html')
+
+    def test_client_without_quality_keeps_renderer_order(self):
+        request = Request(factory.get('/', HTTP_ACCEPT='text/html, application/json'))
+        accepted_renderer, accepted_media_type = self.select_renderer(request)
+        assert accepted_renderer.media_type == 'application/json'
+        assert accepted_media_type == 'application/json'
+
+    def test_client_with_equal_quality_uses_specificity(self):
+        request = Request(
+            factory.get('/', HTTP_ACCEPT='text/*;q=0.5, application/json;q=0.5')
+        )
+        renderers = [MockHTMLRenderer(), MockJSONRenderer()]
+        accepted_renderer, accepted_media_type = self.negotiator.select_renderer(
+            request, renderers
+        )
+        assert accepted_renderer.media_type == 'application/json'
+        assert accepted_media_type.startswith('application/json')
+
+    def test_client_with_invalid_quality_uses_default_quality(self):
+        request = Request(
+            factory.get('/', HTTP_ACCEPT='application/json;q=NaN, text/html;q=0.5')
+        )
+        accepted_renderer, accepted_media_type = self.select_renderer(request)
+        assert accepted_renderer.media_type == 'application/json'
+        assert accepted_media_type.startswith('application/json')
+
     def test_match_is_false_if_main_types_not_match(self):
         mediatype = _MediaType('test_1')
         another_mediatype = _MediaType('test_2')
