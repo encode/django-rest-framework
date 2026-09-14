@@ -10,8 +10,9 @@ from django.db import IntegrityError
 from django.test import TestCase, modify_settings
 
 from rest_framework.authtoken.admin import TokenAdmin
-from rest_framework.authtoken.management.commands.drf_create_token import \
+from rest_framework.authtoken.management.commands.drf_create_token import (
     Command as AuthTokenCommand
+)
 from rest_framework.authtoken.models import Token, TokenProxy
 from rest_framework.authtoken.serializers import AuthTokenSerializer
 from rest_framework.exceptions import ValidationError
