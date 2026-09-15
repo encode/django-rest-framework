@@ -72,7 +72,7 @@ plugins:
   - search
   - redirects:
       redirect_maps:
-        'topics/writable-nested-serializers.md': 'api-guide/relations.md'
+        'topics/writable-nested-serializers.md': 'api-guide/relations.md#writable-nested-serializers'
 nav:
   - Home: 'index.md'
   - Tutorial:
