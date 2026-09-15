@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 import pytest
 from django.test import TestCase
 
@@ -225,6 +227,193 @@ class PKManyToManyTests(TestCase):
         )
         with pytest.raises(AssertionError):
             serializer.data
+
+
+class PKManyRelatedFieldBulkValidationTests(TestCase):
+    """`PrimaryKeyRelatedField(many=True)` should resolve all pks in a single
+    query rather than one query per item (regression test for #9607)."""
+
+    def setUp(self):
+        self.pks = [
+            ManyToManyTarget.objects.create(name='target-%d' % idx).pk
+            for idx in range(1, 6)
+        ]
+
+    def _field(self, queryset=None):
+        if queryset is None:
+            queryset = ManyToManyTarget.objects.all()
+        field = serializers.PrimaryKeyRelatedField(queryset=queryset, many=True)
+        field.bind('targets', serializers.Serializer())
+        return field
+
+    def test_validation_uses_single_query(self):
+        field = self._field()
+        with self.assertNumQueries(1):
+            field.run_validation(self.pks)
+
+    def test_order_and_duplicates_preserved(self):
+        field = self._field()
+        order = [self.pks[2], self.pks[0], self.pks[0], self.pks[1]]
+        result = field.run_validation(order)
+        assert [obj.pk for obj in result] == order
+
+    def test_string_pks_are_accepted(self):
+        # HTML form input arrives as strings; must match int pks (#9607).
+        field = self._field()
+        result = field.run_validation([str(pk) for pk in self.pks])
+        assert [obj.pk for obj in result] == self.pks
+
+    def test_does_not_exist_error(self):
+        field = self._field()
+        missing = max(self.pks) + 1000
+        with pytest.raises(serializers.ValidationError) as exc_info:
+            field.run_validation([self.pks[0], missing])
+        detail = exc_info.value.detail
+        assert 0 not in detail
+        assert detail[1][0].code == 'does_not_exist'
+
+    def test_incorrect_type_error(self):
+        field = self._field()
+        with pytest.raises(serializers.ValidationError) as exc_info:
+            field.run_validation(['not-a-pk'])
+        assert exc_info.value.detail[0][0].code == 'incorrect_type'
+
+    def test_queryset_filtering_is_respected(self):
+        field = self._field(ManyToManyTarget.objects.exclude(pk=self.pks[1]))
+        with pytest.raises(serializers.ValidationError) as exc_info:
+            field.run_validation([self.pks[0], self.pks[1]])
+        detail = exc_info.value.detail
+        assert 0 not in detail
+        assert detail[1][0].code == 'does_not_exist'
+
+    def test_pk_field_transform_is_applied(self):
+        field = serializers.PrimaryKeyRelatedField(
+            queryset=ManyToManyTarget.objects.all(), many=True,
+            pk_field=serializers.IntegerField())
+        field.bind('targets', serializers.Serializer())
+        result = field.run_validation([str(self.pks[0]), str(self.pks[1])])
+        assert [obj.pk for obj in result] == [self.pks[0], self.pks[1]]
+
+    def test_error_details_match_per_item_with_pk_field(self):
+        # The bulk path must report the same incorrect_type detail as the
+        # per-item path, i.e. the type *after* pk_field transformation.
+        child = serializers.PrimaryKeyRelatedField(
+            queryset=ManyToManyTarget.objects.all(),
+            pk_field=serializers.BooleanField())
+        child.bind('targets', serializers.Serializer())
+        field = serializers.PrimaryKeyRelatedField(
+            queryset=ManyToManyTarget.objects.all(), many=True,
+            pk_field=serializers.BooleanField())
+        field.bind('targets', serializers.Serializer())
+        with pytest.raises(serializers.ValidationError) as per_item:
+            child.to_internal_value('true')
+        with pytest.raises(serializers.ValidationError) as bulk:
+            field.to_internal_value(['true'])
+        assert bulk.value.detail[0] == per_item.value.detail
+        assert 'bool' in str(bulk.value.detail[0])
+
+    def test_many_related_field_with_non_related_child(self):
+        # Plain ManyRelatedField (not the PK many subclass) still validates
+        # a non-related child with the per-item loop.
+        field = serializers.ManyRelatedField(
+            child_relation=serializers.IntegerField())
+        field.bind('values', serializers.Serializer())
+        assert field.to_internal_value([1, 2, 3]) == [1, 2, 3]
+
+    def test_many_true_uses_primary_key_many_related_field(self):
+        field = serializers.PrimaryKeyRelatedField(
+            queryset=ManyToManyTarget.objects.all(), many=True)
+        assert isinstance(field, serializers.PrimaryKeyManyRelatedField)
+
+    def test_subclass_many_uses_per_item_to_internal_value(self):
+        # Subclasses keep RelatedField.many_init so overridden
+        # to_internal_value is still called for many=True (auvipy 79ea3de0).
+        calls = []
+
+        class TenantPKField(serializers.PrimaryKeyRelatedField):
+            def to_internal_value(self, data):
+                calls.append(data)
+                return super().to_internal_value(data)
+
+        field = TenantPKField(
+            queryset=ManyToManyTarget.objects.all(), many=True)
+        field.bind('targets', serializers.Serializer())
+        assert isinstance(field, serializers.ManyRelatedField)
+        assert not isinstance(field, serializers.PrimaryKeyManyRelatedField)
+        result = field.run_validation([self.pks[0], self.pks[1]])
+        assert calls == [self.pks[0], self.pks[1]]
+        assert [obj.pk for obj in result] == [self.pks[0], self.pks[1]]
+
+    def test_collects_mixed_errors_with_probe_query(self):
+        # in_bulk + one filter(pk__in=...) probe for true misses (2 queries).
+        field = self._field()
+        missing = max(self.pks) + 1000
+        with self.assertNumQueries(2):
+            with pytest.raises(serializers.ValidationError) as exc_info:
+                field.run_validation([missing, 'not-a-pk', self.pks[0]])
+        detail = exc_info.value.detail
+        assert detail[0][0].code == 'does_not_exist'
+        assert detail[1][0].code == 'incorrect_type'
+        assert 2 not in detail
+
+    def test_duplicate_invalid_pks_report_each_index(self):
+        field = self._field()
+        missing = max(self.pks) + 1000
+        with pytest.raises(serializers.ValidationError) as exc_info:
+            field.run_validation([missing, self.pks[0], missing])
+        detail = exc_info.value.detail
+        assert detail[0][0].code == 'does_not_exist'
+        assert 1 not in detail
+        assert detail[2][0].code == 'does_not_exist'
+
+    def test_sliced_queryset_materializes_once(self):
+        # Real sliced queryset: in_bulk raises; materialize the slice once.
+        allowed = list(ManyToManyTarget.objects.filter(
+            pk__in=self.pks).order_by('pk')[:3])
+        allowed_pks = [obj.pk for obj in allowed]
+        outside = [pk for pk in self.pks if pk not in allowed_pks][0]
+        field = self._field(
+            ManyToManyTarget.objects.filter(pk__in=self.pks).order_by('pk')[:3]
+        )
+        with self.assertNumQueries(1):
+            result = field.run_validation(allowed_pks)
+        assert [obj.pk for obj in result] == allowed_pks
+        with pytest.raises(serializers.ValidationError) as exc_info:
+            field.run_validation([allowed_pks[0], outside, 'not-a-pk'])
+        detail = exc_info.value.detail
+        assert 0 not in detail
+        assert detail[1][0].code == 'does_not_exist'
+        assert detail[2][0].code == 'incorrect_type'
+
+    def test_in_bulk_key_miss_recovers_via_probe(self):
+        # Simulate Python key miss after in_bulk (CI collation / prep): empty
+        # map forces the filter probe + get recovery path.
+        field = self._field()
+        missing = max(self.pks) + 1000
+        with patch.object(
+            type(ManyToManyTarget.objects.all()),
+            'in_bulk',
+            return_value={},
+        ):
+            result = field.run_validation([self.pks[0]])
+            assert [obj.pk for obj in result] == [self.pks[0]]
+            with pytest.raises(serializers.ValidationError) as exc_info:
+                field.run_validation([self.pks[0], missing])
+        detail = exc_info.value.detail
+        assert 0 not in detail
+        assert detail[1][0].code == 'does_not_exist'
+
+    def test_pk_field_validation_error_is_collected(self):
+        field = serializers.PrimaryKeyRelatedField(
+            queryset=ManyToManyTarget.objects.all(), many=True,
+            pk_field=serializers.IntegerField())
+        field.bind('targets', serializers.Serializer())
+        with self.assertNumQueries(1):
+            with pytest.raises(serializers.ValidationError) as exc_info:
+                field.run_validation([self.pks[0], 'not-a-number'])
+        detail = exc_info.value.detail
+        assert 0 not in detail
+        assert 1 in detail
 
 
 @pytest.mark.usefixtures("reset_sequences")
