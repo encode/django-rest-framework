@@ -47,3 +47,4 @@ repos:
   rev: 1.32.0
   hooks:
   - id: django-upgrade
+    args: [--target-version, "5.2"]
