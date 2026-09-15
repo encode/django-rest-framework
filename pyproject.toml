@@ -53,6 +53,8 @@ docs = [
   # MkDocs to build our documentation.
   "mkdocs==1.6.1",
   "mkdocs-material[imaging]==9.7.7",
+  # MkDocs Redirects to add redirects to documentation
+  "mkdocs-redirects==1.2.3",
   # pylinkvalidator to check for broken links in documentation.
   "pylinkvalidator==0.3",
 ]
