@@ -63,7 +63,7 @@ For example:
 
 When serializing the instance, default will be used if the object attribute or dictionary key is not present in the instance.
 
-Note that setting a `default` value implies that the field is not required. Including both the `default` and `required` keyword arguments is invalid and will raise an error.
+Note that setting a `default` value implies that the field is not required. Combining `default` with `required=True` is invalid and will raise an error. An explicit `required=False` alongside `default` is allowed, but redundant.
 
 ### `allow_null`
 

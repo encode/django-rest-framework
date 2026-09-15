@@ -137,6 +137,86 @@ class TestUniquenessValidation(TestCase):
         serializer = UniquenessIntegerSerializer(data={'integer': 'abc'})
         assert serializer.is_valid()
 
+    def test_many_create_validates_uniqueness(self):
+        serializer = UniquenessSerializer(
+            data=[{'username': 'existing'}, {'username': 'other'}],
+            many=True,
+        )
+        assert not serializer.is_valid()
+        assert serializer.errors == {
+            0: {'username': ['uniqueness model with this username already exists.']},
+        }
+
+    def test_many_update_requires_child_instance(self):
+        serializer = UniquenessSerializer(
+            instance=UniquenessModel.objects.all(),
+            data=[{'username': 'existing'}],
+            many=True,
+        )
+        message = (
+            '`UniqueValidator` cannot determine the current instance during '
+            'a multiple update. Override '
+            '`ListSerializer.run_child_validation()` to set `child.instance` '
+            'before validation.'
+        )
+        with pytest.raises(RuntimeError, match=re.escape(message)):
+            serializer.is_valid()
+
+    def test_many_update_with_list_instance_requires_child_instance(self):
+        instances = [self.instance]
+        serializer = UniquenessSerializer(
+            instance=instances,
+            data=[{'username': 'existing'}],
+            many=True,
+        )
+        with pytest.raises(RuntimeError, match='`UniqueValidator` cannot determine'):
+            serializer.is_valid()
+
+    def test_many_update_with_child_instance(self):
+        """
+        Overriding `run_child_validation()` to set `child.instance` allows
+        uniqueness validation to exclude the instance being updated.
+        """
+        existing = self.instance
+        other = UniquenessModel.objects.create(username='other')
+
+        class ListUpdateSerializer(serializers.ListSerializer):
+            def run_child_validation(self, data):
+                self.child.instance = self.instance.get(pk=data['id'])
+                self.child.initial_data = data
+                return super().run_child_validation(data)
+
+            def update(self, instance, validated_data):
+                return instance
+
+        class Serializer(UniquenessSerializer):
+            id = serializers.IntegerField()
+
+            class Meta(UniquenessSerializer.Meta):
+                list_serializer_class = ListUpdateSerializer
+
+        # Unchanged values are not a conflict with the instance itself.
+        serializer = Serializer(
+            instance=UniquenessModel.objects.all(),
+            data=[
+                {'id': existing.pk, 'username': 'existing'},
+                {'id': other.pk, 'username': 'renamed'},
+            ],
+            many=True,
+        )
+        assert serializer.is_valid(), serializer.errors
+
+        # A value that conflicts with a different instance is rejected.
+        serializer = Serializer(
+            instance=UniquenessModel.objects.all(),
+            data=[{'id': other.pk, 'username': 'existing'}],
+            many=True,
+        )
+        assert not serializer.is_valid()
+        assert serializer.errors == {
+            0: {'username': ['uniqueness model with this username already exists.']},
+        }
+
 
 # Tests for `UniqueTogetherValidator`
 # -----------------------------------
@@ -170,6 +250,24 @@ class NullUniquenessTogetherModel(models.Model):
         unique_together = ('race_name', 'position')
 
 
+class ConditionUniquenessTogetherModel(models.Model):
+    """
+    Used to ensure that unique constraints with single fields but at least one other
+    distinct condition field are included when checking unique_together constraints.
+    """
+    race_name = models.CharField(max_length=100)
+    position = models.IntegerField()
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                name="condition_uniqueness_together_model_race_name",
+                fields=('race_name',),
+                condition=models.Q(position__lte=1)
+            )
+        ]
+
+
 class UniquenessTogetherSerializer(serializers.ModelSerializer):
     class Meta:
         model = UniquenessTogetherModel
@@ -179,6 +277,33 @@ class UniquenessTogetherSerializer(serializers.ModelSerializer):
 class NullUniquenessTogetherSerializer(serializers.ModelSerializer):
     class Meta:
         model = NullUniquenessTogetherModel
+        fields = '__all__'
+
+
+class ConditionUniquenessTogetherSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ConditionUniquenessTogetherModel
+        fields = '__all__'
+
+
+class BlankUniquenessTogetherModel(models.Model):
+    """
+    Used to ensure that `blank=True` text fields which are part of a
+    unique_together constraint are not treated as required.
+
+    Django stores an omitted blank text field as an empty string, so the
+    serializer should default to '' and still validate uniqueness against it.
+    """
+    race_name = models.CharField(max_length=100, blank=True)
+    position = models.IntegerField()
+
+    class Meta:
+        unique_together = ('race_name', 'position')
+
+
+class BlankUniquenessTogetherSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BlankUniquenessTogetherModel
         fields = '__all__'
 
 
@@ -222,6 +347,22 @@ class TestUniquenessTogetherValidation(TestCase):
             ]
         }
 
+    def test_is_not_unique_together_condition_based(self):
+        """
+        Failing unique together validation should result in non-field errors when a condition-based
+        unique together constraint is violated.
+        """
+        ConditionUniquenessTogetherModel.objects.create(race_name='example', position=1)
+
+        data = {'race_name': 'example', 'position': 1}
+        serializer = ConditionUniquenessTogetherSerializer(data=data)
+        assert not serializer.is_valid()
+        assert serializer.errors == {
+            'non_field_errors': [
+                'The fields race_name must make a unique set.'
+            ]
+        }
+
     def test_is_unique_together(self):
         """
         In a unique together validation, one field may be non-unique
@@ -232,6 +373,36 @@ class TestUniquenessTogetherValidation(TestCase):
         assert serializer.is_valid()
         assert serializer.validated_data == {
             'race_name': 'other',
+            'position': 2
+        }
+
+    def test_is_unique_together_condition_based(self):
+        """
+        In a condition-based unique together validation, data is valid when
+        the constrained field differs when the condition applies.
+        """
+        ConditionUniquenessTogetherModel.objects.create(race_name='example', position=1)
+
+        data = {'race_name': 'other', 'position': 1}
+        serializer = ConditionUniquenessTogetherSerializer(data=data)
+        assert serializer.is_valid()
+        assert serializer.validated_data == {
+            'race_name': 'other',
+            'position': 1
+        }
+
+    def test_is_unique_together_when_condition_does_not_apply(self):
+        """
+        In a condition-based unique together validation, data is valid when
+        the condition does not apply, even if constrained fields match existing records.
+        """
+        ConditionUniquenessTogetherModel.objects.create(race_name='example', position=1)
+
+        data = {'race_name': 'example', 'position': 2}
+        serializer = ConditionUniquenessTogetherSerializer(data=data)
+        assert serializer.is_valid()
+        assert serializer.validated_data == {
+            'race_name': 'example',
             'position': 2
         }
 
@@ -277,6 +448,95 @@ class TestUniquenessTogetherValidation(TestCase):
 
         with pytest.raises(RuntimeError, match=re.escape(message)):
             serializer.is_valid()
+
+    def test_updated_instance_excluded_from_unique_together_condition_based(self):
+        """
+        When performing an update, the existing instance does not count
+        as a match against uniqueness.
+        """
+        instance = ConditionUniquenessTogetherModel.objects.create(race_name='example', position=1)
+
+        data = {'race_name': 'example', 'position': 0}
+        serializer = ConditionUniquenessTogetherSerializer(instance, data=data)
+        assert serializer.is_valid()
+        assert serializer.validated_data == {
+            'race_name': 'example',
+            'position': 0
+        }
+
+    def test_many_update_with_child_instance(self):
+        """
+        Overriding `run_child_validation()` to set `child.instance` allows
+        unique together validation to exclude the instance being updated.
+        """
+
+        class ListUpdateSerializer(serializers.ListSerializer):
+            def run_child_validation(self, data):
+                self.child.instance = self.instance.get(pk=data['id'])
+                self.child.initial_data = data
+                return super().run_child_validation(data)
+
+            def update(self, instance, validated_data):
+                return instance
+
+        class Serializer(UniquenessTogetherSerializer):
+            id = serializers.IntegerField()
+
+            class Meta(UniquenessTogetherSerializer.Meta):
+                list_serializer_class = ListUpdateSerializer
+
+        serializer = Serializer(
+            instance=UniquenessTogetherModel.objects.all(),
+            data=[{
+                'id': self.instance.pk,
+                'race_name': self.instance.race_name,
+                'position': self.instance.position,
+            }],
+            many=True,
+        )
+        assert serializer.is_valid(), serializer.errors
+
+    def test_many_partial_update_with_child_instance(self):
+        """
+        During a partial multiple update, unprovided field values are read
+        from the instance set by `run_child_validation()`.
+        """
+
+        class ListUpdateSerializer(serializers.ListSerializer):
+            def run_child_validation(self, data):
+                self.child.instance = self.instance.get(pk=data['id'])
+                self.child.initial_data = data
+                return super().run_child_validation(data)
+
+            def update(self, instance, validated_data):
+                return instance
+
+        class Serializer(UniquenessTogetherSerializer):
+            id = serializers.IntegerField()
+
+            class Meta(UniquenessTogetherSerializer.Meta):
+                list_serializer_class = ListUpdateSerializer
+
+        # An unchanged value is not a conflict with the instance itself.
+        serializer = Serializer(
+            instance=UniquenessTogetherModel.objects.all(),
+            data=[{'id': self.instance.pk, 'position': self.instance.position}],
+            many=True,
+            partial=True,
+        )
+        assert serializer.is_valid(), serializer.errors
+
+        # A value that collides with a different instance is rejected.
+        serializer = Serializer(
+            instance=UniquenessTogetherModel.objects.all(),
+            data=[{'id': self.instance.pk, 'position': 2}],
+            many=True,
+            partial=True,
+        )
+        assert not serializer.is_valid()
+        assert serializer.errors == {
+            0: {'non_field_errors': ['The fields race_name, position must make a unique set.']},
+        }
 
     def test_unique_together_is_required(self):
         """
@@ -479,6 +739,47 @@ class TestUniquenessTogetherValidation(TestCase):
         serializer = NullUniquenessTogetherSerializer(data=data)
         assert serializer.is_valid(), serializer.errors
 
+    def test_blank_fields_are_not_required(self):
+        # A `blank=True` text field that is part of the uniqueness constraint
+        # should not become required; it defaults to an empty string.
+        serializer = BlankUniquenessTogetherSerializer()
+        field = serializer.fields['race_name']
+        assert field.required is False
+        assert field.default == ''
+
+        serializer = BlankUniquenessTogetherSerializer(data={'position': 1})
+        assert serializer.is_valid(), serializer.errors
+        instance = serializer.save()
+        assert instance.race_name == ''
+
+    def test_validation_for_missing_blank_fields(self):
+        # An omitted blank field is validated using its empty string default,
+        # matching what the database would store and reject as a duplicate.
+        BlankUniquenessTogetherModel.objects.create(race_name='', position=1)
+        serializer = BlankUniquenessTogetherSerializer(data={'position': 1})
+        assert not serializer.is_valid()
+        assert serializer.errors == {
+            'non_field_errors': [
+                'The fields race_name, position must make a unique set.'
+            ]
+        }
+
+    def test_validation_for_provided_blank_fields(self):
+        BlankUniquenessTogetherModel.objects.create(race_name='', position=1)
+        data = {'race_name': '', 'position': 1}
+        serializer = BlankUniquenessTogetherSerializer(data=data)
+        assert not serializer.is_valid()
+        assert serializer.errors == {
+            'non_field_errors': [
+                'The fields race_name, position must make a unique set.'
+            ]
+        }
+
+    def test_ignore_validation_for_missing_blank_fields_without_duplicate(self):
+        BlankUniquenessTogetherModel.objects.create(race_name='', position=1)
+        serializer = BlankUniquenessTogetherSerializer(data={'position': 2})
+        assert serializer.is_valid(), serializer.errors
+
     def test_do_not_ignore_validation_for_null_fields(self):
         # None values that are not on fields part of the uniqueness constraint
         # do not cause the instance to skip validation.
@@ -583,6 +884,38 @@ class TestUniquenessTogetherValidation(TestCase):
         """)
         assert repr(serializer) == expected
 
+    def test_condition_field_change_triggers_revalidation(self):
+        """
+        When only a condition field changes, the validator should still
+        recheck uniqueness. Previously, the validator would skip validation
+        because it only checked changes in constraint fields.
+        """
+        # Start outside the condition, with a conflicting constrained value already present.
+        instance = ConditionUniquenessTogetherModel.objects.create(
+            race_name='example',
+            position=2,
+        )
+        ConditionUniquenessTogetherModel.objects.create(
+            race_name='example',
+            position=1,
+        )
+
+        # Changing only the condition field so the condition starts applying must revalidate.
+        data = {'race_name': 'example', 'position': 1}
+        serializer = ConditionUniquenessTogetherSerializer(instance, data=data)
+        assert not serializer.is_valid()
+        assert serializer.errors == {
+            'non_field_errors': [
+                'The fields race_name must make a unique set.'
+            ]
+        }
+
+        # Now create another record that would violate the constraint
+        # if the condition applied (but it shouldn't, because position=2 doesn't match)
+        new_data = {'race_name': 'example', 'position': 2}
+        new_serializer = ConditionUniquenessTogetherSerializer(data=new_data)
+        assert new_serializer.is_valid()
+
 
 class UniqueConstraintModel(models.Model):
     race_name = models.CharField(max_length=100)
@@ -646,6 +979,26 @@ class UniqueConstraintNullableModel(models.Model):
         ]
 
 
+class UniqueConstraintBlankModel(models.Model):
+    """
+    Mirrors the model from issue #9750: a conditional UniqueConstraint on a
+    `blank=True` text field, where empty strings are excluded from the
+    constraint and should be allowed to repeat.
+    """
+    title = models.CharField(max_length=100)
+    age = models.IntegerField()
+    tag = models.CharField(max_length=100, blank=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                name='unique_age_tag_when_tag_not_blank',
+                fields=('age', 'tag'),
+                condition=~models.Q(tag=''),
+            ),
+        ]
+
+
 class UniqueConstraintNullsDistinctModel(models.Model):
     name = models.CharField(max_length=100)
     code = models.CharField(max_length=100, null=True)
@@ -690,6 +1043,12 @@ class UniqueConstraintSerializer(serializers.ModelSerializer):
 class UniqueConstraintNullableSerializer(serializers.ModelSerializer):
     class Meta:
         model = UniqueConstraintNullableModel
+        fields = ('title', 'age', 'tag')
+
+
+class UniqueConstraintBlankSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UniqueConstraintBlankModel
         fields = ('title', 'age', 'tag')
 
 
@@ -786,28 +1145,68 @@ class TestUniqueConstraintValidation(TestCase):
     def test_single_field_uniq_validators(self):
         """
         UniqueConstraint with single field must be transformed into
-        field's UniqueValidator
+        field's UniqueValidator if no distinct condition fields exist (else UniqueTogetherValidator)
         """
         # Backends like PostgreSQL add Min/Max validators for IntegerField;
         # SQLite does not because it has no fixed integer range.
         has_int_range = connection.ops.integer_field_range('IntegerField')[0] is not None
         extra_validators_qty = 2 if has_int_range else 0
         serializer = UniqueConstraintSerializer()
-        assert len(serializer.validators) == 2
+        assert len(serializer.validators) == 4
         validators = serializer.fields['global_id'].validators
         assert len(validators) == 1 + extra_validators_qty
         assert validators[0].queryset == UniqueConstraintModel.objects
+        ids_in_qs = {frozenset(v.queryset.values_list('id', flat=True)) for v in validators if hasattr(v, "queryset")}
+        assert ids_in_qs == {frozenset({1, 2, 3})}
 
         validators = serializer.fields['fancy_conditions'].validators
-        assert len(validators) == 2 + extra_validators_qty
-        ids_in_qs = {frozenset(v.queryset.values_list('id', flat=True)) for v in validators if hasattr(v, "queryset")}
-        assert ids_in_qs == {frozenset([1]), frozenset([3])}
+        assert len(validators) == extra_validators_qty
 
     def test_nullable_unique_constraint_fields_are_not_required(self):
         serializer = UniqueConstraintNullableSerializer(data={'title': 'Bob'})
         self.assertTrue(serializer.is_valid(), serializer.errors)
         result = serializer.save()
         self.assertIsInstance(result, UniqueConstraintNullableModel)
+
+    def test_blank_unique_constraint_fields_are_not_required(self):
+        serializer = UniqueConstraintBlankSerializer(data={'title': 'Bob', 'age': 1})
+        self.assertTrue(serializer.is_valid(), serializer.errors)
+        result = serializer.save()
+        self.assertIsInstance(result, UniqueConstraintBlankModel)
+        self.assertEqual(result.tag, '')
+
+    def test_multiple_blank_values_are_allowed(self):
+        """
+        The scenario from issue #9750: the constraint's condition `~Q(tag='')`
+        excludes blank tags, so multiple rows may share the same `age` as long
+        as their tag is empty, whether the tag is omitted or sent as ''.
+        """
+        UniqueConstraintBlankModel.objects.create(title='Alice', age=1, tag='')
+
+        serializer = UniqueConstraintBlankSerializer(data={'title': 'Bob', 'age': 1, 'tag': ''})
+        self.assertTrue(serializer.is_valid(), serializer.errors)
+        serializer.save()
+
+        serializer = UniqueConstraintBlankSerializer(data={'title': 'Carol', 'age': 1})
+        self.assertTrue(serializer.is_valid(), serializer.errors)
+        serializer.save()
+
+        self.assertEqual(
+            UniqueConstraintBlankModel.objects.filter(age=1, tag='').count(), 3
+        )
+
+    def test_conditional_unique_constraint_rejects_repeated_non_blank_values(self):
+        UniqueConstraintBlankModel.objects.create(title='Alice', age=1, tag='vip')
+
+        serializer = UniqueConstraintBlankSerializer(data={'title': 'Bob', 'age': 1, 'tag': 'vip'})
+        self.assertFalse(serializer.is_valid())
+        self.assertEqual(
+            serializer.errors,
+            {'non_field_errors': ['The fields age, tag must make a unique set.']},
+        )
+
+        serializer = UniqueConstraintBlankSerializer(data={'title': 'Bob', 'age': 1, 'tag': 'other'})
+        self.assertTrue(serializer.is_valid(), serializer.errors)
 
     def test_unique_constraint_source(self):
         class SourceUniqueConstraintSerializer(serializers.ModelSerializer):
@@ -946,6 +1345,44 @@ class TestUniquenessForDateValidation(TestCase):
             'slug': 'existing',
             'published': datetime.date(2000, 1, 1)
         }
+
+    def test_many_update_requires_child_instance(self):
+        serializer = UniqueForDateSerializer(
+            instance=UniqueForDateModel.objects.all(),
+            data=[{'slug': 'existing', 'published': '2000-01-01'}],
+            many=True,
+        )
+        message = (
+            '`UniqueForDateValidator` cannot determine the current instance '
+            'during a multiple update. Override '
+            '`ListSerializer.run_child_validation()` to set `child.instance` '
+            'before validation.'
+        )
+        with pytest.raises(RuntimeError, match=re.escape(message)):
+            serializer.is_valid()
+
+    def test_many_update_with_child_instance(self):
+        class ListUpdateSerializer(serializers.ListSerializer):
+            def run_child_validation(self, data):
+                self.child.instance = self.instance.get(pk=data['id'])
+                self.child.initial_data = data
+                return super().run_child_validation(data)
+
+            def update(self, instance, validated_data):
+                return instance
+
+        class Serializer(UniqueForDateSerializer):
+            id = serializers.IntegerField()
+
+            class Meta(UniqueForDateSerializer.Meta):
+                list_serializer_class = ListUpdateSerializer
+
+        serializer = Serializer(
+            instance=UniqueForDateModel.objects.all(),
+            data=[{'id': self.instance.pk, 'slug': 'existing', 'published': '2000-01-01'}],
+            many=True,
+        )
+        assert serializer.is_valid(), serializer.errors
 
 # Tests for `UniqueForMonthValidator`
 # ----------------------------------

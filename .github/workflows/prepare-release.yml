@@ -119,12 +119,18 @@ jobs:
               f.write(content)
           EOF
 
+      - name: Install gettext
+        run: sudo apt install -y gettext
+
+      - name: Ensure translations are up to date
+        run: uv tool run --from django django-admin compilemessages
+
       - name: Create branch and commit
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git checkout -b feat/release-${{ github.event.inputs.version }}
-          git add rest_framework/__init__.py docs/community/release-notes.md
+          git add rest_framework/__init__.py docs/community/release-notes.md rest_framework/locale
           git commit -m "Prepare release ${{ github.event.inputs.version }}"
           git push origin feat/release-${{ github.event.inputs.version }}
 

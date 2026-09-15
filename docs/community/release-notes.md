@@ -22,7 +22,28 @@ The timeline for deprecation of a feature present in version 1.0 would work as f
 
 * Version 1.3 would remove the deprecated bits of API entirely.
 
+Two aliases always point at the warning classes for the current release cycle, so you can refer to them without updating your configuration on every release:
+
+* `RemovedInNextDRFVersionWarning` — features that the next feature release removes. Always a `DeprecationWarning`.
+* `RemovedAfterNextDRFVersionWarning` — features that the release after next removes. Always a `PendingDeprecationWarning`.
+
 Note that in line with Django's policy, any parts of the framework not mentioned in the documentation should generally be considered private API, and may be subject to change.
+
+### Surfacing deprecations in your test suite
+
+Deprecations are much easier to deal with one release at a time, so it's worth failing your test suite on anything that is due to be removed in the next release, while keeping the earlier warnings visible.
+
+If you run your tests with pytest, add the following to your `pyproject.toml`:
+
+```toml
+[tool.pytest]
+filterwarnings = [
+  "error::rest_framework.deprecation.RemovedInNextDRFVersionWarning",
+  "always::rest_framework.deprecation.RemovedAfterNextDRFVersionWarning",
+]
+```
+
+When a warning does fire, the message names the release that removes the feature and what to use instead. Once you have dealt with them all, drop the `always` filter down to `error` too, and you'll be ready for the release after next as well.
 
 ## Upgrading
 
@@ -37,6 +58,31 @@ You can determine your currently installed version using `pip show`:
 ---
 
 ## 3.18.x series
+
+### 3.18.1
+
+**Date**: 7th September 2026
+
+#### Bug fixes
+
+* Fix duplicate validation errors for GenericIPAddressField with protocol by [@browniebroke](https://github.com/browniebroke) in [#10011](https://github.com/encode/django-rest-framework/pull/10011)
+* Fix int64 format detection for negative `IntegerField` minimums in OpenAPI schema definition by [@zainnadeem786](https://github.com/zainnadeem786) in [#9989](https://github.com/encode/django-rest-framework/pull/9989)
+* Fix list serializer on unique constraint validator by [@MehrazRumman](https://github.com/MehrazRumman) in [#10033](https://github.com/encode/django-rest-framework/pull/10033)
+* Reject non-finite values (nan, inf) in FloatField by [@winklemad](https://github.com/winklemad) in [#9998](https://github.com/encode/django-rest-framework/pull/9998)
+
+#### Other changes
+
+* Add a compatibility setting for `ListSerializer` error formats by [@Kub-AT](https://github.com/Kub-AT) in [#10027](https://github.com/encode/django-rest-framework/pull/10027)
+* Expand deprecation classes and review deprecation policy by [@browniebroke](https://github.com/browniebroke) in [#10034](https://github.com/encode/django-rest-framework/pull/10034)
+
+#### New Contributors
+
+* [@abidaliamanat9](https://github.com/abidaliamanat9) made their first contribution in [#10028](https://github.com/encode/django-rest-framework/pull/10028)
+* [@epuronta](https://github.com/epuronta) made their first contribution in [#10030](https://github.com/encode/django-rest-framework/pull/10030)
+* [@Kub-AT](https://github.com/Kub-AT) made their first contribution in [#10027](https://github.com/encode/django-rest-framework/pull/10027)
+* [@winklemad](https://github.com/winklemad) made their first contribution in [#9998](https://github.com/encode/django-rest-framework/pull/9998)
+
+**Full Changelog**: [3.18.0...3.18.1](https://github.com/encode/django-rest-framework/compare/3.18.0...3.18.1)
 
 ### 3.18.0
 

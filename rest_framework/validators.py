@@ -43,6 +43,29 @@ def qs_filter(queryset, **kwargs):
         return queryset.none()
 
 
+def _check_single_instance(serializer, instance, validator):
+    """
+    Uniqueness validators need a single model instance in order to exclude
+    the object being updated from the uniqueness check.
+
+    When a serializer is used with `many=True` and a queryset or list is
+    passed as the `instance`, the child serializer's `instance` will be that
+    queryset or list, unless `ListSerializer.run_child_validation()` has been
+    overridden to set `child.instance` for each item. Raise a clear error in
+    that case rather than an `AttributeError` when accessing `instance.pk`.
+    """
+    if (
+        instance is not None and
+        getattr(serializer.parent, 'many', False) and
+        not hasattr(instance, 'pk')
+    ):
+        raise RuntimeError(
+            '`%s` cannot determine the current instance during a multiple '
+            'update. Override `ListSerializer.run_child_validation()` to set '
+            '`child.instance` before validation.' % validator.__class__.__name__
+        )
+
+
 class UniqueValidator:
     """
     Validator that corresponds to `unique=True` on a model field.
@@ -78,7 +101,9 @@ class UniqueValidator:
         # same as the serializer field name if `source=<>` is set.
         field_name = serializer_field.source_attrs[-1]
         # Determine the existing instance, if this is an update operation.
-        instance = getattr(serializer_field.parent, 'instance', None)
+        serializer = serializer_field.parent
+        instance = getattr(serializer, 'instance', None)
+        _check_single_instance(serializer, instance, self)
 
         queryset = self.queryset
         queryset = self.filter_queryset(value, queryset, field_name)
@@ -172,47 +197,58 @@ class UniqueTogetherValidator:
         return queryset
 
     def __call__(self, attrs, serializer):
-        if (
-            serializer.instance is not None and
-            getattr(serializer.parent, 'many', False) and
-            not hasattr(serializer.instance, 'pk')
-        ):
-            raise RuntimeError(
-                '`UniqueTogetherValidator` cannot determine the current '
-                'instance during a multiple update. Override '
-                '`ListSerializer.run_child_validation()` to set '
-                '`child.instance` before validation.'
-            )
-
+        _check_single_instance(serializer, serializer.instance, self)
         self.enforce_required_fields(attrs, serializer)
         queryset = self.queryset
         queryset = self.filter_queryset(attrs, queryset, serializer)
         queryset = self.exclude_current_instance(attrs, queryset, serializer.instance)
 
-        checked_names = [
+        # Values of constraint fields only, resolved from attrs or instance.
+        # Used solely for the nulls_distinct guard, so condition fields
+        # do not accidentally cause validation to be skipped.
+        constraint_field_sources = [
             serializer.fields[field_name].source for field_name in self.fields
         ]
+        constraint_field_values = [
+            attrs[source] if source in attrs
+            else getattr(serializer.instance, source, None)
+            for source in constraint_field_sources
+        ]
+
+        # Combine constraint fields and condition fields to detect changes
+        # in either set of fields. This ensures that updates to condition
+        # fields also trigger revalidation.
+        checked_names = list(
+            {serializer.fields[field_name].source for field_name in self.fields}
+            | {serializer.fields[field_name].source for field_name in self.condition_fields}
+        )
+
         # Ignore validation if any field is None
         if serializer.instance is None:
-            checked_values = [attrs[field_name] for field_name in checked_names]
+            checked_values = [attrs.get(field_name) for field_name in checked_names]
         else:
-            # Ignore validation if all field values are unchanged
+            # Ignore validation if all field values are unchanged.
+            # Omitted fields are treated as unchanged; their value comes
+            # from the instance (as done for condition_kwargs below).
             checked_values = [
                 attrs[field_name]
                 for field_name in checked_names
-                if attrs[field_name] != getattr(serializer.instance, field_name)
+                if field_name in attrs and attrs[field_name] != getattr(serializer.instance, field_name, None)
             ]
 
         condition_sources = (serializer.fields[field_name].source for field_name in self.condition_fields)
         condition_kwargs = {
-            source: attrs[source]
+            source: attrs.get(source)
             if source in attrs
-            else getattr(serializer.instance, source)
+            else getattr(serializer.instance, source, None)
             for source in condition_sources
         }
+
         if checked_values:
-            # Skip validation for None values unless nulls_distinct is False
-            if self.nulls_distinct is not False and None in checked_values:
+            # Skip validation for None values in *constraint* fields unless
+            # nulls_distinct is False. Condition fields are intentionally
+            # excluded here.
+            if self.nulls_distinct is not False and any(v is None for v in constraint_field_values):
                 return
             if qs_exists_with_condition(queryset, self.condition, condition_kwargs):
                 field_names = ', '.join(self.fields)
@@ -301,6 +337,7 @@ class BaseUniqueForValidator:
         field_name = serializer.fields[self.field].source_attrs[-1]
         date_field_name = serializer.fields[self.date_field].source_attrs[-1]
 
+        _check_single_instance(serializer, serializer.instance, self)
         self.enforce_required_fields(attrs)
         queryset = self.queryset
         queryset = self.filter_queryset(attrs, queryset, field_name, date_field_name)
