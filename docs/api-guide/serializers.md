@@ -595,7 +595,25 @@ This option is a dictionary, mapping field names to a dictionary of keyword argu
             user.save()
             return user
 
-Please keep in mind that, if the field has already been explicitly declared on the serializer class, then the `extra_kwargs` option will be ignored. The same is true of `read_only_fields`, which is implemented using `extra_kwargs`.
+Please keep in mind that, if the field has already been explicitly declared on the serializer class, then the `extra_kwargs` option will be ignored.
+The same is true of `read_only_fields`, which is implemented using `extra_kwargs`.
+
+It is also possible to create new serializer fields from fields on models reached through to-one relationships using the `extra_kwargs` option. For example:
+
+    class UserProfile(models.Model):
+        birthdate = models.DateField()
+        user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    class UserProfileSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = UserProfile
+            fields = ['date_of_birth', 'first_name', 'last_name']
+            extra_kwargs = {
+                'date_of_birth': {'source': 'birthdate'},
+                'first_name': {'source': 'user.first_name', 'read_only': True},
+                'last_name': {'source': 'user.last_name', 'read_only': True},
+            }
+
 
 ### Relational fields
 

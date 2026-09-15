@@ -1137,9 +1137,40 @@ class ModelSerializer(Serializer):
             if source == '*':
                 source = field_name
 
+            # Get the right model and info for source with attributes
+            source_info = info
+            source_model = model
+
+            if '.' in source:
+                source_attrs = source.split('.')
+                attr_info = info
+                attr_model = model
+
+                for attr in source_attrs[:-1]:
+                    if attr not in attr_info.relations:
+                        break
+
+                    relation_info = attr_info.relations[attr]
+                    if relation_info.to_many:
+                        break
+
+                    attr_model = relation_info.related_model
+                    attr_info = model_meta.get_field_info(attr_model)
+                else:
+                    attr = source_attrs[-1]
+                    if (
+                        attr in attr_info.fields_and_pk
+                        or attr in attr_info.relations
+                        or hasattr(attr_model, attr)
+                        or attr == self.url_field_name
+                    ):
+                        source = attr
+                        source_info = attr_info
+                        source_model = attr_model
+
             # Determine the serializer field class and keyword arguments.
             field_class, field_kwargs = self.build_field(
-                source, info, model, depth
+                source, source_info, source_model, depth
             )
 
             # Include any kwargs defined in `Meta.extra_kwargs`
