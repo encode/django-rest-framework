@@ -1346,6 +1346,46 @@ class TestUniquenessForDateValidation(TestCase):
             'published': datetime.date(2000, 1, 1)
         }
 
+    def test_full_update_missing_field_fails(self):
+        """
+        A full update omitting the unique-for field must fail required validation.
+        """
+        serializer = UniqueForDateSerializer(
+            instance=self.instance,
+            data={'published': '2000-01-01'}
+        )
+        assert not serializer.is_valid()
+        assert serializer.errors == {
+            'slug': ['This field is required.']
+        }
+
+    def test_full_update_missing_date_field_fails(self):
+        """
+        A full update omitting the date field must fail required validation.
+        """
+        serializer = UniqueForDateSerializer(
+            instance=self.instance,
+            data={'slug': 'existing'}
+        )
+        assert not serializer.is_valid()
+        assert serializer.errors == {
+            'published': ['This field is required.']
+        }
+
+    def test_full_update_missing_both_fields_fails(self):
+        """
+        A full update omitting both fields must fail required validation.
+        """
+        serializer = UniqueForDateSerializer(
+            instance=self.instance,
+            data={}
+        )
+        assert not serializer.is_valid()
+        assert serializer.errors == {
+            'slug': ['This field is required.'],
+            'published': ['This field is required.']
+        }
+
     def test_partial_update_without_fields(self):
         """
         A partial update that changes neither the field nor the date field

@@ -309,10 +309,10 @@ class BaseUniqueForValidator:
     def enforce_required_fields(self, attrs, serializer=None):
         """
         The `UniqueFor<Range>Validator` classes always force an implied
-        'required' state on the fields they are applied to during creates.
-        On partial updates, missing fields are bypassed.
+        'required' state on the fields they are applied to during creates
+        and full updates. On partial updates, missing fields are bypassed.
         """
-        if serializer is not None and serializer.instance is not None:
+        if serializer is not None and serializer.instance is not None and getattr(serializer, 'partial', False):
             return
 
         missing_items = {
@@ -345,28 +345,29 @@ class BaseUniqueForValidator:
         self.enforce_required_fields(attrs, serializer)
 
         if serializer.instance is not None:
-            # On update: if neither field is present in attrs, skip validation
-            if self.field not in attrs and self.date_field not in attrs:
-                return
+            if getattr(serializer, 'partial', False):
+                # On partial update: if neither field is present in attrs, skip validation
+                if self.field not in attrs and self.date_field not in attrs:
+                    return
 
-            # If only one field is provided, resolve the other from the existing instance
-            attrs = attrs.copy()
-            if self.field not in attrs:
-                attrs[self.field] = getattr(serializer.instance, field_name)
-            if self.date_field not in attrs:
-                date_val = getattr(serializer.instance, date_field_name)
-                if date_val is not None and isinstance(date_val, str):
-                    try:
-                        date_val = serializer.fields[self.date_field].to_internal_value(date_val)
-                    except Exception:
-                        pass
-                attrs[self.date_field] = date_val
+                # If only one field is provided, resolve the other from the existing instance
+                attrs = attrs.copy()
+                if self.field not in attrs:
+                    attrs[self.field] = getattr(serializer.instance, field_name)
+                if self.date_field not in attrs:
+                    date_val = getattr(serializer.instance, date_field_name)
+                    if date_val is not None and isinstance(date_val, str):
+                        try:
+                            date_val = serializer.fields[self.date_field].to_internal_value(date_val)
+                        except Exception:
+                            pass
+                    attrs[self.date_field] = date_val
 
             # If both fields are unchanged on the instance, skip validation
             instance_date = getattr(serializer.instance, date_field_name)
-            if (attrs[self.field] == getattr(serializer.instance, field_name) and
-                    (attrs[self.date_field] == instance_date or
-                     (isinstance(instance_date, str) and str(attrs[self.date_field]) == instance_date))):
+            if (attrs.get(self.field) == getattr(serializer.instance, field_name) and
+                    (attrs.get(self.date_field) == instance_date or
+                     (isinstance(instance_date, str) and str(attrs.get(self.date_field)) == instance_date))):
                 return
 
         # If date_field is None, skip validation
