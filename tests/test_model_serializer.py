@@ -1506,7 +1506,7 @@ class OverflowModel(models.Model):
     ])
 
 
-class Issue7314Test(TestCase):
+class Issue7134Test(TestCase):
 
     def test_model(self):
         """
