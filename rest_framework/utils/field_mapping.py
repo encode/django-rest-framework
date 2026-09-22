@@ -79,10 +79,18 @@ def get_unique_validators(field_name, model_field):
     unique_error_message = get_unique_error_message(model_field)
     queryset = model_field.model._default_manager
     for condition in conditions:
-        yield UniqueValidator(
-            queryset=queryset if condition is None else queryset.filter(condition),
-            message=unique_error_message
+        condition_fields = (
+            set(condition.referenced_base_fields)
+            if condition is not None
+            else set()
         )
+        # Only use UniqueValidator if the union of field and condition fields is 1
+        # (i.e. no additional fields referenced in conditions)
+        if len(field_set | condition_fields) == 1:
+            yield UniqueValidator(
+                queryset=queryset if condition is None else queryset.filter(condition),
+                message=unique_error_message,
+            )
 
 
 def get_field_kwargs(field_name, model_field):
