@@ -1526,5 +1526,11 @@ class Issue7314Test(TestCase):
 
         serializer = TestSerializer(data={'value': 9223372036854775808})
 
-        with self.assertRaises(serializers.ValidationError):
+        with self.assertRaises(serializers.ValidationError) as ctx:
             serializer.is_valid(raise_exception=True)
+
+        # Check that the error code of the validation error
+        self.assertEqual(
+            [error.code for error in ctx.exception.detail['value']],
+            ['max_value'],
+        )
