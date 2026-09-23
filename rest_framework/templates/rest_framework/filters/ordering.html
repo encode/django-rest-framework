@@ -5,7 +5,7 @@
     {% for key, label in options %}
         {% if key == current %}
             <a href="{% add_query_param request param key %}" class="list-group-item list-group-item-action active" aria-current="true">
-                <span class="float-end">{% include "rest_framework/icons/check-lg.html" %}</span> {{ label }}
+                <span class="float-end">{% include "rest_framework/icons/check-lg.svg" %}</span> {{ label }}
             </a>
         {% else %}
             <a href="{% add_query_param request param key %}" class="list-group-item list-group-item-action">{{ label }}</a>

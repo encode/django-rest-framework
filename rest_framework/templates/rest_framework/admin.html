@@ -93,20 +93,20 @@
 
             {% if post_form %}
               <button type="button" class="button-form btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModal">
-                {% include "rest_framework/icons/plus-lg.html" %} Create
+                {% include "rest_framework/icons/plus-lg.svg" %} Create
               </button>
             {% endif %}
 
             {% if put_form %}
               <button type="button" class="button-form btn btn-primary" data-bs-toggle="modal" data-bs-target="#editModal">
-                {% include "rest_framework/icons/pencil.html" %} Edit
+                {% include "rest_framework/icons/pencil.svg" %} Edit
               </button>
             {% endif %}
 
             {% if delete_form %}
               <form class="button-form" action="{{ request.get_full_path }}" data-method="DELETE">
                 <button class="btn btn-danger">
-                  {% include "rest_framework/icons/x-lg.html" %} Delete
+                  {% include "rest_framework/icons/x-lg.svg" %} Delete
                 </button>
               </form>
             {% endif %}
@@ -126,7 +126,7 @@
 
             {% if filter_form %}
               <button type="button" class="btn btn-outline-secondary float-end me-2" data-bs-toggle="modal" data-bs-target="#filtersModal">
-                {% include "rest_framework/icons/wrench.html" %}
+                {% include "rest_framework/icons/wrench.svg" %}
                 {% trans "Filters" %}
               </button>
             {% endif %}
