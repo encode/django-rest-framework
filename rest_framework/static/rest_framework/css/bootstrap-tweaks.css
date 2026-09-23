@@ -278,6 +278,9 @@ body a:hover {
 
 .pagination {
   margin: 5px 0 10px 0;
+  /* Keep pagination links Bootstrap blue rather than the DRF red link colour */
+  --bs-pagination-color: var(--bs-primary);
+  --bs-pagination-hover-color: var(--bs-primary-text-emphasis);
 }
 
 /* Restore the Bootstrap 3 look of preformatted text blocks */
