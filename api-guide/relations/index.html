@@ -3647,7 +3647,7 @@ class CustomerHyperlink(serializers.HyperlinkedRelatedField):
 <hr />
 <h2 id="further-notes">Further notes<a class="headerlink" href="#further-notes" title="Permanent link">&para;</a></h2>
 <h3 id="the-queryset-argument">The <code>queryset</code> argument<a class="headerlink" href="#the-queryset-argument" title="Permanent link">&para;</a></h3>
-<p>The <code>queryset</code> argument is only ever required for <em>writable</em> relationship field, in which case it is used for performing the model instance lookup, that maps from the primitive user input, into a model instance.</p>
+<p>The <code>queryset</code> argument is only ever required for a <em>writable</em> relationship field, in which case it is used for performing the model instance lookup, that maps from the primitive user input, into a model instance.</p>
 <p>In version 2.x a serializer class could <em>sometimes</em> automatically determine the <code>queryset</code> argument <em>if</em> a <code>ModelSerializer</code> class was being used.</p>
 <p>This behavior is now replaced with <em>always</em> using an explicit <code>queryset</code> argument for writable relational fields.</p>
 <p>Doing so reduces the amount of hidden 'magic' that <code>ModelSerializer</code> provides, makes the behavior of the field more clear, and ensures that it is trivial to move between using the <code>ModelSerializer</code> shortcut, or using fully explicit <code>Serializer</code> classes.</p>
