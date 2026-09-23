@@ -1,7 +1,7 @@
 {% load rest_framework %}
 <table class="table table-striped">
   <thead>
-    <tr>{% for column in columns%}<th>{{ column|capfirst }}</th>{% endfor %}<th class="col-xs-1"></th></tr>
+    <tr>{% for column in columns%}<th>{{ column|capfirst }}</th>{% endfor %}<th class="col-1"></th></tr>
   </thead>
   <tbody>
     {% for row in results %}
@@ -15,9 +15,9 @@
         {% endfor %}
         <td>
           {% if row.url %}
-          <a href="{{ row.url }}"><span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></a>
+          <a href="{{ row.url }}">{% include "rest_framework/icons/chevron-right.html" %}</a>
           {% else %}
-          <span class="glyphicon glyphicon-chevron-right text-muted" aria-hidden="true"></span>
+          <span class="text-muted">{% include "rest_framework/icons/chevron-right.html" %}</span>
           {% endif %}
         </td>
       </tr>

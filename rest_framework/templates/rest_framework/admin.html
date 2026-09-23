@@ -9,6 +9,7 @@
 
       {% block meta %}
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
         <meta name="robots" content="NONE,NOARCHIVE" />
       {% endblock %}
 
@@ -30,7 +31,7 @@
     <body class="{% block bodyclass %}{% endblock %}">
       <div class="wrapper">
           {% block navbar %}
-            <div class="navbar navbar-static-top {% block bootstrap_navbar_variant %}navbar-inverse{% endblock %}">
+            <nav class="navbar navbar-expand fixed-top {% block bootstrap_navbar_variant %}navbar-dark{% endblock %}">
               <div class="container">
                 <span>
                   {% block branding %}
@@ -39,7 +40,7 @@
                     </a>
                   {% endblock %}
                 </span>
-                <ul class="nav navbar-nav pull-right">
+                <ul class="navbar-nav ms-auto">
                   {% block userlinks %}
                     {% if user.is_authenticated %}
                       {% optional_logout request user csrf_token %}
@@ -49,7 +50,7 @@
                   {% endblock %}
                 </ul>
               </div>
-            </div>
+            </nav>
           {% endblock %}
 
           <div class="container">
@@ -57,9 +58,9 @@
               <ul class="breadcrumb">
                 {% for breadcrumb_name, breadcrumb_url in breadcrumblist %}
                   {% if forloop.last %}
-                    <li class="active"><a href="{{ breadcrumb_url }}">{{ breadcrumb_name }}</a></li>
+                    <li class="breadcrumb-item active"><a href="{{ breadcrumb_url }}">{{ breadcrumb_name }}</a></li>
                   {% else %}
-                    <li><a href="{{ breadcrumb_url }}">{{ breadcrumb_name }}</a></li>
+                    <li class="breadcrumb-item"><a href="{{ breadcrumb_url }}">{{ breadcrumb_name }}</a></li>
                   {% endif %}
                 {% endfor %}
               </ul>
@@ -68,16 +69,16 @@
           <!-- Content -->
           <div id="content">
             {% if 'GET' in allowed_methods %}
-              <form id="get-form" class="pull-right">
+              <form id="get-form" class="float-end">
                 <fieldset>
                   <div class="btn-group format-selection">
-                    <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
-                      Format <span class="caret"></span>
+                    <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                      Format
                     </button>
-                    <ul class="dropdown-menu">
+                    <ul class="dropdown-menu dropdown-menu-end">
                       {% for format in available_formats %}
                         <li>
-                          <a class="format-option"
+                          <a class="dropdown-item format-option"
                               href='{% add_query_param request api_settings.URL_FORMAT_OVERRIDE format %}'
                                rel="nofollow">
                               {{ format }}
@@ -91,42 +92,41 @@
             {% endif %}
 
             {% if post_form %}
-              <button type="button" class="button-form btn btn-primary" data-toggle="modal" data-target="#createModal">
-                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Create
+              <button type="button" class="button-form btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModal">
+                {% include "rest_framework/icons/plus-lg.html" %} Create
               </button>
             {% endif %}
 
             {% if put_form %}
-              <button type="button" class="button-form btn btn-primary" data-toggle="modal" data-target="#editModal">
-                <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Edit
+              <button type="button" class="button-form btn btn-primary" data-bs-toggle="modal" data-bs-target="#editModal">
+                {% include "rest_framework/icons/pencil.html" %} Edit
               </button>
             {% endif %}
 
             {% if delete_form %}
               <form class="button-form" action="{{ request.get_full_path }}" data-method="DELETE">
                 <button class="btn btn-danger">
-                  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Delete
+                  {% include "rest_framework/icons/x-lg.html" %} Delete
                 </button>
               </form>
             {% endif %}
 
             {% if extra_actions %}
-              <div class="dropdown" style="float: right; margin-right: 10px">
-                <button class="btn btn-default" id="extra-actions-menu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+              <div class="dropdown float-end me-2">
+                <button type="button" class="btn btn-outline-secondary dropdown-toggle" id="extra-actions-menu" data-bs-toggle="dropdown" aria-expanded="false">
                   {% trans "Extra Actions" %}
-                  <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu" aria-labelledby="extra-actions-menu">
                   {% for action_name, url in extra_actions|items %}
-                  <li><a href="{{ url }}">{{ action_name }}</a></li>
+                  <li><a class="dropdown-item" href="{{ url }}">{{ action_name }}</a></li>
                   {% endfor %}
                 </ul>
               </div>
             {% endif %}
 
             {% if filter_form %}
-              <button style="float: right; margin-right: 10px" data-toggle="modal" data-target="#filtersModal" class="btn btn-default">
-                <span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+              <button type="button" class="btn btn-outline-secondary float-end me-2" data-bs-toggle="modal" data-bs-target="#filtersModal">
+                {% include "rest_framework/icons/wrench.html" %}
                 {% trans "Filters" %}
               </button>
             {% endif %}
@@ -136,19 +136,19 @@
                 <h1>{{ name }}</h1>
               </div>
 
-              <div style="float:left">
+              <div class="float-start">
                 {% block description %}
                   {{ description }}
                 {% endblock %}
               </div>
 
               {% if paginator %}
-                <nav style="float: right">
+                <nav class="float-end">
                   {% get_pagination_html paginator %}
                 </nav>
               {% endif %}
 
-              <div class="request-info" style="clear: both" >
+              <div class="request-info clearfix" style="clear: both" >
                 {% if style == 'list' %}
                   {% include "rest_framework/admin/list.html" %}
                 {% else %}
@@ -157,7 +157,7 @@
               </div>
 
               {% if paginator %}
-                <nav style="float: right">
+                <nav class="float-end">
                   {% get_pagination_html paginator %}
                 </nav>
               {% endif %}
@@ -168,12 +168,12 @@
       </div><!-- ./wrapper -->
 
       <!-- Create Modal -->
-      <div class="modal fade" id="createModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true">
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-              <h4 class="modal-title" id="myModalLabel">Create</h4>
+              <h4 class="modal-title" id="createModalLabel">Create</h4>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form action="{{ request.get_full_path }}" method="POST" enctype="multipart/form-data" class="form-horizontal" novalidate>
               <div class="modal-body">
@@ -183,7 +183,7 @@
                 </fieldset>
               </div>
               <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
                 <button type="submit" class="btn btn-primary">Save</button>
               </div>
             </form>
@@ -192,12 +192,12 @@
       </div>
 
       <!-- Edit Modal -->
-      <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-              <h4 class="modal-title" id="myModalLabel">Edit</h4>
+              <h4 class="modal-title" id="editModalLabel">Edit</h4>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form action="{{ request.get_full_path }}" data-method="PUT" enctype="multipart/form-data" class="form-horizontal" novalidate>
               <div class="modal-body">
@@ -206,7 +206,7 @@
                 </fieldset>
               </div>
               <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
                 <button type="submit" class="btn btn-primary">Save</button>
               </div>
             </form>
@@ -216,12 +216,12 @@
 
       {% if error_form %}
         <!-- Errors Modal -->
-        <div class="modal" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
           <div class="modal-dialog">
             <div class="modal-content">
               <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="myModalLabel">{{ error_title }}</h4>
+                <h4 class="modal-title" id="errorModalLabel">{{ error_title }}</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
               <form action="{{ request.get_full_path }}" data-method="{{ request.method }}" enctype="multipart/form-data" class="form-horizontal" novalidate>
                 <div class="modal-body">
@@ -230,7 +230,7 @@
                   </fieldset>
                 </div>
                 <div class="modal-footer">
-                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                  <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
                   <button type="submit" class="btn btn-primary">Save</button>
                 </div>
               </form>
@@ -253,7 +253,7 @@
         <script src="{% static "rest_framework/js/jquery-3.7.1.min.js" %}"></script>
         <script src="{% static "rest_framework/js/ajax-form.js" %}"></script>
         <script src="{% static "rest_framework/js/csrf.js" %}"></script>
-        <script src="{% static "rest_framework/js/bootstrap.min.js" %}"></script>
+        <script src="{% static "rest_framework/js/bootstrap.bundle.min.js" %}"></script>
         <script src="{% static "rest_framework/js/prettify-min.js" %}"></script>
         <script src="{% static "rest_framework/js/default.js" %}"></script>
         <script src="{% static "rest_framework/js/load-ajax-form.js" %}"></script>

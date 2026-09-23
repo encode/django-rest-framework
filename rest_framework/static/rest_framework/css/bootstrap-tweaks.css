@@ -6,6 +6,17 @@ a single block in the template.
 
 */
 
+:root {
+  --bs-link-color: #A30000;
+  --bs-link-color-rgb: 163, 0, 0;
+  --bs-link-hover-color: #C20000;
+  --bs-link-hover-color-rgb: 194, 0, 0;
+  --bs-body-font-size: 14px;
+  --bs-body-line-height: 1.43;
+  --bs-body-color: #333333;
+  --bs-body-font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
 .form-actions {
   background: transparent;
   border-top-color: transparent;
@@ -13,15 +24,15 @@ a single block in the template.
   text-align: right;
 }
 
-#generic-content-form textarea {
+[id$="generic-content-form"] textarea {
   font-family:Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace;
   font-size: 80%;
 }
 
-.navbar-inverse .brand a {
+.navbar-dark .brand a {
   color: #999999;
 }
-.navbar-inverse .brand:hover a {
+.navbar-dark .brand:hover a {
   color: white;
   text-decoration: none;
 }
@@ -40,30 +51,43 @@ a single block in the template.
   border: none;
   border-top: 5px solid #A30000;
   border-radius: 0px;
+  min-height: 50px;
+  padding-top: 0;
+  padding-bottom: 0;
 }
 
-.navbar .nav li, .navbar .nav li a, .navbar .brand:hover {
+.navbar .navbar-brand {
+  color: #9D9D9D;
+}
+
+.navbar .navbar-brand:hover {
   color: white;
 }
 
-.nav-list > .active > a, .nav-list > .active > a:hover {
-  background: #2C2C2C;
+.navbar .navbar-nav .nav-link, .navbar .navbar-text, .navbar .nav-link.dropdown-toggle {
+  color: white;
+  line-height: 50px;
+  padding-top: 0;
+  padding-bottom: 0;
 }
 
-.navbar .dropdown-menu li a, .navbar .dropdown-menu li {
+.navbar .dropdown-menu .dropdown-item {
   color: #A30000;
 }
 
-.navbar .dropdown-menu li a:hover {
+.navbar .dropdown-menu .dropdown-item:hover {
   background: #EEEEEE;
   color: #C20000;
 }
 
 ul.breadcrumb {
   margin: 70px 0 0 0;
+  padding: 8px 15px;
+  background-color: #F5F5F5;
+  border-radius: 4px;
 }
 
-.breadcrumb li.active a {
+.breadcrumb-item.active a {
   color: #777;
 }
 
@@ -78,6 +102,10 @@ ul.breadcrumb {
 .pager>.disabled>a:hover,
 .pager>.disabled>a:focus {
   pointer-events: none;
+}
+
+.pager .page-link {
+  border-radius: 15px;
 }
 
 .pager .next {
@@ -125,9 +153,13 @@ html, body {
 }
 
 .well {
-  -webkit-box-shadow: none;
-     -moz-box-shadow: none;
-          box-shadow: none;
+  min-height: 20px;
+  padding: 19px;
+  margin-bottom: 20px;
+  background-color: #F5F5F5;
+  border: 1px solid #E3E3E3;
+  border-radius: 4px;
+  box-shadow: none;
 }
 
 .well .form-actions {
@@ -141,21 +173,19 @@ html, body {
 
 .nav-tabs {
   border: 0;
+  flex-direction: row-reverse;
 }
 
-.nav-tabs > li {
-  float: right;
-}
-
-.nav-tabs li a {
+.nav-tabs .nav-link {
   margin-right: 0;
 }
 
-.nav-tabs > .active > a {
+.nav-tabs .nav-link.active {
   background: #F5F5F5;
+  border-bottom-color: #F5F5F5;
 }
 
-.nav-tabs > .active > a:hover {
+.nav-tabs .nav-link.active:hover {
   background: #F5F5F5;
 }
 
@@ -196,6 +226,10 @@ footer a:hover {
   margin: 0;
 }
 
+.page-header h1 {
+  margin: 20px 0 10px;
+}
+
 /* custom general page styles */
 .hero-unit h1, .hero-unit h2 {
   color: #A30000;
@@ -203,10 +237,16 @@ footer a:hover {
 
 body a {
   color: #A30000;
+  text-decoration: none;
 }
 
 body a:hover {
   color: #c20000;
+  text-decoration: underline;
+}
+
+.btn:hover, .nav-link:hover, .page-link:hover, .dropdown-item:hover, .list-group-item:hover, .navbar-brand:hover {
+  text-decoration: none;
 }
 
 .request-info {
@@ -221,10 +261,14 @@ body a:hover {
   padding-top: 0 !important;
 }
 
-.horizontal-checkbox input {
+.horizontal-checkbox .form-check {
+  padding-left: 0;
+  padding-top: 7px;
+}
+
+.horizontal-checkbox .form-check-input {
   float: left;
-  width: 20px;
-  margin-top: 3px;
+  margin-left: 0;
 }
 
 .modal-footer form {
@@ -234,4 +278,34 @@ body a:hover {
 
 .pagination {
   margin: 5px 0 10px 0;
+}
+
+/* Restore the Bootstrap 3 look of preformatted text blocks */
+pre {
+  display: block;
+  padding: 9.5px;
+  color: #333333;
+  word-break: break-all;
+  word-wrap: break-word;
+  background-color: #F5F5F5;
+  border: 1px solid #CCCCCC;
+  border-radius: 4px;
+}
+
+/* Bootstrap 3 style form labels */
+.form-horizontal .col-form-label {
+  font-weight: bold;
+  text-align: right;
+}
+
+.form-horizontal legend.col-form-label {
+  font-weight: 300;
+}
+
+.form-label, legend {
+  font-weight: bold;
+}
+
+.has-error .col-form-label, .has-error .form-label {
+  color: var(--bs-form-invalid-color);
 }
