@@ -459,7 +459,7 @@ Generally we recommend a flat style for API representations where possible, but 
 
 ### The `queryset` argument
 
-The `queryset` argument is only ever required for *a writable* relationship field, in which case it is used for performing the model instance lookup, that maps from the primitive user input, into a model instance.
+The `queryset` argument is only ever required for a *writable* relationship field, in which case it is used for performing the model instance lookup, that maps from the primitive user input, into a model instance.
 
 In version 2.x a serializer class could *sometimes* automatically determine the `queryset` argument *if* a `ModelSerializer` class was being used.
 
