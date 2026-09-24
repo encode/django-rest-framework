@@ -3,9 +3,9 @@
 
 {% block body %}
 <body class="container">
-  <div class="container-fluid" style="margin-top: 30px">
-    <div>
-      <div class="card bg-light shadow-sm" style="width: 320px; margin-left: auto; margin-right: auto">
+  <div class="row justify-content-center mt-4">
+    <div class="col-sm-8 col-md-6 col-lg-4">
+      <div class="card bg-light shadow-sm">
         <div class="card-header">
           {% block branding %}<h3 class="fs-4 mb-0">Django REST framework</h3>{% endblock %}
         </div>
@@ -56,7 +56,7 @@
           </div>
         </div><!--/.card-body-->
       </div><!--/.card-->
-    </div>
-  </div><!-- /.container-fluid -->
+    </div><!-- /.col -->
+  </div><!-- /.row -->
 </body>
 {% endblock %}
