@@ -5,14 +5,11 @@
 <body class="container">
   <div class="container-fluid" style="margin-top: 30px">
     <div>
-      <div class="bg-light border rounded p-3" style="width: 320px; margin-left: auto; margin-right: auto">
-        <div>
-          <div>
-            {% block branding %}<h3 class="fs-4" style="margin: 0 0 20px;">Django REST framework</h3>{% endblock %}
-          </div>
+      <div class="card bg-light shadow-sm" style="width: 320px; margin-left: auto; margin-right: auto">
+        <div class="card-header">
+          {% block branding %}<h3 class="fs-4 mb-0">Django REST framework</h3>{% endblock %}
         </div>
-
-        <div>
+        <div class="card-body">
           <div>
             <form action="{% url 'rest_framework:login' %}" role="form" method="post">
               {% csrf_token %}
@@ -57,8 +54,8 @@
               </div>
             </form>
           </div>
-        </div>
-      </div><!--/.login box-->
+        </div><!--/.card-body-->
+      </div><!--/.card-->
     </div>
   </div><!-- /.container-fluid -->
 </body>
