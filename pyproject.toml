@@ -26,6 +26,7 @@ classifiers = [
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
   "Programming Language :: Python :: 3.14",
+  "Programming Language :: Python :: 3.15",
   "Topic :: Internet :: WWW/HTTP",
 ]
 dynamic = [ "version" ]
@@ -48,19 +49,24 @@ test = [
   "pytest==9.*",
   "pytest-cov==7.*",
   "pytest-django>=4.5.2,<5",
-
 ]
 docs = [
   # MkDocs to build our documentation.
   "mkdocs==1.6.1",
   "mkdocs-material[imaging]==9.7.7",
+  # MkDocs Redirects to add redirects to documentation
+  "mkdocs-redirects==1.2.3",
   # pylinkvalidator to check for broken links in documentation.
   "pylinkvalidator==0.3",
 ]
+django52 = [ "django>=5.2,<6.0" ]
+django60 = [ "django>=6.0,<6.1" ]
+django61 = [ "django>=6.1,<6.2" ]
+djangomain = [ "django @ https://github.com/django/django/archive/main.tar.gz" ]
 optional = [
   # Optional packages which may be used with REST framework.
   "django-filter",
-  "django-guardian>=2.4.0,<3.4",
+  "django-guardian>=2.4.0,<3.6",
   "inflection==0.5.1",
   "legacy-cgi; python_version>='3.13'",
   "markdown>=3.3.7",
@@ -70,33 +76,23 @@ optional = [
   "requests",
   "uritemplate",
 ]
-django52 = [ "django>=5.2,<6.0" ]
-django60 = [ "django>=6.0,<6.1" ]
-django61 = [ "django>=6.1,<6.2" ]
-djangomain = [ "django @ https://github.com/django/django/archive/main.tar.gz" ]
 
 [tool.setuptools]
-
-[tool.setuptools.dynamic]
-version = { attr = "rest_framework.__version__" }
-
-[tool.setuptools.packages.find]
-include = [ "rest_framework*" ]
-
-[tool.setuptools.package-data]
-"rest_framework" = [
-  "templates/**/*",
-  "static/**/*",
+packages.find.include = [ "rest_framework*" ]
+package-data.rest_framework = [
   "locale/**/*.mo",
+  "static/**/*",
+  "templates/**/*",
 ]
+dynamic.version = { attr = "rest_framework.__version__" }
 
 [tool.isort]
-skip = [ ".tox" ]
 atomic = true
 multi_line_output = 5
 extra_standard_library = [ "types" ]
-known_third_party = [ "pytest", "_pytest", "django", "uritemplate" ]
+known_third_party = [ "_pytest", "django", "pytest", "uritemplate" ]
 known_first_party = [ "rest_framework", "tests" ]
+skip = [ ".tox" ]
 
 [tool.flake8]
 extend-ignore = [ "E501", "W503", "W504", "B" ]
@@ -104,15 +100,15 @@ extend-select = [ "B006" ]
 banned-modules = "json = use from rest_framework.utils import json!"
 
 [tool.codespell]
-# Ref: https://github.com/codespell-project/codespell#using-a-config-file
-skip = "*/kickstarter-announcement.md,*.js,*.map,*.po,*.css,locale"
+builtin = "clear,rare,code,names,en-GB_to_en-US"
 ignore-words = "codespell-ignore-words.txt"
 ignore-words-list = "commitish"
-builtin = "clear,rare,code,names,en-GB_to_en-US"
+# Ref: https://github.com/codespell-project/codespell#using-a-config-file
+skip = "*/kickstarter-announcement.md,*.js,*.map,*.po,*.css,locale"
 
 [tool.pyproject-fmt]
-max_supported_python = "3.14"
 keep_full_version = true
+max_supported_python = "3.15"
 
 [tool.pytest]
 addopts = [
@@ -121,23 +117,21 @@ addopts = [
   "-ra",
   "--no-migrations",
 ]
-testpaths = [ "tests" ]
-markers = [
-  "requires_postgres: marks tests as requiring a PostgreSQL database backend",
-]
 filterwarnings = [
   "ignore:'cgi' is deprecated:DeprecationWarning",
 ]
+markers = [
+  "requires_postgres: marks tests as requiring a PostgreSQL database backend",
+]
+testpaths = [ "tests" ]
 
-[tool.coverage.run]
+[tool.coverage]
 # NOTE: source is ignored with pytest-cov (but uses the same).
-source = [ "." ]
-include = [ "rest_framework/*", "tests/*" ]
-branch = true
-
-[tool.coverage.report]
-include = [ "rest_framework/*", "tests/*" ]
-exclude_lines = [
+run.source = [ "." ]
+run.include = [ "rest_framework/*", "tests/*" ]
+run.branch = true
+report.include = [ "rest_framework/*", "tests/*" ]
+report.exclude_lines = [
   "pragma: no cover",
   "raise NotImplementedError",
 ]

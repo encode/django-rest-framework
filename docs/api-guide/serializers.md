@@ -1219,7 +1219,7 @@ The [html-json-forms][html-json-forms] package provides an algorithm and seriali
 
 ### DRF Writable Nested
 
-The [drf-writable-nested][drf-writable-nested] package provides writable nested model serializer which allows to create/update models with nested related data.
+The [drf-writable-nested][drf-writable-nested] package provides writable nested model serializer which allows creating/updating models with nested related data.
 
 ### DRF Encrypt Content
 
