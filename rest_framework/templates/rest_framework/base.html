@@ -196,7 +196,7 @@
                     </ul>
                   {% endif %}
 
-                  <div class="well tab-content">
+                  <div class="tab-content bg-light border rounded p-3">
                     {% if post_form %}
                       <div class="tab-pane" id="post-object-form" role="tabpanel">
                         {% with form=post_form %}
@@ -242,7 +242,7 @@
                     </ul>
                   {% endif %}
 
-                  <div class="well tab-content">
+                  <div class="tab-content bg-light border rounded p-3">
                     {% if put_form %}
                       <div class="tab-pane" id="put-object-form" role="tabpanel">
                         <form action="{{ request.get_full_path }}" data-method="PUT" enctype="multipart/form-data" class="form-horizontal" novalidate>

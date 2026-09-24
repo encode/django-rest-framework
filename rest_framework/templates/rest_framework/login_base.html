@@ -5,7 +5,7 @@
 <body class="container">
   <div class="container-fluid" style="margin-top: 30px">
     <div>
-      <div class="well" style="width: 320px; margin-left: auto; margin-right: auto">
+      <div class="bg-light border rounded p-3" style="width: 320px; margin-left: auto; margin-right: auto">
         <div>
           <div>
             {% block branding %}<h3 class="fs-4" style="margin: 0 0 20px;">Django REST framework</h3>{% endblock %}
@@ -48,7 +48,7 @@
 
               {% if form.non_field_errors %}
                 {% for error in form.non_field_errors %}
-                  <div class="well well-small text-danger" style="border: none">{{ error }}</div>
+                  <div class="text-danger mb-3">{{ error }}</div>
                 {% endfor %}
               {% endif %}
 
@@ -58,7 +58,7 @@
             </form>
           </div>
         </div>
-      </div><!--/.well-->
+      </div><!--/.login box-->
     </div>
   </div><!-- /.container-fluid -->
 </body>

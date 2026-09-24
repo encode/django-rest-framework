@@ -152,22 +152,16 @@ html, body {
   margin-bottom: 0;
 }
 
-.well {
-  min-height: 20px;
-  padding: 19px;
+.tab-content {
   margin-bottom: 20px;
-  background-color: #F5F5F5;
-  border: 1px solid #E3E3E3;
-  border-radius: 4px;
-  box-shadow: none;
 }
 
-.well .form-actions {
+.tab-content .form-actions {
   padding-bottom: 0;
   margin-bottom: 0;
 }
 
-.well form {
+.tab-content form {
   margin-bottom: 0;
 }
 
@@ -181,12 +175,12 @@ html, body {
 }
 
 .nav-tabs .nav-link.active {
-  background: #F5F5F5;
-  border-bottom-color: #F5F5F5;
+  background: var(--bs-light);
+  border-bottom-color: var(--bs-light);
 }
 
 .nav-tabs .nav-link.active:hover {
-  background: #F5F5F5;
+  background: var(--bs-light);
 }
 
 .tabbable.first-tab-active .tab-content {
