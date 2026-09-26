@@ -1131,7 +1131,10 @@ class TestIntegerField(FieldValues):
     invalid_inputs = {
         0.5: ['A valid integer is required.'],
         'abc': ['A valid integer is required.'],
-        '0.5': ['A valid integer is required.']
+        '0.5': ['A valid integer is required.'],
+        'inf': ['A valid integer is required.'],
+        'nan': ['A valid integer is required.'],
+        '1e400': ['A valid integer is required.'],
     }
     outputs = {
         '1': 1,
@@ -1241,7 +1244,13 @@ class TestFloatField(FieldValues):
         0.0: 0.0,
     }
     invalid_inputs = {
-        'abc': ["A valid number is required."]
+        'abc': ["A valid number is required."],
+        'nan': ["A valid number is required."],
+        'inf': ["A valid number is required."],
+        '-inf': ["A valid number is required."],
+        '1e400': ["A valid number is required."],
+        float('nan'): ["A valid number is required."],
+        float('inf'): ["A valid number is required."],
     }
     outputs = {
         '1': 1.0,
@@ -2557,6 +2566,74 @@ class TestDictField(FieldValues):
             field.run_validation({})
 
         assert exc_info.value.detail == ['This dictionary may not be empty.']
+
+    def test_query_dict_input_with_dot_separated_keys(self):
+        """
+        DictField should correctly parse HTML form (QueryDict) input
+        with dot-separated keys.
+        """
+        class TestSerializer(serializers.Serializer):
+            data = serializers.DictField(child=serializers.CharField())
+
+        serializer = TestSerializer(data=QueryDict('data.a=1&data.b=2'))
+        assert serializer.is_valid(), serializer.errors
+        assert serializer.validated_data == {'data': {'a': '1', 'b': '2'}}
+
+    def test_query_dict_input_no_values_uses_default(self):
+        """
+        When no matching keys are present in the QueryDict and a default
+        is set, the field should return the default value.
+        """
+        class TestSerializer(serializers.Serializer):
+            a = serializers.IntegerField(required=True)
+            data = serializers.DictField(default=lambda: {'x': 'y'})
+
+        serializer = TestSerializer(data=QueryDict('a=1'))
+        assert serializer.is_valid(), serializer.errors
+        assert serializer.validated_data == {'a': 1, 'data': {'x': 'y'}}
+
+    def test_query_dict_input_no_values_no_default_and_not_required(self):
+        """
+        When no matching keys are present in the QueryDict, there is no
+        default, and the field is not required, the field should be
+        skipped entirely from validated_data.
+        """
+        class TestSerializer(serializers.Serializer):
+            data = serializers.DictField(required=False)
+
+        serializer = TestSerializer(data=QueryDict(''))
+        assert serializer.is_valid(), serializer.errors
+        assert serializer.validated_data == {}
+
+    def test_query_dict_input_no_values_required(self):
+        """
+        When no matching keys are present in the QueryDict and the field
+        is required, validation should fail.
+        """
+        class TestSerializer(serializers.Serializer):
+            data = serializers.DictField(required=True)
+
+        serializer = TestSerializer(data=QueryDict(''))
+        assert not serializer.is_valid()
+        assert 'data' in serializer.errors
+
+    def test_partial_update_can_clear_html_dict_field(self):
+        """
+        Test that a partial update can clear a DictField when provided with an
+        empty string value through a QueryDict.
+        """
+        class TestSerializer(serializers.Serializer):
+            field_name = serializers.DictField(required=False)
+            other_field = serializers.CharField(required=False)
+
+        serializer = TestSerializer(
+            data=QueryDict('field_name='),
+            partial=True,
+        )
+        assert serializer.is_valid()
+        assert 'field_name' in serializer.validated_data
+        assert serializer.validated_data['field_name'] == {}
+        assert 'other_field' not in serializer.validated_data
 
 
 class TestNestedDictField(FieldValues):

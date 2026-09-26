@@ -160,6 +160,52 @@ Once you've made a pull request take a look at the build status in the GitHub in
 
 Sometimes, in order to ensure your code works on various different versions of Django, Python or third party libraries, you'll need to run slightly different code depending on the environment.  Any code that branches in this way should be isolated into the `compat.py` module, and should provide a single common interface that the rest of the codebase can use.
 
+### Deprecating a feature
+
+REST framework follows a formal [deprecation policy][deprecation-policy]: a feature deprecated during the development of `3.X` keeps working until `3.X+2` removes it. In practice this means that a pull request that deprecates something should not change any behavior, only warn about the change to come.
+
+The warning classes live in `rest_framework/deprecation.py`, and are named after the release that removes the feature. For example, during the development of 3.0 you'll find:
+
+* `RemovedInDRF31Warning`, a `DeprecationWarning`, aliased as `RemovedInNextDRFVersionWarning`. Features flagged with it were deprecated one cycle ago, and are removed in the next release.
+* `RemovedInDRF32Warning`, a `PendingDeprecationWarning`, aliased as `RemovedAfterNextDRFVersionWarning`. This is the class **new deprecations** should use.
+
+To deprecate a feature:
+
+1. Keep the existing behavior working, and raise the pending deprecation warning from the deprecated code path. Refer to the warning class by its concrete name rather than the alias, so that it's easy to grep for everything that has to go when the removal comes around.
+
+    ```python
+    import warnings
+
+    from rest_framework.deprecation import RemovedInDRF32Warning
+
+    warnings.warn(
+        "The `foo` argument is deprecated and will be removed in DRF 3.2. "
+        "Use `bar` instead.",
+        RemovedInDRF32Warning,
+        stacklevel=2,
+    )
+    ```
+
+    The message should say what is deprecated, which release removes it, and what to use instead. Pick a `stacklevel` that points the warning at the user's code rather than at REST framework internals.
+
+2. If the deprecation can be worked around ahead of time, consider adding a setting that opts into the new behavior early, and mention it in the warning message.
+
+3. Add a test asserting that the warning is raised, and update the existing tests of the old behavior to expect it:
+
+    ```python
+    with pytest.warns(RemovedInDRF32Warning, match="Use `bar` instead"):
+        ...
+    ```
+
+4. Update the documentation for the feature, flagging the deprecation with an admonition:
+
+    ```
+    !!! warning
+        The `foo` argument is deprecated and will be removed in DRF 3.2. Use `bar` instead.
+    ```
+
+Removing a deprecated feature is the mirror image, and happens as part of the release process. When 3.1 is released, everything raising a `RemovedInDRF31Warning` is deleted, along with the class itself and the documentation of the deprecated behavior, `RemovedInDRF32Warning` is escalated to subclass `DeprecationWarning`, a fresh `RemovedInDRF33Warning` is added for the next cycle's deprecations, and the two aliases are moved on to point at them.
+
 ## Documentation
 
 The documentation for REST framework is built from the [Markdown][markdown] source files in [the docs directory][docs].
@@ -244,3 +290,4 @@ The documentation theme styles `info`, `warning`, `tip` and `danger` admonition 
 [repo]: https://github.com/encode/django-rest-framework
 [how-to-fork]: https://help.github.com/articles/fork-a-repo/
 [admonition]: https://python-markdown.github.io/extensions/admonition/
+[deprecation-policy]: release-notes.md#deprecation-policy

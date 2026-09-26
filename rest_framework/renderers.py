@@ -790,8 +790,20 @@ class AdminRenderer(BrowsableAPIRenderer):
             self.error_title = {'POST': 'Create', 'PUT': 'Edit'}.get(request.method, 'Errors')
 
             with override_method(view, request, 'GET') as request:
-                response = view.get(request, *view.args, **view.kwargs)
-            data = response.data
+                # Only simulate the GET request if the current user is
+                # actually permitted to perform it. Otherwise, we could leak
+                # data that GET permissions are meant to protect.
+                try:
+                    view.check_permissions(request)
+                except exceptions.APIException:
+                    # The user isn't permitted to perform the GET request, so
+                    # we must not expose the data it would return. Render only
+                    # the error data instead of the detail/list representation.
+                    if not isinstance(data, dict):
+                        data = {api_settings.NON_FIELD_ERRORS_KEY: data}
+                else:
+                    response = view.get(request, *view.args, **view.kwargs)
+                    data = response.data
 
         template = loader.get_template(self.template)
         context = self.get_context(data, accepted_media_type, renderer_context)

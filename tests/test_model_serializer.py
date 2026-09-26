@@ -13,10 +13,11 @@ import sys
 import tempfile
 
 import pytest
-from django.core.exceptions import ImproperlyConfigured
+from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.core.serializers.json import DjangoJSONEncoder
 from django.core.validators import (
-    MaxValueValidator, MinLengthValidator, MinValueValidator
+    MaxLengthValidator, MaxValueValidator, MinLengthValidator,
+    MinValueValidator
 )
 from django.db import models
 from django.db.models.signals import m2m_changed
@@ -435,9 +436,90 @@ class TestGenericIPAddressFieldValidation(TestCase):
 
         s = TestSerializer(data={'address': 'not an ip address'})
         self.assertFalse(s.is_valid())
-        self.assertEqual(1, len(s.errors['address']),
-                         'Unexpected number of validation errors: '
-                         '{}'.format(s.errors))
+        self.assertEqual(s.errors['address'],
+                         ['Enter a valid IPv4 or IPv6 address.'])
+
+    def test_ip_address_validation_with_custom_validator(self):
+        class IPAddressFieldModel(models.Model):
+            address = models.GenericIPAddressField(
+                # MaxLengthValidator is an unhashable type
+                validators=[MaxLengthValidator(15)],
+            )
+
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = IPAddressFieldModel
+                fields = '__all__'
+
+        s = TestSerializer(data={'address': 'not an ip address'})
+        self.assertFalse(s.is_valid())
+        self.assertEqual(
+            s.errors['address'],
+            [
+                'Ensure this value has at most 15 characters (it has 17).',
+                'Enter a valid IPv4 or IPv6 address.',
+            ],
+        )
+
+    def test_ip_address_validation_with_protocol_ipv4(self):
+        class IPv4AddressFieldModel(models.Model):
+            address = models.GenericIPAddressField(protocol='IPv4')
+
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = IPv4AddressFieldModel
+                fields = '__all__'
+
+        expected = dedent("""
+            TestSerializer():
+                id = IntegerField(label='ID', read_only=True)
+                address = IPAddressField(protocol='IPv4')
+        """)
+        self.assertEqual(repr(TestSerializer()), expected)
+
+        s = TestSerializer(data={'address': 'not an ip address'})
+        self.assertFalse(s.is_valid())
+        self.assertEqual(s.errors['address'],
+                         ['Enter a valid IPv4 address.'])
+
+        # An IPv6 address is not valid for an IPv4-only field.
+        s = TestSerializer(data={'address': '2001:db8::1'})
+        self.assertFalse(s.is_valid())
+        self.assertEqual(s.errors['address'],
+                         ['Enter a valid IPv4 address.'])
+
+        s = TestSerializer(data={'address': '192.0.2.1'})
+        self.assertTrue(s.is_valid(), s.errors)
+
+    def test_ip_address_validation_with_protocol_ipv6(self):
+        class IPv6AddressFieldModel(models.Model):
+            address = models.GenericIPAddressField(protocol='IPv6')
+
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = IPv6AddressFieldModel
+                fields = '__all__'
+
+        expected = dedent("""
+            TestSerializer():
+                id = IntegerField(label='ID', read_only=True)
+                address = IPAddressField(protocol='IPv6')
+        """)
+        self.assertEqual(repr(TestSerializer()), expected)
+
+        s = TestSerializer(data={'address': 'not an ip address'})
+        self.assertFalse(s.is_valid())
+        self.assertEqual(s.errors['address'],
+                         ['Enter a valid IPv6 address.'])
+
+        # An IPv4 address is not valid for an IPv6-only field.
+        s = TestSerializer(data={'address': '192.0.2.1'})
+        self.assertFalse(s.is_valid())
+        self.assertEqual(s.errors['address'],
+                         ['Enter a valid IPv6 address.'])
+
+        s = TestSerializer(data={'address': '2001:db8::1'})
+        self.assertTrue(s.is_valid(), s.errors)
 
 
 @pytest.mark.skipif('not postgres_fields')
@@ -1416,3 +1498,39 @@ class Issue6751Test(TestCase):
         serializer.save()
 
         self.assertEqual(instance.char_field, 'value changed by signal')
+
+
+class OverflowModel(models.Model):
+    value = models.IntegerField(unique=True, validators=[
+        MaxValueValidator(9223372036854775807),
+    ])
+
+
+class Issue7134Test(TestCase):
+
+    def test_model(self):
+        """
+        Assert that Django can validate the overflow model.
+        """
+        with self.assertRaises(ValidationError):
+            OverflowModel(value=9223372036854775808).full_clean()
+
+    def test_serializer(self):
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = OverflowModel
+                fields = '__all__'
+
+            def validate_value(self, value):
+                assert False
+
+        serializer = TestSerializer(data={'value': 9223372036854775808})
+
+        with self.assertRaises(serializers.ValidationError) as ctx:
+            serializer.is_valid(raise_exception=True)
+
+        # Check that the error code of the validation error
+        self.assertEqual(
+            [error.code for error in ctx.exception.detail['value']],
+            ['max_value'],
+        )

@@ -10,14 +10,16 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.middleware import AuthenticationMiddleware
 from django.contrib.auth.models import User
 from django.contrib.sessions.middleware import SessionMiddleware
+from django.core.exceptions import RequestDataTooBig
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.http.request import RawPostDataException
 from django.test import TestCase, override_settings
 from django.urls import path
 
 from rest_framework import status
 from rest_framework.authentication import SessionAuthentication
-from rest_framework.parsers import BaseParser, FormParser, MultiPartParser
+from rest_framework.parsers import (
+    BaseParser, FormParser, JSONParser, MultiPartParser
+)
 from rest_framework.request import Request, WrappedAttributeError
 from rest_framework.response import Response
 from rest_framework.test import APIClient, APIRequestFactory
@@ -143,6 +145,69 @@ class TestContentParsing(TestCase):
 
         with self.assertRaisesMessage(WrappedAttributeError, expected_message):
             request.data
+
+
+class TestDataUploadMaxMemorySize(TestCase):
+    expected_message = 'Request body exceeded settings.DATA_UPLOAD_MAX_MEMORY_SIZE.'
+
+    @override_settings(DATA_UPLOAD_MAX_MEMORY_SIZE=10)
+    def test_request_data_with_oversized_json_raises_error(self):
+        request = Request(factory.post(
+            '/',
+            b'{"qwerty": "uiop"}',
+            content_type='application/json'
+        ))
+        request.parsers = (JSONParser(),)
+
+        with self.assertRaisesMessage(RequestDataTooBig, self.expected_message):
+            request.data
+
+    @override_settings(DATA_UPLOAD_MAX_MEMORY_SIZE=10)
+    def test_request_data_with_oversized_form_raises_error(self):
+        request = Request(factory.post(
+            '/',
+            b'qwerty=uiop&asdf=ghjkl',
+            content_type='application/x-www-form-urlencoded'
+        ))
+        request.parsers = (FormParser(),)
+
+        with self.assertRaisesMessage(RequestDataTooBig, self.expected_message):
+            request.data
+
+    @override_settings(DATA_UPLOAD_MAX_MEMORY_SIZE=1024)
+    def test_request_data_with_small_bodies_continues_to_parse(self):
+        json_request = Request(factory.post(
+            '/',
+            b'{"qwerty": "uiop"}',
+            content_type='application/json'
+        ))
+        json_request.parsers = (JSONParser(),)
+        assert json_request.data == {'qwerty': 'uiop'}
+
+        form_request = Request(factory.post(
+            '/',
+            b'qwerty=uiop',
+            content_type='application/x-www-form-urlencoded'
+        ))
+        form_request.parsers = (FormParser(),)
+        assert form_request.data['qwerty'] == 'uiop'
+
+    @override_settings(DATA_UPLOAD_MAX_MEMORY_SIZE=10)
+    def test_request_data_with_multipart_file_upload_is_unchanged(self):
+        upload = SimpleUploadedFile('file.txt', b'x' * 32)
+        request = Request(factory.post('/', {'upload': upload}))
+        request.parsers = (FormParser(), MultiPartParser())
+
+        assert request.data['upload'].size == 32
+
+    @override_settings(DATA_UPLOAD_MAX_MEMORY_SIZE=10)
+    def test_request_data_with_custom_parser_keeps_streaming_path(self):
+        content = b'x' * 32
+        request = Request(factory.post('/', content, content_type='text/plain'))
+        request.parsers = (PlainTextParser(),)
+
+        assert request.data == content
+        assert not hasattr(request._request, '_body')
 
 
 class MockView(APIView):
@@ -326,21 +391,19 @@ class TestHttpRequest(TestCase):
             request.inner_property
 
     @override_settings(ROOT_URLCONF='tests.test_request')
-    def test_duplicate_request_stream_parsing_exception(self):
+    def test_duplicate_request_json_data_access(self):
         """
-        Check assumption that duplicate stream parsing will result in a
-        `RawPostDataException` being raised.
+        JSON data is read via Django's request.body, so duplicate processing
+        can reuse the cached body.
         """
         response = APIClient().post('/echo/', data={'a': 'b'}, format='json')
         request = response._request
 
-        # ensure that request stream was consumed by json parser
         assert request.content_type.startswith('application/json')
         assert response.data == {'a': 'b'}
 
-        # pass same HttpRequest to view, stream already consumed
-        with pytest.raises(RawPostDataException):
-            EchoView.as_view()(request._request)
+        response = EchoView.as_view()(request._request)
+        assert response.data == {'a': 'b'}
 
     @override_settings(ROOT_URLCONF='tests.test_request')
     def test_duplicate_request_form_data_access(self):

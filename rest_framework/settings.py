@@ -86,6 +86,7 @@ DEFAULTS = {
     # Exception handling
     'EXCEPTION_HANDLER': 'rest_framework.views.exception_handler',
     'NON_FIELD_ERRORS_KEY': 'non_field_errors',
+    'LIST_SERIALIZER_ERRORS_AS_DICT': True,
 
     # Testing
     'TEST_REQUEST_RENDERER_CLASSES': [
