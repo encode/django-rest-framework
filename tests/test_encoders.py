@@ -4,7 +4,12 @@ from uuid import uuid4
 
 import pytest
 from django.test import TestCase
-from django.utils.timezone import utc
+
+try:
+    from django.utils.timezone import utc
+except ImportError:
+    # Django 6.1+ renamed utc to UTC
+    from django.utils.timezone import UTC as utc
 
 from rest_framework.compat import coreapi
 from rest_framework.utils.encoders import JSONEncoder

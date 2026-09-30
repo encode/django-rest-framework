@@ -27,8 +27,13 @@ from django.utils.duration import duration_string
 from django.utils.encoding import is_protected_type, smart_str
 from django.utils.formats import localize_input, sanitize_separators
 from django.utils.ipv6 import clean_ipv6_address
-from django.utils.timezone import utc
 from django.utils.translation import gettext_lazy as _
+
+try:
+    from django.utils.timezone import utc
+except ImportError:
+    # Django 6.1+ renamed utc to UTC
+    from django.utils.timezone import UTC as utc
 
 try:
     from pytz.exceptions import InvalidTimeError
@@ -913,7 +918,12 @@ class IPAddressField(CharField):
         self.protocol = protocol.lower()
         self.unpack_ipv4 = (self.protocol == 'both')
         super().__init__(**kwargs)
-        validators, error_message = ip_address_validators(protocol, self.unpack_ipv4)
+        validators_result = ip_address_validators(protocol, self.unpack_ipv4)
+        # Django 6.1+ returns a list, earlier versions return (validators, error_message)
+        if isinstance(validators_result, tuple):
+            validators, error_message = validators_result
+        else:
+            validators = validators_result
         self.validators.extend(validators)
 
     def to_internal_value(self, data):

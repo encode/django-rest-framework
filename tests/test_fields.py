@@ -15,7 +15,13 @@ except ImportError:
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.http import QueryDict
 from django.test import TestCase, override_settings
-from django.utils.timezone import activate, deactivate, override, utc
+from django.utils.timezone import activate, deactivate, override
+
+try:
+    from django.utils.timezone import utc
+except ImportError:
+    # Django 6.1+ renamed utc to UTC
+    from django.utils.timezone import UTC as utc
 
 import rest_framework
 from rest_framework import exceptions, serializers
@@ -1460,6 +1466,7 @@ class TestTZWithDateTimeField(FieldValues):
         cls.field = serializers.DateTimeField(default_timezone=kolkata)
 
 
+@pytest.mark.skipif(pytz is None, reason='pytz not installed')
 @override_settings(TIME_ZONE='UTC', USE_TZ=True)
 class TestDefaultTZDateTimeField(TestCase):
     """
@@ -1512,29 +1519,35 @@ class TestCustomTimezoneForDateTimeField(TestCase):
         assert rendered_date == rendered_date_in_timezone
 
 
-@pytest.mark.skipif(pytz is None, reason='pytz not installed')
-class TestNaiveDayLightSavingTimeTimeZoneDateTimeField(FieldValues):
-    """
-    Invalid values for `DateTimeField` with datetime in DST shift (non-existing or ambiguous) and timezone with DST.
-    Timezone America/New_York has DST shift from 2017-03-12T02:00:00 to 2017-03-12T03:00:00 and
-     from 2017-11-05T02:00:00 to 2017-11-05T01:00:00 in 2017.
-    """
-    valid_inputs = {}
-    invalid_inputs = {
-        '2017-03-12T02:30:00': ['Invalid datetime for the timezone "America/New_York".'],
-        '2017-11-05T01:30:00': ['Invalid datetime for the timezone "America/New_York".']
-    }
-    outputs = {}
+if pytz is not None:
+    @pytest.mark.skipif(False, reason='pytz is installed')
+    class TestNaiveDayLightSavingTimeTimeZoneDateTimeField(FieldValues):
+        """
+        Invalid values for `DateTimeField` with datetime in DST shift (non-existing or ambiguous) and timezone with DST.
+        Timezone America/New_York has DST shift from 2017-03-12T02:00:00 to 2017-03-12T03:00:00 and
+         from 2017-11-05T02:00:00 to 2017-11-05T01:00:00 in 2017.
+        """
+        valid_inputs = {}
+        invalid_inputs = {
+            '2017-03-12T02:30:00': ['Invalid datetime for the timezone "America/New_York".'],
+            '2017-11-05T01:30:00': ['Invalid datetime for the timezone "America/New_York".']
+        }
+        outputs = {}
 
-    class MockTimezone(pytz.BaseTzInfo):
-        @staticmethod
-        def localize(value, is_dst):
-            raise pytz.InvalidTimeError()
+        class MockTimezone(pytz.BaseTzInfo):
+            @staticmethod
+            def localize(value, is_dst):
+                raise pytz.InvalidTimeError()
 
-        def __str__(self):
-            return 'America/New_York'
+            def __str__(self):
+                return 'America/New_York'
 
-    field = serializers.DateTimeField(default_timezone=MockTimezone())
+        field = serializers.DateTimeField(default_timezone=MockTimezone())
+else:
+    @pytest.mark.skip(reason='pytz not installed')
+    class TestNaiveDayLightSavingTimeTimeZoneDateTimeField:
+        """Skipped: pytz not installed"""
+        pass
 
 
 class TestTimeField(FieldValues):
