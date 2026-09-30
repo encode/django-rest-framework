@@ -92,13 +92,13 @@ The following view demonstrates an example of using a serializer in a template f
 
 The `render_form` tag takes an optional `template_pack` argument, that specifies which template directory should be used for rendering the form and form fields.
 
-REST framework includes three built-in template packs, all based on Bootstrap 3. The built-in styles are `horizontal`, `vertical`, and `inline`. The default style is `horizontal`. To use any of these template packs you'll want to also include the Bootstrap 3 CSS.
+REST framework includes three built-in template packs, all based on Bootstrap 5. The built-in styles are `horizontal`, `vertical`, and `inline`. The default style is `horizontal`. To use any of these template packs you'll want to also include the Bootstrap 5 CSS.
 
-The following HTML will link to a CDN hosted version of the Bootstrap 3 CSS:
+The following HTML will link to a CDN hosted version of the Bootstrap 5 CSS:
 
     <head>
         …
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css">
     </head>
 
 Third party packages may include alternate template packs, by bundling a template directory containing the necessary form and field templates.
@@ -131,7 +131,7 @@ Presents form labels above their corresponding control inputs, using the standar
     <form action="{% url 'login' %}" method="post" novalidate>
         {% csrf_token %}
         {% render_form serializer template_pack='rest_framework/vertical' %}
-        <button type="submit" class="btn btn-default">Sign in</button>
+        <button type="submit" class="btn btn-secondary">Sign in</button>
     </form>
 
 ![Vertical form example](../img/vertical.png)
@@ -151,9 +151,9 @@ Presents labels and controls alongside each other, using a 2/10 column split.
     <form class="form-horizontal" action="{% url 'login' %}" method="post" novalidate>
         {% csrf_token %}
         {% render_form serializer %}
-        <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-10">
-                <button type="submit" class="btn btn-default">Sign in</button>
+        <div class="row mb-3">
+            <div class="offset-sm-2 col-sm-10">
+                <button type="submit" class="btn btn-secondary">Sign in</button>
             </div>
         </div>
     </form>
@@ -170,10 +170,10 @@ A compact form style that presents all the controls inline.
 
     ...
 
-    <form class="form-inline" action="{% url 'login' %}" method="post" novalidate>
+    <form class="d-flex align-items-center gap-2" action="{% url 'login' %}" method="post" novalidate>
         {% csrf_token %}
         {% render_form serializer template_pack='rest_framework/inline' %}
-        <button type="submit" class="btn btn-default">Sign in</button>
+        <button type="submit" class="btn btn-secondary">Sign in</button>
     </form>
 
 ![Inline form example](../img/inline.png)
