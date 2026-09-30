@@ -3,9 +3,15 @@ import os
 import re
 import uuid
 from decimal import ROUND_DOWN, ROUND_UP, Decimal
+from zoneinfo import ZoneInfo
 
 import pytest
-import pytz
+
+try:
+    import pytz
+except ImportError:
+    pytz = None
+
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.http import QueryDict
 from django.test import TestCase, override_settings
@@ -1431,6 +1437,7 @@ class TestNaiveDateTimeField(FieldValues):
     field = serializers.DateTimeField(default_timezone=None)
 
 
+@pytest.mark.skipif(pytz is None, reason='pytz not installed')
 class TestTZWithDateTimeField(FieldValues):
     """
     Valid and invalid values for `DateTimeField` when not using UTC as the timezone.
@@ -1505,6 +1512,7 @@ class TestCustomTimezoneForDateTimeField(TestCase):
         assert rendered_date == rendered_date_in_timezone
 
 
+@pytest.mark.skipif(pytz is None, reason='pytz not installed')
 class TestNaiveDayLightSavingTimeTimeZoneDateTimeField(FieldValues):
     """
     Invalid values for `DateTimeField` with datetime in DST shift (non-existing or ambiguous) and timezone with DST.

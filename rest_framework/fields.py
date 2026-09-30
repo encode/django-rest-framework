@@ -29,7 +29,13 @@ from django.utils.formats import localize_input, sanitize_separators
 from django.utils.ipv6 import clean_ipv6_address
 from django.utils.timezone import utc
 from django.utils.translation import gettext_lazy as _
-from pytz.exceptions import InvalidTimeError
+
+try:
+    from pytz.exceptions import InvalidTimeError
+except ImportError:
+    # pytz is optional in DRF 3.18+
+    class InvalidTimeError(Exception):
+        pass
 
 from rest_framework import (
     ISO_8601, RemovedInDRF313Warning, RemovedInDRF314Warning
