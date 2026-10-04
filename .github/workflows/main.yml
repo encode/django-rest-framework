@@ -73,7 +73,7 @@ jobs:
         tox -e base,dist,docs
 
     - name: Upload coverage
-      uses: codecov/codecov-action@v7.1.0
+      uses: codecov/codecov-action@v7.1.1
       with:
         env_vars: TOXENV,DJANGO
 
