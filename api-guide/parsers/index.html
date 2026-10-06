@@ -3284,7 +3284,16 @@ urlpatterns = [
 <p>Depending on the request's <code>Content-Type:</code> header, this may be more specific than the renderer's <code>media_type</code> attribute, and may include media type parameters.  For example <code>"text/plain; charset=utf-8"</code>.</p>
 <h3 id="parser_context">parser_context<a class="headerlink" href="#parser_context" title="Permanent link">&para;</a></h3>
 <p>Optional.  If supplied, this argument will be a dictionary containing any additional context that may be required to parse the request content.</p>
-<p>By default this will include the following keys: <code>view</code>, <code>request</code>, <code>args</code>, <code>kwargs</code>.</p>
+<p>By default, this will include the following keys: <code>view</code>, <code>request</code>, <code>args</code>, <code>kwargs</code>, <code>encoding</code>.</p>
+<p>The <code>encoding</code> key holds the charset named in the request's <code>Content-Type:</code> header, or <code>settings.DEFAULT_CHARSET</code> if there is none.  If your parser decodes the request body as text, resolve it with <code>get_encoding()</code> rather than reading the key directly:</p>
+<div class="language-text highlight"><pre><span></span><code>from rest_framework.parsers import get_encoding
+
+def parse(self, stream, media_type=None, parser_context=None):
+    parser_context = parser_context or {}
+    encoding = get_encoding(parser_context)
+    return stream.read().decode(encoding)
+</code></pre></div>
+<p>Clients can name any charset that <code>codecs.lookup()</code> resolves, including bytes-to-bytes codecs such as <code>bz2_codec</code> that decompress rather than decode.  <code>get_encoding()</code> rejects those with a <code>ParseError</code>, so a small request body cannot expand past <code>DATA_UPLOAD_MAX_MEMORY_SIZE</code> after Django has already checked it.</p>
 <h3 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h3>
 <p>The following is an example plaintext parser that will populate the <code>request.data</code> property with a string representing the body of the request.</p>
 <div class="language-text highlight"><pre><span></span><code>class PlainTextParser(BaseParser):
