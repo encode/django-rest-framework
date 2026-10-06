@@ -1,5 +1,6 @@
 import io
 import math
+from urllib.parse import quote
 
 import pytest
 from django import forms
@@ -107,16 +108,18 @@ class TestFileUploadParser(TestCase):
 
     def test_get_encoded_filename(self):
         parser = FileUploadParser()
+        # RFC 8187 requires non-ASCII to be percent-encoded: "value-chars = *( pct-encoded / attr-char )"
+        encoded = quote('ÀĥƦ.txt')
 
-        self.__replace_content_disposition('inline; filename*=utf-8\'\'ÀĥƦ.txt')
+        self.__replace_content_disposition(f"inline; filename*=utf-8''{encoded}")
         filename = parser.get_filename(self.stream, None, self.parser_context)
         assert filename == 'ÀĥƦ.txt'
 
-        self.__replace_content_disposition('inline; filename=fallback.txt; filename*=utf-8\'\'ÀĥƦ.txt')
+        self.__replace_content_disposition(f"inline; filename=fallback.txt; filename*=utf-8''{encoded}")
         filename = parser.get_filename(self.stream, None, self.parser_context)
         assert filename == 'ÀĥƦ.txt'
 
-        self.__replace_content_disposition('inline; filename=fallback.txt; filename*=utf-8\'en-us\'ÀĥƦ.txt')
+        self.__replace_content_disposition(f"inline; filename=fallback.txt; filename*=utf-8'en-us'{encoded}")
         filename = parser.get_filename(self.stream, None, self.parser_context)
         assert filename == 'ÀĥƦ.txt'
 
