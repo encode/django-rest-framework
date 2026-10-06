@@ -65,9 +65,9 @@ You can determine your currently installed version using `pip show`:
 
 #### Security
 
-* Harden content negotiation against large `Accept` headers by [@jisung-02](https://github.com/jisung-02) in [148ab65](https://github.com/encode/django-rest-framework/commit/148ab65). Thanks [@jisung-02](https://github.com/jisung-02) for the report.
-* Refuse non-text encoding charsets by [@syrull](https://github.com/syrull) in [3c26345](https://github.com/encode/django-rest-framework/commit/3c26345). Thanks [@syrull](https://github.com/syrull) and [@jisung-02](https://github.com/jisung-02) who both reported the problem.
-* Make `TokenProxy` deletion actually delete the token by [@syrull](https://github.com/syrull) in [af3fabf](https://github.com/encode/django-rest-framework/commit/af3fabf). Thanks [@syrull](https://github.com/syrull) for the report.
+* GHSA-33wh-fxxf-88vv: Harden content negotiation against large `Accept` headers by [@jisung-02](https://github.com/jisung-02) in [148ab65](https://github.com/encode/django-rest-framework/commit/148ab65). Thanks [@jisung-02](https://github.com/jisung-02) for the report.
+* GHSA-3547-9m27-7rxg: Refuse non-text encoding charsets by [@syrull](https://github.com/syrull) in [3c26345](https://github.com/encode/django-rest-framework/commit/3c26345). Thanks [@syrull](https://github.com/syrull) and [@jisung-02](https://github.com/jisung-02) who both reported the problem.
+* GHSA-xw6w-gcfp-cf8m: Make `TokenProxy` deletion actually delete the token by [@syrull](https://github.com/syrull) in [af3fabf](https://github.com/encode/django-rest-framework/commit/af3fabf). Thanks [@syrull](https://github.com/syrull) for the report.
 
 #### Features
 
