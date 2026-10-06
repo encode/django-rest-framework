@@ -65,7 +65,7 @@ You can determine your currently installed version using `pip show`:
 
 #### Bug fixes
 
-* Restore `order_by_precedence` from 3.18.1 to fix broken return value by [@browniebroke](https://github.com/browniebroke) in [#10066](https://github.com/encode/django-rest-framework/pull/10066)
+* Revert return value of `order_by_precedence` from 3.18.1 by [@browniebroke](https://github.com/browniebroke) in [#10066](https://github.com/encode/django-rest-framework/pull/10066). The API was changed by mistake in 3.18.2.
 
 **Full Changelog**: [3.18.2...3.18.3](https://github.com/encode/django-rest-framework/compare/3.18.2...3.18.3)
 
