@@ -1,6 +1,7 @@
 """
 Tests for content parsing, and form-overloaded content parsing.
 """
+import bz2
 import copy
 import os.path
 import tempfile
@@ -18,6 +19,7 @@ from django.urls import path
 
 from rest_framework import status
 from rest_framework.authentication import SessionAuthentication
+from rest_framework.exceptions import ParseError
 from rest_framework.negotiation import DefaultContentNegotiation
 from rest_framework.parsers import (
     BaseParser, FormParser, JSONParser, MultiPartParser
@@ -217,6 +219,28 @@ class TestDataUploadMaxMemorySize(TestCase):
         ))
         form_request.parsers = (FormParser(),)
         assert form_request.data['qwerty'] == 'uiop'
+
+    @override_settings(DATA_UPLOAD_MAX_MEMORY_SIZE=1024)
+    def test_request_data_with_compression_charset_raises_error(self):
+        # Django checks the limit against the compressed body.
+        # The parser must not decompress it afterwards.
+        expanded = b'{"qwerty": "' + b'u' * (64 * 1024) + b'"}'
+        compressed = bz2.compress(expanded)
+        assert len(compressed) < 1024 < len(expanded)
+
+        django_request = factory.post(
+            '/',
+            compressed,
+            content_type='application/json; charset=bz2_codec'
+        )
+        # Guard against the test client re-encoding the payload.
+        assert django_request.body == compressed
+
+        request = Request(django_request)
+        request.parsers = (JSONParser(),)
+
+        with pytest.raises(ParseError):
+            request.data
 
     @override_settings(DATA_UPLOAD_MAX_MEMORY_SIZE=10)
     def test_request_data_with_multipart_file_upload_is_unchanged(self):

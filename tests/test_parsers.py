@@ -4,6 +4,7 @@ from urllib.parse import quote
 
 import pytest
 from django import forms
+from django.conf import settings
 from django.core.files.uploadhandler import (
     MemoryFileUploadHandler, TemporaryFileUploadHandler
 )
@@ -12,7 +13,7 @@ from django.test import TestCase
 
 from rest_framework.exceptions import ParseError
 from rest_framework.parsers import (
-    FileUploadParser, FormParser, JSONParser, MultiPartParser
+    FileUploadParser, FormParser, JSONParser, MultiPartParser, get_encoding
 )
 from rest_framework.request import Request
 from rest_framework.test import APIRequestFactory
@@ -143,6 +144,91 @@ class TestJSONParser(TestCase):
         assert parser.parse(self.bytes('Infinity')) == float('inf')
         assert parser.parse(self.bytes('-Infinity')) == float('-inf')
         assert math.isnan(parser.parse(self.bytes('NaN')))
+
+
+class TestGetEncoding(TestCase):
+    def test_defaults_to_default_charset(self):
+        assert get_encoding({}) == settings.DEFAULT_CHARSET
+
+    def test_accepts_text_encodings(self):
+        for encoding in ['utf-8', 'UTF8', 'ascii', 'latin-1', 'utf-16', 'utf-32']:
+            with self.subTest(encoding=encoding):
+                assert get_encoding({'encoding': encoding}) == encoding
+
+    def test_rejects_non_text_encodings(self):
+        # Short aliases, as a `charset=` parameter would carry them.
+        # `undefined` is a text codec in name only: it fails on every input.
+        for encoding in ['bz2', 'zlib', 'base64', 'hex', 'rot13', 'undefined',
+                         'not-a-real-encoding']:
+            with self.subTest(encoding=encoding):
+                with pytest.raises(ParseError):
+                    get_encoding({'encoding': encoding})
+
+
+class TestRequestCharset(TestCase):
+    unsupported_message = 'Unsupported charset "%s" in request Content-Type header.'
+
+    # Codecs that transform bytes rather than decode text. `zip` is an alias
+    # of `zlib_codec`, so this also checks the codec is resolved rather than
+    # the name matched.
+    byte_transforms = (
+        'base64_codec', 'bz2_codec', 'hex_codec', 'quopri_codec', 'rot_13',
+        'uu_codec', 'zlib_codec', 'zip',
+    )
+
+    def test_json_parser_honours_a_text_charset(self):
+        # utf-16 is not the default and its bytes are not valid utf-8, so this
+        # only passes if the charset the client named was the one used.
+        stream = io.BytesIO('{"field1": "ÀĥƦ"}'.encode('utf-16'))
+        data = JSONParser().parse(stream, parser_context={'encoding': 'utf-16'})
+
+        assert data == {'field1': 'ÀĥƦ'}
+
+    def test_form_parser_honours_a_text_charset(self):
+        stream = io.BytesIO('field1=À&field2=x'.encode('iso-8859-1'))
+        data = FormParser().parse(stream, parser_context={'encoding': 'iso-8859-1'})
+
+        assert data['field1'] == 'À'
+
+    def test_json_parser_rejects_a_byte_transform_charset(self):
+        for charset in self.byte_transforms:
+            with self.subTest(charset=charset):
+                with pytest.raises(ParseError) as excinfo:
+                    JSONParser().parse(
+                        io.BytesIO(b'{}'), parser_context={'encoding': charset}
+                    )
+                assert str(excinfo.value) == self.unsupported_message % charset
+
+    def test_form_parser_rejects_a_byte_transform_charset(self):
+        for charset in self.byte_transforms:
+            with self.subTest(charset=charset):
+                with pytest.raises(ParseError) as excinfo:
+                    FormParser().parse(
+                        io.BytesIO(b'field1=x'), parser_context={'encoding': charset}
+                    )
+                assert str(excinfo.value) == self.unsupported_message % charset
+
+    def test_multipart_parser_rejects_a_byte_transform_charset(self):
+        request = APIRequestFactory().post('/', {'field1': 'x'})
+        for charset in self.byte_transforms:
+            with self.subTest(charset=charset):
+                with pytest.raises(ParseError) as excinfo:
+                    MultiPartParser().parse(
+                        io.BytesIO(request.body),
+                        request.content_type,
+                        parser_context={'request': request, 'encoding': charset}
+                    )
+                assert str(excinfo.value) == self.unsupported_message % charset
+
+    def test_unresolvable_charset_is_rejected(self):
+        # Django drops charsets `codecs.lookup()` cannot resolve, so this only
+        # happens with a hand-built `parser_context`. Still not a server error.
+        with pytest.raises(ParseError) as excinfo:
+            JSONParser().parse(
+                io.BytesIO(b'{}'), parser_context={'encoding': 'no-such-charset'}
+            )
+
+        assert str(excinfo.value) == self.unsupported_message % 'no-such-charset'
 
 
 class TestPOSTAccessed(TestCase):
