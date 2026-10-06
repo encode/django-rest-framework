@@ -6,6 +6,7 @@ import functools
 import inspect
 import math
 import re
+import sys
 import uuid
 import warnings
 from collections.abc import Mapping
@@ -74,7 +75,16 @@ def is_simple_callable(obj):
     if not (inspect.isfunction(obj) or inspect.ismethod(obj) or isinstance(obj, functools.partial)):
         return False
 
-    sig = inspect.signature(obj)
+    signature_kwargs = {}
+    if sys.version_info >= (3, 14):
+        # Annotations are evaluated lazily since Python 3.14 (PEP 649), and
+        # inspect.signature() evaluates them, raising NameError for names only
+        # imported under TYPE_CHECKING. Only parameter kinds and defaults are
+        # needed here. See https://github.com/encode/django-rest-framework/discussions/9959
+        import annotationlib
+        signature_kwargs['annotation_format'] = annotationlib.Format.FORWARDREF
+
+    sig = inspect.signature(obj, **signature_kwargs)
     params = sig.parameters.values()
     return all(
         param.kind == param.VAR_POSITIONAL or
