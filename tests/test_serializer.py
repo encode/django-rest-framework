@@ -809,3 +809,52 @@ class TestWarningManyToMany(TestCase):
         with pytest.raises(ValueError) as exc_info:
             serializer.is_valid(raise_exception=True)
         assert str(exc_info.value) == error_msg
+
+
+class TestNestedSerializerPartial:
+    def test_nested_serializer_with_partial_false(self):
+        class LocationSerializer(serializers.Serializer):
+            country = serializers.CharField()
+            city = serializers.CharField()
+
+        class UserSerializer(serializers.Serializer):
+            username = serializers.CharField()
+            location = LocationSerializer(partial=False)
+
+        # 1. When location is provided as empty dict, required fields must not be skipped
+        serializer = UserSerializer(data={'location': {}}, partial=True)
+        assert not serializer.is_valid()
+        assert serializer.errors == {
+            'location': {
+                'country': ['This field is required.'],
+                'city': ['This field is required.']
+            }
+        }
+
+        # 2. When location is provided with only one field, the other required field must not be skipped
+        serializer2 = UserSerializer(data={'location': {'city': 'Paris'}}, partial=True)
+        assert not serializer2.is_valid()
+        assert serializer2.errors == {
+            'location': {
+                'country': ['This field is required.']
+            }
+        }
+
+        # 3. When location is omitted entirely, the location field itself is skipped on partial update
+        serializer3 = UserSerializer(data={'username': 'alice'}, partial=True)
+        assert serializer3.is_valid()
+        assert serializer3.validated_data == {'username': 'alice'}
+
+    def test_nested_serializer_inherits_partial_by_default(self):
+        class LocationSerializer(serializers.Serializer):
+            country = serializers.CharField()
+            city = serializers.CharField()
+
+        class UserSerializer(serializers.Serializer):
+            username = serializers.CharField()
+            location = LocationSerializer()
+
+        # When partial is not specified on the nested serializer, it should inherit partial=True
+        serializer = UserSerializer(data={'location': {'city': 'Paris'}}, partial=True)
+        assert serializer.is_valid()
+        assert serializer.validated_data == {'location': {'city': 'Paris'}}
