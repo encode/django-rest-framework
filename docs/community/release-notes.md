@@ -63,6 +63,12 @@ You can determine your currently installed version using `pip show`:
 
 **Date**: 6th October 2026
 
+#### Security
+
+* Harden content negotiation against large `Accept` headers by [@jisung-02](https://github.com/jisung-02) in [148ab65](https://github.com/encode/django-rest-framework/commit/148ab65). Thanks [@jisung-02](https://github.com/jisung-02) for the report.
+* Refuse non-text encoding charsets by [@syrull](https://github.com/syrull) in [3c26345](https://github.com/encode/django-rest-framework/commit/3c26345). Thanks [@syrull](https://github.com/syrull) and [@jisung-02](https://github.com/jisung-02) who both reported the problem.
+* Make `TokenProxy` deletion actually delete the token by [@syrull](https://github.com/syrull) in [af3fabf](https://github.com/encode/django-rest-framework/commit/af3fabf). Thanks [@syrull](https://github.com/syrull) for the report.
+
 #### Features
 
 * Add support for Python 3.15 by [@p-r-a-v-i-n](https://github.com/p-r-a-v-i-n) in [#10025](https://github.com/encode/django-rest-framework/pull/10025)
