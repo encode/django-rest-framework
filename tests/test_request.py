@@ -4,6 +4,7 @@ Tests for content parsing, and form-overloaded content parsing.
 import copy
 import os.path
 import tempfile
+from unittest import mock
 
 import pytest
 from django.contrib.auth import authenticate, login, logout
@@ -17,12 +18,16 @@ from django.urls import path
 
 from rest_framework import status
 from rest_framework.authentication import SessionAuthentication
+from rest_framework.negotiation import DefaultContentNegotiation
 from rest_framework.parsers import (
     BaseParser, FormParser, JSONParser, MultiPartParser
 )
-from rest_framework.request import Request, WrappedAttributeError
+from rest_framework.request import (
+    Request, WrappedAttributeError, is_form_media_type
+)
 from rest_framework.response import Response
 from rest_framework.test import APIClient, APIRequestFactory
+from rest_framework.utils import mediatypes
 from rest_framework.views import APIView
 
 factory = APIRequestFactory()
@@ -145,6 +150,27 @@ class TestContentParsing(TestCase):
 
         with self.assertRaisesMessage(WrappedAttributeError, expected_message):
             request.data
+
+    def test_content_type_length_limit(self):
+        negotiator = DefaultContentNegotiation()
+        parser = JSONParser()
+        prefix = 'application/json; padding='
+        content_type = prefix + 'x' * (negotiator.max_media_type_length - len(prefix))
+        request = Request(factory.post('/', data=b'', content_type=content_type))
+        assert negotiator.select_parser(request, [parser]) is parser
+
+        request = Request(factory.post('/', data=b'', content_type=content_type + 'x'))
+        with mock.patch.object(mediatypes, 'parse_header_parameters') as parse:
+            assert negotiator.select_parser(request, [parser]) is None
+        parse.assert_not_called()
+
+    def test_form_content_type_length_limit(self):
+        prefix = 'multipart/form-data; boundary='
+        content_type = prefix + 'x' * (256 - len(prefix))
+        assert is_form_media_type(content_type) is True
+        with mock.patch('rest_framework.request.parse_header_parameters') as parse:
+            assert is_form_media_type(content_type + 'x') is False
+        parse.assert_not_called()
 
 
 class TestDataUploadMaxMemorySize(TestCase):
