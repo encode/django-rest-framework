@@ -374,6 +374,11 @@ The [djangorestframework-word-filter][django-rest-framework-word-search-filter] 
 
 [drf-url-filter][drf-url-filter] is a simple Django app to apply filters on drf `ModelViewSet`'s `Queryset` in a clean, simple and configurable way. It also supports validations on incoming query params and their values. A beautiful python package `Voluptuous` is being used for validations on the incoming query parameters. The best part about voluptuous is you can define your own validations as per your query params requirements.
 
+### rest-filters
+
+[rest-filters][rest-filters] is a modern, typed replacement for `django-filter` that uses DRF's serializer API. In addition to basic filtering, rest-filters supports filter groups, nested filters and filter defaults. It also includes a constraint system to perform validation across filters with ease. Since it uses the serializer API, you can use your existing serializers or serializer fields to parse query parameters.
+
+
 [cite]: https://docs.djangoproject.com/en/stable/topics/db/queries/#retrieving-specific-objects-with-filters
 [django-filter-docs]: https://django-filter.readthedocs.io/en/latest/index.html
 [django-filter-drf-docs]: https://django-filter.readthedocs.io/en/latest/guide/rest_framework.html
@@ -382,6 +387,7 @@ The [djangorestframework-word-filter][django-rest-framework-word-search-filter] 
 [django-rest-framework-word-search-filter]: https://github.com/trollknurr/django-rest-framework-word-search-filter
 [django-url-filter]: https://github.com/miki725/django-url-filter
 [drf-url-filter]: https://github.com/manjitkumar/drf-url-filters
+[rest-filters]: https://github.com/realsuayip/rest-filters
 [HStoreField]: https://docs.djangoproject.com/en/stable/ref/contrib/postgres/fields/#hstorefield
 [JSONField]: https://docs.djangoproject.com/en/stable/ref/models/fields/#django.db.models.JSONField
 [postgres-search]: https://docs.djangoproject.com/en/stable/ref/contrib/postgres/search/

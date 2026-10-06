@@ -3,6 +3,7 @@ from io import StringIO
 from unittest.mock import patch
 
 import pytest
+from django.apps import apps
 from django.contrib.admin import site
 from django.contrib.auth.models import User
 from django.core.management import CommandError, call_command
@@ -10,8 +11,9 @@ from django.db import IntegrityError
 from django.test import TestCase, modify_settings
 
 from rest_framework.authtoken.admin import TokenAdmin
-from rest_framework.authtoken.management.commands.drf_create_token import \
+from rest_framework.authtoken.management.commands.drf_create_token import (
     Command as AuthTokenCommand
+)
 from rest_framework.authtoken.models import Token, TokenProxy
 from rest_framework.authtoken.serializers import AuthTokenSerializer
 from rest_framework.exceptions import ValidationError
@@ -25,12 +27,21 @@ class AuthTokenTests(TestCase):
         self.token = Token.objects.create(key='test token', user=self.user)
 
     def test_authtoken_can_be_imported_when_not_included_in_installed_apps(self):
-        import rest_framework.authtoken.models
-        with modify_settings(INSTALLED_APPS={'remove': 'rest_framework.authtoken'}):
-            importlib.reload(rest_framework.authtoken.models)
-        # Set the proxy and abstract properties back to the version,
-        # where authtoken is among INSTALLED_APPS.
-        importlib.reload(rest_framework.authtoken.models)
+        import rest_framework.authtoken.models as authtoken_models
+        originals = (authtoken_models.Token, authtoken_models.TokenProxy)
+        try:
+            with modify_settings(INSTALLED_APPS={'remove': 'rest_framework.authtoken'}):
+                importlib.reload(authtoken_models)
+        finally:
+            # Set the proxy and abstract properties back to the version,
+            # where authtoken is among INSTALLED_APPS.
+            importlib.reload(authtoken_models)
+            # Reloading registered new classes; put the originals back so
+            # references held elsewhere stay valid.
+            for model in originals:
+                setattr(authtoken_models, model.__name__, model)
+                apps.all_models['authtoken'][model._meta.model_name] = model
+            apps.clear_cache()
 
     def test_model_admin_displayed_fields(self):
         mock_request = object()
