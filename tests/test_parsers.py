@@ -108,7 +108,7 @@ class TestFileUploadParser(TestCase):
 
     def test_get_encoded_filename(self):
         parser = FileUploadParser()
-        # RFC 8187 requires non-ASCII to be percent-encoded: "value-chars = *( pct-encoded / attr-char )"
+        # RFC 8187 requires non-ASCII to be percent-encoded
         encoded = quote('ÀĥƦ.txt')
 
         self.__replace_content_disposition(f"inline; filename*=utf-8''{encoded}")
