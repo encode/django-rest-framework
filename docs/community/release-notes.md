@@ -59,6 +59,16 @@ You can determine your currently installed version using `pip show`:
 
 ## 3.18.x series
 
+### 3.18.3
+
+**Date**: 6th October 2026
+
+#### Bug fixes
+
+* Revert return value of `order_by_precedence` from 3.18.1 by [@browniebroke](https://github.com/browniebroke) in [#10066](https://github.com/encode/django-rest-framework/pull/10066). The API was changed by mistake in 3.18.2.
+
+**Full Changelog**: [3.18.2...3.18.3](https://github.com/encode/django-rest-framework/compare/3.18.2...3.18.3)
+
 ### 3.18.2
 
 **Date**: 6th October 2026
