@@ -59,6 +59,37 @@ You can determine your currently installed version using `pip show`:
 
 ## 3.18.x series
 
+### 3.18.2
+
+**Date**: 6th October 2026
+
+#### Security
+
+* GHSA-33wh-fxxf-88vv: Harden content negotiation against large `Accept` headers by [@jisung-02](https://github.com/jisung-02) in [148ab65](https://github.com/encode/django-rest-framework/commit/148ab65). Thanks [@jisung-02](https://github.com/jisung-02) for the report.
+* GHSA-3547-9m27-7rxg: Refuse non-text encoding charsets by [@syrull](https://github.com/syrull) in [3c26345](https://github.com/encode/django-rest-framework/commit/3c26345). Thanks [@syrull](https://github.com/syrull) and [@jisung-02](https://github.com/jisung-02) who both reported the problem.
+* GHSA-xw6w-gcfp-cf8m: Make `TokenProxy` deletion actually delete the token by [@syrull](https://github.com/syrull) in [af3fabf](https://github.com/encode/django-rest-framework/commit/af3fabf). Thanks [@syrull](https://github.com/syrull) for the report.
+
+#### Features
+
+* Add support for Python 3.15 by [@p-r-a-v-i-n](https://github.com/p-r-a-v-i-n) in [#10025](https://github.com/encode/django-rest-framework/pull/10025)
+
+#### Bug fixes
+
+* Fix `blank=True` fields in unique constraints being treated as required by [@MehrazRumman](https://github.com/MehrazRumman) in [#10039](https://github.com/encode/django-rest-framework/pull/10039)
+* Fix `UniqueConstraint` validation with conditional fields by [@majidkhazaei](https://github.com/majidkhazaei) in [#10021](https://github.com/encode/django-rest-framework/pull/10021)
+
+#### New Contributors
+
+* [@olitreadwell](https://github.com/olitreadwell) made their first contribution in [#10038](https://github.com/encode/django-rest-framework/pull/10038)
+* [@majidkhazaei](https://github.com/majidkhazaei) made their first contribution in [#10021](https://github.com/encode/django-rest-framework/pull/10021)
+* [@rblotsky](https://github.com/rblotsky) made their first contribution in [#10045](https://github.com/encode/django-rest-framework/pull/10045)
+* [@mrchatam](https://github.com/mrchatam) made their first contribution in [#10042](https://github.com/encode/django-rest-framework/pull/10042)
+* [@haimingZZ](https://github.com/haimingZZ) made their first contribution in [#10052](https://github.com/encode/django-rest-framework/pull/10052)
+* [@jisung-02](https://github.com/jisung-02) made their first contribution in [148ab65](https://github.com/encode/django-rest-framework/commit/148ab65)
+* [@syrull](https://github.com/syrull) made their first contribution in [3c26345](https://github.com/encode/django-rest-framework/commit/3c26345)
+
+**Full Changelog**: [3.18.1...3.18.2](https://github.com/encode/django-rest-framework/compare/3.18.1...3.18.2)
+
 ### 3.18.1
 
 **Date**: 7th September 2026

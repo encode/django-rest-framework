@@ -24,6 +24,28 @@ from rest_framework.settings import api_settings
 from rest_framework.utils import json
 
 
+def get_encoding(parser_context):
+    """
+    Return the charset to decode the request body with: the one named in the
+    request's `Content-Type` header, or `settings.DEFAULT_CHARSET`.
+
+    Django accepts any charset that `codecs.lookup()` resolves, which includes
+    bytes-to-bytes codecs such as `bz2_codec`. Decoding through one of those
+    decompresses the body after `DATA_UPLOAD_MAX_MEMORY_SIZE` has already been
+    checked against the compressed size, so a tiny request can expand without
+    bound. Only text encodings are accepted here.
+    """
+    encoding = parser_context.get('encoding', settings.DEFAULT_CHARSET)
+    try:
+        # Unlike `codecs.getreader()`, `str.encode()` rejects non-text codecs.
+        ''.encode(encoding)
+    except (LookupError, UnicodeError):
+        raise ParseError(
+            'Unsupported charset "%s" in request Content-Type header.' % encoding
+        )
+    return encoding
+
+
 class DataAndFiles:
     def __init__(self, data, files):
         self.data = data
@@ -59,7 +81,7 @@ class JSONParser(BaseParser):
         Parses the incoming bytestream as JSON and returns the resulting data.
         """
         parser_context = parser_context or {}
-        encoding = parser_context.get('encoding', settings.DEFAULT_CHARSET)
+        encoding = get_encoding(parser_context)
 
         try:
             decoded_stream = codecs.getreader(encoding)(stream)
@@ -81,7 +103,7 @@ class FormParser(BaseParser):
         and returns the resulting QueryDict.
         """
         parser_context = parser_context or {}
-        encoding = parser_context.get('encoding', settings.DEFAULT_CHARSET)
+        encoding = get_encoding(parser_context)
         return QueryDict(stream.read(), encoding=encoding)
 
 
@@ -101,7 +123,7 @@ class MultiPartParser(BaseParser):
         """
         parser_context = parser_context or {}
         request = parser_context['request']
-        encoding = parser_context.get('encoding', settings.DEFAULT_CHARSET)
+        encoding = get_encoding(parser_context)
         meta = request.META.copy()
         meta['CONTENT_TYPE'] = media_type
         upload_handlers = request.upload_handlers
