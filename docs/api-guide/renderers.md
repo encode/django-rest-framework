@@ -171,6 +171,8 @@ Renders data into HTML for the Browsable API:
 
 This renderer will determine which other renderer would have been given highest priority, and use that to display an API style response within the HTML page.
 
+It also renders an HTML form for each method the view allows, which involves calling back into the view with the request method overridden.  See [form rendering][browsable-api-form-rendering] for the implications of this.
+
 **.media_type**: `text/html`
 
 **.format**: `'api'`
@@ -513,6 +515,7 @@ Comma-separated values are a plain-text tabular data format, that can be easily 
 
 
 [cite]: https://docs.djangoproject.com/en/stable/ref/template-response/#the-rendering-process
+[browsable-api-form-rendering]: ../topics/browsable-api.md#form-rendering
 [conneg]: content-negotiation.md
 [html-and-forms]: ../topics/html-and-forms.md
 [browser-accept-headers]: http://www.gethifi.com/blog/browser-rest-http-accept-headers

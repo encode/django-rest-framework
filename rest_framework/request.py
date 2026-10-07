@@ -21,11 +21,15 @@ from django.utils.http import parse_header_parameters
 from rest_framework import exceptions
 from rest_framework.settings import api_settings
 
+MAX_MEDIA_TYPE_LENGTH = 256
+
 
 def is_form_media_type(media_type):
     """
     Return True if the media type is a valid form media type.
     """
+    if media_type is None or len(media_type) > MAX_MEDIA_TYPE_LENGTH:
+        return False
     base_media_type, params = parse_header_parameters(media_type)
     return (base_media_type == 'application/x-www-form-urlencoded' or
             base_media_type == 'multipart/form-data')
@@ -354,6 +358,10 @@ class Request:
 
         if not parser:
             raise exceptions.UnsupportedMediaType(media_type)
+
+        from rest_framework.parsers import FormParser, JSONParser
+        if isinstance(parser, (JSONParser, FormParser)):
+            stream = io.BytesIO(self.body)
 
         try:
             parsed = parser.parse(stream, media_type, self.parser_context)

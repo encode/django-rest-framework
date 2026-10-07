@@ -14,7 +14,7 @@ from rest_framework.authentication import (
     BaseAuthentication, BasicAuthentication, RemoteUserAuthentication,
     SessionAuthentication, TokenAuthentication
 )
-from rest_framework.authtoken.models import Token
+from rest_framework.authtoken.models import Token, TokenProxy
 from rest_framework.authtoken.views import obtain_auth_token
 from rest_framework.response import Response
 from rest_framework.test import APIClient, APIRequestFactory
@@ -409,6 +409,24 @@ class TokenAuthTests(BaseTokenAuthTests, TestCase):
         self.token.delete()
         token = self.model.objects.create(user=self.user)
         assert bool(token.key)
+
+    def test_deleting_the_proxy_revokes_the_token(self):
+        """
+        A token deleted through TokenProxy no longer authenticates requests.
+        """
+        auth = self.header_prefix + self.key
+        response = self.csrf_client.post(
+            self.path, {'example': 'example'}, HTTP_AUTHORIZATION=auth
+        )
+        assert response.status_code == status.HTTP_200_OK
+
+        deleted, _ = TokenProxy.objects.get(user=self.user).delete()
+        assert deleted == 1
+
+        response = self.csrf_client.post(
+            self.path, {'example': 'example'}, HTTP_AUTHORIZATION=auth
+        )
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
     def test_generate_key_returns_string(self):
         """Ensure generate_key returns a string"""

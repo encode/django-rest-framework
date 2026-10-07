@@ -1,26 +1,35 @@
 """
 Tests for content parsing, and form-overloaded content parsing.
 """
+import bz2
 import copy
 import os.path
 import tempfile
+from unittest import mock
 
 import pytest
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.middleware import AuthenticationMiddleware
 from django.contrib.auth.models import User
 from django.contrib.sessions.middleware import SessionMiddleware
+from django.core.exceptions import RequestDataTooBig
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.http.request import RawPostDataException
 from django.test import TestCase, override_settings
 from django.urls import path
 
 from rest_framework import status
 from rest_framework.authentication import SessionAuthentication
-from rest_framework.parsers import BaseParser, FormParser, MultiPartParser
-from rest_framework.request import Request, WrappedAttributeError
+from rest_framework.exceptions import ParseError
+from rest_framework.negotiation import DefaultContentNegotiation
+from rest_framework.parsers import (
+    BaseParser, FormParser, JSONParser, MultiPartParser
+)
+from rest_framework.request import (
+    Request, WrappedAttributeError, is_form_media_type
+)
 from rest_framework.response import Response
 from rest_framework.test import APIClient, APIRequestFactory
+from rest_framework.utils import mediatypes
 from rest_framework.views import APIView
 
 factory = APIRequestFactory()
@@ -143,6 +152,112 @@ class TestContentParsing(TestCase):
 
         with self.assertRaisesMessage(WrappedAttributeError, expected_message):
             request.data
+
+    def test_content_type_length_limit(self):
+        negotiator = DefaultContentNegotiation()
+        parser = JSONParser()
+        prefix = 'application/json; padding='
+        content_type = prefix + 'x' * (negotiator.max_media_type_length - len(prefix))
+        request = Request(factory.post('/', data=b'', content_type=content_type))
+        assert negotiator.select_parser(request, [parser]) is parser
+
+        request = Request(factory.post('/', data=b'', content_type=content_type + 'x'))
+        with mock.patch.object(mediatypes, 'parse_header_parameters') as parse:
+            assert negotiator.select_parser(request, [parser]) is None
+        parse.assert_not_called()
+
+    def test_form_content_type_length_limit(self):
+        prefix = 'multipart/form-data; boundary='
+        content_type = prefix + 'x' * (256 - len(prefix))
+        assert is_form_media_type(content_type) is True
+        with mock.patch('rest_framework.request.parse_header_parameters') as parse:
+            assert is_form_media_type(content_type + 'x') is False
+        parse.assert_not_called()
+
+
+class TestDataUploadMaxMemorySize(TestCase):
+    expected_message = 'Request body exceeded settings.DATA_UPLOAD_MAX_MEMORY_SIZE.'
+
+    @override_settings(DATA_UPLOAD_MAX_MEMORY_SIZE=10)
+    def test_request_data_with_oversized_json_raises_error(self):
+        request = Request(factory.post(
+            '/',
+            b'{"qwerty": "uiop"}',
+            content_type='application/json'
+        ))
+        request.parsers = (JSONParser(),)
+
+        with self.assertRaisesMessage(RequestDataTooBig, self.expected_message):
+            request.data
+
+    @override_settings(DATA_UPLOAD_MAX_MEMORY_SIZE=10)
+    def test_request_data_with_oversized_form_raises_error(self):
+        request = Request(factory.post(
+            '/',
+            b'qwerty=uiop&asdf=ghjkl',
+            content_type='application/x-www-form-urlencoded'
+        ))
+        request.parsers = (FormParser(),)
+
+        with self.assertRaisesMessage(RequestDataTooBig, self.expected_message):
+            request.data
+
+    @override_settings(DATA_UPLOAD_MAX_MEMORY_SIZE=1024)
+    def test_request_data_with_small_bodies_continues_to_parse(self):
+        json_request = Request(factory.post(
+            '/',
+            b'{"qwerty": "uiop"}',
+            content_type='application/json'
+        ))
+        json_request.parsers = (JSONParser(),)
+        assert json_request.data == {'qwerty': 'uiop'}
+
+        form_request = Request(factory.post(
+            '/',
+            b'qwerty=uiop',
+            content_type='application/x-www-form-urlencoded'
+        ))
+        form_request.parsers = (FormParser(),)
+        assert form_request.data['qwerty'] == 'uiop'
+
+    @override_settings(DATA_UPLOAD_MAX_MEMORY_SIZE=1024)
+    def test_request_data_with_compression_charset_raises_error(self):
+        # Django checks the limit against the compressed body.
+        # The parser must not decompress it afterwards.
+        expanded = b'{"qwerty": "' + b'u' * (64 * 1024) + b'"}'
+        compressed = bz2.compress(expanded)
+        assert len(compressed) < 1024 < len(expanded)
+
+        django_request = factory.post(
+            '/',
+            compressed,
+            content_type='application/json; charset=bz2_codec'
+        )
+        # Guard against the test client re-encoding the payload.
+        assert django_request.body == compressed
+
+        request = Request(django_request)
+        request.parsers = (JSONParser(),)
+
+        with pytest.raises(ParseError):
+            request.data
+
+    @override_settings(DATA_UPLOAD_MAX_MEMORY_SIZE=10)
+    def test_request_data_with_multipart_file_upload_is_unchanged(self):
+        upload = SimpleUploadedFile('file.txt', b'x' * 32)
+        request = Request(factory.post('/', {'upload': upload}))
+        request.parsers = (FormParser(), MultiPartParser())
+
+        assert request.data['upload'].size == 32
+
+    @override_settings(DATA_UPLOAD_MAX_MEMORY_SIZE=10)
+    def test_request_data_with_custom_parser_keeps_streaming_path(self):
+        content = b'x' * 32
+        request = Request(factory.post('/', content, content_type='text/plain'))
+        request.parsers = (PlainTextParser(),)
+
+        assert request.data == content
+        assert not hasattr(request._request, '_body')
 
 
 class MockView(APIView):
@@ -326,21 +441,19 @@ class TestHttpRequest(TestCase):
             request.inner_property
 
     @override_settings(ROOT_URLCONF='tests.test_request')
-    def test_duplicate_request_stream_parsing_exception(self):
+    def test_duplicate_request_json_data_access(self):
         """
-        Check assumption that duplicate stream parsing will result in a
-        `RawPostDataException` being raised.
+        JSON data is read via Django's request.body, so duplicate processing
+        can reuse the cached body.
         """
         response = APIClient().post('/echo/', data={'a': 'b'}, format='json')
         request = response._request
 
-        # ensure that request stream was consumed by json parser
         assert request.content_type.startswith('application/json')
         assert response.data == {'a': 'b'}
 
-        # pass same HttpRequest to view, stream already consumed
-        with pytest.raises(RawPostDataException):
-            EchoView.as_view()(request._request)
+        response = EchoView.as_view()(request._request)
+        assert response.data == {'a': 'b'}
 
     @override_settings(ROOT_URLCONF='tests.test_request')
     def test_duplicate_request_form_data_access(self):

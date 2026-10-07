@@ -9,7 +9,7 @@ from rest_framework import status
 from rest_framework.exceptions import APIException
 from rest_framework.response import Response
 from rest_framework.test import APIRequestFactory
-from rest_framework.views import APIView
+from rest_framework.views import APIView, set_rollback
 from tests.models import BasicModel
 
 factory = APIRequestFactory()
@@ -183,3 +183,72 @@ class NonAtomicDBTransactionAPIExceptionTests(TransactionTestCase):
         # without checking connection.in_atomic_block view raises 500
         # due attempt to rollback without transaction
         assert response.status_code == status.HTTP_404_NOT_FOUND
+
+
+@unittest.skipUnless(
+    connection.features.uses_savepoints,
+    "'atomic' requires transactions and savepoints."
+)
+class SetRollbackTests(TestCase):
+    def setUp(self):
+        connections.databases['default']['ATOMIC_REQUESTS'] = True
+
+    def tearDown(self):
+        connections.databases['default']['ATOMIC_REQUESTS'] = False
+
+    def test_marks_initialized_atomic_connection_for_rollback(self):
+        with transaction.atomic():
+            set_rollback()
+            assert transaction.get_rollback()
+
+
+class UninitializedSecondaryConnectionMixin:
+    """
+    Remove the 'secondary' connection wrapper from the current thread for
+    the duration of a test, restoring the original wrapper afterwards so
+    Django's test-case connection patching still finds it at class cleanup.
+    """
+    def setUp(self):
+        super().setUp()
+        self._saved_secondary = getattr(connections._connections, 'secondary', None)
+        if self._saved_secondary is not None:
+            delattr(connections._connections, 'secondary')
+
+    def tearDown(self):
+        stray = getattr(connections._connections, 'secondary', None)
+        if stray is not None and stray is not self._saved_secondary:
+            stray.close()
+        if self._saved_secondary is not None:
+            setattr(connections._connections, 'secondary', self._saved_secondary)
+        super().tearDown()
+
+
+class SetRollbackUninitializedConnectionTests(UninitializedSecondaryConnectionMixin, TestCase):
+    def setUp(self):
+        super().setUp()
+        connections.databases['secondary']['ATOMIC_REQUESTS'] = True
+
+    def tearDown(self):
+        connections.databases['secondary']['ATOMIC_REQUESTS'] = False
+        super().tearDown()
+
+    def test_does_not_initialize_unused_connections(self):
+        set_rollback()
+        assert not hasattr(connections._connections, 'secondary')
+
+
+class MultiDBUnusedConnectionAPIExceptionTests(UninitializedSecondaryConnectionMixin, TestCase):
+    def setUp(self):
+        super().setUp()
+        self.view = APIExceptionView.as_view()
+        connections.databases['secondary']['ATOMIC_REQUESTS'] = True
+
+    def tearDown(self):
+        connections.databases['secondary']['ATOMIC_REQUESTS'] = False
+        super().tearDown()
+
+    def test_api_exception_leaves_unused_connection_uninitialized(self):
+        request = factory.post('/')
+        response = self.view(request)
+        assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
+        assert not hasattr(connections._connections, 'secondary')

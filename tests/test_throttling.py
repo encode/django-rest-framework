@@ -392,9 +392,16 @@ class XffTestingBase(TestCase):
         cache.clear()
         self.throttle = Throttle()
         self.view = View.as_view()
-        self.request = APIRequestFactory().get('/some_uri')
-        self.request.META['REMOTE_ADDR'] = '3.3.3.3'
-        self.request.META['HTTP_X_FORWARDED_FOR'] = '0.0.0.0, 1.1.1.1, 2.2.2.2'
+        self.request = self.build_request('0.0.0.0, 1.1.1.1, 2.2.2.2')
+
+    def build_request(self, xff):
+        # `HttpRequest.headers` is a cached_property, so a request has to be
+        # rebuilt rather than have its META mutated to change a header.
+        request = APIRequestFactory().get(
+            '/some_uri', headers={'x-forwarded-for': xff}
+        )
+        request.META['REMOTE_ADDR'] = '3.3.3.3'
+        return request
 
     def config_proxy(self, num_proxies):
         setattr(api_settings, 'NUM_PROXIES', num_proxies)
@@ -415,28 +422,28 @@ class XffSpoofingTests(XffTestingBase):
     def test_xff_spoofing_doesnt_change_machine_id_with_one_app_proxy(self):
         self.config_proxy(1)
         self.view(self.request)
-        self.request.META['HTTP_X_FORWARDED_FOR'] = '4.4.4.4, 5.5.5.5, 2.2.2.2'
-        assert self.view(self.request).status_code == 429
+        spoofed = self.build_request('4.4.4.4, 5.5.5.5, 2.2.2.2')
+        assert self.view(spoofed).status_code == 429
 
     def test_xff_spoofing_doesnt_change_machine_id_with_two_app_proxies(self):
         self.config_proxy(2)
         self.view(self.request)
-        self.request.META['HTTP_X_FORWARDED_FOR'] = '4.4.4.4, 1.1.1.1, 2.2.2.2'
-        assert self.view(self.request).status_code == 429
+        spoofed = self.build_request('4.4.4.4, 1.1.1.1, 2.2.2.2')
+        assert self.view(spoofed).status_code == 429
 
 
 class XffUniqueMachinesTest(XffTestingBase):
     def test_unique_clients_are_counted_independently_with_one_proxy(self):
         self.config_proxy(1)
         self.view(self.request)
-        self.request.META['HTTP_X_FORWARDED_FOR'] = '0.0.0.0, 1.1.1.1, 7.7.7.7'
-        assert self.view(self.request).status_code == 200
+        other_client = self.build_request('0.0.0.0, 1.1.1.1, 7.7.7.7')
+        assert self.view(other_client).status_code == 200
 
     def test_unique_clients_are_counted_independently_with_two_proxies(self):
         self.config_proxy(2)
         self.view(self.request)
-        self.request.META['HTTP_X_FORWARDED_FOR'] = '0.0.0.0, 7.7.7.7, 2.2.2.2'
-        assert self.view(self.request).status_code == 200
+        other_client = self.build_request('0.0.0.0, 7.7.7.7, 2.2.2.2')
+        assert self.view(other_client).status_code == 200
 
 
 class BaseThrottleTests(TestCase):

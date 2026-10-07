@@ -58,7 +58,8 @@ Our PyPI releases is automated in GitHub actions on tag pushes. The following te
     - `pyproject.toml` Python & Django version trove classifiers
     - `README` Python & Django versions
     - `docs` Python & Django versions
-- Ensure the pull request increments the version to `*.*.*` in [`restframework/__init__.py`](https://github.com/encode/django-rest-framework/blob/main/rest_framework/__init__.py).
+- Ensure the pull request increments the version to `*.*.*` in [`rest_framework/__init__.py`](https://github.com/encode/django-rest-framework/blob/main/rest_framework/__init__.py).
+- Ensure the deprecation warnings in [`rest_framework/deprecation.py`](https://github.com/encode/django-rest-framework/blob/main/rest_framework/deprecation.py) have been rotated for the release, following the [deprecation policy](release-notes.md#deprecation-policy).
 - Ensure documentation validates
     - Build and serve docs `mkdocs serve`
     - Validate links `pylinkvalidate.py -P http://127.0.0.1:8000`

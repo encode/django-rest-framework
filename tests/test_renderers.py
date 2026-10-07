@@ -14,6 +14,7 @@ from django.utils.translation import gettext_lazy as _
 
 from rest_framework import permissions, serializers, status
 from rest_framework.decorators import action
+from rest_framework.permissions import BasePermission
 from rest_framework.renderers import (
     AdminRenderer, BaseRenderer, BrowsableAPIRenderer, HTMLFormRenderer,
     JSONRenderer, StaticHTMLRenderer
@@ -174,7 +175,7 @@ class RendererEndToEndTests(TestCase):
 
     def test_default_renderer_serializes_content_on_accept_any(self):
         """If the Accept header is set to */* the default renderer should serialize the response."""
-        resp = self.client.get('/', HTTP_ACCEPT='*/*')
+        resp = self.client.get('/', headers={"accept": '*/*'})
         self.assertEqual(resp['Content-Type'], RendererA.media_type + '; charset=utf-8')
         self.assertEqual(resp.content, RENDERER_A_SERIALIZER(DUMMYCONTENT))
         self.assertEqual(resp.status_code, DUMMYSTATUS)
@@ -182,7 +183,7 @@ class RendererEndToEndTests(TestCase):
     def test_specified_renderer_serializes_content_default_case(self):
         """If the Accept header is set the specified renderer should serialize the response.
         (In this case we check that works for the default renderer)"""
-        resp = self.client.get('/', HTTP_ACCEPT=RendererA.media_type)
+        resp = self.client.get('/', headers={"accept": RendererA.media_type})
         self.assertEqual(resp['Content-Type'], RendererA.media_type + '; charset=utf-8')
         self.assertEqual(resp.content, RENDERER_A_SERIALIZER(DUMMYCONTENT))
         self.assertEqual(resp.status_code, DUMMYSTATUS)
@@ -190,14 +191,14 @@ class RendererEndToEndTests(TestCase):
     def test_specified_renderer_serializes_content_non_default_case(self):
         """If the Accept header is set the specified renderer should serialize the response.
         (In this case we check that works for a non-default renderer)"""
-        resp = self.client.get('/', HTTP_ACCEPT=RendererB.media_type)
+        resp = self.client.get('/', headers={"accept": RendererB.media_type})
         self.assertEqual(resp['Content-Type'], RendererB.media_type + '; charset=utf-8')
         self.assertEqual(resp.content, RENDERER_B_SERIALIZER(DUMMYCONTENT))
         self.assertEqual(resp.status_code, DUMMYSTATUS)
 
     def test_unsatisfiable_accept_header_on_request_returns_406_status(self):
         """If the Accept header is unsatisfiable we should return a 406 Not Acceptable response."""
-        resp = self.client.get('/', HTTP_ACCEPT='foo/bar')
+        resp = self.client.get('/', headers={"accept": 'foo/bar'})
         self.assertEqual(resp.status_code, status.HTTP_406_NOT_ACCEPTABLE)
 
     def test_specified_renderer_serializes_content_on_format_query(self):
@@ -228,14 +229,14 @@ class RendererEndToEndTests(TestCase):
             RendererB.format
         )
         resp = self.client.get('/' + param,
-                               HTTP_ACCEPT=RendererB.media_type)
+                               headers={"accept": RendererB.media_type})
         self.assertEqual(resp['Content-Type'], RendererB.media_type + '; charset=utf-8')
         self.assertEqual(resp.content, RENDERER_B_SERIALIZER(DUMMYCONTENT))
         self.assertEqual(resp.status_code, DUMMYSTATUS)
 
     def test_parse_error_renderers_browsable_api(self):
         """Invalid data should still render the browsable API correctly."""
-        resp = self.client.post('/parseerror', data='foobar', content_type='application/json', HTTP_ACCEPT='text/html')
+        resp = self.client.post('/parseerror', data='foobar', content_type='application/json', headers={"accept": 'text/html'})
         self.assertEqual(resp['Content-Type'], 'text/html; charset=utf-8')
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
@@ -834,19 +835,19 @@ class BrowsableAPIRendererTests(URLPatternsTestCase):
         assert result is None
 
     def test_extra_actions_dropdown(self):
-        resp = self.client.get('/api/examples/', HTTP_ACCEPT='text/html')
+        resp = self.client.get('/api/examples/', headers={"accept": 'text/html'})
         assert 'id="extra-actions-menu"' in resp.content.decode()
         assert '/api/examples/list_action/' in resp.content.decode()
         assert '>Extra list action<' in resp.content.decode()
 
     def test_extra_actions_dropdown_not_authed(self):
-        resp = self.client.get('/api/unauth-examples/', HTTP_ACCEPT='text/html')
+        resp = self.client.get('/api/unauth-examples/', headers={"accept": 'text/html'})
         assert 'id="extra-actions-menu"' not in resp.content.decode()
         assert '/api/examples/list_action/' not in resp.content.decode()
         assert '>Extra list action<' not in resp.content.decode()
 
     def test_options_form_does_not_check_object_permissions_for_extra_action(self):
-        resp = self.client.get('/api/issue-6855/1/extra_action/', HTTP_ACCEPT='text/html')
+        resp = self.client.get('/api/issue-6855/1/extra_action/', headers={"accept": 'text/html'})
         assert resp.status_code == status.HTTP_200_OK
 
     def test_delete_form_still_checks_object_permissions(self):
@@ -1019,3 +1020,100 @@ class AdminRendererTests(TestCase):
         self.assertEqual(results[1]['url'], '/example')
         self.assertEqual(results[2]['url'], None)
         self.assertNotIn('url', results[3])
+
+    def test_invalid_post_request_shows_validation_error(self):
+        factory = APIRequestFactory()
+
+        class DummySerializer(serializers.Serializer):
+            name = serializers.CharField()
+
+            def validate_name(self, value):
+                raise serializers.ValidationError("any-post-is-invalid")
+
+        class DummyView(APIView):
+            renderer_classes = (AdminRenderer,)
+            serializer_class = DummySerializer
+
+            def get(self, request):
+                return Response({'content': 'page-content-on-get'})
+
+            def post(self, request):
+                serializer = DummySerializer(data=request.data)
+                serializer.is_valid(raise_exception=True)
+                return Response(serializer.data)
+
+        view = DummyView.as_view()
+        request = factory.post('/', {'name': 'anything'})
+        response = view(request)
+        response.render()
+
+        # Render normal page
+        self.assertContains(response, 'page-content-on-get', status_code=400)
+        # The validation error is surfaced through the bound error form
+        self.assertContains(response, 'any-post-is-invalid', status_code=400)
+
+    def test_invalid_post_request_missing_get_permissions(self):
+        factory = APIRequestFactory()
+
+        class PostOnlyPermission(BasePermission):
+            def has_permission(self, request, view):
+                return request.method == "POST"
+
+        class DummyView(APIView):
+            renderer_classes = (AdminRenderer,)
+            permission_classes = (PostOnlyPermission,)
+
+            def get(self, request):
+                return Response({'content': 'super-duper-secret'})
+
+            def post(self, request):
+                raise serializers.ValidationError("any-post-is-invalid")
+
+        view = DummyView.as_view()
+        request = factory.post('/')
+        response = view(request)
+        response.render()
+
+        # We should not leak private data
+        self.assertNotContains(response, 'super-duper-secret', status_code=400)
+
+        # We should show the validation error instead
+        self.assertContains(response, 'any-post-is-invalid', status_code=400)
+
+    def test_invalid_post_request_missing_get_permissions_with_serializer(self):
+        factory = APIRequestFactory()
+
+        class PostOnlyPermission(BasePermission):
+            def has_permission(self, request, view):
+                return request.method == "POST"
+
+        class DummySerializer(serializers.Serializer):
+            name = serializers.CharField()
+
+            def validate_name(self, value):
+                raise serializers.ValidationError("any-post-is-invalid")
+
+        class DummyView(APIView):
+            renderer_classes = (AdminRenderer,)
+            permission_classes = (PostOnlyPermission,)
+            serializer_class = DummySerializer
+
+            def get(self, request):
+                return Response({'content': 'super-duper-secret'})
+
+            def post(self, request):
+                serializer = DummySerializer(data=request.data)
+                serializer.is_valid(raise_exception=True)
+                return Response(serializer.data)
+
+        view = DummyView.as_view()
+        request = factory.post('/', {'name': 'anything'})
+        response = view(request)
+        response.render()
+
+        # Even with a serializer (and its bound error form), the denied GET
+        # representation must not leak.
+        self.assertNotContains(response, 'super-duper-secret', status_code=400)
+
+        # We should still show the validation error.
+        self.assertContains(response, 'any-post-is-invalid', status_code=400)

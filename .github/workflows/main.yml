@@ -14,15 +14,8 @@ jobs:
   pre-commit:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7.0.0
-        with:
-          fetch-depth: 0
-
-      - uses: actions/setup-python@v6.3.0
-        with:
-          python-version: "3.10"
-
-      - uses: pre-commit/action@v3.0.1
+      - uses: actions/checkout@v7
+      - uses: j178/prek-action@v3.0.0
 
   tests:
     name: Python ${{ matrix.python-version }}
@@ -51,14 +44,15 @@ jobs:
         - '3.12'
         - '3.13'
         - '3.14'
+        - '3.15'
 
     env:
       DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
 
     steps:
-    - uses: actions/checkout@v7.0.0
+    - uses: actions/checkout@v7
 
-    - uses: actions/setup-python@v6.3.0
+    - uses: actions/setup-python@v7.0.0
       with:
         python-version: ${{ matrix.python-version }}
         allow-prereleases: true
@@ -79,7 +73,7 @@ jobs:
         tox -e base,dist,docs
 
     - name: Upload coverage
-      uses: codecov/codecov-action@v7.0.0
+      uses: codecov/codecov-action@v7.1.1
       with:
         env_vars: TOXENV,DJANGO
 
@@ -87,9 +81,9 @@ jobs:
     name: Test documentation links
     runs-on: ubuntu-24.04
     steps:
-    - uses: actions/checkout@v7.0.0
+    - uses: actions/checkout@v7
 
-    - uses: actions/setup-python@v6.3.0
+    - uses: actions/setup-python@v7.0.0
       with:
         python-version: '3.13'
 

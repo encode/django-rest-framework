@@ -86,4 +86,4 @@ as well as how to support content types other than form-encoded data.
 [ajax-form]: https://github.com/tomchristie/ajax-form
 [rails]: https://guides.rubyonrails.org/form_helpers.html#how-do-forms-with-put-or-delete-methods-work
 [html5]: https://www.w3.org/TR/html5-diff/#changes-2010-06-24
-[put_delete]: http://amundsen.com/examples/put-delete-forms/
+[put_delete]: https://web.archive.org/web/20230202091223/http://amundsen.com/examples/put-delete-forms/

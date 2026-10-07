@@ -45,3 +45,14 @@ updates:
       interval: weekly
     cooldown:
       default-days: 7
+
+  - package-ecosystem: "pre-commit"
+    directory: "/"
+    groups:
+      pre-commit:
+        patterns:
+        - "*"
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7

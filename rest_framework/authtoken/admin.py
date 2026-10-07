@@ -6,7 +6,7 @@ from django.core.exceptions import ValidationError
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
-from rest_framework.authtoken.models import Token, TokenProxy
+from rest_framework.authtoken.models import TokenProxy
 
 User = get_user_model()
 
@@ -21,6 +21,7 @@ class TokenChangeList(ChangeList):
                        current_app=self.model_admin.admin_site.name)
 
 
+@admin.register(TokenProxy)
 class TokenAdmin(admin.ModelAdmin):
     list_display = ('key', 'user', 'created')
     list_filter = ('created',)
@@ -45,11 +46,3 @@ class TokenAdmin(admin.ModelAdmin):
             return queryset.get(user=user)
         except (queryset.model.DoesNotExist, User.DoesNotExist, ValidationError, ValueError):
             return None
-
-    def delete_model(self, request, obj):
-        # Map back to actual Token, since delete() uses pk.
-        token = Token.objects.get(key=obj.key)
-        return super().delete_model(request, token)
-
-
-admin.site.register(TokenProxy, TokenAdmin)

@@ -184,6 +184,9 @@ For example:
             return FullAccountSerializer
         return BasicAccountSerializer
 
+!!! note
+    If your implementation branches on `self.request.method`, note that the browsable API calls this method with the request method overridden while [rendering its forms][browsable-api-form-rendering].
+
 **Save and deletion hooks**:
 
 The following methods are provided by the mixin classes, and provide easy overriding of the object save or deletion behavior.
@@ -416,6 +419,7 @@ The following third party packages provide additional generic view implementatio
 
 
 [cite]: https://docs.djangoproject.com/en/stable/ref/class-based-views/#base-vs-generic-views
+[browsable-api-form-rendering]: ../topics/browsable-api.md#form-rendering
 [GenericAPIView]: #genericapiview
 [ListModelMixin]: #listmodelmixin
 [CreateModelMixin]: #createmodelmixin
