@@ -376,7 +376,7 @@ class TestRegularFieldMappings(TestCase):
         class CustomChoiceField(serializers.ChoiceField):
             pass
 
-        class ChoiceModel(models.Model):
+        class CustomChoiceModel(models.Model):
             field = CustomModelField(
                 max_length=10,
                 choices=COLOR_CHOICES,
@@ -389,7 +389,7 @@ class TestRegularFieldMappings(TestCase):
             }
 
             class Meta:
-                model = ChoiceModel
+                model = CustomChoiceModel
                 fields = ('field',)
 
         field = TestSerializer().fields['field']
