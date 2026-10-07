@@ -369,6 +369,34 @@ class TestRegularFieldMappings(TestCase):
         assert choices_field_with_nonstandard_args.choices
         assert choices_field_with_nonstandard_args.read_only is False
 
+    def test_custom_choice_field_mapping(self):
+        class CustomModelField(models.CharField):
+            pass
+
+        class CustomChoiceField(serializers.ChoiceField):
+            pass
+
+        class ChoiceModel(models.Model):
+            field = CustomModelField(
+                max_length=10,
+                choices=COLOR_CHOICES,
+            )
+
+        class TestSerializer(serializers.ModelSerializer):
+            serializer_field_mapping = {
+                **serializers.ModelSerializer.serializer_field_mapping,
+                CustomModelField: CustomChoiceField,
+            }
+
+            class Meta:
+                model = ChoiceModel
+                fields = ('field',)
+
+        field = TestSerializer().fields['field']
+
+        assert isinstance(field, CustomChoiceField)
+        assert list(field.choices) == [choice[0] for choice in COLOR_CHOICES]
+
     def test_non_editable_choice_field(self):
         class ExampleSerializer(serializers.ModelSerializer):
             class Meta:
