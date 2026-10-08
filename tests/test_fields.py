@@ -983,6 +983,14 @@ class TestSlugField(FieldValues):
     outputs = {}
     field = serializers.SlugField()
 
+    def test_trailing_newline_is_invalid(self):
+        # `$` would also match before a trailing newline; Django's own slug
+        # validators reject it.
+        for allow_unicode in (False, True):
+            field = serializers.SlugField(allow_unicode=allow_unicode, trim_whitespace=False)
+            with pytest.raises(serializers.ValidationError):
+                field.run_validation('slug-99\n')
+
     def test_allow_unicode_true(self):
         field = serializers.SlugField(allow_unicode=True)
 
