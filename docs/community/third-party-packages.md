@@ -74,7 +74,7 @@ To submit new content, [create a pull request][drf-create-pr].
 * [drf-access-policy][drf-access-policy] - Declarative and flexible permissions inspired by AWS' IAM policies.
 * [drf-psq][drf-psq] - An extension that gives support for having action-based **permission_classes**, **serializer_class**, and **queryset** dependent on permission-based rules.
 * [axioms-drf-py][axioms-drf-py] - Supports authentication and claim-based fine-grained authorization (**scopes**, **roles**, **groups**, **permissions**, etc. including object-level checks) using JWT tokens issued by an OAuth2/OIDC Authorization Server.
-* [django-permission-tracer] - Shows which permissions protect each endpoint and HTTP method, traces which permission denied a request, and flags endpoints open to anonymous users. Analyze and visualize permissions across your entire DRF project
+* [django-permission-tracer][django-permission-tracer] - Analyzes and visualizes permissions across a DRF project: which permissions protect each endpoint and HTTP method, which permission denied a request, and which endpoints are open to anonymous users.
 
 ### Serializers
 
@@ -277,5 +277,6 @@ To submit new content, [create a pull request][drf-create-pr].
 [drf-shapeless-serializers]: https://github.com/khaledsukkar2/drf-shapeless-serializers
 [django-lisan]: https://github.com/Nabute/django-lisan
 [axioms-drf-py]: https://github.com/abhishektiwari/axioms-drf-py
+[django-permission-tracer]: https://github.com/pradeeppc/django-permission-tracer
 [django-pydantic-field]: https://github.com/surenkov/django-pydantic-field
 [drf-pydantic]: https://github.com/georgebv/drf-pydantic
