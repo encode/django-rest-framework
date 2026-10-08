@@ -3,7 +3,7 @@ Provides an APIView class that is the base of all views in REST framework.
 """
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
-from django.db import connections, models
+from django.db import connections, models, transaction
 from django.http import Http404
 from django.http.response import HttpResponseBase
 from django.utils.cache import patch_vary_headers
@@ -64,9 +64,13 @@ def get_view_description(view, html=False):
 
 
 def set_rollback():
+    # Rollback all connections that have ATOMIC_REQUESTS set, if it looks like
+    # the @atomic block for the request was started.
+    # Note that this in_atomic_block check may be a false positive due to
+    # transactions started in other ways, e.g. when testing with TestCase.
     for db in connections.all(initialized_only=True):
         if db.settings_dict['ATOMIC_REQUESTS'] and db.in_atomic_block:
-            db.set_rollback(True)
+            transaction.set_rollback(True, using=db.alias)
 
 
 def exception_handler(exc, context):
@@ -230,7 +234,7 @@ class APIView(View):
             'view': self,
             'args': getattr(self, 'args', ()),
             'kwargs': getattr(self, 'kwargs', {}),
-            'request': getattr(self, 'request', None)
+            'request': getattr(self, 'request', None),
         }
 
     def get_view_name(self):
