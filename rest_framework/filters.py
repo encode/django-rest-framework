@@ -122,6 +122,8 @@ class SearchFilter(BaseFilterBackend):
                 continue
             parts = search_field.split(LOOKUP_SEP)
             for part in parts:
+                if part == "pk":
+                    part = opts.pk.name
                 field = opts.get_field(part)
                 if hasattr(field, 'get_path_info'):
                     # This field is a relation, update opts to follow the relation
