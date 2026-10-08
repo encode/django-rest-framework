@@ -977,6 +977,20 @@ class OrderingFilterTests(TestCase):
 
         self.assertContains(response, 'verbose title')
 
+    def test_get_template_context_annotation_label(self):
+        class OrderingListView(generics.ListAPIView):
+            ordering_fields = '__all__'
+            serializer_class = OrderingFilterSerializer
+            queryset = OrderingFilterModel.objects.all().annotate(
+                models.Count("related"))
+            filter_backends = (filters.OrderingFilter,)
+
+        request = factory.get('/', HTTP_ACCEPT='text/html')
+        view = OrderingListView.as_view()
+        response = view(request)
+
+        self.assertContains(response, 'Related Count - ascending')
+
     def test_ordering_with_overridden_get_serializer_class(self):
         class OrderingListView(generics.ListAPIView):
             queryset = OrderingFilterModel.objects.all()
