@@ -1,8 +1,8 @@
 {% load rest_framework %}
 
-<div class="form-group">
+<div class="form-group row mb-3{% if field.errors %} has-error{% endif %}">
   {% if field.label %}
-    <label class="col-sm-2 control-label {% if style.hide_label %}sr-only{% endif %}">
+    <label class="col-sm-2 col-form-label{% if style.hide_label %} visually-hidden{% endif %}">
       {{ field.label }}
     </label>
   {% endif %}
@@ -10,16 +10,18 @@
   <div class="col-sm-10">
     {% if style.inline %}
       {% for key, text in field.choices|items %}
-        <label class="checkbox-inline">
-          <input type="checkbox" name="{{ field.name }}" value="{{ key }}" {% if key|as_string in field.value|as_list_of_strings %}checked{% endif %}>
-          {{ text }}
-        </label>
+        <div class="form-check form-check-inline">
+          <label class="form-check-label">
+            <input class="form-check-input" type="checkbox" name="{{ field.name }}" value="{{ key }}" {% if key|as_string in field.value|as_list_of_strings %}checked{% endif %}>
+            {{ text }}
+          </label>
+        </div>
       {% endfor %}
     {% else %}
       {% for key, text in field.choices|items %}
-        <div class="checkbox">
-          <label>
-            <input type="checkbox" name="{{ field.name }}" value="{{ key }}" {% if key|as_string in field.value|as_list_of_strings %}checked{% endif %}>
+        <div class="form-check">
+          <label class="form-check-label">
+            <input class="form-check-input" type="checkbox" name="{{ field.name }}" value="{{ key }}" {% if key|as_string in field.value|as_list_of_strings %}checked{% endif %}>
             {{ text }}
           </label>
         </div>
@@ -28,12 +30,12 @@
 
   {% if field.errors %}
     {% for error in field.errors %}
-      <span class="help-block">{{ error }}</span>
+      <div class="invalid-feedback d-block">{{ error }}</div>
     {% endfor %}
   {% endif %}
 
   {% if field.help_text %}
-    <span class="help-block">{{ field.help_text|safe }}</span>
+    <div class="form-text">{{ field.help_text|safe }}</div>
   {% endif %}
   </div>
 </div>

@@ -221,7 +221,7 @@ class SessionAuthTests(TestCase):
         """
         response = self.csrf_client.get('/auth/login/')
         content = response.content.decode()
-        assert '<label for="id_username">Username:</label>' in content
+        assert '<label class="form-label" for="id_username">Username:</label>' in content
 
     def test_post_form_session_auth_failing_csrf(self):
         """

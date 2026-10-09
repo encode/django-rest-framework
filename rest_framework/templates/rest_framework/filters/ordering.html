@@ -4,11 +4,11 @@
 <div class="list-group">
     {% for key, label in options %}
         {% if key == current %}
-            <a href="{% add_query_param request param key %}" class="list-group-item active">
-                <span class="glyphicon glyphicon-ok" style="float: right" aria-hidden="true"></span> {{ label }}
+            <a href="{% add_query_param request param key %}" class="list-group-item list-group-item-action active" aria-current="true">
+                <span class="float-end">{% include "rest_framework/icons/check-lg.svg" %}</span> {{ label }}
             </a>
         {% else %}
-            <a href="{% add_query_param request param key %}" class="list-group-item">{{ label }}</a>
+            <a href="{% add_query_param request param key %}" class="list-group-item list-group-item-action">{{ label }}</a>
         {% endif %}
     {% endfor %}
 </div>
