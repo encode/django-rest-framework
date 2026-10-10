@@ -129,7 +129,15 @@ class TestIsSimpleCallable:
             def valid(self) -> UndefinedType:  # noqa: F821
                 pass
 
+        def valid(param: UndefinedType = None):  # noqa: F821
+            pass
+
+        def invalid(param: UndefinedType):  # noqa: F821
+            pass
+
         assert is_simple_callable(Foo().valid)
+        assert is_simple_callable(valid)
+        assert not is_simple_callable(invalid)
 
 
 # Tests for field keyword arguments and core functionality.
