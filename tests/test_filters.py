@@ -451,6 +451,19 @@ class SearchFilterFkTests(TestCase):
                 ["%stitle" % prefix, "%sattribute__label" % prefix]
             )
 
+    def test_must_call_distinct_with_pk_alias(self):
+        filter_ = filters.SearchFilter()
+        prefixes = [''] + list(filter_.lookup_prefixes)
+        for prefix in prefixes:
+            assert not filter_.must_call_distinct(
+                SearchFilterModelFk._meta,
+                ["%spk" % prefix]
+            )
+            assert not filter_.must_call_distinct(
+                SearchFilterModelFk._meta,
+                ["%sattribute__pk" % prefix]
+            )
+
     def test_must_call_distinct_restores_meta_for_each_field(self):
         # In this test case the attribute of the fk model comes first in the
         # list of search fields.
@@ -534,6 +547,33 @@ class SearchFilterM2MTests(TestCase):
                 SearchFilterModelM2M._meta,
                 ["%stitle" % prefix, "%sattributes__label" % prefix]
             )
+
+    def test_must_call_distinct_with_pk_alias(self):
+        filter_ = filters.SearchFilter()
+        prefixes = [''] + list(filter_.lookup_prefixes)
+        for prefix in prefixes:
+            assert not filter_.must_call_distinct(
+                SearchFilterModelM2M._meta,
+                ["%spk" % prefix]
+            )
+            assert filter_.must_call_distinct(
+                SearchFilterModelM2M._meta,
+                ["%sattributes__pk" % prefix]
+            )
+
+    def test_search_on_pk(self):
+        class SearchListView(generics.ListAPIView):
+            queryset = SearchFilterModelM2M.objects.all()
+            serializer_class = SearchFilterM2MSerializer
+            filter_backends = (filters.SearchFilter,)
+            search_fields = ('=pk',)
+
+        pk = SearchFilterModelM2M.objects.get(title='zz').pk
+        view = SearchListView.as_view()
+        request = factory.get('/', {'search': str(pk)})
+        response = view(request)
+        assert response.status_code == 200
+        assert [item['title'] for item in response.data] == ['zz']
 
 
 class Blog(models.Model):

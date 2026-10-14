@@ -24,6 +24,24 @@ def media_type_matches(lhs, rhs):
     return lhs.match(rhs)
 
 
+def order_parsed_by_precedence(media_types):
+    """
+    Given an iterable of parsed ``_MediaType``, return a list of sets,
+    ordered by precedence. Precedence is determined by how specific a media type is:
+
+    3. 'type/subtype; param=val'
+    2. 'type/subtype'
+    1. 'type/*'
+    0. '*/*'
+
+    ``_MediaType`` is hashable by its original string, preserving the set-based dedup.
+    """
+    ret = [set(), set(), set(), set()]
+    for media_type in media_types:
+        ret[3 - media_type.precedence].add(media_type)
+    return [bucket for bucket in ret if bucket]
+
+
 def order_by_precedence(media_type_lst):
     """
     Returns a list of sets of media type strings, ordered by precedence.
@@ -44,8 +62,19 @@ def order_by_precedence(media_type_lst):
 class _MediaType:
     def __init__(self, media_type_str):
         self.orig = '' if (media_type_str is None) else media_type_str
-        self.full_type, self.params = parse_header_parameters(self.orig)
+        try:
+            self.full_type, self.params = parse_header_parameters(self.orig)
+        except ValueError:
+            # Django raises ValueError above MAX_HEADER_LENGTH; degrade to a
+            # media type that matches nothing rather than surfacing a 500.
+            self.full_type, self.params = '', {}
         self.main_type, sep, self.sub_type = self.full_type.partition('/')
+
+    def __eq__(self, other):
+        return isinstance(other, _MediaType) and self.orig == other.orig
+
+    def __hash__(self):
+        return hash(self.orig)
 
     def match(self, other):
         """Return true if this MediaType satisfies the given MediaType."""

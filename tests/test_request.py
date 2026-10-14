@@ -1,9 +1,11 @@
 """
 Tests for content parsing, and form-overloaded content parsing.
 """
+import bz2
 import copy
 import os.path
 import tempfile
+from unittest import mock
 
 import pytest
 from django.contrib.auth import authenticate, login, logout
@@ -17,12 +19,17 @@ from django.urls import path
 
 from rest_framework import status
 from rest_framework.authentication import SessionAuthentication
+from rest_framework.exceptions import ParseError
+from rest_framework.negotiation import DefaultContentNegotiation
 from rest_framework.parsers import (
     BaseParser, FormParser, JSONParser, MultiPartParser
 )
-from rest_framework.request import Request, WrappedAttributeError
+from rest_framework.request import (
+    Request, WrappedAttributeError, is_form_media_type
+)
 from rest_framework.response import Response
 from rest_framework.test import APIClient, APIRequestFactory
+from rest_framework.utils import mediatypes
 from rest_framework.views import APIView
 
 factory = APIRequestFactory()
@@ -146,6 +153,27 @@ class TestContentParsing(TestCase):
         with self.assertRaisesMessage(WrappedAttributeError, expected_message):
             request.data
 
+    def test_content_type_length_limit(self):
+        negotiator = DefaultContentNegotiation()
+        parser = JSONParser()
+        prefix = 'application/json; padding='
+        content_type = prefix + 'x' * (negotiator.max_media_type_length - len(prefix))
+        request = Request(factory.post('/', data=b'', content_type=content_type))
+        assert negotiator.select_parser(request, [parser]) is parser
+
+        request = Request(factory.post('/', data=b'', content_type=content_type + 'x'))
+        with mock.patch.object(mediatypes, 'parse_header_parameters') as parse:
+            assert negotiator.select_parser(request, [parser]) is None
+        parse.assert_not_called()
+
+    def test_form_content_type_length_limit(self):
+        prefix = 'multipart/form-data; boundary='
+        content_type = prefix + 'x' * (256 - len(prefix))
+        assert is_form_media_type(content_type) is True
+        with mock.patch('rest_framework.request.parse_header_parameters') as parse:
+            assert is_form_media_type(content_type + 'x') is False
+        parse.assert_not_called()
+
 
 class TestDataUploadMaxMemorySize(TestCase):
     expected_message = 'Request body exceeded settings.DATA_UPLOAD_MAX_MEMORY_SIZE.'
@@ -191,6 +219,28 @@ class TestDataUploadMaxMemorySize(TestCase):
         ))
         form_request.parsers = (FormParser(),)
         assert form_request.data['qwerty'] == 'uiop'
+
+    @override_settings(DATA_UPLOAD_MAX_MEMORY_SIZE=1024)
+    def test_request_data_with_compression_charset_raises_error(self):
+        # Django checks the limit against the compressed body.
+        # The parser must not decompress it afterwards.
+        expanded = b'{"qwerty": "' + b'u' * (64 * 1024) + b'"}'
+        compressed = bz2.compress(expanded)
+        assert len(compressed) < 1024 < len(expanded)
+
+        django_request = factory.post(
+            '/',
+            compressed,
+            content_type='application/json; charset=bz2_codec'
+        )
+        # Guard against the test client re-encoding the payload.
+        assert django_request.body == compressed
+
+        request = Request(django_request)
+        request.parsers = (JSONParser(),)
+
+        with pytest.raises(ParseError):
+            request.data
 
     @override_settings(DATA_UPLOAD_MAX_MEMORY_SIZE=10)
     def test_request_data_with_multipart_file_upload_is_unchanged(self):
