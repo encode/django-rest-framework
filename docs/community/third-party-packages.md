@@ -49,6 +49,7 @@ To submit new content, [create a pull request][drf-create-pr].
 ### Async Support
 
 *  [adrf](https://github.com/em1208/adrf) - Async support, provides async Views, ViewSets, and Serializers.
+*  [django-aiodrf](https://github.com/django-aiodrf/django-aiodrf) - Async-native views, serializers and policies for Django REST framework. Extends DRF's classes and keeps its contracts.
 
 ### Authentication
 
@@ -93,6 +94,7 @@ To submit new content, [create a pull request][drf-create-pr].
 * [django-restql][django-restql] - Turn your REST API into a GraphQL like API(It allows clients to control which fields will be sent in a response, uses GraphQL like syntax, supports read and write on both flat and nested fields).
 * [graphwrap][graphwrap] - Transform your REST API into a fully compliant GraphQL API with just two lines of code. Leverages [Graphene-Django](https://docs.graphene-python.org/projects/django/en/latest/) to dynamically build, at runtime, a GraphQL ObjectType for each view in your API.
 * [drf-shapeless-serializers][drf-shapeless-serializers] - Dynamically assemble, configure, and shape your Django Rest Framework serializers at runtime, much like connecting Lego bricks.
+* [django-fastdrf][django-fastdrf] - Opt-in serializer, query and response optimizations for synchronous Django REST framework: compiled output with msgspec, pydantic or plain Python, automatic prefetching and cached fields, without patching DRF.
 
 ### Serializer fields
 
