@@ -799,7 +799,7 @@ class SlugField(CharField):
         if self.allow_unicode:
             validator = RegexValidator(re.compile(r'^[-\w]+\Z', re.UNICODE), message=self.error_messages['invalid_unicode'])
         else:
-            validator = RegexValidator(re.compile(r'^[-a-zA-Z0-9_]+$'), message=self.error_messages['invalid'])
+            validator = RegexValidator(re.compile(r'^[-a-zA-Z0-9_]+\Z'), message=self.error_messages['invalid'])
         self.validators.append(validator)
 
 
