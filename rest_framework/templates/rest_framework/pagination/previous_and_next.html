@@ -1,21 +1,21 @@
-<ul class="pager">
+<ul class="pagination pager">
   {% if previous_url %}
-    <li class="previous">
-      <a href="{{ previous_url }}" rel="prev" aria-label="Previous page">&laquo; Previous</a>
+    <li class="page-item previous">
+      <a class="page-link" href="{{ previous_url }}" rel="prev" aria-label="Previous page">&laquo; Previous</a>
     </li>
   {% else %}
-    <li class="previous disabled" aria-disabled="true">
-      <a href="#" tabindex="-1" aria-disabled="true">&laquo; Previous</a>
+    <li class="page-item previous disabled" aria-disabled="true">
+      <a class="page-link" href="#" tabindex="-1" aria-disabled="true">&laquo; Previous</a>
     </li>
   {% endif %}
 
   {% if next_url %}
-    <li class="next">
-      <a href="{{ next_url }}" rel="next" aria-label="Next page">Next &raquo;</a>
+    <li class="page-item next">
+      <a class="page-link" href="{{ next_url }}" rel="next" aria-label="Next page">Next &raquo;</a>
     </li>
   {% else %}
-    <li class="next disabled" aria-disabled="true">
-      <a href="#" tabindex="-1" aria-disabled="true">Next &raquo;</a>
+    <li class="page-item next disabled" aria-disabled="true">
+      <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Next &raquo;</a>
     </li>
   {% endif %}
 </ul>

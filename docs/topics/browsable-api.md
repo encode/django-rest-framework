@@ -37,7 +37,7 @@ This means that during a `GET` request the view may be called again with `self.r
 
 ## Customizing
 
-The browsable API is built with [Twitter's Bootstrap][bootstrap] (v 3.4.1), making it easy to customize the look-and-feel.
+The browsable API is built with [Bootstrap][bootstrap] (v 5.3.8), making it easy to customize the look-and-feel.
 
 To customize the default style, create a template called `rest_framework/api.html` that extends from `rest_framework/base.html`.  For example:
 
@@ -55,16 +55,16 @@ To replace the default theme, add a `bootstrap_theme` block to your `api.html` a
         <link rel="stylesheet" href="/path/to/my/bootstrap.css" type="text/css">
     {% endblock %}
 
-Suitable pre-made replacement themes are available at [Bootswatch][bswatch].  To use any of the Bootswatch themes, simply download the theme's `bootstrap.min.css` file, add it to your project, and replace the default one as described above. Make sure that the Bootstrap version of the new theme matches that of the default theme.
+Suitable pre-made replacement themes are available at [Bootswatch][bswatch].  To use any of the Bootswatch themes, simply download the theme's `bootstrap.min.css` file, add it to your project, and replace the default one as described above. Make sure that the Bootstrap version of the new theme matches that of the default theme (Bootstrap 5).
 
-You can also change the navbar variant, which by default is `navbar-inverse`, using the `bootstrap_navbar_variant` block.  The empty `{% block bootstrap_navbar_variant %}{% endblock %}` will use the original Bootstrap navbar style.
+You can also change the navbar variant, which by default is `navbar-dark`, using the `bootstrap_navbar_variant` block.  The empty `{% block bootstrap_navbar_variant %}{% endblock %}` will use the original Bootstrap navbar style.
 
 Full example:
 
     {% extends "rest_framework/base.html" %}
 
     {% block bootstrap_theme %}
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@3.4.1/flatly/bootstrap.min.css" type="text/css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.8/dist/flatly/bootstrap.min.css" type="text/css">
     {% endblock %}
 
     {% block bootstrap_navbar_variant %}{% endblock %}
@@ -220,8 +220,8 @@ There are [a variety of packages for autocomplete widgets][autocomplete-packages
 [cerulean]: ../img/cerulean.png
 [slate]: ../img/slate.png
 [bswatch]: https://bootswatch.com/
-[bcomponents]: https://getbootstrap.com/2.3.2/components.html
-[bcomponentsnav]: https://getbootstrap.com/2.3.2/components.html#navbar
+[bcomponents]: https://getbootstrap.com/docs/5.3/components/
+[bcomponentsnav]: https://getbootstrap.com/docs/5.3/components/navbar/
 [autocomplete-packages]: https://www.djangopackages.com/grids/g/auto-complete/
 [django-autocomplete-light]: https://github.com/yourlabs/django-autocomplete-light
 [drf-restwind]: https://github.com/youzarsiph/drf-restwind

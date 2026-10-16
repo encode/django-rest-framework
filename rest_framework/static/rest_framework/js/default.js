@@ -3,45 +3,56 @@ $(document).ready(function() {
   prettyPrint();
 
   // Bootstrap tooltips.
-  $('.js-tooltip').tooltip({
-    delay: 1000,
-    container: 'body'
+  document.querySelectorAll('.js-tooltip').forEach(function(el) {
+    bootstrap.Tooltip.getOrCreateInstance(el, {
+      delay: 1000,
+      container: 'body'
+    });
   });
 
-  // Deal with rounded tab styling after tab clicks.
-  $('a[data-toggle="tab"]:first').on('shown', function(e) {
-    $(e.target).parents('.tabbable').addClass('first-tab-active');
-  });
+  var tabLinks = document.querySelectorAll('a[data-bs-toggle="tab"]');
 
-  $('a[data-toggle="tab"]:not(:first)').on('shown', function(e) {
-    $(e.target).parents('.tabbable').removeClass('first-tab-active');
-  });
+  tabLinks.forEach(function(link) {
+    // Deal with rounded tab styling after tab clicks.
+    link.addEventListener('shown.bs.tab', function(e) {
+      var tabbable = e.target.closest('.tabbable');
+      if (!tabbable) {
+        return;
+      }
+      var isFirst = e.target === tabbable.querySelector('a[data-bs-toggle="tab"]');
+      tabbable.classList.toggle('first-tab-active', isFirst);
+    });
 
-  $('a[data-toggle="tab"]').click(function() {
-    document.cookie = "tabstyle=" + this.name + "; path=/";
+    link.addEventListener('click', function() {
+      document.cookie = "tabstyle=" + this.name + "; path=/";
+    });
   });
 
   // Store tab preference in cookies & display appropriate tab on load.
-  var selectedTab = null;
   var selectedTabName = getCookie('tabstyle');
 
   if (selectedTabName) {
     selectedTabName = selectedTabName.replace(/[^a-z-]/g, '');
   }
 
-  if (selectedTabName) {
-    selectedTab = $('.form-switcher a[name=' + selectedTabName + ']');
-  }
-
-  if (selectedTab && selectedTab.length > 0) {
-    // Display whichever tab is selected.
-    selectedTab.tab('show');
-  } else {
-    // If no tab selected, display rightmost tab.
-    $('.form-switcher a:first').tab('show');
-  }
+  document.querySelectorAll('.form-switcher').forEach(function(switcher) {
+    var selectedTab = null;
+    if (selectedTabName) {
+      selectedTab = switcher.querySelector('a[name=' + selectedTabName + ']');
+    }
+    if (!selectedTab) {
+      // If no tab selected, display rightmost tab.
+      selectedTab = switcher.querySelector('a[data-bs-toggle="tab"]');
+    }
+    if (selectedTab) {
+      bootstrap.Tab.getOrCreateInstance(selectedTab).show();
+    }
+  });
 
   $(window).on('load', function() {
-    $('#errorModal').modal('show');
+    var errorModal = document.getElementById('errorModal');
+    if (errorModal) {
+      bootstrap.Modal.getOrCreateInstance(errorModal).show();
+    }
   });
 });
