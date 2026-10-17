@@ -298,7 +298,7 @@ class OrderingFilter(BaseFilterBackend):
                 (field.name, field.verbose_name) for field in queryset.model._meta.fields
             ]
             valid_fields += [
-                (key, key.title().split('__'))
+                (key, ' '.join(key.title().split('__')))
                 for key in queryset.query.annotations
             ]
         else:
