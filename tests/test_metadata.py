@@ -331,6 +331,16 @@ class TestSimpleMetadataFieldInfo(TestCase):
         assert field_info['max_digits'] == 18
         assert field_info['decimal_places'] == 4
 
+    def test_default_value_field_info(self):
+        options = metadata.SimpleMetadata()
+        field_info = options.get_field_info(serializers.IntegerField(default=42))
+        assert field_info['default'] == 42
+
+    def test_callable_default_field_info(self):
+        options = metadata.SimpleMetadata()
+        field_info = options.get_field_info(serializers.IntegerField(default=list))
+        assert 'default' not in field_info
+
 
 class TestModelSerializerMetadata(TestCase):
     def test_read_only_primary_key_related_field(self):
