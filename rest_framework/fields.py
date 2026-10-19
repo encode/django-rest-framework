@@ -473,7 +473,7 @@ class Field:
         raise `SkipField`, indicating that no value should be set in the
         validated data for this field.
         """
-        if self.default is empty or getattr(self.root, 'partial', False):
+        if self.default is empty or getattr(self.parent, 'partial', False):
             # No default, or this is a partial update.
             raise SkipField()
         if callable(self.default):
@@ -499,7 +499,7 @@ class Field:
             return (True, self.get_default())
 
         if data is empty:
-            if getattr(self.root, 'partial', False):
+            if getattr(self.parent, 'partial', False):
                 raise SkipField()
             if self.required:
                 self.fail('required')
