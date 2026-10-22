@@ -1,0 +1,10 @@
+{% load rest_framework %}
+<label class="sr-only">{{ field.label }}</label>
+<select class="form-control" name="{{ field.name }}">
+  {% for select in field.iter_options %} {% if select.value|as_string ==
+  field.value|as_string %}
+  <option value="{{ select.value }}" selected>{{ select.display_text }}</option>
+  {% else %}
+  <option value="{{ select.value }}">{{ select.display_text }}</option>
+  {% endif %} {% endfor %}
+</select>

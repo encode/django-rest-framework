@@ -680,6 +680,10 @@ class BooleanField(Field):
     }
     NULL_VALUES = {'null', '', None}
 
+    @property
+    def _is_nullable_boolean_field(self):
+        return self.allow_null
+
     def __init__(self, **kwargs):
         if kwargs.get('allow_null', False):
             self.default_empty_html = None
@@ -711,6 +715,14 @@ class BooleanField(Field):
             if self._lower_if_str(value) in self.NULL_VALUES and self.allow_null:
                 return None
         return bool(value)
+
+    def iter_options(self):
+        choices = {
+            "": _("Unknown"),
+            True: _("Yes"),
+            False: _("No"),
+        }
+        return iter_options(choices)
 
 
 # String types...
