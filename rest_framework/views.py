@@ -1,6 +1,8 @@
 """
 Provides an APIView class that is the base of all views in REST framework.
 """
+import warnings
+
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
 from django.db import connections, models
@@ -13,6 +15,7 @@ from django.views.generic import View
 
 from rest_framework import exceptions, status
 from rest_framework.compat import split_header_value
+from rest_framework.deprecation import RemovedInDRF321Warning
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.schemas import DefaultSchema
@@ -63,10 +66,45 @@ def get_view_description(view, html=False):
     return description
 
 
-def set_rollback():
+def set_rollback(request=None):
+    """
+    Mark databases for rollback that were atomically wrapped by
+    ATOMIC_REQUESTS.
+
+    If `request` is provided, we mirror Django's
+    ``BaseHandler.make_view_atomic`` logic and skip databases where the
+    resolved view is decorated with ``@transaction.non_atomic_requests``.
+    This prevents DRF from accidentally marking outer transactions (for
+    example, the one Django's ``TestCase`` wraps each test in) for
+    rollback.
+
+    Passing ``request`` is recommended. Calling without it is deprecated.
+    """
+    if request is None:
+        warnings.warn(
+            "Calling `set_rollback()` without a `request` argument is "
+            "deprecated. `set_rollback(request)` will be required in a "
+            "future release.",
+            RemovedInDRF321Warning,
+            stacklevel=2,
+        )
+        non_atomic_requests = None
+    else:
+        # Best-effort: RequestFactory may not set `resolver_match`.
+        view_func = getattr(
+            getattr(request, 'resolver_match', None), 'func', None
+        )
+        non_atomic_requests = getattr(view_func, '_non_atomic_requests', None)
+
     for db in connections.all(initialized_only=True):
-        if db.settings_dict['ATOMIC_REQUESTS'] and db.in_atomic_block:
-            db.set_rollback(True)
+        if not db.settings_dict['ATOMIC_REQUESTS']:
+            continue
+        if not db.in_atomic_block:
+            continue
+        # Mirror Django's make_view_atomic.
+        if non_atomic_requests is not None and db.alias in non_atomic_requests:
+            continue
+        db.set_rollback(True)
 
 
 def exception_handler(exc, context):
@@ -96,7 +134,7 @@ def exception_handler(exc, context):
         else:
             data = {'detail': exc.detail}
 
-        set_rollback()
+        set_rollback(context.get('request'))
         return Response(data, status=exc.status_code, headers=headers)
 
     return None
@@ -230,7 +268,7 @@ class APIView(View):
             'view': self,
             'args': getattr(self, 'args', ()),
             'kwargs': getattr(self, 'kwargs', {}),
-            'request': getattr(self, 'request', None)
+            'request': getattr(self, 'request', None),
         }
 
     def get_view_name(self):
