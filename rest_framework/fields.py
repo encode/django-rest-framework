@@ -680,10 +680,6 @@ class BooleanField(Field):
     }
     NULL_VALUES = {'null', '', None}
 
-    @property
-    def _is_nullable_boolean_field(self):
-        return self.allow_null
-
     def __init__(self, **kwargs):
         if kwargs.get('allow_null', False):
             self.default_empty_html = None

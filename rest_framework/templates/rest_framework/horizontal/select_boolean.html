@@ -9,8 +9,7 @@
 
   <div class="col-sm-10">
     <select class="form-control" name="{{ field.name }}">
-      {% for select in field.iter_options %} {% if select.value == field.value
-      %}
+      {% for select in field.iter_options %} {% if select.value == field.value %}
       <option value="{{ select.value }}" selected>
         {{ select.display_text }}
       </option>

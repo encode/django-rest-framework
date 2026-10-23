@@ -129,6 +129,52 @@ class TestSimpleBoundField:
             rendered_packed = ''.join(rendered.split())
             assert rendered_packed == expected_packed
 
+    def test_rendering_nullable_boolean_field_with_explicit_style(self):
+        from rest_framework.renderers import HTMLFormRenderer
+
+        class ExampleSerializer(serializers.Serializer):
+            bool_field = serializers.BooleanField(
+                allow_null=True,
+                style={'base_template': 'checkbox.html', 'template_pack': 'rest_framework/vertical'})
+
+        serializer = ExampleSerializer(data={'bool_field': True})
+        assert serializer.is_valid()
+        renderer = HTMLFormRenderer()
+        rendered = renderer.render_field(serializer['bool_field'], {})
+        expected_packed = (
+            '<divclass="form-group">'
+            '<divclass="checkbox">'
+            '<label>'
+            '<inputtype="checkbox"name="bool_field"value="true"checked>'
+            'Boolfield'
+            '</label>'
+            '</div>'
+            '</div>'
+        )
+        rendered_packed = ''.join(rendered.split())
+        assert rendered_packed == expected_packed
+
+    def test_rendering_nullable_boolean_field_template_packs(self):
+        from rest_framework.renderers import HTMLFormRenderer
+
+        class ExampleSerializer(serializers.Serializer):
+            bool_field = serializers.BooleanField(allow_null=True)
+
+        cases = [
+            (True, '<optionvalue="True"selected>Yes</option>'),
+            (False, '<optionvalue="False"selected>No</option>'),
+            (None, '<optionvalue=""selected>Unknown</option>'),
+        ]
+        for template_pack in ('rest_framework/vertical', 'rest_framework/horizontal', 'rest_framework/inline'):
+            renderer = HTMLFormRenderer()
+            renderer.template_pack = template_pack
+            for value, selected_option in cases:
+                serializer = ExampleSerializer(data={'bool_field': value})
+                assert serializer.is_valid()
+                rendered = renderer.render_field(serializer['bool_field'], {})
+                rendered_packed = ''.join(rendered.split())
+                assert selected_option in rendered_packed
+
 
 class CustomJSONField(serializers.JSONField):
     pass
