@@ -175,6 +175,30 @@ class TestSimpleBoundField:
                 rendered_packed = ''.join(rendered.split())
                 assert selected_option in rendered_packed
 
+    def test_rendering_nullable_boolean_field_on_redisplay(self):
+        from rest_framework.renderers import HTMLFormRenderer
+
+        class ExampleSerializer(serializers.Serializer):
+            bool_field = serializers.BooleanField(allow_null=True)
+            other = serializers.CharField()
+
+        # After a failed validation the bound value is the raw submitted
+        # string, not a bool; the submitted option must stay selected.
+        cases = [
+            ('True', '<optionvalue="True"selected>Yes</option>'),
+            ('False', '<optionvalue="False"selected>No</option>'),
+            ('', '<optionvalue=""selected>Unknown</option>'),
+        ]
+        for template_pack in ('rest_framework/vertical', 'rest_framework/horizontal', 'rest_framework/inline'):
+            renderer = HTMLFormRenderer()
+            renderer.template_pack = template_pack
+            for raw_value, selected_option in cases:
+                serializer = ExampleSerializer(data={'bool_field': raw_value})
+                assert not serializer.is_valid()
+                rendered = renderer.render_field(serializer['bool_field'], {})
+                rendered_packed = ''.join(rendered.split())
+                assert selected_option in rendered_packed
+
 
 class CustomJSONField(serializers.JSONField):
     pass

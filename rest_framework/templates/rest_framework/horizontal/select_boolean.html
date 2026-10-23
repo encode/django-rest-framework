@@ -1,3 +1,4 @@
+{% load rest_framework %}
 <div class="form-group {% if field.errors %}has-error{% endif %}">
   {% if field.label %}
   <label
@@ -9,7 +10,7 @@
 
   <div class="col-sm-10">
     <select class="form-control" name="{{ field.name }}">
-      {% for select in field.iter_options %} {% if select.value == field.value %}
+      {% for select in field.iter_options %} {% if select.value|as_string == field.value|as_string %}
       <option value="{{ select.value }}" selected>
         {{ select.display_text }}
       </option>
