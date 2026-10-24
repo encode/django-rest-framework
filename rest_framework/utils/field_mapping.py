@@ -138,7 +138,7 @@ def get_field_kwargs(field_name, model_field):
         kwargs['read_only'] = True
         return kwargs
 
-    if model_field.has_default() or model_field.blank or model_field.null:
+    if model_field.has_default() or model_field.has_db_default() or model_field.blank or model_field.null:
         kwargs['required'] = False
 
     if model_field.blank and (isinstance(model_field, (models.CharField, models.TextField))):
@@ -304,7 +304,7 @@ def get_relation_kwargs(field_name, relation_info):
             # No further keyword arguments are valid.
             return kwargs
 
-        if model_field.has_default() or model_field.blank or model_field.null:
+        if model_field.has_default() or model_field.has_db_default() or model_field.blank or model_field.null:
             kwargs['required'] = False
         if model_field.validators:
             kwargs['validators'] = model_field.validators
