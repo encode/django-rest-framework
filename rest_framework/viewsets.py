@@ -84,6 +84,10 @@ class ViewSetMixin:
                             "calling `.as_view()` on a ViewSet. For example "
                             "`.as_view({'get': 'list'})`")
 
+        actions = dict(actions)
+        if 'get' in actions and 'head' not in actions:
+            actions['head'] = actions['get']
+
         # sanitize keyword arguments
         for key in initkwargs:
             if key in cls.http_method_names:
@@ -101,9 +105,6 @@ class ViewSetMixin:
 
         def view(request, *args, **kwargs):
             self = cls(**initkwargs)
-
-            if 'get' in actions and 'head' not in actions:
-                actions['head'] = actions['get']
 
             # We also store the mapping of request methods to actions,
             # so that we can later set the action attribute.

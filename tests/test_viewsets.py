@@ -196,6 +196,62 @@ class InitializeViewSetsTestCase(TestCase):
         assert get.view.action == 'list_action'
         assert head.view.action == 'list_action'
 
+    def test_actions_dict_not_mutated(self):
+        """
+        The original actions dict passed to as_view() should not be
+        mutated, and view.actions should be deterministic before and
+        after handling requests.
+        Regression test for #9747.
+        """
+        actions = {'get': 'list'}
+        view = ActionViewSet.as_view(actions=actions)
+
+        # The caller's dictionary is not mutated
+        assert actions == {'get': 'list'}
+        # view.actions includes 'head' right away and remains deterministic
+        expected_actions = {'get': 'list', 'head': 'list'}
+        assert view.actions == expected_actions
+
+        view(factory.get('/'))
+        assert actions == {'get': 'list'}
+        assert view.actions == expected_actions
+
+        view(factory.head('/'))
+        assert actions == {'get': 'list'}
+        assert view.actions == expected_actions
+
+    def test_actions_dict_with_custom_head_not_mutated(self):
+        """
+        Explicit head mapping is preserved and caller's dict is not mutated.
+        """
+        actions = {'get': 'list', 'head': 'retrieve'}
+        view = ActionViewSet.as_view(actions=actions)
+
+        expected_actions = {'get': 'list', 'head': 'retrieve'}
+        assert actions == {'get': 'list', 'head': 'retrieve'}
+        assert view.actions == expected_actions
+
+        head = view(factory.head('/'))
+        assert head.view.action == 'retrieve'
+        assert actions == {'get': 'list', 'head': 'retrieve'}
+        assert view.actions == expected_actions
+
+    def test_actions_dict_without_get(self):
+        """
+        When 'get' is not present in actions, 'head' is not added,
+        and actions remains deterministic before and after requests.
+        """
+        actions = {'post': 'list'}
+        view = ActionViewSet.as_view(actions=actions)
+
+        expected_actions = {'post': 'list'}
+        assert actions == {'post': 'list'}
+        assert view.actions == expected_actions
+
+        view(factory.post('/'))
+        assert actions == {'post': 'list'}
+        assert view.actions == expected_actions
+
     def test_login_required_middleware_compat(self):
         view = ActionViewSet.as_view(actions={'get': 'list'})
         assert view.login_required is False
