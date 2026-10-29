@@ -845,6 +845,24 @@ class TestNullableBooleanField(TestBooleanField):
     }
     field = serializers.BooleanField(allow_null=True)
 
+    @pytest.mark.parametrize(
+        'input_value,output_value',
+        [
+            ('', None),
+            ('True', True),
+            ('False', False),
+        ]
+    )
+    def test_nullable_boolean_html(self, input_value, output_value):
+        class TestSerializer(serializers.Serializer):
+            bool_field = serializers.BooleanField(allow_null=True)
+
+        data = QueryDict(mutable=True)
+        data.update({'bool_field': input_value})
+        serializer = TestSerializer(data=data)
+        assert serializer.is_valid()
+        assert serializer.validated_data['bool_field'] is output_value
+
 
 # String types...
 

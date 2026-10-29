@@ -712,6 +712,14 @@ class BooleanField(Field):
                 return None
         return bool(value)
 
+    def iter_options(self):
+        choices = {
+            "": _("Unknown"),
+            True: _("Yes"),
+            False: _("No"),
+        }
+        return iter_options(choices)
+
 
 # String types...
 
