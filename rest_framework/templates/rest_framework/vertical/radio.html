@@ -2,9 +2,9 @@
 {% load rest_framework %}
 {% trans "None" as none_choice %}
 
-<div class="form-group {% if field.errors %}has-error{% endif %}">
+<div class="form-group mb-3{% if field.errors %} has-error{% endif %}">
   {% if field.label %}
-    <label {% if style.hide_label %}class="sr-only"{% endif %}>
+    <label class="form-label{% if style.hide_label %} visually-hidden{% endif %}">
       {{ field.label }}
     </label>
   {% endif %}
@@ -12,33 +12,37 @@
     {% if style.inline %}
       <div>
         {% if field.allow_null or field.allow_blank %}
-          <label class="radio-inline">
-            <input type="radio" name="{{ field.name }}" value="" {% if not field.value %}checked{% endif %} />
-            {{ none_choice }}
-          </label>
+          <div class="form-check form-check-inline">
+            <label class="form-check-label">
+              <input class="form-check-input" type="radio" name="{{ field.name }}" value="" {% if not field.value %}checked{% endif %} />
+              {{ none_choice }}
+            </label>
+          </div>
         {% endif %}
 
         {% for key, text in field.choices|items %}
-          <label class="radio-inline">
-            <input type="radio" name="{{ field.name }}" value="{{ key }}" {% if key|as_string == field.value|as_string %}checked{% endif %}>
-            {{ text }}
-          </label>
+          <div class="form-check form-check-inline">
+            <label class="form-check-label">
+              <input class="form-check-input" type="radio" name="{{ field.name }}" value="{{ key }}" {% if key|as_string == field.value|as_string %}checked{% endif %}>
+              {{ text }}
+            </label>
+          </div>
         {% endfor %}
       </div>
     {% else %}
       {% if field.allow_null or field.allow_blank %}
-        <div class="radio">
-          <label>
-            <input type="radio" name="{{ field.name }}" value="" {% if not field.value %}checked{% endif %} />
+        <div class="form-check">
+          <label class="form-check-label">
+            <input class="form-check-input" type="radio" name="{{ field.name }}" value="" {% if not field.value %}checked{% endif %} />
             {{ none_choice }}
           </label>
         </div>
       {% endif %}
 
       {% for key, text in field.choices|items %}
-        <div class="radio">
-          <label>
-            <input type="radio" name="{{ field.name }}" value="{{ key }}" {% if key|as_string == field.value|as_string %}checked{% endif %}>
+        <div class="form-check">
+          <label class="form-check-label">
+            <input class="form-check-input" type="radio" name="{{ field.name }}" value="{{ key }}" {% if key|as_string == field.value|as_string %}checked{% endif %}>
             {{ text }}
           </label>
         </div>
@@ -47,11 +51,11 @@
 
     {% if field.errors %}
       {% for error in field.errors %}
-        <span class="help-block">{{ error }}</span>
+        <div class="invalid-feedback d-block">{{ error }}</div>
       {% endfor %}
     {% endif %}
 
     {% if field.help_text %}
-      <span class="help-block">{{ field.help_text|safe }}</span>
+      <div class="form-text">{{ field.help_text|safe }}</div>
     {% endif %}
 </div>
