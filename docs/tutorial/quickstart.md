@@ -57,6 +57,8 @@ $ pwd
 <some path>/tutorial
 $ find .
 .
+./.venv
+./.venv/...
 ./tutorial
 ./tutorial/asgi.py
 ./tutorial/__init__.py
@@ -72,8 +74,6 @@ $ find .
 ./tutorial/settings.py
 ./tutorial/urls.py
 ./tutorial/wsgi.py
-./env
-./env/...
 ./manage.py
 ```
 
