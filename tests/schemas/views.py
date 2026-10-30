@@ -8,7 +8,7 @@ from django.core.validators import (
 from django.db import models
 
 from rest_framework import generics, permissions, serializers
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view
 from rest_framework.response import Response
 from rest_framework.schemas.openapi import AutoSchema
 from rest_framework.views import APIView
@@ -226,6 +226,21 @@ class ExampleAutoSchemaDuplicate2(generics.GenericAPIView):
 
         serializer = self.get_serializer(data=now.date(), datetime=now)
         return Response(serializer.data)
+
+
+class ExampleQueryViewSet(ViewSet):
+    serializer_class = ExampleSerializerModel
+
+    def list(self, request):
+        pass
+
+    def query(self, request):
+        pass
+
+
+@api_view(['GET', 'QUERY'])
+def example_query_view(request):
+    pass
 
 
 class ExampleViewSet(ViewSet):

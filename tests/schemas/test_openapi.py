@@ -1176,6 +1176,23 @@ class TestOperationIntrospection(TestCase):
 @override_settings(REST_FRAMEWORK={'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.openapi.AutoSchema'})
 class TestGenerator(TestCase):
 
+    def test_query_is_excluded(self):
+        """
+        OpenAPI 3.0 has no `query` operation, so QUERY is left out like
+        OPTIONS and HEAD to keep the generated document valid.
+        """
+        router = routers.SimpleRouter()
+        router.register('example', views.ExampleQueryViewSet, basename='example')
+        patterns = router.urls + [
+            path('function/', views.example_query_view),
+        ]
+        generator = SchemaGenerator(patterns=patterns)
+
+        paths = generator.get_schema(request=create_request('/'))['paths']
+
+        assert list(paths['/example/']) == ['get']
+        assert list(paths['/function/']) == ['get']
+
     def test_override_settings(self):
         assert isinstance(views.ExampleListView.schema, AutoSchema)
 

@@ -14,6 +14,7 @@ from rest_framework.test import (
     APIClient, APIRequestFactory, URLPatternsTestCase
 )
 from rest_framework.utils import json
+from tests.utils import requires_query_method
 
 factory = APIRequestFactory()
 
@@ -151,6 +152,95 @@ class BasicViewSet(viewsets.ViewSet):
     @action3.mapping.delete
     def action3_delete(self, request, pk, *args, **kwargs):
         return Response({'delete': pk})
+
+
+class QueryViewSet(viewsets.ViewSet):
+    def list(self, request, *args, **kwargs):
+        return Response({'method': 'list'})
+
+    def query(self, request, *args, **kwargs):
+        return Response({'method': 'query', 'data': request.data})
+
+    def retrieve(self, request, *args, **kwargs):
+        return Response({'method': 'retrieve'})
+
+
+class QueryActionViewSet(viewsets.ViewSet):
+    def list(self, request, *args, **kwargs):
+        return Response({'method': 'list'})
+
+    @action(methods=['post'], detail=False)
+    def query(self, request, *args, **kwargs):
+        return Response({'method': 'query action'})
+
+
+class TestQueryRoute(URLPatternsTestCase, TestCase):
+    """
+    The router binds QUERY on the list route, but only for viewsets that
+    actually implement `query()`.
+    """
+
+    router = SimpleRouter()
+    router.register('queryables', QueryViewSet, basename='queryable')
+    router.register('basics', BasicViewSet, basename='basic')
+    router.register('actions', QueryActionViewSet, basename='action')
+
+    urlpatterns = [
+        path('api/', include(router.urls)),
+    ]
+
+    def setUp(self):
+        self.router = SimpleRouter()
+
+    def test_query_is_bound_when_the_viewset_implements_it(self):
+        list_route = self.router.get_routes(QueryViewSet)[0]
+        assert self.router.get_method_map(QueryViewSet, list_route.mapping) == {
+            'get': 'list',
+            'query': 'query',
+        }
+
+    def test_query_is_not_bound_when_the_viewset_omits_it(self):
+        list_route = self.router.get_routes(BasicViewSet)[0]
+        assert self.router.get_method_map(BasicViewSet, list_route.mapping) == {
+            'get': 'list',
+        }
+
+    @requires_query_method
+    def test_query_request_reaches_the_handler(self):
+        response = APIClient().query(
+            reverse('queryable-list'), {'search': 'abc'}, format='json')
+        assert response.status_code == 200
+        assert json.loads(response.content.decode()) == {
+            'method': 'query', 'data': {'search': 'abc'}
+        }
+
+    def test_query_is_method_not_allowed_without_a_handler(self):
+        response = APIClient().query(
+            reverse('basic-list'), {'search': 'abc'}, format='json')
+        assert response.status_code == 405
+
+    @requires_query_method
+    def test_query_is_method_not_allowed_on_the_detail_route(self):
+        response = APIClient().query('/api/queryables/1/', {}, format='json')
+        assert response.status_code == 405
+        assert 'QUERY' not in response['Allow']
+
+    def test_action_named_query_keeps_its_own_route(self):
+        list_route = self.router.get_routes(QueryActionViewSet)[0]
+        assert self.router.get_method_map(QueryActionViewSet, list_route.mapping) == {
+            'get': 'list',
+        }
+
+        response = APIClient().post(reverse('action-query'))
+        assert response.status_code == 200
+        assert json.loads(response.content.decode()) == {'method': 'query action'}
+
+    @requires_query_method
+    def test_action_named_query_does_not_handle_the_query_method(self):
+        for url in (reverse('action-list'), reverse('action-query')):
+            with self.subTest(url=url):
+                response = APIClient().query(url, {}, format='json')
+                assert response.status_code == 405
 
 
 class TestSimpleRouter(URLPatternsTestCase, TestCase):

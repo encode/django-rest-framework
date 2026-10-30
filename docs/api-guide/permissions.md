@@ -181,6 +181,9 @@ The default behavior can also be overridden to support custom model permissions.
 
 To use custom model permissions, override `DjangoModelPermissions` and set the `.perms_map` property.  Refer to the source code for details.
 
+!!! note
+    `QUERY` is a safe method, so it maps to an empty list of required permissions, as `GET` does.  A `.perms_map` override that predates `QUERY` simply omits the key, and a `QUERY` request against it raises `MethodNotAllowed` rather than being permitted by default.
+
 ### DjangoModelPermissionsOrAnonReadOnly
 
 Similar to `DjangoModelPermissions`, but also allows unauthenticated users to have read-only access to the API.
@@ -211,7 +214,7 @@ To implement a custom permission, override `BasePermission` and implement either
 
 The methods should return `True` if the request should be granted access, and `False` otherwise.
 
-If you need to test if a request is a read operation or a write operation, you should check the request method against the constant `SAFE_METHODS`, which is a tuple containing `'GET'`, `'OPTIONS'` and `'HEAD'`.  For example:
+If you need to test if a request is a read operation or a write operation, you should check the request method against the constant `SAFE_METHODS`, which is a tuple containing `'GET'`, `'OPTIONS'`, `'HEAD'` and `'QUERY'`.  For example:
 
     if request.method in permissions.SAFE_METHODS:
         # Check permissions for read-only request

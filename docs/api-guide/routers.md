@@ -158,12 +158,13 @@ Note that path converters will be used on all URLs registered in the router, inc
 
 ### SimpleRouter
 
-This router includes routes for the standard set of `list`, `create`, `retrieve`, `update`, `partial_update` and `destroy` actions.  The viewset can also mark additional methods to be routed, using the `@action` decorator.
+This router includes routes for the standard set of `list`, `create`, `query`, `retrieve`, `update`, `partial_update` and `destroy` actions.  The viewset can also mark additional methods to be routed, using the `@action` decorator.
 
 <table border=1>
     <tr><th>URL Style</th><th>HTTP Method</th><th>Action</th><th>URL Name</th></tr>
-    <tr><td rowspan=2>{prefix}/</td><td>GET</td><td>list</td><td rowspan=2>{basename}-list</td></tr></tr>
+    <tr><td rowspan=3>{prefix}/</td><td>GET</td><td>list</td><td rowspan=3>{basename}-list</td></tr></tr>
     <tr><td>POST</td><td>create</td></tr>
+    <tr><td>QUERY</td><td>query</td></tr>
     <tr><td>{prefix}/{url_path}/</td><td>GET, or as specified by `methods` argument</td><td>`@action(detail=False)` decorated method</td><td>{basename}-{url_name}</td></tr>
     <tr><td rowspan=4>{prefix}/{lookup}/</td><td>GET</td><td>retrieve</td><td rowspan=4>{basename}-detail</td></tr></tr>
     <tr><td>PUT</td><td>update</td></tr>
@@ -186,8 +187,9 @@ This router is similar to `SimpleRouter` as above, but additionally includes a d
 <table border=1>
     <tr><th>URL Style</th><th>HTTP Method</th><th>Action</th><th>URL Name</th></tr>
     <tr><td>[.format]</td><td>GET</td><td>automatically generated root view</td><td>api-root</td></tr></tr>
-    <tr><td rowspan=2>{prefix}/[.format]</td><td>GET</td><td>list</td><td rowspan=2>{basename}-list</td></tr></tr>
+    <tr><td rowspan=3>{prefix}/[.format]</td><td>GET</td><td>list</td><td rowspan=3>{basename}-list</td></tr></tr>
     <tr><td>POST</td><td>create</td></tr>
+    <tr><td>QUERY</td><td>query</td></tr>
     <tr><td>{prefix}/{url_path}/[.format]</td><td>GET, or as specified by `methods` argument</td><td>`@action(detail=False)` decorated method</td><td>{basename}-{url_name}</td></tr>
     <tr><td rowspan=4>{prefix}/{lookup}/[.format]</td><td>GET</td><td>retrieve</td><td rowspan=4>{basename}-detail</td></tr></tr>
     <tr><td>PUT</td><td>update</td></tr>

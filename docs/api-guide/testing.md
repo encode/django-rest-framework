@@ -17,7 +17,7 @@ Extends [Django's existing `RequestFactory` class][requestfactory].
 
 ### Creating test requests
 
-The `APIRequestFactory` class supports an almost identical API to Django's standard `RequestFactory` class.  This means that the standard `.get()`, `.post()`, `.put()`, `.patch()`, `.delete()`, `.head()` and `.options()` methods are all available.
+The `APIRequestFactory` class supports an almost identical API to Django's standard `RequestFactory` class.  This means that the standard `.get()`, `.post()`, `.put()`, `.patch()`, `.delete()`, `.head()` and `.options()` methods are all available.  A `.query()` method is also provided, for the [`QUERY` method][query-method].
 
     from rest_framework.test import APIRequestFactory
 
@@ -132,7 +132,7 @@ Extends [Django's existing `Client` class][client].
 
 ### Making requests
 
-The `APIClient` class supports the same request interface as Django's standard `Client` class.  This means that the standard `.get()`, `.post()`, `.put()`, `.patch()`, `.delete()`, `.head()` and `.options()` methods are all available.  For example:
+The `APIClient` class supports the same request interface as Django's standard `Client` class.  This means that the standard `.get()`, `.post()`, `.put()`, `.patch()`, `.delete()`, `.head()` and `.options()` methods are all available, plus `.query()` for the [`QUERY` method][query-method].  For example:
 
     from rest_framework.test import APIClient
 
@@ -401,3 +401,4 @@ For example, to add support for using `format='html'` in test requests, you migh
 [refresh_from_db_docs]: https://docs.djangoproject.com/en/stable/ref/models/instances/#django.db.models.Model.refresh_from_db
 [session_objects]: https://requests.readthedocs.io/en/latest/user/advanced/#session-objects
 [provided_test_case_classes]: https://docs.djangoproject.com/en/stable/topics/testing/tools/#provided-test-case-classes
+[query-method]: views.md#the-query-method

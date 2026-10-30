@@ -48,6 +48,14 @@ If we need to, we can bind this viewset into two separate views, like so:
     user_list = UserViewSet.as_view({'get': 'list'})
     user_detail = UserViewSet.as_view({'get': 'retrieve'})
 
+A viewset that defines a `.query()` method also gets a `QUERY` route on the collection URL, for the [`QUERY` method][query-method]. None of the model mixins provide `.query()`, so a `ModelViewSet` that should accept `QUERY` delegates to `.list()`, which applies the view's filter backends to the request body:
+
+    class UserViewSet(viewsets.ModelViewSet):
+        ...
+
+        def query(self, request, *args, **kwargs):
+            return self.list(request, *args, **kwargs)
+
 !!! warning
     Do not use `.as_view()` with `@action` methods. It bypasses router setup and may ignore action settings like `permission_classes`. Use `DefaultRouter` for actions.
 
@@ -339,3 +347,4 @@ By creating your own base `ViewSet` classes, you can provide common behavior tha
 
 [cite]: https://guides.rubyonrails.org/action_controller_overview.html
 [routers]: routers.md
+[query-method]: views.md#the-query-method

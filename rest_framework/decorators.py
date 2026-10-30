@@ -298,3 +298,6 @@ class MethodMapper(dict):
 
     def trace(self, func):
         return self._map('trace', func)
+
+    def query(self, func):
+        return self._map('query', func)

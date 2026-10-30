@@ -18,6 +18,7 @@ from rest_framework.test import (
     APIClient, APIRequestFactory, URLPatternsTestCase, force_authenticate
 )
 from rest_framework.views import APIView
+from tests.utils import requires_query_method
 
 
 @api_view(['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'])
@@ -72,6 +73,16 @@ def post_view(request):
     return Response(serializer.validated_data)
 
 
+@api_view(['QUERY'])
+def query_view(request):
+    return Response(request.data)
+
+
+@api_view(['QUERY'])
+def query_redirect_view(request, code):
+    return HttpResponseRedirect('/query-view/', status=code)
+
+
 urlpatterns = [
     path('view/', view),
     path('session-view/', session_view),
@@ -80,6 +91,8 @@ urlpatterns = [
     path('post-json-view/', post_json_view),
     path('delete-json-view/', delete_json_view),
     path('post-view/', post_view),
+    path('query-view/', query_view),
+    path('query-redirect-view/<int:code>/', query_redirect_view),
 ]
 
 
@@ -269,6 +282,36 @@ class TestAPITestClient(TestCase):
         assert response.status_code == status.HTTP_204_NO_CONTENT
         assert response.data is None
 
+    @requires_query_method
+    def test_query_based_on_format(self):
+        data = {'search': {'field': 'value'}}
+        response = self.client.query('/query-view/', data, format='json')
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data == data
+
+    @requires_query_method
+    def test_query_encodes_data_based_on_json_content_type(self):
+        data = {'search': True}
+        response = self.client.query(
+            '/query-view/',
+            data=data,
+            content_type='application/json'
+        )
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data == data
+
+    @requires_query_method
+    def test_query_follows_307_308_with_its_body(self):
+        data = {'search': 'abc'}
+        for code in (307, 308):
+            with self.subTest(code=code):
+                response = self.client.query(
+                    '/query-redirect-view/%s/' % code, data,
+                    format='json', follow=True)
+                assert response.redirect_chain == [('/query-view/', code)]
+                assert response.status_code == status.HTTP_200_OK
+                assert response.data == data
+
 
 class TestAPIRequestFactory(TestCase):
     def test_csrf_exempt_by_default(self):
@@ -362,6 +405,13 @@ class TestAPIRequestFactory(TestCase):
         assert dict(request.GET) == {'demo': ['testé']}
         request = factory.get('/view/', {'demo': 'testé'})
         assert dict(request.GET) == {'demo': ['testé']}
+
+    def test_query_encodes_data(self):
+        factory = APIRequestFactory()
+        request = factory.query('/query-view/', {'search': 'abc'}, format='json')
+        assert request.method == 'QUERY'
+        assert request.headers['content-type'] == 'application/json'
+        assert request.body == b'{"search":"abc"}'
 
     def test_empty_request_content_type(self):
         factory = APIRequestFactory()

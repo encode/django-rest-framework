@@ -159,6 +159,33 @@ By default only `GET` methods will be accepted. Other methods will respond with 
         return Response({"message": "Hello, world!"})
 
 
+### The `QUERY` method
+
+REST framework supports the `QUERY` method defined by [RFC 10008][rfc10008], which requires Django 6.2 or later. `QUERY` is safe and idempotent like `GET`, but carries a request body like `POST`, which makes it a good fit for searches whose parameters are too large or too structured for a query string.
+
+A view opts in by defining a `.query()` handler. The request body is parsed by the usual [parsers][parsers], so `request.data` works exactly as it does for `POST`.
+
+    class SearchNotes(APIView):
+        def query(self, request, format=None):
+            notes = Note.objects.filter(title__icontains=request.data.get('title', ''))
+            return Response(NoteSerializer(notes, many=True).data)
+
+Generic views don't provide a `.query()` handler, so a list view that should accept `QUERY` delegates to `.list()`. The built-in filter backends read their parameters from [`request.filter_params`][filter-params], which includes the request body of a `QUERY` request. Pagination parameters are still read from the URL, so the `next` and `previous` links carry the page, but the client must send them as `QUERY` requests with the same body to keep the filters.
+
+    class UserList(generics.ListAPIView):
+        queryset = User.objects.all()
+        serializer_class = UserSerializer
+        filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+        search_fields = ['username', 'email']
+
+        def query(self, request, *args, **kwargs):
+            return self.list(request, *args, **kwargs)
+
+!!! note
+    Because `QUERY` is safe, it is included in `permissions.SAFE_METHODS` and requires no permission in the `perms_map` of `DjangoModelPermissions` and `DjangoObjectPermissions`. Handlers must honor that contract and never modify state. See the [permissions documentation][permissions].
+
+HTML forms cannot issue a `QUERY` request, so the browsable API does not render a form for it.
+
 ### API policy decorators
 
 To override the default settings, REST framework provides a set of additional decorators which can be added to your views.  These must come *after* (below) the `@api_view` decorator.  For example, to create a view that uses a [throttle][throttling] to ensure it can only be called once per day by a particular user, use the `@throttle_classes` decorator, passing a list of throttle classes:
@@ -241,4 +268,8 @@ See [ScopedRateThrottle documentation][scoped-rate-throttle] for more details.
 [scoped-rate-throttle]: throttling.md#scopedratethrottle
 [classy-drf]: http://www.cdrf.co
 [api-policy-attributes]: views.md#api-policy-attributes
+[parsers]: parsers.md
+[filter-params]: requests.md#filter_params
+[permissions]: permissions.md
+[rfc10008]: https://www.rfc-editor.org/rfc/rfc10008.html
 
