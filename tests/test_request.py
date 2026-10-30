@@ -134,6 +134,37 @@ class TestContentParsing(TestCase):
         request.parsers = (PlainTextParser(), )
         assert request.data == content
 
+    def test_filter_params_are_query_params_for_get(self):
+        request = Request(factory.get('/', {'search': 'abc'}))
+        assert request.filter_params is request.query_params
+
+    def test_filter_params_merge_json_body_over_url_for_QUERY(self):
+        request = Request(
+            factory.query('/?page=2&search=url', {'search': 'body', 'tags': ['a', 'b']}, format='json'),
+            parsers=(JSONParser(),),
+        )
+        assert request.filter_params['page'] == '2'
+        assert request.filter_params['search'] == 'body'
+        assert request.filter_params.getlist('tags') == ['a', 'b']
+        assert request.query_params['search'] == 'url'
+
+    def test_filter_params_read_form_body_for_QUERY(self):
+        body = 'search=abc&tags=a&tags=b'
+        request = Request(
+            factory.query('/', body, content_type='application/x-www-form-urlencoded'),
+            parsers=(FormParser(),),
+        )
+        assert request.filter_params['search'] == 'abc'
+        assert request.filter_params.getlist('tags') == ['a', 'b']
+
+    def test_filter_params_reject_a_non_object_QUERY_body(self):
+        request = Request(
+            factory.query('/', ['abc'], format='json'),
+            parsers=(JSONParser(),),
+        )
+        with pytest.raises(ParseError):
+            request.filter_params
+
     def test_calling_data_fails_when_attribute_error_is_raised(self):
         """
         Ensure attribute errors raised when parsing are properly re-raised.

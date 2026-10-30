@@ -325,11 +325,24 @@ The `ordering` attribute may be either a string or a list/tuple of strings.
 
 ---
 
+## Filtering with the `QUERY` method
+
+A [`QUERY` request][query-method] carries its search and ordering parameters in the request body, rather than the URL.  `SearchFilter` and `OrderingFilter` read their parameters from [`request.filter_params`][filter-params], so they apply to the body of a `QUERY` request in the same way as they apply to the query string of a `GET` request:
+
+    QUERY /users/ HTTP/1.1
+    Content-Type: application/json
+
+    {"search": "alice", "ordering": "-date_joined"}
+
+Values take the same form as they would in a query string, so multiple ordering fields are a single comma-separated string.
+
 ## Custom generic filtering
 
 You can also provide your own generic filtering backend, or write an installable app for other developers to use.
 
 To do so override `BaseFilterBackend`, and override the `.filter_queryset(self, request, queryset, view)` method.  The method should return a new, filtered queryset.
+
+A backend that reads client-supplied parameters should read them from `request.filter_params` rather than `request.query_params`, so that it also supports `QUERY` requests.
 
 As well as allowing clients to perform searches and filtering, generic filter backends can be useful for restricting which objects should be visible to any given request or user.
 
@@ -380,6 +393,7 @@ The [djangorestframework-word-filter][django-rest-framework-word-search-filter] 
 
 
 [cite]: https://docs.djangoproject.com/en/stable/topics/db/queries/#retrieving-specific-objects-with-filters
+[filter-params]: requests.md#filter_params
 [django-filter-docs]: https://django-filter.readthedocs.io/en/latest/index.html
 [django-filter-drf-docs]: https://django-filter.readthedocs.io/en/latest/guide/rest_framework.html
 [search-django-admin]: https://docs.djangoproject.com/en/stable/ref/contrib/admin/#django.contrib.admin.ModelAdmin.search_fields
@@ -392,3 +406,4 @@ The [djangorestframework-word-filter][django-rest-framework-word-search-filter] 
 [JSONField]: https://docs.djangoproject.com/en/stable/ref/models/fields/#django.db.models.JSONField
 [postgres-search]: https://docs.djangoproject.com/en/stable/ref/contrib/postgres/search/
 [postgres-lookups]: https://docs.djangoproject.com/en/stable/ref/contrib/postgres/lookups/#unaccent
+[query-method]: views.md#the-query-method

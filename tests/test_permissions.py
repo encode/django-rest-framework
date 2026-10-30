@@ -16,6 +16,7 @@ from rest_framework import (
 from rest_framework.routers import DefaultRouter
 from rest_framework.test import APIRequestFactory
 from tests.models import BasicModel
+from tests.utils import requires_query_method
 
 factory = APIRequestFactory()
 
@@ -60,7 +61,23 @@ class IgnoredGetQuerySetListView(GetQuerySetListView):
     _ignore_model_permissions = True
 
 
+class QueryRootView(RootView):
+    def query(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+
+
+class ReadOnlyQueryView(generics.ListCreateAPIView):
+    queryset = BasicModel.objects.all()
+    serializer_class = BasicSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def query(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+
+
 root_view = RootView.as_view()
+query_root_view = QueryRootView.as_view()
+read_only_query_view = ReadOnlyQueryView.as_view()
 api_root_view = DefaultRouter().get_api_root_view()
 instance_view = InstanceView.as_view()
 get_queryset_list_view = GetQuerySetListView.as_view()
@@ -168,6 +185,48 @@ class ModelPermissionsIntegrationTests(TestCase):
         request = factory.delete('/1', HTTP_AUTHORIZATION=self.disallowed_credentials)
         response = instance_view(request, pk=1)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    @requires_query_method
+    def test_query_requires_no_model_permission(self):
+        """
+        QUERY is safe per RFC 10008, so `perms_map` requires nothing for it,
+        exactly as for GET.
+        """
+        request = factory.query('/', {'search': 'abc'}, format='json',
+                                HTTP_AUTHORIZATION=self.disallowed_credentials)
+        response = query_root_view(request)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    @requires_query_method
+    def test_query_is_permitted_for_unauthenticated_read_only(self):
+        request = factory.query('/', {'search': 'abc'}, format='json')
+        response = read_only_query_view(request)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_overridden_perms_map_without_query_is_method_not_allowed(self):
+        """
+        `perms_map` overrides that predate QUERY keep failing closed rather
+        than silently permitting it.
+        """
+
+        class LegacyPermissions(permissions.DjangoModelPermissions):
+            perms_map = {
+                'GET': [],
+                'OPTIONS': [],
+                'HEAD': [],
+                'POST': ['%(app_label)s.add_%(model_name)s'],
+                'PUT': ['%(app_label)s.change_%(model_name)s'],
+                'PATCH': ['%(app_label)s.change_%(model_name)s'],
+                'DELETE': ['%(app_label)s.delete_%(model_name)s'],
+            }
+
+        class LegacyQueryView(QueryRootView):
+            permission_classes = [LegacyPermissions]
+
+        request = factory.query('/', {'search': 'abc'}, format='json',
+                                HTTP_AUTHORIZATION=self.permitted_credentials)
+        response = LegacyQueryView.as_view()(request)
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
     def test_options_permitted(self):
         request = factory.options(
@@ -305,6 +364,19 @@ class ObjectPermissionInstanceView(generics.RetrieveUpdateDestroyAPIView):
 object_permissions_view = ObjectPermissionInstanceView.as_view()
 
 
+class QueryObjectPermissionInstanceView(generics.RetrieveAPIView):
+    queryset = BasicPermModel.objects.all()
+    serializer_class = BasicPermSerializer
+    authentication_classes = [authentication.BasicAuthentication]
+    permission_classes = [permissions.DjangoObjectPermissions]
+
+    def query(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
+
+
+query_object_permissions_view = QueryObjectPermissionInstanceView.as_view()
+
+
 class ObjectPermissionListView(generics.ListAPIView):
     queryset = BasicPermModel.objects.all()
     serializer_class = BasicPermSerializer
@@ -426,6 +498,12 @@ class ObjectPermissionsIntegrationTests(TestCase):
         request = factory.get('/1', HTTP_AUTHORIZATION=self.credentials['writeonly'])
         response = object_permissions_view(request, pk='1')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    @requires_query_method
+    def test_query_requires_no_object_permission(self):
+        request = factory.query('/1', {}, format='json', HTTP_AUTHORIZATION=self.credentials['writeonly'])
+        response = query_object_permissions_view(request, pk='1')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_can_read_get_queryset_permissions(self):
         """

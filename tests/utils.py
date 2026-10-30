@@ -1,7 +1,14 @@
 from operator import attrgetter
 
+import pytest
 from django.core.exceptions import ObjectDoesNotExist
 from django.urls import NoReverseMatch
+from django.views.generic import View
+
+requires_query_method = pytest.mark.skipif(
+    'query' not in View.http_method_names,
+    reason='Django supports the QUERY method from 6.2 onwards.',
+)
 
 
 class MockObject:

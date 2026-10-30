@@ -18,7 +18,7 @@ AJAX requests that are made on a different site from the API they are communicat
 
 To guard against these type of attacks, you need to do two things:
 
-1. Ensure that the 'safe' HTTP operations, such as `GET`, `HEAD` and `OPTIONS` cannot be used to alter any server-side state.
+1. Ensure that the 'safe' HTTP operations, such as `GET`, `HEAD`, `OPTIONS` and `QUERY` cannot be used to alter any server-side state.
 2. Ensure that any 'unsafe' HTTP operations, such as `POST`, `PUT`, `PATCH` and `DELETE`, always require a valid CSRF token.
 
 If you're using `SessionAuthentication` you'll need to include valid CSRF tokens for any `POST`, `PUT`, `PATCH` or `DELETE` operations.
