@@ -1,14 +1,20 @@
+from unittest import mock
+
 import pytest
 from django.http import Http404
 from django.test import TestCase
 
+from rest_framework import exceptions
 from rest_framework.negotiation import (
     BaseContentNegotiation, DefaultContentNegotiation
 )
 from rest_framework.renderers import BaseRenderer
 from rest_framework.request import Request
 from rest_framework.test import APIRequestFactory
-from rest_framework.utils.mediatypes import _MediaType
+from rest_framework.utils import mediatypes
+from rest_framework.utils.mediatypes import (
+    _MediaType, order_parsed_by_precedence
+)
 
 factory = APIRequestFactory()
 
@@ -83,6 +89,90 @@ class TestAcceptedMediaType(TestCase):
         renderers = [MockRenderer()]
         with pytest.raises(Http404):
             self.negotiator.filter_renderers(renderers, format='json')
+
+    def test_accept_header_length_limit(self):
+        prefix = 'text/plain,'
+        limit = self.negotiator.max_accept_header_length
+        header = prefix + ' ' * (limit - len(prefix) - len('application/json')) + 'application/json'
+        request = Request(factory.get('/', HTTP_ACCEPT=header))
+        assert self.negotiator.get_accept_list(request) == ['text/plain', 'application/json']
+
+        request = Request(factory.get('/', HTTP_ACCEPT=header + 'x'))
+        assert self.negotiator.get_accept_list(request) == ['text/plain']
+
+    def test_accept_header_without_separator(self):
+        header = 'x' * (self.negotiator.max_accept_header_length + 1)
+        request = Request(factory.get('/', HTTP_ACCEPT=header))
+        assert self.negotiator.get_accept_list(request) == []
+        with pytest.raises(exceptions.NotAcceptable):
+            self.select_renderer(request)
+
+    def test_accept_token_length_limit(self):
+        prefix = 'application/json; padding='
+        token = prefix + 'x' * (self.negotiator.max_media_type_length - len(prefix))
+        request = Request(factory.get('/', HTTP_ACCEPT=token))
+        accepted_renderer, accepted_media_type = self.select_renderer(request)
+        assert accepted_renderer is self.renderers[0]
+        assert accepted_media_type == token
+
+        request = Request(factory.get('/', HTTP_ACCEPT=token + 'x, text/html'))
+        assert self.negotiator.get_accept_list(request) == ['text/html']
+        accepted_renderer, accepted_media_type = self.select_renderer(request)
+        assert accepted_renderer is self.renderers[1]
+        assert accepted_media_type == 'text/html'
+
+    def test_accept_token_count_limit(self):
+        tokens = ['text/x%d' % i for i in range(self.negotiator.max_accept_tokens - 1)]
+        request = Request(factory.get('/', HTTP_ACCEPT=', '.join(tokens + ['application/json'])))
+        accepted_renderer, accepted_media_type = self.select_renderer(request)
+        assert accepted_renderer is self.renderers[0]
+        assert accepted_media_type == 'application/json'
+
+        request = Request(factory.get('/', HTTP_ACCEPT=', '.join(tokens + ['text/plain', 'application/json'])))
+        with pytest.raises(exceptions.NotAcceptable):
+            self.select_renderer(request)
+
+    def test_media_type_parse_error(self):
+        with mock.patch.object(
+            mediatypes, 'parse_header_parameters', side_effect=ValueError
+        ) as parse:
+            media_type = _MediaType('application/json')
+        parse.assert_called_once_with('application/json')
+        assert media_type.full_type == ''
+        assert media_type.params == {}
+
+    def test_media_type_equality(self):
+        one = _MediaType('application/json')
+        same = _MediaType('application/json')
+        assert one == same
+        assert hash(one) == hash(same)
+        assert one != _MediaType('text/html')
+        assert one != _MediaType('application/json; indent=4')
+
+    def test_parsed_media_type_precedence(self):
+        wildcard = _MediaType('*/*')
+        subtype = _MediaType('application/*')
+        json = _MediaType('application/json')
+        parameterized = _MediaType('application/json; indent=4')
+        buckets = order_parsed_by_precedence([
+            wildcard, json, subtype, parameterized, _MediaType('application/json'),
+        ])
+        assert buckets == [{parameterized}, {json}, {subtype}, {wildcard}]
+
+    def test_accept_tokens_cached_on_request(self):
+        token = 'application/json; indent=8'
+        request = Request(factory.get('/', HTTP_ACCEPT=token))
+        with mock.patch.object(
+            mediatypes, 'parse_header_parameters',
+            wraps=mediatypes.parse_header_parameters
+        ) as parse:
+            for _ in range(2):
+                self.select_renderer(request)
+            assert parse.call_args_list.count(mock.call(token)) == 1
+
+            request = Request(factory.get('/', HTTP_ACCEPT=token))
+            self.select_renderer(request)
+            assert parse.call_args_list.count(mock.call(token)) == 2
 
 
 class BaseContentNegotiationTests(TestCase):
