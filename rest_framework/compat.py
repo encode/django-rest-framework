@@ -52,6 +52,11 @@ if 'patch' not in View.http_method_names:
     View.http_method_names = View.http_method_names + ['patch']
 
 
+# QUERY method (RFC 10008) is not implemented by Django before 6.2
+if 'query' not in View.http_method_names:
+    View.http_method_names = View.http_method_names + ['query']
+
+
 # Markdown is optional (version 3.0+ required)
 try:
     import markdown

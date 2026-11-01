@@ -14,7 +14,6 @@ from rest_framework.test import (
     APIClient, APIRequestFactory, URLPatternsTestCase
 )
 from rest_framework.utils import json
-from tests.utils import requires_query_method
 
 factory = APIRequestFactory()
 
@@ -205,7 +204,6 @@ class TestQueryRoute(URLPatternsTestCase, TestCase):
             'get': 'list',
         }
 
-    @requires_query_method
     def test_query_request_reaches_the_handler(self):
         response = APIClient().query(
             reverse('queryable-list'), {'search': 'abc'}, format='json')
@@ -219,7 +217,6 @@ class TestQueryRoute(URLPatternsTestCase, TestCase):
             reverse('basic-list'), {'search': 'abc'}, format='json')
         assert response.status_code == 405
 
-    @requires_query_method
     def test_query_is_method_not_allowed_on_the_detail_route(self):
         response = APIClient().query('/api/queryables/1/', {}, format='json')
         assert response.status_code == 405
@@ -235,7 +232,6 @@ class TestQueryRoute(URLPatternsTestCase, TestCase):
         assert response.status_code == 200
         assert json.loads(response.content.decode()) == {'method': 'query action'}
 
-    @requires_query_method
     def test_action_named_query_does_not_handle_the_query_method(self):
         for url in (reverse('action-list'), reverse('action-query')):
             with self.subTest(url=url):

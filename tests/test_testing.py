@@ -18,7 +18,6 @@ from rest_framework.test import (
     APIClient, APIRequestFactory, URLPatternsTestCase, force_authenticate
 )
 from rest_framework.views import APIView
-from tests.utils import requires_query_method
 
 
 @api_view(['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'])
@@ -282,14 +281,12 @@ class TestAPITestClient(TestCase):
         assert response.status_code == status.HTTP_204_NO_CONTENT
         assert response.data is None
 
-    @requires_query_method
     def test_query_based_on_format(self):
         data = {'search': {'field': 'value'}}
         response = self.client.query('/query-view/', data, format='json')
         assert response.status_code == status.HTTP_200_OK
         assert response.data == data
 
-    @requires_query_method
     def test_query_encodes_data_based_on_json_content_type(self):
         data = {'search': True}
         response = self.client.query(
@@ -300,7 +297,6 @@ class TestAPITestClient(TestCase):
         assert response.status_code == status.HTTP_200_OK
         assert response.data == data
 
-    @requires_query_method
     def test_query_follows_307_308_with_its_body(self):
         data = {'search': 'abc'}
         for code in (307, 308):

@@ -11,7 +11,6 @@ from rest_framework.response import Response
 from rest_framework.routers import SimpleRouter
 from rest_framework.test import APIRequestFactory
 from rest_framework.viewsets import GenericViewSet
-from tests.utils import requires_query_method
 
 factory = APIRequestFactory()
 
@@ -208,7 +207,6 @@ class InitializeViewSetsTestCase(TestCase):
         view = ActionViewSet.as_view(actions={'get': 'list'})
         assert view.login_required is False
 
-    @requires_query_method
     def test_initialize_view_set_with_query_action(self):
         request = factory.query('/', {'search': 'abc'}, format='json')
         my_view = QueryViewSet.as_view(actions={

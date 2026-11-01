@@ -16,7 +16,6 @@ from rest_framework import (
 from rest_framework.routers import DefaultRouter
 from rest_framework.test import APIRequestFactory
 from tests.models import BasicModel
-from tests.utils import requires_query_method
 
 factory = APIRequestFactory()
 
@@ -186,7 +185,6 @@ class ModelPermissionsIntegrationTests(TestCase):
         response = instance_view(request, pk=1)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    @requires_query_method
     def test_query_requires_no_model_permission(self):
         """
         QUERY is safe per RFC 10008, so `perms_map` requires nothing for it,
@@ -197,7 +195,6 @@ class ModelPermissionsIntegrationTests(TestCase):
         response = query_root_view(request)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    @requires_query_method
     def test_query_is_permitted_for_unauthenticated_read_only(self):
         request = factory.query('/', {'search': 'abc'}, format='json')
         response = read_only_query_view(request)
@@ -499,7 +496,6 @@ class ObjectPermissionsIntegrationTests(TestCase):
         response = object_permissions_view(request, pk='1')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
-    @requires_query_method
     def test_query_requires_no_object_permission(self):
         request = factory.query('/1', {}, format='json', HTTP_AUTHORIZATION=self.credentials['writeonly'])
         response = query_object_permissions_view(request, pk='1')

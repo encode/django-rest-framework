@@ -12,7 +12,6 @@ from django.test.utils import override_settings
 from rest_framework import filters, generics, pagination, serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.test import APIRequestFactory
-from tests.utils import requires_query_method
 
 factory = APIRequestFactory()
 
@@ -345,14 +344,12 @@ class QueryMethodSearchFilterTests(TestCase):
         SearchFilterModel.objects.create(title='zz', text='bcd')
         SearchFilterModel.objects.create(title='zzz', text='cde')
 
-    @requires_query_method
     def test_search_reads_the_request_body(self):
         view = QueryMethodSearchListView.as_view()
         request = factory.query('/', {'search': 'b'}, format='json')
         response = view(request)
         assert [item['title'] for item in response.data] == ['z', 'zz']
 
-    @requires_query_method
     def test_search_from_body_with_page_from_url(self):
         view = QueryMethodSearchListView.as_view(
             queryset=SearchFilterModel.objects.order_by('pk'),
@@ -365,7 +362,6 @@ class QueryMethodSearchFilterTests(TestCase):
         assert response.data['next'] is None
         assert response.data['previous'] == 'http://testserver/'
 
-    @requires_query_method
     def test_search_rejects_a_non_string_term(self):
         view = QueryMethodSearchListView.as_view()
         request = factory.query('/', {'search': {'title': 'b'}}, format='json')
@@ -801,7 +797,6 @@ class OrderingFilterTests(TestCase):
             )
             OrderingFilterModel(title=title, text=text).save()
 
-    @requires_query_method
     def test_ordering_reads_the_query_request_body(self):
         class OrderingListView(generics.ListAPIView):
             queryset = OrderingFilterModel.objects.all()

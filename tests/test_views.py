@@ -11,7 +11,6 @@ from rest_framework.settings import APISettings, api_settings
 from rest_framework.test import APIRequestFactory
 from rest_framework.utils import mediatypes
 from rest_framework.views import APIView
-from tests.utils import requires_query_method
 
 factory = APIRequestFactory()
 
@@ -107,7 +106,6 @@ class QueryMethodTests(TestCase):
     other method, so a view opts in simply by defining a `query()` handler.
     """
 
-    @requires_query_method
     def test_query_handler_is_dispatched(self):
         request = factory.query('/', {'search': 'abc'}, format='json')
         response = QueryView.as_view()(request)

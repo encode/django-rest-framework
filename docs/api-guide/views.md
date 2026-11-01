@@ -161,7 +161,7 @@ By default only `GET` methods will be accepted. Other methods will respond with 
 
 ### The `QUERY` method
 
-REST framework supports the `QUERY` method defined by [RFC 10008][rfc10008], which requires Django 6.2 or later. `QUERY` is safe and idempotent like `GET`, but carries a request body like `POST`, which makes it a good fit for searches whose parameters are too large or too structured for a query string.
+REST framework supports the `QUERY` method defined by [RFC 10008][rfc10008] on every supported Django version. `QUERY` is safe and idempotent like `GET`, but carries a request body like `POST`, which makes it a good fit for searches whose parameters are too large or too structured for a query string.
 
 A view opts in by defining a `.query()` handler. The request body is parsed by the usual [parsers][parsers], so `request.data` works exactly as it does for `POST`.
 
