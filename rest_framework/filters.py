@@ -73,10 +73,10 @@ class SearchFilter(BaseFilterBackend):
 
     def get_search_terms(self, request):
         """
-        Search terms are set by a ?search=... query parameter,
-        and may be whitespace delimited.
+        Search terms are set by a ?search=... query parameter, or by the
+        request body of a QUERY request, and may be whitespace delimited.
         """
-        value = request.query_params.get(self.search_param, '')
+        value = request.filter_params.get(self.search_param, '')
         field = CharField(trim_whitespace=False, allow_blank=True)
         cleaned_value = field.run_validation(value)
         return search_smart_split(cleaned_value)
@@ -222,14 +222,15 @@ class OrderingFilter(BaseFilterBackend):
 
     def get_ordering(self, request, queryset, view):
         """
-        Ordering is set by a comma delimited ?ordering=... query parameter.
+        Ordering is set by a comma delimited ?ordering=... query parameter,
+        or by the request body of a QUERY request.
 
         The `ordering` query parameter can be overridden by setting
         the `ordering_param` value on the OrderingFilter or by
         specifying an `ORDERING_PARAM` value in the API settings.
         """
-        params = request.query_params.get(self.ordering_param)
-        if params:
+        params = request.filter_params.get(self.ordering_param)
+        if params and isinstance(params, str):
             fields = [param.strip() for param in params.split(',')]
             ordering = self.remove_invalid_fields(queryset, fields, view, request)
             if ordering:
