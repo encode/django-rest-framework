@@ -331,6 +331,8 @@ class HTMLFormRenderer(BaseRenderer):
             return ''
 
         style = self.default_style[field].copy()
+        if isinstance(field._field, serializers.BooleanField) and field._field.allow_null:
+            style['base_template'] = 'select_boolean.html'
         style.update(field.style)
         if 'template_pack' not in style:
             style['template_pack'] = parent_style.get('template_pack', self.template_pack)
