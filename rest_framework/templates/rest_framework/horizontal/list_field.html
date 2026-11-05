@@ -1,11 +1,11 @@
-<div class="form-group">
+<div class="form-group row mb-3">
   {% if field.label %}
-    <label class="col-sm-2 control-label {% if style.hide_label %}sr-only{% endif %}">
+    <label class="col-sm-2 col-form-label{% if style.hide_label %} visually-hidden{% endif %}">
       {{ field.label }}
     </label>
   {% endif %}
 
   <div class="col-sm-10">
-    <p class="form-control-static">Lists are not currently supported in HTML input.</p>
+    <p class="form-control-plaintext">Lists are not currently supported in HTML input.</p>
   </div>
 </div>

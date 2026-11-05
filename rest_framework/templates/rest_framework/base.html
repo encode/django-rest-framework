@@ -9,6 +9,7 @@
 
       {% block meta %}
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
         <meta name="robots" content="NONE,NOARCHIVE" />
       {% endblock %}
 
@@ -33,7 +34,7 @@
 
     <div class="wrapper">
       {% block navbar %}
-        <div class="navbar navbar-static-top {% block bootstrap_navbar_variant %}navbar-inverse{% endblock %}"
+        <nav class="navbar navbar-expand fixed-top {% block bootstrap_navbar_variant %}navbar-dark{% endblock %}"
              role="navigation" aria-label="{% trans "navbar" %}">
           <div class="container">
             <span>
@@ -43,7 +44,7 @@
                 </a>
               {% endblock %}
             </span>
-            <ul class="nav navbar-nav pull-right">
+            <ul class="navbar-nav ms-auto">
               {% block userlinks %}
                 {% if user.is_authenticated %}
                   {% optional_logout request user csrf_token %}
@@ -53,7 +54,7 @@
               {% endblock %}
             </ul>
           </div>
-        </div>
+        </nav>
       {% endblock %}
 
       <div class="container">
@@ -61,9 +62,9 @@
           <ul class="breadcrumb">
             {% for breadcrumb_name, breadcrumb_url in breadcrumblist %}
               {% if forloop.last %}
-                <li class="active"><a href="{{ breadcrumb_url }}">{{ breadcrumb_name }}</a></li>
+                <li class="breadcrumb-item active"><a href="{{ breadcrumb_url }}">{{ breadcrumb_name }}</a></li>
               {% else %}
-                <li><a href="{{ breadcrumb_url }}">{{ breadcrumb_name }}</a></li>
+                <li class="breadcrumb-item"><a href="{{ breadcrumb_url }}">{{ breadcrumb_name }}</a></li>
               {% endif %}
             {% empty %}
               {% block breadcrumbs_empty %}&nbsp;{% endblock breadcrumbs_empty %}
@@ -79,19 +80,19 @@
           {% block request_forms %}
 
           {% if 'GET' in allowed_methods %}
-            <form id="get-form" class="pull-right">
+            <form id="get-form" class="float-end">
               <fieldset>
                 {% if api_settings.URL_FORMAT_OVERRIDE %}
                   <div class="btn-group format-selection">
                     <a class="btn btn-primary js-tooltip" href="{{ request.get_full_path }}" rel="nofollow" title="Make a GET request on the {{ name }} resource">GET</a>
 
-                    <button class="btn btn-primary dropdown-toggle js-tooltip" data-toggle="dropdown" title="Specify a format for the GET request">
-                      <span class="caret"></span>
+                    <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split js-tooltip" data-bs-toggle="dropdown" aria-expanded="false" title="Specify a format for the GET request">
+                      <span class="visually-hidden">{% trans "Toggle format dropdown" %}</span>
                     </button>
-                    <ul class="dropdown-menu">
+                    <ul class="dropdown-menu dropdown-menu-end">
                       {% for format in available_formats %}
                         <li>
-                          <a class="js-tooltip format-option" href="{% add_query_param request api_settings.URL_FORMAT_OVERRIDE format %}" rel="nofollow" title="Make a GET request on the {{ name }} resource with the format set to `{{ format }}`">{{ format }}</a>
+                          <a class="dropdown-item js-tooltip format-option" href="{% add_query_param request api_settings.URL_FORMAT_OVERRIDE format %}" rel="nofollow" title="Make a GET request on the {{ name }} resource with the format set to `{{ format }}`">{{ format }}</a>
                         </li>
                       {% endfor %}
                     </ul>
@@ -110,17 +111,17 @@
           {% endif %}
 
           {% if delete_form %}
-            <button class="btn btn-danger button-form js-tooltip" title="Make a DELETE request on the {{ name }} resource" data-toggle="modal" data-target="#deleteModal">DELETE</button>
+            <button type="button" class="btn btn-danger button-form js-tooltip" title="Make a DELETE request on the {{ name }} resource" data-bs-toggle="modal" data-bs-target="#deleteModal">DELETE</button>
 
             <!-- Delete Modal -->
-            <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
               <div class="modal-dialog">
                 <div class="modal-content">
                   <div class="modal-body">
-                    <h4 class="text-center">Are you sure you want to delete this {{ name }}?</h4>
+                    <h4 class="text-center" id="deleteModalLabel">Are you sure you want to delete this {{ name }}?</h4>
                   </div>
                   <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
                     <form class="button-form" action="{{ request.get_full_path }}" data-method="DELETE">
                       <button class="btn btn-danger">Delete</button>
                     </form>
@@ -131,22 +132,21 @@
           {% endif %}
 
           {% if extra_actions %}
-            <div class="dropdown" style="float: right; margin-right: 10px">
-              <button class="btn btn-default" id="extra-actions-menu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+            <div class="dropdown float-end me-2">
+              <button type="button" class="btn btn-outline-secondary dropdown-toggle" id="extra-actions-menu" data-bs-toggle="dropdown" aria-expanded="false">
                 {% trans "Extra Actions" %}
-                <span class="caret"></span>
               </button>
               <ul class="dropdown-menu" aria-labelledby="extra-actions-menu">
                 {% for action_name, url in extra_actions|items %}
-                <li><a href="{{ url }}">{{ action_name }}</a></li>
+                <li><a class="dropdown-item" href="{{ url }}">{{ action_name }}</a></li>
                 {% endfor %}
               </ul>
             </div>
           {% endif %}
 
           {% if filter_form %}
-            <button style="float: right; margin-right: 10px" data-toggle="modal" data-target="#filtersModal" class="btn btn-default">
-              <span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+            <button type="button" class="btn btn-outline-secondary float-end me-2" data-bs-toggle="modal" data-bs-target="#filtersModal">
+              {% include "rest_framework/icons/wrench.svg" %}
               {% trans "Filters" %}
             </button>
           {% endif %}
@@ -158,14 +158,14 @@
               <div class="page-header">
                 <h1>{{ name }}</h1>
               </div>
-              <div class="pull-left">
+              <div class="float-start">
                 {% block description %}
                   {{ description }}
                 {% endblock %}
               </div>
 
               {% if paginator %}
-                <nav class="pull-right">
+                <nav class="float-end">
                   {% get_pagination_html paginator %}
                 </nav>
               {% endif %}
@@ -186,19 +186,19 @@
               {% if post_form or raw_data_post_form %}
                 <div {% if post_form %}class="tabbable"{% endif %}>
                   {% if post_form %}
-                    <ul class="nav nav-tabs form-switcher">
-                      <li>
-                        <a name='html-tab' href="#post-object-form" data-toggle="tab">HTML form</a>
+                    <ul class="nav nav-tabs form-switcher" role="tablist">
+                      <li class="nav-item" role="presentation">
+                        <a class="nav-link" name='html-tab' href="#post-object-form" data-bs-toggle="tab" role="tab">HTML form</a>
                       </li>
-                      <li>
-                        <a name='raw-tab' href="#post-generic-content-form" data-toggle="tab">Raw data</a>
+                      <li class="nav-item" role="presentation">
+                        <a class="nav-link" name='raw-tab' href="#post-generic-content-form" data-bs-toggle="tab" role="tab">Raw data</a>
                       </li>
                     </ul>
                   {% endif %}
 
-                  <div class="well tab-content">
+                  <div class="tab-content bg-light border rounded p-3">
                     {% if post_form %}
-                      <div class="tab-pane" id="post-object-form">
+                      <div class="tab-pane" id="post-object-form" role="tabpanel">
                         {% with form=post_form %}
                           <form action="{{ request.get_full_path }}" method="POST" enctype="multipart/form-data" class="form-horizontal" novalidate>
                             <fieldset>
@@ -213,7 +213,7 @@
                       </div>
                     {% endif %}
 
-                    <div {% if post_form %}class="tab-pane"{% endif %} id="post-generic-content-form">
+                    <div {% if post_form %}class="tab-pane" role="tabpanel"{% endif %} id="post-generic-content-form">
                       {% with form=raw_data_post_form %}
                         <form action="{{ request.get_full_path }}" method="POST" class="form-horizontal">
                           <fieldset>
@@ -232,19 +232,19 @@
               {% if put_form or raw_data_put_form or raw_data_patch_form %}
                 <div {% if put_form %}class="tabbable"{% endif %}>
                   {% if put_form %}
-                    <ul class="nav nav-tabs form-switcher">
-                      <li>
-                        <a name='html-tab' href="#put-object-form" data-toggle="tab">HTML form</a>
+                    <ul class="nav nav-tabs form-switcher" role="tablist">
+                      <li class="nav-item" role="presentation">
+                        <a class="nav-link" name='html-tab' href="#put-object-form" data-bs-toggle="tab" role="tab">HTML form</a>
                       </li>
-                      <li>
-                        <a  name='raw-tab' href="#put-generic-content-form" data-toggle="tab">Raw data</a>
+                      <li class="nav-item" role="presentation">
+                        <a class="nav-link" name='raw-tab' href="#put-generic-content-form" data-bs-toggle="tab" role="tab">Raw data</a>
                       </li>
                     </ul>
                   {% endif %}
 
-                  <div class="well tab-content">
+                  <div class="tab-content bg-light border rounded p-3">
                     {% if put_form %}
-                      <div class="tab-pane" id="put-object-form">
+                      <div class="tab-pane" id="put-object-form" role="tabpanel">
                         <form action="{{ request.get_full_path }}" data-method="PUT" enctype="multipart/form-data" class="form-horizontal" novalidate>
                           <fieldset>
                             {{ put_form }}
@@ -256,7 +256,7 @@
                       </div>
                     {% endif %}
 
-                    <div {% if put_form %}class="tab-pane"{% endif %} id="put-generic-content-form">
+                    <div {% if put_form %}class="tab-pane" role="tabpanel"{% endif %} id="put-generic-content-form">
                       {% with form=raw_data_put_or_patch_form %}
                         <form action="{{ request.get_full_path }}" data-method="PUT" class="form-horizontal">
                           <fieldset>
@@ -296,7 +296,7 @@
       <script src="{% static "rest_framework/js/jquery-3.7.1.min.js" %}"></script>
       <script src="{% static "rest_framework/js/ajax-form.js" %}"></script>
       <script src="{% static "rest_framework/js/csrf.js" %}"></script>
-      <script src="{% static "rest_framework/js/bootstrap.min.js" %}"></script>
+      <script src="{% static "rest_framework/js/bootstrap.bundle.min.js" %}"></script>
       <script src="{% static "rest_framework/js/prettify-min.js" %}"></script>
       <script src="{% static "rest_framework/js/default.js" %}"></script>
       <script src="{% static "rest_framework/js/load-ajax-form.js" %}"></script>
