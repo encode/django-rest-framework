@@ -4,6 +4,7 @@ Tests for content parsing, and form-overloaded content parsing.
 import bz2
 import copy
 import os.path
+import sys
 import tempfile
 from unittest import mock
 
@@ -16,6 +17,7 @@ from django.core.exceptions import RequestDataTooBig
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase, override_settings
 from django.urls import path
+from django.views.debug import ExceptionReporter
 
 from rest_framework import status
 from rest_framework.authentication import SessionAuthentication
@@ -287,10 +289,17 @@ class FileUploadView(APIView):
         return Response(status=status.HTTP_200_OK, data=filenames)
 
 
+class CrashView(APIView):
+    def post(self, request):
+        _ = request.data
+        raise RuntimeError("Simulated unhandled view crash")
+
+
 urlpatterns = [
     path('', MockView.as_view()),
     path('echo/', EchoView.as_view()),
-    path('upload/', FileUploadView.as_view())
+    path('upload/', FileUploadView.as_view()),
+    path('crash/', CrashView.as_view()),
 ]
 
 
@@ -489,3 +498,36 @@ class TestDeepcopy(TestCase):
 class TestTyping(TestCase):
     def test_request_is_subscriptable(self):
         assert Request is Request["foo"]
+
+
+@override_settings(ROOT_URLCONF='tests.test_request')
+class TestExceptionReporting(TestCase):
+    def test_uncaught_exception_json_post_data_in_exception_reporter(self):
+        """
+        Ensure unhandled exceptions in views receiving JSON payloads expose
+        the parsed data to Django's ExceptionReporter (used by
+        AdminEmailHandler). Regression test for #7953.
+        """
+        django_request = factory.post(
+            '/crash/',
+            data=b'{"username": "test_user", "role": "admin"}',
+            content_type='application/json'
+        )
+        try:
+            CrashView.as_view()(django_request)
+        except RuntimeError:
+            reporter = ExceptionReporter(
+                django_request, *sys.exc_info(), is_email=True
+            )
+            traceback_data = reporter.get_traceback_data()
+            filtered_post = dict(traceback_data.get('filtered_POST_items', []))
+            assert filtered_post == {'username': 'test_user', 'role': 'admin'}
+            html = reporter.get_traceback_html()
+            assert "test_user" in html
+            assert "admin" in html
+            text = reporter.get_traceback_text()
+            assert "username = 'test_user'" in text
+            assert "role = 'admin'" in text
+            assert "No POST data" not in text
+        else:
+            self.fail("Expected RuntimeError was not raised.")
