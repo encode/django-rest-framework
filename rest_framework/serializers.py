@@ -115,10 +115,20 @@ class BaseSerializer(Field):
         self.instance = instance
         if data is not empty:
             self.initial_data = data
-        self.partial = kwargs.pop('partial', False)
+        self._partial = kwargs.pop('partial', None)
         self._context = kwargs.pop('context', {})
         kwargs.pop('many', None)
         super().__init__(**kwargs)
+
+    @property
+    def partial(self):
+        if self._partial is not None:
+            return self._partial
+        return getattr(self.parent, 'partial', False)
+
+    @partial.setter
+    def partial(self, value):
+        self._partial = value
 
     def __new__(cls, *args, **kwargs):
         # We override this method in order to automatically create
