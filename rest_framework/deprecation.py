@@ -21,6 +21,10 @@ class RemovedInDRF320Warning(PendingDeprecationWarning):
     pass
 
 
+class RemovedInDRF321Warning(PendingDeprecationWarning):
+    pass
+
+
 # Aliases that always track the current release cycle, so that projects can
 # filter on them without editing their configuration on every DRF release.
 RemovedInNextDRFVersionWarning = RemovedInDRF319Warning
