@@ -10,6 +10,7 @@ from django.urls import NoReverseMatch, Resolver404, get_script_prefix, resolve
 from django.utils.encoding import smart_str, uri_to_iri
 from django.utils.translation import gettext_lazy as _
 
+from rest_framework.exceptions import ValidationError
 from rest_framework.fields import (
     Field, SkipField, empty, get_attribute, is_simple_callable, iter_options
 )
@@ -245,6 +246,18 @@ class PrimaryKeyRelatedField(RelatedField):
     def __init__(self, **kwargs):
         self.pk_field = kwargs.pop('pk_field', None)
         super().__init__(**kwargs)
+
+    @classmethod
+    def many_init(cls, *args, **kwargs):
+        if cls is not PrimaryKeyRelatedField:
+            return super().many_init(*args, **kwargs)
+        # Use PrimaryKeyManyRelatedField so many=True validates with one
+        # in_bulk() query. Slug/Hyperlinked keep RelatedField.many_init.
+        list_kwargs = {'child_relation': cls(*args, **kwargs)}
+        for key in kwargs:
+            if key in MANY_RELATION_KWARGS:
+                list_kwargs[key] = kwargs[key]
+        return PrimaryKeyManyRelatedField(**list_kwargs)
 
     def use_pk_only_optimization(self):
         return True
@@ -583,3 +596,150 @@ class ManyRelatedField(Field):
             cutoff=self.html_cutoff,
             cutoff_text=self.html_cutoff_text
         )
+
+
+class PrimaryKeyManyRelatedField(ManyRelatedField):
+    """
+    Many-related field for PrimaryKeyRelatedField that resolves every pk with
+    a single `in_bulk()` query instead of one `get()` per item.
+
+    Treated as private API — constructed via PrimaryKeyRelatedField.many_init.
+    """
+
+    def to_internal_value(self, data):
+        if isinstance(data, str) or not hasattr(data, '__iter__'):
+            self.fail('not_a_list', input_type=type(data).__name__)
+        if not self.allow_empty and len(data) == 0:
+            self.fail('empty')
+
+        # Resolve every pk with a single query instead of one `get()` per item.
+        # Collect per-item errors (incorrect_type / does_not_exist / pk_field)
+        # keyed by index, matching ListField.run_child_validation. Input
+        # ordering and duplicates are preserved.
+        child = self.child_relation
+        queryset = child.get_queryset()
+        model_pk = queryset.model._meta.pk
+        # Each entry is (idx, lookup_key, value): `value` mirrors the per-item
+        # path (post-`pk_field`) and is used for error details, while
+        # `lookup_key` is the pk-typed value used to match `in_bulk()` results.
+        errors = {}
+        entries = []
+        for idx, item in enumerate(data):
+            try:
+                value = item
+                if child.pk_field is not None:
+                    value = child.pk_field.to_internal_value(value)
+            except ValidationError as exc:
+                errors[idx] = exc.detail
+                continue
+            try:
+                if isinstance(value, bool):
+                    raise TypeError
+                # Coerce to the pk's Python type (e.g. "1" -> 1) so the lookup
+                # below matches the keys returned by `in_bulk()`, exactly as
+                # `queryset.get(pk=value)` would have.
+                lookup_key = model_pk.get_prep_value(value)
+            except (TypeError, ValueError):
+                try:
+                    child.fail(
+                        'incorrect_type', data_type=type(value).__name__
+                    )
+                except ValidationError as exc:
+                    errors[idx] = exc.detail
+                continue
+            entries.append((idx, lookup_key, value))
+
+        objects = self._resolve_objects(queryset, entries)
+        if objects is None:
+            return self._collecting_per_item(child, data)
+
+        resolved = {}
+        unmatched = []
+        for idx, lookup_key, value in entries:
+            if lookup_key in objects:
+                resolved[idx] = objects[lookup_key]
+            else:
+                unmatched.append((idx, lookup_key, value))
+
+        if unmatched:
+            if queryset.query.is_sliced:
+                # Allowed set is the slice; do not call get() on a sliced QS.
+                for idx, lookup_key, value in unmatched:
+                    try:
+                        child.fail('does_not_exist', pk_value=value)
+                    except ValidationError as exc:
+                        errors[idx] = exc.detail
+            else:
+                self._recover_unmatched(
+                    queryset, child, unmatched, resolved, errors
+                )
+
+        if errors:
+            raise ValidationError(errors)
+        return [resolved[idx] for idx, _, _ in entries]
+
+    def _resolve_objects(self, queryset, entries):
+        """
+        Return {pk: obj} for `entries`, or None to signal collecting per-item.
+
+        Sliced querysets cannot use in_bulk/get; materialize the slice once.
+        Other in_bulk TypeErrors (e.g. values()/values_list()) fall back to
+        collecting per-item to_internal_value.
+        """
+        lookup_keys = [lookup_key for _, lookup_key, _ in entries]
+        try:
+            return queryset.in_bulk(lookup_keys) if lookup_keys else {}
+        except (TypeError, ValueError):
+            if queryset.query.is_sliced:
+                try:
+                    return {obj.pk: obj for obj in queryset}
+                except (TypeError, AttributeError):
+                    return None
+            return None
+
+    def _collecting_per_item(self, child, data):
+        errors = {}
+        result = []
+        for idx, item in enumerate(data):
+            try:
+                result.append(child.to_internal_value(item))
+            except ValidationError as exc:
+                errors[idx] = exc.detail
+        if errors:
+            raise ValidationError(errors)
+        return result
+
+    def _recover_unmatched(self, queryset, child, unmatched, resolved, errors):
+        """
+        Recover keys missed by Python equality against in_bulk() results.
+
+        One filter(pk__in=...) probe first: empty means true misses. Non-empty
+        means possible CI-collation / prep mismatch — resolve each unmatched
+        value with get(pk=value), collecting DoesNotExist like the per-item
+        path.
+        """
+        probe = list(queryset.filter(
+            pk__in=[value for _, _, value in unmatched]
+        ))
+        if not probe:
+            for idx, lookup_key, value in unmatched:
+                try:
+                    child.fail('does_not_exist', pk_value=value)
+                except ValidationError as exc:
+                    errors[idx] = exc.detail
+            return
+        for idx, lookup_key, value in unmatched:
+            try:
+                resolved[idx] = queryset.get(pk=value)
+            except ObjectDoesNotExist:
+                try:
+                    child.fail('does_not_exist', pk_value=value)
+                except ValidationError as exc:
+                    errors[idx] = exc.detail
+            except (TypeError, ValueError):
+                try:
+                    child.fail(
+                        'incorrect_type', data_type=type(value).__name__
+                    )
+                except ValidationError as exc:
+                    errors[idx] = exc.detail
