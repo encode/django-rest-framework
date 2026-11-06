@@ -1534,3 +1534,27 @@ class Issue7134Test(TestCase):
             [error.code for error in ctx.exception.detail['value']],
             ['max_value'],
         )
+
+
+class Issue7489Model(models.Model):
+    field1 = models.CharField(max_length=1, default='A')
+    field2 = models.CharField(max_length=1, default='A')
+    field3 = models.CharField(max_length=1, default='A')
+
+    class Meta:
+        unique_together = ('field1', 'field2')
+
+
+class Issue7489Serializer(serializers.ModelSerializer):
+    class Meta:
+        model = Issue7489Model
+        fields = '__all__'
+
+
+class Issue7489Test(TestCase):
+    def test_model_serializer_substitutes_default_on_unique_together_validation(self):
+        Issue7489Model.objects.create(field1='A', field2='A')
+        b = Issue7489Model.objects.create(field1='B', field2='B')
+        # Attempt to validate the serializer for updating `field3` on instance `b`
+        serializer = Issue7489Serializer(instance=b, data={'field3': 'X'})
+        self.assertTrue(serializer.is_valid(), serializer.errors)
