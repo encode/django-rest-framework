@@ -6,6 +6,8 @@ This gives us better separation of concerns, allows us to use single-step
 object creation, and makes it possible to switch between using the implicit
 `ModelSerializer` class and an equivalent explicit `Serializer` class.
 """
+from datetime import date
+
 from django.core.exceptions import FieldError
 from django.db import DataError
 from django.db.models import Exists
@@ -306,15 +308,18 @@ class BaseUniqueForValidator:
         self.date_field = date_field
         self.message = message or self.message
 
-    def enforce_required_fields(self, attrs):
+    def enforce_required_fields(self, attrs, serializer):
         """
         The `UniqueFor<Range>Validator` classes always force an implied
         'required' state on the fields they are applied to.
         """
+        if serializer.instance is not None:
+            return
+
         missing_items = {
             field_name: self.missing_message
-            for field_name in [self.field, self.date_field]
-            if field_name not in attrs
+            for field_name in (self.field, self.date_field)
+            if serializer.fields[field_name].source not in attrs
         }
         if missing_items:
             raise ValidationError(missing_items, code='required')
@@ -338,7 +343,21 @@ class BaseUniqueForValidator:
         date_field_name = serializer.fields[self.date_field].source_attrs[-1]
 
         _check_single_instance(serializer, serializer.instance, self)
-        self.enforce_required_fields(attrs)
+        self.enforce_required_fields(attrs, serializer)
+
+        # If this is an update, then any unprovided field should
+        # have it's value set based on the existing instance attribute.
+        if serializer.instance is not None:
+            for name in (self.field, self.date_field):
+                source = serializer.fields[name].source
+                if source not in attrs:
+                    value = getattr(serializer.instance, source)
+                    if not isinstance(value, date):
+                        value = serializer.fields[name].to_internal_value(value)
+                    attrs[source] = value
+                if name not in attrs:
+                    attrs[name] = attrs[source]
+
         queryset = self.queryset
         queryset = self.filter_queryset(attrs, queryset, field_name, date_field_name)
         queryset = self.exclude_current_instance(attrs, queryset, serializer.instance)

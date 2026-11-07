@@ -1346,6 +1346,27 @@ class TestUniquenessForDateValidation(TestCase):
             'published': datetime.date(2000, 1, 1)
         }
 
+    def test_partial_update_uses_instance_date(self):
+        """
+        Omitted date fields on update are populated from the instance.
+        """
+        data = {'slug': 'existing'}
+        serializer = UniqueForDateSerializer(
+            instance=self.instance, data=data, partial=True
+        )
+        assert serializer.is_valid(), serializer.errors
+        assert serializer.validated_data == {'slug': 'existing'}
+
+    def test_partial_update_is_not_unique_for_date(self):
+        UniqueForDateModel.objects.create(slug='other', published='2000-01-01')
+        serializer = UniqueForDateSerializer(
+            instance=self.instance, data={'slug': 'other'}, partial=True
+        )
+        assert not serializer.is_valid()
+        assert serializer.errors == {
+            'slug': ['This field must be unique for the "published" date.']
+        }
+
     def test_many_update_requires_child_instance(self):
         serializer = UniqueForDateSerializer(
             instance=UniqueForDateModel.objects.all(),
@@ -1468,6 +1489,18 @@ class HiddenFieldUniqueForDateModel(models.Model):
     published = models.DateTimeField(auto_now_add=True)
 
 
+class HiddenFieldUniqueForDateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = HiddenFieldUniqueForDateModel
+        fields = ('id', 'slug')
+
+
+class ReadOnlyDateUniqueForDateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = HiddenFieldUniqueForDateModel
+        fields = ('id', 'slug', 'published')
+
+
 class TestHiddenFieldUniquenessForDateValidation(TestCase):
     def test_repr_date_field_not_included(self):
         class TestSerializer(serializers.ModelSerializer):
@@ -1503,6 +1536,47 @@ class TestHiddenFieldUniquenessForDateValidation(TestCase):
         """)
         assert repr(serializer) == expected
 
+    def test_create_with_hidden_auto_now_add(self):
+        serializer = HiddenFieldUniqueForDateSerializer(data={'slug': 'new'})
+        assert serializer.is_valid(), serializer.errors
+        assert serializer.validated_data['slug'] == 'new'
+        assert 'published' in serializer.validated_data
+
+    def test_update_with_hidden_auto_now_add(self):
+        instance = HiddenFieldUniqueForDateModel.objects.create(slug='existing')
+        serializer = HiddenFieldUniqueForDateSerializer(
+            instance, data={'slug': 'updated'}
+        )
+        assert serializer.is_valid(), serializer.errors
+        assert serializer.validated_data == {'slug': 'updated'}
+
+    def test_partial_update_with_hidden_auto_now_add(self):
+        instance = HiddenFieldUniqueForDateModel.objects.create(slug='existing')
+        serializer = HiddenFieldUniqueForDateSerializer(
+            instance, data={'slug': 'updated'}, partial=True
+        )
+        assert serializer.is_valid(), serializer.errors
+        assert serializer.validated_data == {'slug': 'updated'}
+
+    def test_update_with_read_only_auto_now_add(self):
+        instance = HiddenFieldUniqueForDateModel.objects.create(slug='existing')
+        serializer = ReadOnlyDateUniqueForDateSerializer(
+            instance, data={'slug': 'updated'}
+        )
+        assert serializer.is_valid(), serializer.errors
+        assert serializer.validated_data == {'slug': 'updated'}
+
+    def test_update_hidden_auto_now_add_is_not_unique_for_date(self):
+        HiddenFieldUniqueForDateModel.objects.create(slug='existing')
+        instance = HiddenFieldUniqueForDateModel.objects.create(slug='other')
+        serializer = HiddenFieldUniqueForDateSerializer(
+            instance, data={'slug': 'existing'}
+        )
+        assert not serializer.is_valid()
+        assert serializer.errors == {
+            'slug': ['This field must be unique for the "published" date.']
+        }
+
 
 class ValidatorsTests(TestCase):
 
@@ -1528,8 +1602,12 @@ class ValidatorsTests(TestCase):
         validator = BaseUniqueForValidator(queryset=object(), field='foo',
                                            date_field='bar')
         attrs = {'foo': 'baz'}
+        serializer = MagicMock()
+        serializer.instance = None
+        serializer.fields['foo'].source = 'foo'
+        serializer.fields['bar'].source = 'bar'
         with pytest.raises(ValidationError):
-            validator.enforce_required_fields(attrs)
+            validator.enforce_required_fields(attrs, serializer)
 
     def test_validator_raises_error_when_abstract_method_called(self):
         validator = BaseUniqueForValidator(queryset=object(), field='foo',

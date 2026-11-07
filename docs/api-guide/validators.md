@@ -156,7 +156,7 @@ If you want the date field to be entirely hidden from the user, then use `Hidden
     published = serializers.HiddenField(default=timezone.now)
 
 !!! note
-    The `UniqueFor<Range>Validator` classes impose an implicit constraint that the fields they are applied to are always treated as required. Fields with `default` values are an exception to this as they always supply a value even when omitted from user input.
+    The `UniqueFor<Range>Validator` classes impose an implicit constraint that the fields they are applied to are always treated as required. Fields with `default` values are an exception to this as they always supply a value even when omitted from user input. When updating an existing instance, omitted fields are populated from the instance.
 
 !!! note
     `HiddenField()` does not appear in `partial=True` serializer (when making `PATCH` request). 
