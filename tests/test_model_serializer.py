@@ -119,6 +119,12 @@ class UniqueChoiceModel(models.Model):
     name = models.CharField(max_length=254, unique=True, choices=CHOICES)
 
 
+class DBDefaultFieldsModel(models.Model):
+    title = models.CharField(max_length=100)
+    status = models.CharField(max_length=10, db_default='draft')
+    created = models.DateTimeField(db_default=Now())
+
+
 class TestModelSerializer(TestCase):
     def test_create_method(self):
         class TestSerializer(serializers.ModelSerializer):
@@ -399,6 +405,20 @@ class TestRegularFieldMappings(TestCase):
                 db_default_expression_field = DateTimeField\(required=False\)
         """)
         assert re.search(expected, repr(TestSerializer())) is not None
+
+    def test_db_default_fields_can_be_omitted(self):
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = DBDefaultFieldsModel
+                fields = '__all__'
+
+        serializer = TestSerializer(data={'title': 'Hello'})
+        assert serializer.is_valid(), serializer.errors
+
+        instance = serializer.save()
+        instance.refresh_from_db()
+        assert instance.status == 'draft'
+        assert instance.created is not None
 
 
 class TestDurationFieldMapping(TestCase):
