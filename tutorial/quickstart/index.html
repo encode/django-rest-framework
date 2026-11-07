@@ -2870,6 +2870,8 @@ django-admin<span class="w"> </span>startapp<span class="w"> </span>quickstart
 &lt;some<span class="w"> </span>path&gt;/tutorial
 $<span class="w"> </span>find<span class="w"> </span>.
 .
+./.venv
+./.venv/...
 ./tutorial
 ./tutorial/asgi.py
 ./tutorial/__init__.py
@@ -2885,8 +2887,6 @@ $<span class="w"> </span>find<span class="w"> </span>.
 ./tutorial/settings.py
 ./tutorial/urls.py
 ./tutorial/wsgi.py
-./env
-./env/...
 ./manage.py
 </code></pre></div>
 <p>It may look unusual that the application has been created within the project directory. Using the project's namespace avoids name clashes with external modules (a topic that goes outside the scope of the quickstart).</p>
