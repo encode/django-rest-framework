@@ -127,7 +127,7 @@ class SlugForeignKeyTests(TestCase):
             data = {'id': 1, 'name': 'source-1', 'target': value}
             serializer = IntegerSlugForeignKeySourceSerializer(instance, data=data)
             assert not serializer.is_valid()
-            assert serializer.errors == {'target': ['Value too large to be a valid id.']}
+            assert serializer.errors == {'target': [f'Object with id={value} does not exist.']}
 
     def test_reverse_foreign_key_update_with_overflowing_integer_slug(self):
         class IntegerSlugForeignKeyTargetSerializer(serializers.ModelSerializer):
@@ -145,7 +145,7 @@ class SlugForeignKeyTests(TestCase):
         data = {'id': 2, 'name': 'target-2', 'sources': [1, float('inf')]}
         serializer = IntegerSlugForeignKeyTargetSerializer(instance, data=data)
         assert not serializer.is_valid()
-        assert serializer.errors == {'sources': ['Value too large to be a valid id.']}
+        assert serializer.errors == {'sources': ['Object with id=inf does not exist.']}
 
     def test_reverse_foreign_key_update(self):
         data = {'id': 2, 'name': 'target-2', 'sources': ['source-1', 'source-3']}

@@ -296,7 +296,7 @@ class PKForeignKeyTests(TestCase):
             instance = ForeignKeySource.objects.get(pk=1)
             serializer = ForeignKeySourceSerializer(instance, data=data)
             assert not serializer.is_valid()
-            assert serializer.errors == {'target': ['Value too large to be a valid pk.']}
+            assert serializer.errors == {'target': [f'Invalid pk "{value}" - object does not exist.']}
 
     def test_reverse_foreign_key_update(self):
         data = {'id': 2, 'name': 'target-2', 'sources': [1, 3]}

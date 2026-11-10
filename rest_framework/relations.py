@@ -240,7 +240,6 @@ class PrimaryKeyRelatedField(RelatedField):
         'required': _('This field is required.'),
         'does_not_exist': _('Invalid pk "{pk_value}" - object does not exist.'),
         'incorrect_type': _('Incorrect type. Expected pk value, received {data_type}.'),
-        'overflow': _('Value too large to be a valid pk.'),
     }
 
     def __init__(self, **kwargs):
@@ -258,12 +257,10 @@ class PrimaryKeyRelatedField(RelatedField):
             if isinstance(data, bool):
                 raise TypeError
             return queryset.get(pk=data)
-        except ObjectDoesNotExist:
+        except (ObjectDoesNotExist, OverflowError):
             self.fail('does_not_exist', pk_value=data)
         except (TypeError, ValueError):
             self.fail('incorrect_type', data_type=type(data).__name__)
-        except OverflowError:
-            self.fail('overflow')
 
     def to_representation(self, value):
         if self.pk_field is not None:
@@ -447,7 +444,6 @@ class SlugRelatedField(RelatedField):
     default_error_messages = {
         'does_not_exist': _('Object with {slug_name}={value} does not exist.'),
         'invalid': _('Invalid value.'),
-        'overflow': _('Value too large to be a valid {slug_name}.'),
     }
 
     def __init__(self, slug_field=None, **kwargs):
@@ -459,12 +455,10 @@ class SlugRelatedField(RelatedField):
         queryset = self.get_queryset()
         try:
             return queryset.get(**{self.slug_field: data})
-        except ObjectDoesNotExist:
+        except (ObjectDoesNotExist, OverflowError):
             self.fail('does_not_exist', slug_name=self.slug_field, value=smart_str(data))
         except (TypeError, ValueError):
             self.fail('invalid')
-        except OverflowError:
-            self.fail('overflow', slug_name=self.slug_field)
 
     def to_representation(self, obj):
         slug = self.slug_field
