@@ -3131,7 +3131,7 @@ Host: example.com
 Accept: application/json; version=1.0
 </code></pre></div>
 <p>In the example request above <code>request.version</code> attribute would return the string <code>'1.0'</code>.</p>
-<p>Versioning based on accept headers is <a href="http://blog.steveklabnik.com/posts/2011-07-03-nobody-understands-rest-or-http#i_want_my_api_to_be_versioned">generally considered</a> as <a href="https://github.com/interagent/http-api-design/blob/master/en/foundations/require-versioning-in-the-accepts-header.md">best practice</a>, although other styles may be suitable depending on your client requirements.</p>
+<p>Versioning based on accept headers is <a href="https://steveklabnik.com/writing/nobody-understands-rest-or-http#i-want-my-api-to-be-versioned">generally considered</a> as <a href="https://github.com/interagent/http-api-design/blob/master/en/foundations/require-versioning-in-the-accepts-header.md">best practice</a>, although other styles may be suitable depending on your client requirements.</p>
 <h4 id="using-accept-headers-with-vendor-media-types">Using accept headers with vendor media types<a class="headerlink" href="#using-accept-headers-with-vendor-media-types" title="Permanent link">&para;</a></h4>
 <p>Strictly speaking the <code>json</code> media type is not specified as <a href="https://tools.ietf.org/html/rfc4627#section-6">including additional parameters</a>. If you are building a well-specified public API you might consider using a <a href="https://en.wikipedia.org/wiki/Internet_media_type#Vendor_tree">vendor media type</a>. To do so, configure your renderers to use a JSON based renderer with a custom media type:</p>
 <div class="language-text highlight"><pre><span></span><code>class BookingsAPIRenderer(JSONRenderer):
