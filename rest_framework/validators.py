@@ -175,9 +175,12 @@ class UniqueTogetherValidator:
 
         # If this is an update, then any unprovided field should
         # have it's value set based on the existing instance attribute.
+        # A field that was not submitted counts as unprovided, even if
+        # a default value was substituted for it in `attrs`.
         if serializer.instance is not None:
-            for source in sources:
-                if source not in attrs:
+            initial_data = getattr(serializer, 'initial_data', None)
+            for field_name, source in zip(self.fields, sources):
+                if source not in attrs or (initial_data is not None and field_name not in initial_data):
                     attrs[source] = getattr(serializer.instance, source)
 
         # Determine the filter keyword arguments and filter the queryset.
