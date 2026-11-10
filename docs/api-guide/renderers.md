@@ -523,7 +523,7 @@ Comma-separated values are a plain-text tabular data format, that can be easily 
 [HATEOAS]: http://timelessrepo.com/haters-gonna-hateoas
 [quote]: https://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven
 [application/vnd.github+json]: https://developer.github.com/v3/media/
-[application/vnd.collection+json]: http://www.amundsen.com/media-types/collection/
+[application/vnd.collection+json]: https://github.com/collection-json/spec
 [django-error-views]: https://docs.djangoproject.com/en/stable/topics/http/views/#customizing-error-views
 [rest-framework-jsonp]: https://jpadilla.github.io/django-rest-framework-jsonp/
 [cors]: https://www.w3.org/TR/cors/

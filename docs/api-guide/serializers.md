@@ -1250,7 +1250,7 @@ The [drf-pydantic][drf-pydantic] package allows you to use Pydantic with Django 
 [drf-flex-fields]: https://github.com/rsinger86/drf-flex-fields
 [json-form-spec]: https://www.w3.org/TR/html-json-forms/
 [drf-dynamic-fields]: https://github.com/dbrgn/drf-dynamic-fields
-[drf-base64]: https://bitbucket.org/levit_scs/drf_base64
+[drf-base64]: https://pypi.org/project/drf-base64/
 [drf-serializer-extensions]: https://github.com/evenicoulddoit/django-rest-framework-serializer-extensions
 [djangorestframework-queryfields]: https://djangorestframework-queryfields.readthedocs.io/
 [drf-writable-nested]: https://github.com/beda-software/drf-writable-nested
