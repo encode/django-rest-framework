@@ -3093,7 +3093,18 @@ in your project's URL conf:</p>
     [ref]: http://example.com/activating-accounts
     """
 </code></pre></div>
-<p>Note that when using viewsets the basic docstring is used for all generated views.  To provide descriptions for each view, such as for the list and retrieve views, use docstring sections as described in <a href="../../api-guide/schemas/#examples">Schemas as documentation: Examples</a>.</p>
+<p>Note that when using viewsets the basic docstring is used for all generated views in the browsable API.  To give each action its own description in the generated OpenAPI schema, split the docstring into sections named after the actions.  Actions without a section of their own use the text before the first section.</p>
+<div class="language-text highlight"><pre><span></span><code>class UserViewSet(viewsets.ModelViewSet):
+    """
+    General description, used for actions without their own section.
+
+    list:
+    Return a list of all users.
+
+    retrieve:
+    Return the given user.
+    """
+</code></pre></div>
 <h4 id="the-options-method">The <code>OPTIONS</code> method<a class="headerlink" href="#the-options-method" title="Permanent link">&para;</a></h4>
 <p>REST framework APIs also support programmatically accessible descriptions, using the <code>OPTIONS</code> HTTP method.  A view will respond to an <code>OPTIONS</code> request with metadata including the name, description, and the various media types it accepts and responds with.</p>
 <p>When using the generic views, any <code>OPTIONS</code> requests will additionally respond with metadata regarding any <code>POST</code> or <code>PUT</code> actions available, describing which fields are on the serializer.</p>
