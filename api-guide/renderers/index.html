@@ -3691,6 +3691,10 @@ def simple_html_view(request):
         model = Account
 </code></pre></div>
 </div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>When it renders a <code>400 Bad Request</code> response, <code>AdminRenderer</code> simulates a <code>GET</code> request so it can show the detail or list representation next to the errors. Permissions are checked again for that <code>GET</code>, but authentication is not, so it keeps the <code>request.user</code> and <code>request.auth</code> of the original request. Rules that depend on the HTTP method belong in a <a href="../permissions/">permission class</a>, not in an <a href="../authentication/">authentication class</a>.</p>
+</div>
 <p><strong>.media_type</strong>: <code>text/html</code></p>
 <p><strong>.format</strong>: <code>'admin'</code></p>
 <p><strong>.charset</strong>: <code>utf-8</code></p>

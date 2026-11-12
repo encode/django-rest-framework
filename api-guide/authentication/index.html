@@ -3744,6 +3744,11 @@ already exist. To change this and other behavior, consult the
 <p class="admonition-title">Note</p>
 <p>When your custom authenticator is invoked by the request object's <code>.user</code> or <code>.auth</code> properties, you may see an <code>AttributeError</code> re-raised as a <code>WrappedAttributeError</code>. This is necessary to prevent the original exception from being suppressed by the outer property access. Python will not recognize that the <code>AttributeError</code> originates from your custom authenticator and will instead assume that the request object does not have a <code>.user</code> or <code>.auth</code> property. These errors should be fixed or otherwise handled by your authenticator.</p>
 </div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Don't make the result of <code>.authenticate()</code> depend on the HTTP method, for example by accepting a credential for <code>POST</code> requests but not for <code>GET</code> requests. Rules like that belong in a <a href="../permissions/">permission class</a>.</p>
+<p>REST framework sometimes makes a copy of the current request with a different method, for example when it renders the browsable API or <code>AdminRenderer</code>, or builds the response to an <code>OPTIONS</code> request. Permissions are checked again for the copy, but authentication is not, so the copy keeps the <code>request.user</code> and <code>request.auth</code> of the original request.</p>
+</div>
 <h3 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h3>
 <p>The following example will authenticate any incoming request as the user given by the username in a custom request header named 'X-USERNAME'.</p>
 <div class="language-text highlight"><pre><span></span><code>from django.contrib.auth.models import User
