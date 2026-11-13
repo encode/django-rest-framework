@@ -40,8 +40,13 @@ td.nested > table {
   margin: 0;
 }
 
-form select, form input:not([type=checkbox]), form textarea {
+form select, form input:not([type=checkbox]):not([type=radio]), form textarea {
   width: 90%;
+}
+
+/* Inside an input-group let Bootstrap's flex sizing win over the 90% rule above. */
+form .input-group > input.form-control, form .input-group > select.form-select, form .input-group > textarea.form-control {
+  width: 1%;
 }
 
 form select[multiple] {

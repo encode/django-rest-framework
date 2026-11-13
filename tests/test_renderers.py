@@ -506,8 +506,9 @@ class TestDateTimeFieldHTMLFormRender(TestCase):
         renderer = HTMLFormRenderer()
         field = serializer['appointment']
         rendered = renderer.render_field(field, {})
+        css_class = "form-control is-invalid" if field.errors else "form-control"
         expected_html = (
-            '<input name="appointment" class="form-control" '
+            f'<input name="appointment" class="{css_class}" '
             f'type="datetime-local" value="{expected}">'
         )
 
