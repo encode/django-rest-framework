@@ -482,6 +482,20 @@ class APIView(View):
             renderer_format = getattr(request.accepted_renderer, 'format')
             use_plaintext_traceback = renderer_format not in ('html', 'api', 'admin')
             request.force_plaintext_errors(use_plaintext_traceback)
+        if hasattr(self, 'request'):
+            request = self.request
+            if hasattr(request, '_request') and hasattr(request, '_data'):
+                django_req = request._request
+                if (
+                    not getattr(django_req, '_post', None)
+                    and isinstance(request._data, dict)
+                ):
+                    django_req._post = request._data
+                    if not hasattr(django_req, '_files'):
+                        from django.utils.datastructures import MultiValueDict
+                        django_req._files = getattr(
+                            request, '_files', MultiValueDict()
+                        )
         raise exc
 
     # Note: Views are made CSRF exempt from within `as_view` as to prevent
