@@ -216,7 +216,7 @@ If your versioning scheme is based on the request URL, you will also want to alt
 
 [cite]: https://www.slideshare.net/evolve_conference/201308-fielding-evolve/31
 [roy-fielding-on-versioning]: https://www.infoq.com/articles/roy-fielding-on-versioning
-[klabnik-guidelines]: http://blog.steveklabnik.com/posts/2011-07-03-nobody-understands-rest-or-http#i_want_my_api_to_be_versioned
+[klabnik-guidelines]: https://steveklabnik.com/writing/nobody-understands-rest-or-http#i-want-my-api-to-be-versioned
 [heroku-guidelines]: https://github.com/interagent/http-api-design/blob/master/en/foundations/require-versioning-in-the-accepts-header.md
 [json-parameters]: https://tools.ietf.org/html/rfc4627#section-6
 [vendor-media-type]: https://en.wikipedia.org/wiki/Internet_media_type#Vendor_tree

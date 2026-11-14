@@ -40,11 +40,11 @@ What REST framework doesn't do is give you machine readable hypermedia formats s
 [restful-web-apis]: http://restfulwebapis.org/
 [building-hypermedia-apis]: https://www.amazon.com/Building-Hypermedia-APIs-HTML5-Node/dp/1449306578
 [designing-hypermedia-apis]: http://designinghypermediaapis.com/
-[readinglist]: http://blog.steveklabnik.com/posts/2012-02-27-hypermedia-api-reading-list
+[readinglist]: https://steveklabnik.com/writing/hypermedia-api-reading-list
 [maturitymodel]: https://martinfowler.com/articles/richardsonMaturityModel.html
 
 [hal]: http://stateless.co/hal_specification.html
-[collection]: http://www.amundsen.com/media-types/collection/
+[collection]: https://github.com/collection-json/spec
 [json-api]: http://jsonapi.org/
 [microformats]: http://microformats.org/wiki/Main_Page
 [serialization]: ../api-guide/serializers.md
