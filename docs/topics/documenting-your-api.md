@@ -194,7 +194,18 @@ If the python `Markdown` library is installed, then [markdown syntax][markdown] 
         [ref]: http://example.com/activating-accounts
         """
 
-Note that when using viewsets the basic docstring is used for all generated views.  To provide descriptions for each view, such as for the list and retrieve views, use docstring sections as described in [Schemas as documentation: Examples][schemas-examples].
+Note that when using viewsets the basic docstring is used for all generated views in the browsable API.  To give each action its own description in the generated OpenAPI schema, split the docstring into sections named after the actions.  Actions without a section of their own use the text before the first section.
+
+    class UserViewSet(viewsets.ModelViewSet):
+        """
+        General description, used for actions without their own section.
+
+        list:
+        Return a list of all users.
+
+        retrieve:
+        Return the given user.
+        """
 
 #### The `OPTIONS` method
 
@@ -229,7 +240,6 @@ To implement a hypermedia API you'll need to decide on an appropriate media type
 
 [hypermedia-docs]: rest-hypermedia-hateoas.md
 [metadata-docs]: ../api-guide/metadata.md
-[schemas-examples]: ../api-guide/schemas.md#examples
 
 [image-drf-yasg]: ../img/drf-yasg.png
 [image-self-describing-api]: ../img/self-describing.png
