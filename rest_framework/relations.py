@@ -257,7 +257,7 @@ class PrimaryKeyRelatedField(RelatedField):
             if isinstance(data, bool):
                 raise TypeError
             return queryset.get(pk=data)
-        except ObjectDoesNotExist:
+        except (ObjectDoesNotExist, OverflowError):
             self.fail('does_not_exist', pk_value=data)
         except (TypeError, ValueError):
             self.fail('incorrect_type', data_type=type(data).__name__)
@@ -455,7 +455,7 @@ class SlugRelatedField(RelatedField):
         queryset = self.get_queryset()
         try:
             return queryset.get(**{self.slug_field: data})
-        except ObjectDoesNotExist:
+        except (ObjectDoesNotExist, OverflowError):
             self.fail('does_not_exist', slug_name=self.slug_field, value=smart_str(data))
         except (TypeError, ValueError):
             self.fail('invalid')
