@@ -20,7 +20,7 @@ REST framework's Request objects provide flexible request parsing that allows yo
 `request.data` returns the parsed content of the request body.  This is similar to the standard `request.POST` and `request.FILES` attributes except that:
 
 * It includes all parsed content, including *file and non-file* inputs.
-* It supports parsing the content of HTTP methods other than `POST`, meaning that you can access the content of `PUT` and `PATCH` requests.
+* It supports parsing the content of HTTP methods other than `POST`, meaning that you can access the content of `PUT`, `PATCH` and `QUERY` requests.
 * It supports REST framework's flexible request parsing, rather than just supporting form data.  For example you can handle incoming [JSON data] similarly to how you handle incoming [form data].
 
 For more details see the [parsers documentation].
@@ -30,6 +30,14 @@ For more details see the [parsers documentation].
 `request.query_params` is a more correctly named synonym for `request.GET`.
 
 For clarity inside your code, we recommend using `request.query_params` instead of the Django's standard `request.GET`. Doing so will help keep your codebase more correct and obvious - any HTTP method type may include query parameters, not just `GET` requests.
+
+### .filter_params
+
+`request.filter_params` returns the parameters that filter backends should read.
+
+For most methods this is the same object as `request.query_params`. For a [`QUERY` request][query-method], the parsed request body is merged over the URL query parameters, with the body taking precedence for any key present in both. The result is a `QueryDict`, so list values in a JSON body are available through `.getlist()`.
+
+A `QUERY` request whose body is not an object of parameters, such as a JSON array, raises `ParseError` when `request.filter_params` is accessed.
 
 ### .parsers
 
@@ -132,3 +140,4 @@ Note that due to implementation reasons the `Request` class does not inherit fro
 [form data]: parsers.md#formparser
 [authentication documentation]: authentication.md
 [browser enhancements documentation]: ../topics/browser-enhancements.md
+[query-method]: views.md#the-query-method

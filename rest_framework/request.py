@@ -10,6 +10,7 @@ The wrapped request then offers a richer API, in particular :
 """
 import io
 import sys
+from collections.abc import Mapping
 from contextlib import contextmanager
 
 from django.conf import settings
@@ -217,6 +218,37 @@ class Request:
         More semantically correct name for request.GET.
         """
         return self._request.GET
+
+    @property
+    def filter_params(self):
+        """
+        The parameters that filter backends should read.
+
+        For most methods this is `request.query_params`. A `QUERY` request
+        (RFC 10008) carries its query in the request body, so the parsed body
+        is merged over the URL query parameters, with the body taking
+        precedence for any key present in both.
+        """
+        if self.method != 'QUERY':
+            return self.query_params
+
+        body = self.data
+        if not isinstance(body, Mapping):
+            raise exceptions.ParseError(
+                'QUERY request body must be an object of parameters, '
+                'not %s.' % type(body).__name__
+            )
+
+        if not isinstance(body, MultiValueDict):
+            body = MultiValueDict({
+                key: value if isinstance(value, list) else [value]
+                for key, value in body.items()
+            })
+
+        params = self.query_params.copy()
+        for key, values in body.lists():
+            params.setlist(key, values)
+        return params
 
     @property
     def data(self):

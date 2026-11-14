@@ -396,13 +396,18 @@ class ActionDecoratorTestCase(TestCase):
     def test_method_mapping_http_method(self):
         from http import HTTPMethod
 
-        method_names = [getattr(HTTPMethod, name.upper()) for name in APIView.http_method_names]
+        # QUERY is not in http.HTTPMethod yet (python/cpython#153309).
+        mappable = [
+            name for name in APIView.http_method_names
+            if hasattr(HTTPMethod, name.upper())
+        ]
+        method_names = [getattr(HTTPMethod, name.upper()) for name in mappable]
 
         @action(detail=False, methods=method_names)
         def test_action():
             raise NotImplementedError
 
-        expected_mapping = {name: test_action.__name__ for name in APIView.http_method_names}
+        expected_mapping = {name: test_action.__name__ for name in mappable}
 
         assert test_action.mapping == expected_mapping
 

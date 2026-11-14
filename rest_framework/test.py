@@ -231,6 +231,10 @@ class APIRequestFactory(DjangoRequestFactory):
         data, content_type = self._encode_data(data, format, content_type)
         return self.generic('OPTIONS', path, data, content_type, **extra)
 
+    def query(self, path, data=None, format=None, content_type=None, **extra):
+        data, content_type = self._encode_data(data, format, content_type)
+        return self.generic('QUERY', path, data, content_type, **extra)
+
     def generic(self, method, path, data='',
                 content_type='application/octet-stream', secure=False, **extra):
         # Include the CONTENT_TYPE, regardless of whether or not data is empty.
@@ -332,6 +336,14 @@ class APIClient(APIRequestFactory, DjangoClient):
     def options(self, path, data=None, format=None, content_type=None,
                 follow=False, **extra):
         response = super().options(
+            path, data=data, format=format, content_type=content_type, **extra)
+        if follow:
+            response = self._handle_redirects(response, data=data, format=format, content_type=content_type, **extra)
+        return response
+
+    def query(self, path, data=None, format=None, content_type=None,
+              follow=False, **extra):
+        response = super().query(
             path, data=data, format=format, content_type=content_type, **extra)
         if follow:
             response = self._handle_redirects(response, data=data, format=format, content_type=content_type, **extra)

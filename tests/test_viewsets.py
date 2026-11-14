@@ -20,6 +20,13 @@ class BasicViewSet(GenericViewSet):
         return Response({'ACTION': 'LIST'})
 
 
+class QueryViewSet(GenericViewSet):
+    def query(self, request, *args, **kwargs):
+        response = Response({'ACTION': 'QUERY', 'data': request.data})
+        response.view = self
+        return response
+
+
 class InstanceViewSet(GenericViewSet):
 
     def dispatch(self, request, *args, **kwargs):
@@ -199,6 +206,17 @@ class InitializeViewSetsTestCase(TestCase):
     def test_login_required_middleware_compat(self):
         view = ActionViewSet.as_view(actions={'get': 'list'})
         assert view.login_required is False
+
+    def test_initialize_view_set_with_query_action(self):
+        request = factory.query('/', {'search': 'abc'}, format='json')
+        my_view = QueryViewSet.as_view(actions={
+            'query': 'query',
+        })
+
+        response = my_view(request)
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data == {'ACTION': 'QUERY', 'data': {'search': 'abc'}}
+        assert response.view.action == 'query'
 
 
 class GetExtraActionsTests(TestCase):
