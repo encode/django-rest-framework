@@ -211,6 +211,9 @@ Note that views that have nested or list serializers for their input won't work 
                 model = Account
 
 
+!!! warning
+    When it renders a `400 Bad Request` response, `AdminRenderer` simulates a `GET` request so it can show the detail or list representation next to the errors. Permissions are checked again for that `GET`, but authentication is not, so it keeps the `request.user` and `request.auth` of the original request. Rules that depend on the HTTP method belong in a [permission class][permissions], not in an [authentication class][authentication].
+
 **.media_type**: `text/html`
 
 **.format**: `'admin'`
@@ -520,10 +523,12 @@ Comma-separated values are a plain-text tabular data format, that can be easily 
 [html-and-forms]: ../topics/html-and-forms.md
 [browser-accept-headers]: http://www.gethifi.com/blog/browser-rest-http-accept-headers
 [testing]: testing.md
+[permissions]: permissions.md
+[authentication]: authentication.md
 [HATEOAS]: http://timelessrepo.com/haters-gonna-hateoas
 [quote]: https://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven
 [application/vnd.github+json]: https://developer.github.com/v3/media/
-[application/vnd.collection+json]: http://www.amundsen.com/media-types/collection/
+[application/vnd.collection+json]: https://github.com/collection-json/spec
 [django-error-views]: https://docs.djangoproject.com/en/stable/topics/http/views/#customizing-error-views
 [rest-framework-jsonp]: https://jpadilla.github.io/django-rest-framework-jsonp/
 [cors]: https://www.w3.org/TR/cors/
