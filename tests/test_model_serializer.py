@@ -14,13 +14,14 @@ import tempfile
 import uuid
 
 import pytest
-from django.core.exceptions import ImproperlyConfigured
+from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.core.serializers.json import DjangoJSONEncoder
 from django.core.validators import (
     MaxLengthValidator, MaxValueValidator, MinLengthValidator,
     MinValueValidator
 )
 from django.db import models
+from django.db.models.functions import Now
 from django.db.models.signals import m2m_changed
 from django.dispatch import receiver
 from django.test import TestCase
@@ -117,6 +118,12 @@ class UniqueChoiceModel(models.Model):
     )
 
     name = models.CharField(max_length=254, unique=True, choices=CHOICES)
+
+
+class DBDefaultFieldsModel(models.Model):
+    title = models.CharField(max_length=100)
+    status = models.CharField(max_length=10, db_default='draft')
+    created = models.DateTimeField(db_default=Now())
 
 
 class TestModelSerializer(TestCase):
@@ -495,6 +502,38 @@ class TestRegularFieldMappings(TestCase):
         assert non_editable_choice_field.read_only is True
         assert non_editable_choice_field.choices
 
+    def test_db_default_field_not_required(self):
+        class DBDefaultModel(models.Model):
+            db_default_field = models.IntegerField(db_default=0)
+            db_default_expression_field = models.DateTimeField(db_default=Now())
+
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = DBDefaultModel
+                fields = '__all__'
+
+        expected = dedent(r"""
+            TestSerializer\(\):
+                id = IntegerField\(label='ID', read_only=True\)
+                db_default_field = IntegerField\(.*required=False\)
+                db_default_expression_field = DateTimeField\(required=False\)
+        """)
+        assert re.search(expected, repr(TestSerializer())) is not None
+
+    def test_db_default_fields_can_be_omitted(self):
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = DBDefaultFieldsModel
+                fields = '__all__'
+
+        serializer = TestSerializer(data={'title': 'Hello'})
+        assert serializer.is_valid(), serializer.errors
+
+        instance = serializer.save()
+        instance.refresh_from_db()
+        assert instance.status == 'draft'
+        assert instance.created is not None
+
 
 class TestDurationFieldMapping(TestCase):
     def test_duration_field(self):
@@ -767,6 +806,22 @@ class TestRelationalFieldMappings(TestCase):
                 one_to_one = PrimaryKeyRelatedField(queryset=OneToOneTargetModel.objects.all(), validators=[<UniqueValidator(queryset=RelationalModel.objects.all())>])
                 many_to_many = PrimaryKeyRelatedField(allow_empty=False, many=True, queryset=ManyToManyTargetModel.objects.all())
                 through = PrimaryKeyRelatedField(many=True, read_only=True)
+        """)
+        self.assertEqual(repr(TestSerializer()), expected)
+
+    def test_foreign_key_with_db_default(self):
+        class DBDefaultForeignKeyModel(models.Model):
+            foreign_key = models.ForeignKey(ForeignKeyTargetModel, on_delete=models.CASCADE, db_default=1)
+
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = DBDefaultForeignKeyModel
+                fields = '__all__'
+
+        expected = dedent("""
+            TestSerializer():
+                id = IntegerField(label='ID', read_only=True)
+                foreign_key = PrimaryKeyRelatedField(queryset=ForeignKeyTargetModel.objects.all(), required=False)
         """)
         self.assertEqual(repr(TestSerializer()), expected)
 
@@ -1612,3 +1667,39 @@ class Issue6751Test(TestCase):
         serializer.save()
 
         self.assertEqual(instance.char_field, 'value changed by signal')
+
+
+class OverflowModel(models.Model):
+    value = models.IntegerField(unique=True, validators=[
+        MaxValueValidator(9223372036854775807),
+    ])
+
+
+class Issue7134Test(TestCase):
+
+    def test_model(self):
+        """
+        Assert that Django can validate the overflow model.
+        """
+        with self.assertRaises(ValidationError):
+            OverflowModel(value=9223372036854775808).full_clean()
+
+    def test_serializer(self):
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = OverflowModel
+                fields = '__all__'
+
+            def validate_value(self, value):
+                assert False
+
+        serializer = TestSerializer(data={'value': 9223372036854775808})
+
+        with self.assertRaises(serializers.ValidationError) as ctx:
+            serializer.is_valid(raise_exception=True)
+
+        # Check that the error code of the validation error
+        self.assertEqual(
+            [error.code for error in ctx.exception.detail['value']],
+            ['max_value'],
+        )

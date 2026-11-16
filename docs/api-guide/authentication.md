@@ -328,6 +328,11 @@ If the `.authenticate_header()` method is not overridden, the authentication sch
 !!! note
     When your custom authenticator is invoked by the request object's `.user` or `.auth` properties, you may see an `AttributeError` re-raised as a `WrappedAttributeError`. This is necessary to prevent the original exception from being suppressed by the outer property access. Python will not recognize that the `AttributeError` originates from your custom authenticator and will instead assume that the request object does not have a `.user` or `.auth` property. These errors should be fixed or otherwise handled by your authenticator.
 
+!!! warning
+    Don't make the result of `.authenticate()` depend on the HTTP method, for example by accepting a credential for `POST` requests but not for `GET` requests. Rules like that belong in a [permission class][permission].
+
+    REST framework sometimes makes a copy of the current request with a different method, for example when it renders the browsable API or `AdminRenderer`, or builds the response to an `OPTIONS` request. Permissions are checked again for the copy, but authentication is not, so the copy keeps the `request.user` and `request.auth` of the original request.
+
 ### Example
 
 The following example will authenticate any incoming request as the user given by the username in a custom request header named 'X-USERNAME'.

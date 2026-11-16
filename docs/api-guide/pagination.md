@@ -369,7 +369,7 @@ The [`DRF-extensions` package][drf-extensions] includes a [`PaginateByMaxMixin` 
 
 ### drf-proxy-pagination
 
-The [`drf-proxy-pagination` package][drf-proxy-pagination] includes a `ProxyPagination` class which allows to choose pagination class with a query parameter.
+The [`drf-proxy-pagination` package][drf-proxy-pagination] includes a `ProxyPagination` class which allows choosing the pagination class with a query parameter.
 
 ### link-header-pagination
 
