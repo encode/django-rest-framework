@@ -1305,6 +1305,8 @@ class TestDecimalField(FieldValues):
         12.3: Decimal('12.3'),
         0.1: Decimal('0.1'),
         '2E+1': Decimal('20'),
+        '0E+3': Decimal('0'),
+        Decimal('0E+10'): Decimal('0'),
     }
     invalid_inputs = (
         (None, ["This field may not be null."]),

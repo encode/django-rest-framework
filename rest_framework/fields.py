@@ -1081,7 +1081,11 @@ class DecimalField(Field):
 
         if exponent >= 0:
             # 1234500.0
-            total_digits = len(digittuple) + exponent
+            total_digits = len(digittuple)
+            if digittuple != (0,):
+                # A positive exponent adds that many trailing zeros,
+                # except for zero itself, e.g. 0E+3.
+                total_digits += exponent
             whole_digits = total_digits
             decimal_places = 0
         elif len(digittuple) > abs(exponent):
