@@ -39,13 +39,15 @@ Set to false if this field is not required to be present during deserialization.
 
 Setting this to `False` also allows the object attribute or dictionary key to be omitted from output when serializing the instance. If the key is not present it will simply not be included in the output representation.
 
-Defaults to `True`. If you're using [Model Serializer](https://www.django-rest-framework.org/api-guide/serializers/#modelserializer), the default value will be `False` when you have specified a `default`, or when the corresponding `Model` field has `blank=True` or `null=True` and is not part of a unique constraint at the same time. (Note that without a `default` value, [unique constraints will cause the field to be required](https://www.django-rest-framework.org/api-guide/validators/#optional-fields).)
+Defaults to `True`. If you're using [Model Serializer](https://www.django-rest-framework.org/api-guide/serializers/#modelserializer), the default value will be `False` when you have specified a `default`, or when the corresponding `Model` field has a `db_default`, `blank=True` or `null=True` and is not part of a unique constraint at the same time. (Note that without a `default` value, [unique constraints will cause the field to be required](https://www.django-rest-framework.org/api-guide/validators/#optional-fields).)
 
 ### `default`
 
 If set, this gives the default value that will be used for the field if no input value is supplied. If not set the default behavior is to not populate the attribute at all.
 
 The `default` is not applied during partial update operations. In the partial update case only fields that are provided in the incoming data will have a validated value returned.
+
+If you're using [Model Serializer](https://www.django-rest-framework.org/api-guide/serializers/#modelserializer) and the corresponding `Model` field declares a `default`, it will be used as the serializer field default. This does not apply to relational fields such as `ForeignKey`: a model default on a relational field is expressed as a primary key value rather than a model instance, so it is not propagated and only causes the generated serializer field to be not required.
 
 May be set to a function or other callable, in which case the value will be evaluated each time it is used. When called, it will receive no arguments. If the callable has a `requires_context = True` attribute, then the serializer field will be passed as an argument.
 

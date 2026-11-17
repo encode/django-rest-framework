@@ -4,6 +4,7 @@
 # 
 # Translators:
 # Christos Barkonikos <xristosbarko@hotmail.com>, 2020
+# Konstantinos Giannopoulos <giannopoulosk.data@gmail.com>, 2026
 # Panagiotis Pavlidis <panpavlid@gmail.com>, 2019
 # Serafeim Papastefanos <spapas@gmail.com>, 2016
 msgid ""
@@ -11,8 +12,8 @@ msgstr ""
 "Project-Id-Version: Django REST framework\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-13 21:45+0200\n"
-"PO-Revision-Date: 2020-10-13 19:45+0000\n"
-"Last-Translator: Xavier Ordoquy <xordoquy@linovia.com>\n"
+"PO-Revision-Date: 2026-10-24 09:57+0000\n"
+"Last-Translator: Konstantinos Giannopoulos <giannopoulosk.data@gmail.com>\n"
 "Language-Team: Greek (http://www.transifex.com/django-rest-framework-1/django-rest-framework/language/el/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -55,7 +56,7 @@ msgstr "Λανθασμένη επικεφαλίδα token. Το token περιέ
 
 #: authentication.py:203
 msgid "Invalid token."
-msgstr "Λανθασμένο token"
+msgstr "Λανθασμένο token."
 
 #: authtoken/apps.py:7
 msgid "Auth Token"
@@ -103,7 +104,7 @@ msgstr "Σφάλμα διακομιστή."
 
 #: exceptions.py:142
 msgid "Invalid input."
-msgstr ""
+msgstr "Λάθος δεδομένα εισόδου."
 
 #: exceptions.py:161
 msgid "Malformed request."
@@ -146,12 +147,12 @@ msgstr "Το αίτημα έγινε throttle."
 #: exceptions.py:224
 #, python-brace-format
 msgid "Expected available in {wait} second."
-msgstr ""
+msgstr "Αναμένεται διαθεσιμότητα σε {wait} δευτερόλεπτο."
 
 #: exceptions.py:225
 #, python-brace-format
 msgid "Expected available in {wait} seconds."
-msgstr ""
+msgstr "Αναμένεται διαθεσιμότητα σε {wait} δευτερόλεπτα."
 
 #: fields.py:316 relations.py:245 relations.py:279 validators.py:90
 #: validators.py:183
@@ -160,57 +161,57 @@ msgstr "Το πεδίο είναι απαραίτητο."
 
 #: fields.py:317
 msgid "This field may not be null."
-msgstr "Το πεδίο δε μπορεί να είναι null."
+msgstr "Το πεδίο δεν μπορεί να είναι null."
 
 #: fields.py:701
 msgid "Must be a valid boolean."
-msgstr ""
+msgstr "Πρέπει να είναι έγκυρη τιμή boolean."
 
 #: fields.py:766
 msgid "Not a valid string."
-msgstr ""
+msgstr "Μη έγκυρο κείμενο."
 
 #: fields.py:767
 msgid "This field may not be blank."
-msgstr "Το πεδίο δε μπορεί να είναι κενό."
+msgstr "Το πεδίο δεν μπορεί να είναι κενό."
 
 #: fields.py:768 fields.py:1881
 #, python-brace-format
 msgid "Ensure this field has no more than {max_length} characters."
-msgstr "Επιβεβαιώσατε ότι το πεδίο δεν έχει περισσότερους από {max_length} χαρακτήρες."
+msgstr "Βεβαιωθείτε ότι το πεδίο δεν έχει περισσότερους από {max_length} χαρακτήρες."
 
 #: fields.py:769
 #, python-brace-format
 msgid "Ensure this field has at least {min_length} characters."
-msgstr "Επιβεβαιώσατε ότι το πεδίο έχει τουλάχιστον {min_length} χαρακτήρες."
+msgstr "Βεβαιωθείτε ότι το πεδίο έχει τουλάχιστον {min_length} χαρακτήρες."
 
 #: fields.py:816
 msgid "Enter a valid email address."
-msgstr "Συμπληρώσατε μια έγκυρη διεύθυνση e-mail."
+msgstr "Εισάγετε μια έγκυρη διεύθυνση ηλ. ταχυδρομείου."
 
 #: fields.py:827
 msgid "This value does not match the required pattern."
-msgstr "Η τιμή δε ταιριάζει με το pattern."
+msgstr "Η τιμή δεν ταιριάζει με το pattern."
 
 #: fields.py:838
 msgid ""
 "Enter a valid \"slug\" consisting of letters, numbers, underscores or "
 "hyphens."
-msgstr "Εισάγετε ένα έγκυρο \"slug\" που αποτελείται από γράμματα, αριθμούς παύλες και κάτω παύλες."
+msgstr "Εισάγετε ένα έγκυρο \"slug\" που αποτελείται από γράμματα, αριθμούς, κάτω παύλες ή παύλες."
 
 #: fields.py:839
 msgid ""
 "Enter a valid \"slug\" consisting of Unicode letters, numbers, underscores, "
 "or hyphens."
-msgstr ""
+msgstr "Εισάγετε ένα έγκυρο \"slug\" που αποτελείται από γράμματα Unicode, αριθμούς, κάτω παύλες ή παύλες."
 
 #: fields.py:854
 msgid "Enter a valid URL."
-msgstr "Εισάγετε έγκυρο URL."
+msgstr "Εισάγετε ένα έγκυρο URL."
 
 #: fields.py:867
 msgid "Must be a valid UUID."
-msgstr ""
+msgstr "Πρέπει να είναι έγκυρο UUID."
 
 #: fields.py:903
 msgid "Enter a valid IPv4 or IPv6 address."
@@ -223,12 +224,12 @@ msgstr "Ένας έγκυρος ακέραιος είναι απαραίτητο
 #: fields.py:932 fields.py:969 fields.py:1005 fields.py:1366
 #, python-brace-format
 msgid "Ensure this value is less than or equal to {max_value}."
-msgstr "Επιβεβαιώσατε ότι η τιμή είναι μικρότερη ή ίση του {max_value}."
+msgstr "Βεβαιωθείτε ότι η τιμή είναι μικρότερη ή ίση του {max_value}."
 
 #: fields.py:933 fields.py:970 fields.py:1006 fields.py:1367
 #, python-brace-format
 msgid "Ensure this value is greater than or equal to {min_value}."
-msgstr "Επιβεβαιώσατε ότι η τιμή είναι μεγαλύτερη ή ίση του {min_value}."
+msgstr "Βεβαιωθείτε ότι η τιμή είναι μεγαλύτερη ή ίση του {min_value}."
 
 #: fields.py:934 fields.py:971 fields.py:1010
 msgid "String value too large."
@@ -241,25 +242,25 @@ msgstr "Ένας έγκυρος αριθμός είναι απαραίτητος
 #: fields.py:1007
 #, python-brace-format
 msgid "Ensure that there are no more than {max_digits} digits in total."
-msgstr "Επιβεβαιώσατε ότι δεν υπάρχουν παραπάνω από {max_digits} ψηφία."
+msgstr "Βεβαιωθείτε ότι δεν υπάρχουν παραπάνω από {max_digits} ψηφία."
 
 #: fields.py:1008
 #, python-brace-format
 msgid ""
 "Ensure that there are no more than {max_decimal_places} decimal places."
-msgstr "Επιβεβαιώσατε ότι δεν υπάρχουν παραπάνω από {max_decimal_places} δεκαδικά ψηφία."
+msgstr "Βεβαιωθείτε ότι δεν υπάρχουν παραπάνω από {max_decimal_places} δεκαδικά ψηφία."
 
 #: fields.py:1009
 #, python-brace-format
 msgid ""
 "Ensure that there are no more than {max_whole_digits} digits before the "
 "decimal point."
-msgstr "Επιβεβαιώσατε ότι δεν υπάρχουν παραπάνω από {max_whole_digits} ακέραια ψηφία."
+msgstr "Βεβαιωθείτε ότι δεν υπάρχουν παραπάνω από {max_whole_digits} ακέραια ψηφία."
 
 #: fields.py:1148
 #, python-brace-format
 msgid "Datetime has wrong format. Use one of these formats instead: {format}."
-msgstr "Η ημερομηνία έχεi λάθος μορφή. Χρησιμοποιήστε μια από τις ακόλουθες μορφές: {format}"
+msgstr "Η ημερομηνία/ώρα έχει λάθος μορφή. Χρησιμοποιήστε μια από τις ακόλουθες μορφές: {format}."
 
 #: fields.py:1149
 msgid "Expected a datetime but got a date."
@@ -268,16 +269,16 @@ msgstr "Αναμένεται ημερομηνία και ώρα αλλά δόθ�
 #: fields.py:1150
 #, python-brace-format
 msgid "Invalid datetime for the timezone \"{timezone}\"."
-msgstr ""
+msgstr "Λάθος ημερομηνία/ώρα για τη ζώνη ώρας \"{timezone}\"."
 
 #: fields.py:1151
 msgid "Datetime value out of range."
-msgstr ""
+msgstr "Η τιμή ημερομηνίας/ώρας είναι εκτός εύρους."
 
 #: fields.py:1236
 #, python-brace-format
 msgid "Date has wrong format. Use one of these formats instead: {format}."
-msgstr "Η ημερομηνία έχεi λάθος μορφή. Χρησιμοποιήστε μια από τις ακόλουθες μορφές: {format}"
+msgstr "Η ημερομηνία έχει λάθος μορφή. Χρησιμοποιήστε μια από τις ακόλουθες μορφές: {format}."
 
 #: fields.py:1237
 msgid "Expected a date but got a datetime."
@@ -286,12 +287,12 @@ msgstr "Αναμένεται ημερομηνία αλλά δόθηκε ημερ
 #: fields.py:1303
 #, python-brace-format
 msgid "Time has wrong format. Use one of these formats instead: {format}."
-msgstr "Η ώρα έχει λάθος μορφή. Χρησιμοποιήστε μια από τις ακόλουθες μορφές: {format}"
+msgstr "Η ώρα έχει λάθος μορφή. Χρησιμοποιήστε μια από τις ακόλουθες μορφές: {format}."
 
 #: fields.py:1365
 #, python-brace-format
 msgid "Duration has wrong format. Use one of these formats instead: {format}."
-msgstr "Η διάρκεια έχει λάθος μορφή. Χρησιμοποιήστε μια από τις ακόλουθες μορφές: {format}"
+msgstr "Η διάρκεια έχει λάθος μορφή. Χρησιμοποιήστε μια από τις ακόλουθες μορφές: {format}."
 
 #: fields.py:1399 fields.py:1456
 #, python-brace-format
@@ -306,11 +307,11 @@ msgstr "Περισσότερα από {count} αντικείμενα..."
 #: fields.py:1457 fields.py:1603 relations.py:485 serializers.py:570
 #, python-brace-format
 msgid "Expected a list of items but got type \"{input_type}\"."
-msgstr "Αναμένεται μια λίστα αντικειμένον αλλά δόθηκε ο τύπος \"{input_type}\""
+msgstr "Αναμένεται μια λίστα αντικειμένων αλλά δόθηκε ο τύπος \"{input_type}\"."
 
 #: fields.py:1458
 msgid "This selection may not be empty."
-msgstr "Η επιλογή δε μπορεί να είναι κενή."
+msgstr "Η επιλογή δεν μπορεί να είναι κενή."
 
 #: fields.py:1495
 #, python-brace-format
@@ -324,7 +325,7 @@ msgstr "Δεν υποβλήθηκε αρχείο."
 #: fields.py:1515
 msgid ""
 "The submitted data was not a file. Check the encoding type on the form."
-msgstr "Τα δεδομένα που υποβλήθηκαν δεν ήταν αρχείο. Ελέγξατε την κωδικοποίηση της φόρμας."
+msgstr "Τα δεδομένα που υποβλήθηκαν δεν ήταν αρχείο. Ελέγξτε την κωδικοποίηση της φόρμας."
 
 #: fields.py:1516
 msgid "No filename could be determined."
@@ -338,7 +339,7 @@ msgstr "Το αρχείο που υποβλήθηκε είναι κενό."
 #, python-brace-format
 msgid ""
 "Ensure this filename has at most {max_length} characters (it has {length})."
-msgstr "Επιβεβαιώσατε ότι το όνομα αρχείου έχει ως {max_length} χαρακτήρες (έχει {length})."
+msgstr "Βεβαιωθείτε ότι το όνομα αρχείου έχει το πολύ {max_length} χαρακτήρες (έχει {length})."
 
 #: fields.py:1566
 msgid ""
@@ -348,26 +349,26 @@ msgstr "Ανεβάστε μια έγκυρη εικόνα. Το αρχείο π�
 
 #: fields.py:1604 relations.py:486 serializers.py:571
 msgid "This list may not be empty."
-msgstr "Η λίστα δε μπορεί να είναι κενή."
+msgstr "Η λίστα δεν μπορεί να είναι κενή."
 
 #: fields.py:1605
 #, python-brace-format
 msgid "Ensure this field has at least {min_length} elements."
-msgstr ""
+msgstr "Βεβαιωθείτε ότι το πεδίο έχει τουλάχιστον {min_length} στοιχεία."
 
 #: fields.py:1606
 #, python-brace-format
 msgid "Ensure this field has no more than {max_length} elements."
-msgstr ""
+msgstr "Βεβαιωθείτε ότι το πεδίο δεν έχει περισσότερα από {max_length} στοιχεία."
 
 #: fields.py:1682
 #, python-brace-format
 msgid "Expected a dictionary of items but got type \"{input_type}\"."
-msgstr "Αναμένεται ένα λεξικό αντικείμενων αλλά δόθηκε ο τύπος \"{input_type}\"."
+msgstr "Αναμένεται ένα λεξικό αντικειμένων αλλά δόθηκε ο τύπος \"{input_type}\"."
 
 #: fields.py:1683
 msgid "This dictionary may not be empty."
-msgstr ""
+msgstr "Το λεξικό δεν μπορεί να είναι κενό."
 
 #: fields.py:1755
 msgid "Value must be valid JSON."
@@ -379,7 +380,7 @@ msgstr "Αναζήτηση"
 
 #: filters.py:50
 msgid "A search term."
-msgstr ""
+msgstr "Ένας όρος αναζήτησης."
 
 #: filters.py:180 templates/rest_framework/filters/ordering.html:3
 msgid "Ordering"
@@ -387,23 +388,23 @@ msgstr "Ταξινόμηση"
 
 #: filters.py:181
 msgid "Which field to use when ordering the results."
-msgstr ""
+msgstr "Ποιο πεδίο θα χρησιμοποιηθεί για την ταξινόμηση των αποτελεσμάτων."
 
 #: filters.py:287
 msgid "ascending"
-msgstr ""
+msgstr "αύξουσα"
 
 #: filters.py:288
 msgid "descending"
-msgstr ""
+msgstr "φθίνουσα"
 
 #: pagination.py:174
 msgid "A page number within the paginated result set."
-msgstr ""
+msgstr "Ένας αριθμός σελίδας μέσα στο σύνολο αποτελεσμάτων με σελιδοποίηση."
 
 #: pagination.py:179 pagination.py:372 pagination.py:590
 msgid "Number of results to return per page."
-msgstr ""
+msgstr "Πλήθος αποτελεσμάτων που θα επιστρέφονται ανά σελίδα."
 
 #: pagination.py:189
 msgid "Invalid page."
@@ -411,15 +412,15 @@ msgstr "Λάθος σελίδα."
 
 #: pagination.py:374
 msgid "The initial index from which to return the results."
-msgstr ""
+msgstr "Ο αρχικός δείκτης από τον οποίο θα επιστραφούν τα αποτελέσματα."
 
 #: pagination.py:581
 msgid "The pagination cursor value."
-msgstr ""
+msgstr "Η τιμή του cursor σελιδοποίησης."
 
 #: pagination.py:583
 msgid "Invalid cursor"
-msgstr "Λάθος cursor."
+msgstr "Λάθος cursor"
 
 #: relations.py:246
 #, python-brace-format
@@ -433,11 +434,11 @@ msgstr "Λάθος τύπος. Αναμένεται τιμή κλειδιού, �
 
 #: relations.py:280
 msgid "Invalid hyperlink - No URL match."
-msgstr "Λάθος σύνδεση - δε ταιριάζει κάποιο URL."
+msgstr "Λάθος σύνδεση - δεν ταιριάζει κάποιο URL."
 
 #: relations.py:281
 msgid "Invalid hyperlink - Incorrect URL match."
-msgstr "Λάθος σύνδεση - δε ταιριάζει κάποιο URL."
+msgstr "Λάθος σύνδεση - λανθασμένη αντιστοίχιση URL."
 
 #: relations.py:282
 msgid "Invalid hyperlink - Object does not exist."
@@ -459,20 +460,20 @@ msgstr "Λάθος τιμή."
 
 #: schemas/utils.py:32
 msgid "unique integer value"
-msgstr ""
+msgstr "μοναδική ακέραια τιμή"
 
 #: schemas/utils.py:34
 msgid "UUID string"
-msgstr ""
+msgstr "κείμενο UUID"
 
 #: schemas/utils.py:36
 msgid "unique value"
-msgstr ""
+msgstr "μοναδική τιμή"
 
 #: schemas/utils.py:38
 #, python-brace-format
 msgid "A {value_type} identifying this {name}."
-msgstr ""
+msgstr "Αναγνωριστικό για το αντικείμενο {name} ({value_type})."
 
 #: serializers.py:337
 #, python-brace-format
@@ -482,7 +483,7 @@ msgstr "Λάθος δεδομένα. Αναμένεται λεξικό αλλά 
 #: templates/rest_framework/admin.html:116
 #: templates/rest_framework/base.html:136
 msgid "Extra Actions"
-msgstr ""
+msgstr "Επιπλέον ενέργειες"
 
 #: templates/rest_framework/admin.html:130
 #: templates/rest_framework/base.html:150
@@ -491,27 +492,27 @@ msgstr "Φίλτρα"
 
 #: templates/rest_framework/base.html:37
 msgid "navbar"
-msgstr ""
+msgstr "γραμμή πλοήγησης"
 
 #: templates/rest_framework/base.html:75
 msgid "content"
-msgstr ""
+msgstr "περιεχόμενο"
 
 #: templates/rest_framework/base.html:78
 msgid "request form"
-msgstr ""
+msgstr "φόρμα αιτήματος"
 
 #: templates/rest_framework/base.html:157
 msgid "main content"
-msgstr ""
+msgstr "κύριο περιεχόμενο"
 
 #: templates/rest_framework/base.html:173
 msgid "request info"
-msgstr ""
+msgstr "πληροφορίες αιτήματος"
 
 #: templates/rest_framework/base.html:177
 msgid "response info"
-msgstr ""
+msgstr "πληροφορίες απάντησης"
 
 #: templates/rest_framework/horizontal/radio.html:4
 #: templates/rest_framework/inline/radio.html:3
@@ -527,7 +528,7 @@ msgstr "Δεν υπάρχουν αντικείμενα προς επιλογή."
 
 #: validators.py:39
 msgid "This field must be unique."
-msgstr "Το πεδίο πρέπει να είναι μοναδικό"
+msgstr "Το πεδίο πρέπει να είναι μοναδικό."
 
 #: validators.py:89
 #, python-brace-format
@@ -537,7 +538,7 @@ msgstr "Τα πεδία {field_names} πρέπει να αποτελούν έν�
 #: validators.py:171
 #, python-brace-format
 msgid "Surrogate characters are not allowed: U+{code_point:X}."
-msgstr ""
+msgstr "Δεν επιτρέπονται οι χαρακτήρες surrogate: U+{code_point:X}."
 
 #: validators.py:243
 #, python-brace-format
@@ -552,7 +553,7 @@ msgstr "Το πεδίο πρέπει να είναι μοναδικό για τ�
 #: validators.py:271
 #, python-brace-format
 msgid "This field must be unique for the \"{date_field}\" year."
-msgstr "Το πεδίο πρέπει να είναι μοναδικό για το έτος  \"{date_field}\"."
+msgstr "Το πεδίο πρέπει να είναι μοναδικό για το έτος \"{date_field}\"."
 
 #: versioning.py:40
 msgid "Invalid version in \"Accept\" header."
@@ -564,7 +565,7 @@ msgstr "Λάθος έκδοση στη διαδρομή URL."
 
 #: versioning.py:116
 msgid "Invalid version in URL path. Does not match any version namespace."
-msgstr ""
+msgstr "Λάθος έκδοση στη διαδρομή URL. Δεν ταιριάζει με κανένα namespace έκδοσης."
 
 #: versioning.py:148
 msgid "Invalid version in hostname."
@@ -572,4 +573,4 @@ msgstr "Λάθος έκδοση στο hostname."
 
 #: versioning.py:170
 msgid "Invalid version in query parameter."
-msgstr "Λάθος έκδοση στην παράμετρο"
+msgstr "Λάθος έκδοση στην παράμετρο query."
