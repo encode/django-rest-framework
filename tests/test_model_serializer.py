@@ -429,6 +429,25 @@ class TestRegularFieldMappings(TestCase):
         """)
         self.assertEqual(repr(TestSerializer()), expected)
 
+    def test_extra_field_kwargs_required_with_model_default(self):
+        """
+        An explicit `required=True` in `extra_kwargs` should take precedence
+        over the default propagated from the model field.
+        """
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = FieldOptionsModel
+                fields = ('value_limit_field', 'default_field')
+                extra_kwargs = {'default_field': {'required': True}}
+
+        field = TestSerializer().fields['default_field']
+        assert field.required is True
+        assert field.default is serializers.empty
+
+        serializer = TestSerializer(data={'value_limit_field': 5})
+        assert not serializer.is_valid()
+        assert serializer.errors == {'default_field': ['This field is required.']}
+
     def test_invalid_field(self):
         """
         Field names that do not map to a model field or relationship should
@@ -1445,6 +1464,10 @@ class OneToOneSourceTestModel(models.Model):
     target = models.OneToOneField(OneToOneTargetTestModel, primary_key=True, on_delete=models.CASCADE)
 
 
+class OneToOneSourceWithDefaultTestModel(models.Model):
+    target = models.OneToOneField(OneToOneTargetTestModel, primary_key=True, default=1, on_delete=models.CASCADE)
+
+
 class TestModelFieldValues(TestCase):
     def test_model_field(self):
         class ExampleSerializer(serializers.ModelSerializer):
@@ -1456,6 +1479,31 @@ class TestModelFieldValues(TestCase):
         source = OneToOneSourceTestModel(target=target)
         serializer = ExampleSerializer(source)
         self.assertEqual(serializer.data, {'target': 1})
+
+    def test_one_to_one_primary_key_default_not_propagated(self):
+        """
+        A `OneToOneField` primary key is built through `build_standard_field`,
+        but its model default is a primary key value rather than a model
+        instance, so it should not be propagated to the serializer field.
+        """
+        target = OneToOneTargetTestModel.objects.create(id=1, text='abc')
+
+        class ExampleSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = OneToOneSourceWithDefaultTestModel
+                fields = ('target',)
+
+        field = ExampleSerializer().fields['target']
+        assert isinstance(field, serializers.PrimaryKeyRelatedField)
+        assert field.default is serializers.empty
+        assert field.required is False
+
+        serializer = ExampleSerializer(data={})
+        assert serializer.is_valid(), serializer.errors
+        assert serializer.validated_data == {}
+
+        instance = serializer.save()
+        assert instance.target == target
 
 
 class TestUniquenessOverride(TestCase):

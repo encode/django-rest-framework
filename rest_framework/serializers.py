@@ -1422,6 +1422,9 @@ class ModelSerializer(Serializer):
         if extra_kwargs.get('default') and kwargs.get('required') is False:
             kwargs.pop('required')
 
+        if extra_kwargs.get('required'):
+            kwargs.pop('default', None)
+
         if extra_kwargs.get('read_only', kwargs.get('read_only', False)):
             extra_kwargs.pop('required', None)  # Read only fields should always omit the 'required' argument.
 
