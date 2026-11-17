@@ -4347,6 +4347,7 @@ Set to false if this field is not required to be present during deserialization.
 <h3 id="default"><code>default</code><a class="headerlink" href="#default" title="Permanent link">&para;</a></h3>
 <p>If set, this gives the default value that will be used for the field if no input value is supplied. If not set the default behavior is to not populate the attribute at all.</p>
 <p>The <code>default</code> is not applied during partial update operations. In the partial update case only fields that are provided in the incoming data will have a validated value returned.</p>
+<p>If you're using <a href="https://www.django-rest-framework.org/api-guide/serializers/#modelserializer">Model Serializer</a> and the corresponding <code>Model</code> field declares a <code>default</code>, it will be used as the serializer field default. This does not apply to relational fields such as <code>ForeignKey</code>: a model default on a relational field is expressed as a primary key value rather than a model instance, so it is not propagated and only causes the generated serializer field to be not required.</p>
 <p>May be set to a function or other callable, in which case the value will be evaluated each time it is used. When called, it will receive no arguments. If the callable has a <code>requires_context = True</code> attribute, then the serializer field will be passed as an argument.</p>
 <p>For example:</p>
 <div class="language-text highlight"><pre><span></span><code>class CurrentUserDefault:
