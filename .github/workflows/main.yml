@@ -19,11 +19,11 @@ jobs:
 
   tests:
     name: Python ${{ matrix.python-version }}
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
 
     services:
       postgres:
-        image: postgres:16
+        image: postgres:18
         env:
           POSTGRES_DB: postgres
           POSTGRES_USER: postgres
@@ -39,7 +39,6 @@ jobs:
     strategy:
       matrix:
         python-version:
-        - '3.10'
         - '3.11'
         - '3.12'
         - '3.13'
@@ -79,13 +78,13 @@ jobs:
 
   test-docs:
     name: Test documentation links
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
     - uses: actions/checkout@v7
 
     - uses: actions/setup-python@v7.1.0
       with:
-        python-version: '3.13'
+        python-version: '3.14'
 
     - name: Install dependencies
       run: pip install --group docs
