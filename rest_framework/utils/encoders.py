@@ -72,10 +72,15 @@ class JSONEncoder(json.JSONEncoder):
 
 class CustomScalar:
     """
-    CustomScalar that knows how to encode timedelta that renderer
-    can understand.
+    CustomScalar that knows how to encode timedelta and Decimal values
+    that renderer can understand.
     """
     @classmethod
     def represent_timedelta(cls, dumper, data):
         value = str(data.total_seconds())
         return dumper.represent_scalar('tag:yaml.org,2002:str', value)
+
+    @classmethod
+    def represent_decimal(cls, dumper, data):
+        # As in JSONEncoder, render the decimal as a number.
+        return dumper.represent_float(float(data))
