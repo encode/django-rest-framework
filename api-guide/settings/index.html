@@ -1652,6 +1652,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#default_missing_data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DEFAULT_MISSING_DATA
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -3435,6 +3446,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#default_missing_data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DEFAULT_MISSING_DATA
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -4187,6 +4209,10 @@ print(api_settings.DEFAULT_AUTHENTICATION_CLASSES)
 <h4 id="default_schema_class">DEFAULT_SCHEMA_CLASS<a class="headerlink" href="#default_schema_class" title="Permanent link">&para;</a></h4>
 <p>A view inspector class that will be used for schema generation.</p>
 <p>Default: <code>'rest_framework.schemas.openapi.AutoSchema'</code></p>
+<h4 id="default_missing_data">DEFAULT_MISSING_DATA<a class="headerlink" href="#default_missing_data" title="Permanent link">&para;</a></h4>
+<p>The value that should be used for <code>request.data</code> when the client did not send any data in the request body. This
+setting applies only if the client did not send a header indicating form encoding.</p>
+<p>Default: <code>None</code></p>
 <hr />
 <h3 id="generic-view-settings">Generic view settings<a class="headerlink" href="#generic-view-settings" title="Permanent link">&para;</a></h3>
 <p><em>The following settings control the behavior of the generic class-based views.</em></p>

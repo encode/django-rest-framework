@@ -3074,6 +3074,7 @@
 <li>It includes all parsed content, including <em>file and non-file</em> inputs.</li>
 <li>It supports parsing the content of HTTP methods other than <code>POST</code>, meaning that you can access the content of <code>PUT</code> and <code>PATCH</code> requests.</li>
 <li>It supports REST framework's flexible request parsing, rather than just supporting form data.  For example you can handle incoming <a href="../parsers/#jsonparser">JSON data</a> similarly to how you handle incoming <a href="../parsers/#formparser">form data</a>.</li>
+<li>If the client does not send any data and does not specify form encoding, the value of <code>.data</code> is determined by the <code>DEFAULT_MISSING_DATA</code> setting. If form encoding is used and no data is sent, <code>.data</code> will be an empty Django <code>QueryDict</code>.</li>
 </ul>
 <p>For more details see the <a href="../parsers/">parsers documentation</a>.</p>
 <h3 id="query_params">.query_params<a class="headerlink" href="#query_params" title="Permanent link">&para;</a></h3>
