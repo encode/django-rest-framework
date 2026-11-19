@@ -138,8 +138,14 @@ def get_field_kwargs(field_name, model_field):
         kwargs['read_only'] = True
         return kwargs
 
-    if model_field.has_default() or model_field.blank or model_field.null:
+    if model_field.has_default() or model_field.has_db_default() or model_field.blank or model_field.null:
         kwargs['required'] = False
+
+    # The default of a relational field (e.g. a `OneToOneField` primary key) is
+    # a primary key value rather than a model instance, and serializer field
+    # defaults bypass `to_internal_value()`, so it is not propagated.
+    if model_field.has_default() and not model_field.is_relation:
+        kwargs['default'] = model_field.default
 
     if model_field.blank and (isinstance(model_field, (models.CharField, models.TextField))):
         kwargs['allow_blank'] = True
@@ -304,7 +310,7 @@ def get_relation_kwargs(field_name, relation_info):
             # No further keyword arguments are valid.
             return kwargs
 
-        if model_field.has_default() or model_field.blank or model_field.null:
+        if model_field.has_default() or model_field.has_db_default() or model_field.blank or model_field.null:
             kwargs['required'] = False
         if model_field.validators:
             kwargs['validators'] = model_field.validators
