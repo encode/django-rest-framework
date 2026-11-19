@@ -843,7 +843,7 @@ class CursorPagination(BasePagination):
                     'type': 'string',
                     'nullable': True,
                     'format': 'uri',
-                    'example': 'http://api.example.org/accounts/?{cursor_query_param}=cD00ODY%3D"'.format(
+                    'example': 'http://api.example.org/accounts/?{cursor_query_param}=cD00ODY%3D'.format(
                         cursor_query_param=self.cursor_query_param)
                 },
                 'previous': {
