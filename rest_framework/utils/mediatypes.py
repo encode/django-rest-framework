@@ -44,10 +44,19 @@ def order_parsed_by_precedence(media_types):
 
 def order_by_precedence(media_type_lst):
     """
-    Same as `order_parsed_by_precedence`, but takes unparsed media type strings.
+    Returns a list of sets of media type strings, ordered by precedence.
+    Precedence is determined by how specific a media type is:
+
+    3. 'type/subtype; param=val'
+    2. 'type/subtype'
+    1. 'type/*'
+    0. '*/*'
     """
-    media_types_gen = (_MediaType(mt) for mt in media_type_lst)
-    return order_parsed_by_precedence(media_types_gen)
+    ret = [set(), set(), set(), set()]
+    for media_type in media_type_lst:
+        precedence = _MediaType(media_type).precedence
+        ret[3 - precedence].add(media_type)
+    return [media_types for media_types in ret if media_types]
 
 
 class _MediaType:
