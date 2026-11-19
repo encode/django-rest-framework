@@ -79,10 +79,18 @@ def get_unique_validators(field_name, model_field):
     unique_error_message = get_unique_error_message(model_field)
     queryset = model_field.model._default_manager
     for condition in conditions:
-        yield UniqueValidator(
-            queryset=queryset if condition is None else queryset.filter(condition),
-            message=unique_error_message
+        condition_fields = (
+            set(condition.referenced_base_fields)
+            if condition is not None
+            else set()
         )
+        # Only use UniqueValidator if the union of field and condition fields is 1
+        # (i.e. no additional fields referenced in conditions)
+        if len(field_set | condition_fields) == 1:
+            yield UniqueValidator(
+                queryset=queryset if condition is None else queryset.filter(condition),
+                message=unique_error_message,
+            )
 
 
 def get_field_kwargs(field_name, model_field):
@@ -130,8 +138,14 @@ def get_field_kwargs(field_name, model_field):
         kwargs['read_only'] = True
         return kwargs
 
-    if model_field.has_default() or model_field.blank or model_field.null:
+    if model_field.has_default() or model_field.has_db_default() or model_field.blank or model_field.null:
         kwargs['required'] = False
+
+    # The default of a relational field (e.g. a `OneToOneField` primary key) is
+    # a primary key value rather than a model instance, and serializer field
+    # defaults bypass `to_internal_value()`, so it is not propagated.
+    if model_field.has_default() and not model_field.is_relation:
+        kwargs['default'] = model_field.default
 
     if model_field.blank and (isinstance(model_field, (models.CharField, models.TextField))):
         kwargs['allow_blank'] = True
@@ -296,7 +310,7 @@ def get_relation_kwargs(field_name, relation_info):
             # No further keyword arguments are valid.
             return kwargs
 
-        if model_field.has_default() or model_field.blank or model_field.null:
+        if model_field.has_default() or model_field.has_db_default() or model_field.blank or model_field.null:
             kwargs['required'] = False
         if model_field.validators:
             kwargs['validators'] = model_field.validators
