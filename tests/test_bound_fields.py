@@ -259,6 +259,19 @@ class TestNestedBoundField:
 }'''
         assert serializer['nested'].as_form_field().value['nullable_bool_field'] is False
 
+    def test_as_form_field_with_undeclared_nested_key(self):
+        class Nested(serializers.Serializer):
+            flag = serializers.BooleanField(allow_null=True)
+
+        class ExampleSerializer(serializers.Serializer):
+            nested = Nested()
+            other = serializers.CharField()
+
+        serializer = ExampleSerializer(data={'nested': {'flag': True, 'extra': 1}})
+        assert not serializer.is_valid()
+
+        assert serializer['nested'].as_form_field().value == {'flag': True, 'extra': '1'}
+
     def test_rendering_nested_fields_with_none_value(self):
         from rest_framework.renderers import HTMLFormRenderer
 

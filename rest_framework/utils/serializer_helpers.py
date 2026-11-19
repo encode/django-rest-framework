@@ -91,7 +91,9 @@ class BoundField:
         )
 
     def as_form_field(self):
-        if self._field.allow_null:
+        from rest_framework.fields import BooleanField
+
+        if isinstance(self._field, BooleanField) and self._field.allow_null:
             value = '' if self.value is None else self.value
         else:
             value = '' if (self.value is None or self.value is False) else self.value
@@ -141,11 +143,14 @@ class NestedBoundField(BoundField):
         return BoundField(field, value, error, prefix=self.name + '.')
 
     def as_form_field(self):
+        from rest_framework.fields import BooleanField
+
         values = {}
         for key, value in self.value.items():
+            field = self.fields.get(key)
             if isinstance(value, (list, dict)):
                 values[key] = value
-            elif self.fields[key].allow_null:
+            elif isinstance(field, BooleanField) and field.allow_null:
                 values[key] = '' if value is None else value
             else:
                 values[key] = '' if (value is None or value is False) else force_str(value)
