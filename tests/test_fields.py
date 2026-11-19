@@ -2792,6 +2792,16 @@ class TestJSONField(FieldValues):
         assert serializer.is_valid()
         assert serializer.validated_data == {'config': {"a": 1}}
 
+    def test_html_input_nested_too_deep(self):
+        class TestSerializer(serializers.Serializer):
+            config = serializers.JSONField()
+
+        data = QueryDict(mutable=True)
+        data.update({'config': '[' * 100000 + ']' * 100000})
+        serializer = TestSerializer(data=data)
+        assert not serializer.is_valid()
+        assert serializer.errors == {'config': ['Value must be valid JSON.']}
+
 
 class TestBinaryJSONField(FieldValues):
     """

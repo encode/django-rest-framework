@@ -145,6 +145,13 @@ class TestJSONParser(TestCase):
         assert parser.parse(self.bytes('-Infinity')) == float('-inf')
         assert math.isnan(parser.parse(self.bytes('NaN')))
 
+    def test_deeply_nested_json(self):
+        parser = JSONParser()
+        value = '[' * 100000 + ']' * 100000
+        with pytest.raises(ParseError) as excinfo:
+            parser.parse(self.bytes(value))
+        assert str(excinfo.value).startswith('JSON parse error - ')
+
 
 class TestGetEncoding(TestCase):
     def test_defaults_to_default_charset(self):
