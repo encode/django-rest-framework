@@ -1,4 +1,5 @@
 import copy
+from unittest import mock
 
 from django.test import TestCase
 from django.views.decorators.vary import vary_on_headers
@@ -8,6 +9,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.settings import APISettings, api_settings
 from rest_framework.test import APIRequestFactory
+from rest_framework.utils import mediatypes
 from rest_framework.views import APIView
 
 factory = APIRequestFactory()
@@ -81,6 +83,16 @@ class ClassBasedViewIntegrationTests(TestCase):
         }
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert sanitise_json_error(response.data) == expected
+
+    def test_accept_tokens_cached_for_error_response(self):
+        token = 'text/plain; version=1'
+        with mock.patch.object(
+            mediatypes, 'parse_header_parameters',
+            wraps=mediatypes.parse_header_parameters
+        ) as parse:
+            response = self.view(factory.get('/', HTTP_ACCEPT=token))
+        assert response.status_code == status.HTTP_406_NOT_ACCEPTABLE
+        assert parse.call_args_list.count(mock.call(token)) == 1
 
 
 @api_view(['GET'])

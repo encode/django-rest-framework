@@ -137,7 +137,7 @@ To submit new content, [create a pull request][drf-create-pr].
 
 * [drf-sendables][drf-sendables] - User messages for Django REST Framework
 * [cookiecutter-django-rest][cookiecutter-django-rest] - A cookiecutter template that takes care of the setup and configuration so you can focus on making your REST apis awesome.
-* [djangorestrelationalhyperlink][djangorestrelationalhyperlink] - A hyperlinked serializer that can can be used to alter relationships via hyperlinks, but otherwise like a hyperlink model serializer.
+* [djangorestrelationalhyperlink][djangorestrelationalhyperlink] - A hyperlinked serializer that can be used to alter relationships via hyperlinks, but otherwise like a hyperlink model serializer.
 * [django-rest-framework-proxy][django-rest-framework-proxy] - Proxy to redirect incoming request to another API server.
 * [gaiarestframework][gaiarestframework] - Utils for django-rest-framework
 * [drf-extensions][drf-extensions] - A collection of custom extensions
@@ -202,7 +202,7 @@ To submit new content, [create a pull request][drf-create-pr].
 [django-rest-framework-mongoengine]: https://github.com/umutbozkurt/django-rest-framework-mongoengine
 [djangorestframework-gis]: https://github.com/djangonauts/django-rest-framework-gis
 [djangorestframework-hstore]: https://github.com/djangonauts/django-rest-framework-hstore
-[drf-compound-fields]: https://github.com/estebistec/drf-compound-fields
+[drf-compound-fields]: https://drf-compound-fields.readthedocs.io
 [drf-extra-fields]: https://github.com/Hipo/drf-extra-fields
 [django-rest-multiple-models]: https://github.com/MattBroach/DjangoRestMultipleModels
 [drf-nested-routers]: https://github.com/alanjds/drf-nested-routers

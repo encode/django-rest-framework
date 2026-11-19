@@ -945,7 +945,7 @@ class CursorPaginationTestsMixin:
                     'type': 'string',
                     'nullable': True,
                     'format': 'uri',
-                    'example': 'http://api.example.org/accounts/?cursor=cD00ODY%3D"'
+                    'example': 'http://api.example.org/accounts/?cursor=cD00ODY%3D'
                 },
                 'previous': {
                     'type': 'string',
