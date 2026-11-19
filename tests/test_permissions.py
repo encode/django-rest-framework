@@ -770,9 +770,6 @@ class PermissionsCompositionTests(TestCase):
             permissions.AllowAny,
         ]
 
-        filtered_permissions = [
-            perm for perm
-            in dict.fromkeys(unfiltered_permissions)
-        ]
+        filtered_permissions = [*dict.fromkeys(unfiltered_permissions)]
 
         assert filtered_permissions == expected_permissions

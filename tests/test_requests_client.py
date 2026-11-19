@@ -55,16 +55,12 @@ class HeadersView(APIView):
 
 class SessionView(APIView):
     def get(self, request):
-        return Response({
-            key: value for key, value in request.session.items()
-        })
+        return Response({**request.session})
 
     def post(self, request):
         for key, value in request.data.items():
             request.session[key] = value
-        return Response({
-            key: value for key, value in request.session.items()
-        })
+        return Response({**request.session})
 
 
 class AuthView(APIView):

@@ -1301,9 +1301,10 @@ class ModelSerializer(Serializer):
             field_kwargs['queryset'] = model_field.related_model.objects
 
         if 'choices' in field_kwargs:
-            # Fields with choices get coerced into `ChoiceField`
-            # instead of using their regular typed field.
-            field_class = self.serializer_choice_field
+            # Fields with choices default to `ChoiceField`, unless a custom
+            # `ChoiceField` subclass is already mapped for the model field.
+            if not issubclass(field_class, self.serializer_choice_field):
+                field_class = self.serializer_choice_field
             # Some model fields may introduce kwargs that would not be valid
             # for the choice field. We need to strip these out.
             # Eg. models.DecimalField(max_digits=3, decimal_places=1, choices=DECIMAL_CHOICES)
@@ -1421,6 +1422,9 @@ class ModelSerializer(Serializer):
 
         if extra_kwargs.get('default') and kwargs.get('required') is False:
             kwargs.pop('required')
+
+        if extra_kwargs.get('required'):
+            kwargs.pop('default', None)
 
         if extra_kwargs.get('read_only', kwargs.get('read_only', False)):
             extra_kwargs.pop('required', None)  # Read only fields should always omit the 'required' argument.

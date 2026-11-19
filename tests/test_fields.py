@@ -2,6 +2,7 @@ import datetime
 import math
 import os
 import re
+import sys
 import uuid
 import warnings
 from decimal import ROUND_DOWN, ROUND_UP, Decimal
@@ -120,6 +121,23 @@ class TestIsSimpleCallable:
         valid = locals['valid']
 
         assert is_simple_callable(valid)
+
+    @pytest.mark.skipif(sys.version_info < (3, 14), reason="Annotations are evaluated lazily from Python 3.14")
+    def test_unresolvable_type_annotation(self):
+        # A name only imported under `if TYPE_CHECKING:` is undefined at runtime.
+        class Foo:
+            def valid(self) -> UndefinedType:  # noqa: F821
+                pass
+
+        def valid(param: UndefinedType = None):  # noqa: F821
+            pass
+
+        def invalid(param: UndefinedType):  # noqa: F821
+            pass
+
+        assert is_simple_callable(Foo().valid)
+        assert is_simple_callable(valid)
+        assert not is_simple_callable(invalid)
 
 
 # Tests for field keyword arguments and core functionality.
@@ -1313,6 +1331,8 @@ class TestDecimalField(FieldValues):
         12.3: Decimal('12.3'),
         0.1: Decimal('0.1'),
         '2E+1': Decimal('20'),
+        '0E+3': Decimal('0'),
+        Decimal('0E+10'): Decimal('0'),
     }
     invalid_inputs = (
         (None, ["This field may not be null."]),
