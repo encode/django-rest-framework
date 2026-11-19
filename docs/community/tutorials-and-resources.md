@@ -89,7 +89,7 @@ Want your Django REST Framework talk/tutorial/article to be added to our website
 
 [beginners-guide-to-the-django-rest-framework]: https://code.tutsplus.com/tutorials/beginners-guide-to-the-django-rest-framework--cms-19786
 [getting-started-with-django-rest-framework-and-angularjs]: https://blog.kevinastone.com/django-rest-framework-and-angular-js
-[end-to-end-web-app-with-django-rest-framework-angularjs]: https://mourafiq.com/2013/07/01/end-to-end-web-app-with-django-angular-1.html
+[end-to-end-web-app-with-django-rest-framework-angularjs]: https://web.archive.org/web/20220331111339/https://mourafiq.com/2013/07/01/end-to-end-web-app-with-django-angular-1.html
 [start-your-api-django-rest-framework-part-1]: https://www.youtube.com/watch?v=hqo2kk91WpE
 [permissions-authentication-django-rest-framework-part-2]: https://www.youtube.com/watch?v=R3xvUDUZxGU
 [viewsets-and-routers-django-rest-framework-part-3]: https://www.youtube.com/watch?v=2d6w4DGQ4OU
@@ -126,12 +126,12 @@ Want your Django REST Framework talk/tutorial/article to be added to our website
 [drf-image-upload-tutorial-with-angularjs]: https://www.youtube.com/watch?v=hMiNTCIY7dw&list=PLUe5s-xycYk_X0vDjYBmKuIya2a2myF8O
 [blog-api-with-drf]: https://www.youtube.com/watch?v=XMu0T6L2KRQ&list=PLEsfXFp6DpzTOcOVdZF-th7BS_GYGguAS
 [drf-an-intro]: https://realpython.com/blog/python/django-rest-framework-quick-start/
-[drf-tutorial]: https://tests4geeks.com/django-rest-framework-tutorial/
+[drf-tutorial]: https://web.archive.org/web/20190822013217/https://tests4geeks.com/django-rest-framework-tutorial/
 [building-a-restful-api-with-drf]: https://agiliq.com/blog/2014/12/building-a-restful-api-with-django-rest-framework/
 [submit-pr]: https://github.com/encode/django-rest-framework
 [anna-email]: mailto:anna@django-rest-framework.org
 [pycon-us-2017]: https://www.youtube.com/watch?v=Rk6MHZdust4
-[django-rest-react-valentinog]: https://www.valentinog.com/blog/tutorial-api-django-rest-react/
+[django-rest-react-valentinog]: https://web.archive.org/web/20180914054059/https://www.valentinog.com/blog/tutorial-api-django-rest-react/
 [doordash-implementing-rest-apis]: https://doordash.engineering/2013/10/07/implementing-rest-apis-with-embedded-privacy/
 [developing-restful-apis-with-django-rest-framework]: https://testdriven.io/courses/django-rest-framework/
 [django-con-2018]: https://youtu.be/pY-oje5b5Qk?si=AOU6tLi0IL1_pVzq
