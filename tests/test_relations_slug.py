@@ -111,6 +111,42 @@ class SlugForeignKeyTests(TestCase):
         assert not serializer.is_valid()
         assert serializer.errors == {'target': ['Object with name=123 does not exist.']}
 
+    def test_foreign_key_update_with_overflowing_integer_slug(self):
+        class IntegerSlugForeignKeySourceSerializer(serializers.ModelSerializer):
+            target = serializers.SlugRelatedField(
+                slug_field='id',
+                queryset=ForeignKeyTarget.objects.all()
+            )
+
+            class Meta:
+                model = ForeignKeySource
+                fields = '__all__'
+
+        instance = ForeignKeySource.objects.get(pk=1)
+        for value in (float('inf'), float('-inf')):
+            data = {'id': 1, 'name': 'source-1', 'target': value}
+            serializer = IntegerSlugForeignKeySourceSerializer(instance, data=data)
+            assert not serializer.is_valid()
+            assert serializer.errors == {'target': [f'Object with id={value} does not exist.']}
+
+    def test_reverse_foreign_key_update_with_overflowing_integer_slug(self):
+        class IntegerSlugForeignKeyTargetSerializer(serializers.ModelSerializer):
+            sources = serializers.SlugRelatedField(
+                slug_field='id',
+                queryset=ForeignKeySource.objects.all(),
+                many=True
+            )
+
+            class Meta:
+                model = ForeignKeyTarget
+                fields = '__all__'
+
+        instance = ForeignKeyTarget.objects.get(pk=2)
+        data = {'id': 2, 'name': 'target-2', 'sources': [1, float('inf')]}
+        serializer = IntegerSlugForeignKeyTargetSerializer(instance, data=data)
+        assert not serializer.is_valid()
+        assert serializer.errors == {'sources': ['Object with id=inf does not exist.']}
+
     def test_reverse_foreign_key_update(self):
         data = {'id': 2, 'name': 'target-2', 'sources': ['source-1', 'source-3']}
         instance = ForeignKeyTarget.objects.get(pk=2)

@@ -11,6 +11,7 @@ import json  # noqa
 import re
 import sys
 import tempfile
+import uuid
 
 import pytest
 from django.core.exceptions import ImproperlyConfigured, ValidationError
@@ -20,6 +21,7 @@ from django.core.validators import (
     MinValueValidator
 )
 from django.db import models
+from django.db.models.functions import Now
 from django.db.models.signals import m2m_changed
 from django.dispatch import receiver
 from django.test import TestCase
@@ -118,6 +120,12 @@ class UniqueChoiceModel(models.Model):
     name = models.CharField(max_length=254, unique=True, choices=CHOICES)
 
 
+class DBDefaultFieldsModel(models.Model):
+    title = models.CharField(max_length=100)
+    status = models.CharField(max_length=10, db_default='draft')
+    created = models.DateTimeField(db_default=Now())
+
+
 class TestModelSerializer(TestCase):
     def test_create_method(self):
         class TestSerializer(serializers.ModelSerializer):
@@ -177,7 +185,7 @@ class TestRegularFieldMappings(TestCase):
             TestSerializer\(\):
                 auto_field = IntegerField\(read_only=True\)
                 big_integer_field = BigIntegerField\(.*\)
-                boolean_field = BooleanField\(required=False\)
+                boolean_field = BooleanField\(default=False, required=False\)
                 char_field = CharField\(max_length=100\)
                 comma_separated_integer_field = CharField\(max_length=100, validators=\[<django.core.validators.RegexValidator object>\]\)
                 date_field = DateField\(\)
@@ -186,7 +194,7 @@ class TestRegularFieldMappings(TestCase):
                 email_field = EmailField\(max_length=100\)
                 float_field = FloatField\(\)
                 integer_field = IntegerField\(.*\)
-                null_boolean_field = BooleanField\(allow_null=True, required=False\)
+                null_boolean_field = BooleanField\(allow_null=True, default=False, required=False\)
                 positive_integer_field = IntegerField\(.*\)
                 positive_small_integer_field = IntegerField\(.*\)
                 slug_field = SlugField\(allow_unicode=False, max_length=100\)
@@ -213,12 +221,125 @@ class TestRegularFieldMappings(TestCase):
                 length_limit_field = CharField\(max_length=12, min_length=3\)
                 blank_field = CharField\(allow_blank=True, max_length=10, required=False\)
                 null_field = IntegerField\(allow_null=True,.*required=False\)
-                default_field = IntegerField\(.*required=False\)
+                default_field = IntegerField\(default=0,.*required=False\)
                 descriptive_field = IntegerField\(help_text='Some help text', label='A label'.*\)
                 choices_field = ChoiceField\(choices=(?:\[|\()\('red', 'Red'\), \('blue', 'Blue'\), \('green', 'Green'\)(?:\]|\))\)
                 text_choices_field = ChoiceField\(choices=(?:\[|\()\('red', 'Red'\), \('blue', 'Blue'\), \('green', 'Green'\)(?:\]|\))\)
         """)
         assert re.search(expected, repr(TestSerializer())) is not None
+
+    def test_default_value_used_when_field_omitted(self):
+        """
+        Model field defaults should be propagated to the serializer field,
+        so that omitted fields fall back to the model default on validation.
+        """
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = FieldOptionsModel
+                fields = ('value_limit_field', 'default_field')
+
+        serializer = TestSerializer(data={'value_limit_field': 5})
+        assert serializer.is_valid(), serializer.errors
+        assert serializer.validated_data == {'value_limit_field': 5, 'default_field': 0}
+
+    def test_default_value_skipped_on_partial_update(self):
+        """
+        Propagated model defaults should not be applied on partial updates.
+        """
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = FieldOptionsModel
+                fields = ('value_limit_field', 'default_field')
+
+        instance = FieldOptionsModel(value_limit_field=5, default_field=10)
+        serializer = TestSerializer(instance, data={'value_limit_field': 6}, partial=True)
+        assert serializer.is_valid(), serializer.errors
+        assert serializer.validated_data == {'value_limit_field': 6}
+
+    def test_default_value_used_on_full_update(self):
+        """
+        Propagated model defaults should be applied on non-partial updates.
+        """
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = FieldOptionsModel
+                fields = ('value_limit_field', 'default_field')
+
+        instance = FieldOptionsModel(value_limit_field=5, default_field=10)
+        serializer = TestSerializer(instance, data={'value_limit_field': 6})
+        assert serializer.is_valid(), serializer.errors
+        assert serializer.validated_data == {'value_limit_field': 6, 'default_field': 0}
+
+    def test_relational_field_default_not_propagated(self):
+        """
+        Model defaults on relational fields are not propagated, since a
+        serializer field default is used as-is in `validated_data` while a
+        foreign key model default is expressed as a primary key value
+        rather than a model instance.
+        """
+        class RelationalDefaultTargetModel(models.Model):
+            name = models.CharField(max_length=10)
+
+        class RelationalDefaultSourceModel(models.Model):
+            target = models.ForeignKey(
+                RelationalDefaultTargetModel, on_delete=models.CASCADE, default=1
+            )
+
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = RelationalDefaultSourceModel
+                fields = ('target',)
+
+        field = TestSerializer().fields['target']
+        assert field.default is serializers.empty
+        assert field.required is False
+
+    def test_callable_default_executed_on_validation(self):
+        """
+        Callable model defaults (e.g. `uuid.uuid4`) should be propagated as
+        callables and evaluated each time the field is omitted from the input.
+        """
+        class CallableDefaultModel(models.Model):
+            uuid_field = models.UUIDField(default=uuid.uuid4)
+            name = models.CharField(max_length=10)
+
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = CallableDefaultModel
+                fields = ('uuid_field', 'name')
+
+        assert TestSerializer().fields['uuid_field'].default is uuid.uuid4
+
+        first = TestSerializer(data={'name': 'foo'})
+        assert first.is_valid(), first.errors
+        assert isinstance(first.validated_data['uuid_field'], uuid.UUID)
+
+        second = TestSerializer(data={'name': 'bar'})
+        assert second.is_valid(), second.errors
+        assert second.validated_data['uuid_field'] != first.validated_data['uuid_field']
+
+    def test_choices_field_with_default(self):
+        """
+        A choices field with a model default should fall back to that default
+        and still validate against the choices when omitted (#7469).
+        """
+        class ChoicesDefaultModel(models.Model):
+            color = models.CharField(max_length=10, choices=COLOR_CHOICES, default='red')
+
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = ChoicesDefaultModel
+                fields = ('color',)
+
+        assert isinstance(TestSerializer().fields['color'], ChoiceField)
+
+        serializer = TestSerializer(data={})
+        assert serializer.is_valid(), serializer.errors
+        assert serializer.validated_data == {'color': 'red'}
+
+        serializer = TestSerializer(data={'color': 'blue'})
+        assert serializer.is_valid(), serializer.errors
+        assert serializer.validated_data == {'color': 'blue'}
 
     def test_nullable_boolean_field_choices(self):
         class NullableBooleanChoicesModel(models.Model):
@@ -308,6 +429,25 @@ class TestRegularFieldMappings(TestCase):
         """)
         self.assertEqual(repr(TestSerializer()), expected)
 
+    def test_extra_field_kwargs_required_with_model_default(self):
+        """
+        An explicit `required=True` in `extra_kwargs` should take precedence
+        over the default propagated from the model field.
+        """
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = FieldOptionsModel
+                fields = ('value_limit_field', 'default_field')
+                extra_kwargs = {'default_field': {'required': True}}
+
+        field = TestSerializer().fields['default_field']
+        assert field.required is True
+        assert field.default is serializers.empty
+
+        serializer = TestSerializer(data={'value_limit_field': 5})
+        assert not serializer.is_valid()
+        assert serializer.errors == {'default_field': ['This field is required.']}
+
     def test_invalid_field(self):
         """
         Field names that do not map to a model field or relationship should
@@ -380,6 +520,38 @@ class TestRegularFieldMappings(TestCase):
         assert isinstance(non_editable_choice_field, ChoiceField)
         assert non_editable_choice_field.read_only is True
         assert non_editable_choice_field.choices
+
+    def test_db_default_field_not_required(self):
+        class DBDefaultModel(models.Model):
+            db_default_field = models.IntegerField(db_default=0)
+            db_default_expression_field = models.DateTimeField(db_default=Now())
+
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = DBDefaultModel
+                fields = '__all__'
+
+        expected = dedent(r"""
+            TestSerializer\(\):
+                id = IntegerField\(label='ID', read_only=True\)
+                db_default_field = IntegerField\(.*required=False\)
+                db_default_expression_field = DateTimeField\(required=False\)
+        """)
+        assert re.search(expected, repr(TestSerializer())) is not None
+
+    def test_db_default_fields_can_be_omitted(self):
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = DBDefaultFieldsModel
+                fields = '__all__'
+
+        serializer = TestSerializer(data={'title': 'Hello'})
+        assert serializer.is_valid(), serializer.errors
+
+        instance = serializer.save()
+        instance.refresh_from_db()
+        assert instance.status == 'draft'
+        assert instance.created is not None
 
 
 class TestDurationFieldMapping(TestCase):
@@ -653,6 +825,22 @@ class TestRelationalFieldMappings(TestCase):
                 one_to_one = PrimaryKeyRelatedField(queryset=OneToOneTargetModel.objects.all(), validators=[<UniqueValidator(queryset=RelationalModel.objects.all())>])
                 many_to_many = PrimaryKeyRelatedField(allow_empty=False, many=True, queryset=ManyToManyTargetModel.objects.all())
                 through = PrimaryKeyRelatedField(many=True, read_only=True)
+        """)
+        self.assertEqual(repr(TestSerializer()), expected)
+
+    def test_foreign_key_with_db_default(self):
+        class DBDefaultForeignKeyModel(models.Model):
+            foreign_key = models.ForeignKey(ForeignKeyTargetModel, on_delete=models.CASCADE, db_default=1)
+
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = DBDefaultForeignKeyModel
+                fields = '__all__'
+
+        expected = dedent("""
+            TestSerializer():
+                id = IntegerField(label='ID', read_only=True)
+                foreign_key = PrimaryKeyRelatedField(queryset=ForeignKeyTargetModel.objects.all(), required=False)
         """)
         self.assertEqual(repr(TestSerializer()), expected)
 
@@ -1276,6 +1464,10 @@ class OneToOneSourceTestModel(models.Model):
     target = models.OneToOneField(OneToOneTargetTestModel, primary_key=True, on_delete=models.CASCADE)
 
 
+class OneToOneSourceWithDefaultTestModel(models.Model):
+    target = models.OneToOneField(OneToOneTargetTestModel, primary_key=True, default=1, on_delete=models.CASCADE)
+
+
 class TestModelFieldValues(TestCase):
     def test_model_field(self):
         class ExampleSerializer(serializers.ModelSerializer):
@@ -1287,6 +1479,31 @@ class TestModelFieldValues(TestCase):
         source = OneToOneSourceTestModel(target=target)
         serializer = ExampleSerializer(source)
         self.assertEqual(serializer.data, {'target': 1})
+
+    def test_one_to_one_primary_key_default_not_propagated(self):
+        """
+        A `OneToOneField` primary key is built through `build_standard_field`,
+        but its model default is a primary key value rather than a model
+        instance, so it should not be propagated to the serializer field.
+        """
+        target = OneToOneTargetTestModel.objects.create(id=1, text='abc')
+
+        class ExampleSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = OneToOneSourceWithDefaultTestModel
+                fields = ('target',)
+
+        field = ExampleSerializer().fields['target']
+        assert isinstance(field, serializers.PrimaryKeyRelatedField)
+        assert field.default is serializers.empty
+        assert field.required is False
+
+        serializer = ExampleSerializer(data={})
+        assert serializer.is_valid(), serializer.errors
+        assert serializer.validated_data == {}
+
+        instance = serializer.save()
+        assert instance.target == target
 
 
 class TestUniquenessOverride(TestCase):
