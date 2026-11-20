@@ -24,6 +24,7 @@ from django.db import models
 from django.db.models.functions import Now
 from django.db.models.signals import m2m_changed
 from django.dispatch import receiver
+from django.http import QueryDict
 from django.test import TestCase
 
 from rest_framework import serializers
@@ -185,7 +186,7 @@ class TestRegularFieldMappings(TestCase):
             TestSerializer\(\):
                 auto_field = IntegerField\(read_only=True\)
                 big_integer_field = BigIntegerField\(.*\)
-                boolean_field = BooleanField\(default=False, required=False\)
+                boolean_field = BooleanField\(required=False\)
                 char_field = CharField\(max_length=100\)
                 comma_separated_integer_field = CharField\(max_length=100, validators=\[<django.core.validators.RegexValidator object>\]\)
                 date_field = DateField\(\)
@@ -194,7 +195,7 @@ class TestRegularFieldMappings(TestCase):
                 email_field = EmailField\(max_length=100\)
                 float_field = FloatField\(\)
                 integer_field = IntegerField\(.*\)
-                null_boolean_field = BooleanField\(allow_null=True, default=False, required=False\)
+                null_boolean_field = BooleanField\(allow_null=True, required=False\)
                 positive_integer_field = IntegerField\(.*\)
                 positive_small_integer_field = IntegerField\(.*\)
                 slug_field = SlugField\(allow_unicode=False, max_length=100\)
@@ -291,6 +292,29 @@ class TestRegularFieldMappings(TestCase):
                 fields = ('target',)
 
         field = TestSerializer().fields['target']
+        assert field.default is serializers.empty
+        assert field.required is False
+
+    def test_boolean_field_default_not_propagated(self):
+        """
+        Model defaults on boolean fields are not propagated, since HTML forms
+        leave out unchecked checkboxes, and a `BooleanField` with a default
+        reads a missing HTML value as that default rather than as `False`.
+        """
+        class BooleanDefaultModel(models.Model):
+            enabled = models.BooleanField(default=True)
+            reviewed = models.BooleanField(null=True, default=False)
+
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = BooleanDefaultModel
+                fields = ('enabled', 'reviewed')
+
+        serializer = TestSerializer(data=QueryDict(''))
+        assert serializer.is_valid(), serializer.errors
+        assert serializer.validated_data == {'enabled': False, 'reviewed': None}
+
+        field = TestSerializer().fields['enabled']
         assert field.default is serializers.empty
         assert field.required is False
 
