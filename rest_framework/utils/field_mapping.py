@@ -144,7 +144,14 @@ def get_field_kwargs(field_name, model_field):
     # The default of a relational field (e.g. a `OneToOneField` primary key) is
     # a primary key value rather than a model instance, and serializer field
     # defaults bypass `to_internal_value()`, so it is not propagated.
-    if model_field.has_default() and not model_field.is_relation:
+    # Neither is the default of a `BooleanField`: HTML forms leave out unchecked
+    # checkboxes, and a `BooleanField` with a default reads a missing HTML value
+    # as that default, so a form could not set the field to `False`.
+    if (
+        model_field.has_default()
+        and not model_field.is_relation
+        and not isinstance(model_field, models.BooleanField)
+    ):
         kwargs['default'] = model_field.default
 
     if model_field.blank and (isinstance(model_field, (models.CharField, models.TextField))):
