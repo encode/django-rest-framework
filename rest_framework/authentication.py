@@ -135,7 +135,13 @@ class SessionAuthentication(BaseAuthentication):
     def enforce_csrf(self, request):
         """
         Enforce CSRF validation for session based authentication.
+
+        QUERY is a safe method, so it needs no CSRF token. Django exempts it
+        from 6.2 onwards; this extends the same behavior to earlier versions.
         """
+        if request.method == 'QUERY':
+            return
+
         def dummy_get_response(request):  # pragma: no cover
             return None
 

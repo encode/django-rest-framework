@@ -5,7 +5,7 @@ from django.http import Http404
 
 from rest_framework import exceptions
 
-SAFE_METHODS = ('GET', 'HEAD', 'OPTIONS')
+SAFE_METHODS = ('GET', 'HEAD', 'OPTIONS', 'QUERY')
 
 
 class OperationHolderMixin:
@@ -192,6 +192,7 @@ class DjangoModelPermissions(BasePermission):
         'GET': [],
         'OPTIONS': [],
         'HEAD': [],
+        'QUERY': [],
         'POST': ['%(app_label)s.add_%(model_name)s'],
         'PUT': ['%(app_label)s.change_%(model_name)s'],
         'PATCH': ['%(app_label)s.change_%(model_name)s'],
@@ -269,6 +270,7 @@ class DjangoObjectPermissions(DjangoModelPermissions):
         'GET': [],
         'OPTIONS': [],
         'HEAD': [],
+        'QUERY': [],
         'POST': ['%(app_label)s.add_%(model_name)s'],
         'PUT': ['%(app_label)s.change_%(model_name)s'],
         'PATCH': ['%(app_label)s.change_%(model_name)s'],

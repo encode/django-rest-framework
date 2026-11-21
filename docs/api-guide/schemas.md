@@ -52,6 +52,9 @@ Schema generation has several moving parts. It's worth having an overview:
 
 The following sections explain more.
 
+!!! note
+    OpenAPI 3.0 has no `query` operation, so handlers for the [`QUERY` method][query-method] are left out of generated schemas.
+
 ## Generating an OpenAPI Schema
 
 ### Install dependencies
@@ -460,3 +463,4 @@ create a base `AutoSchema` subclass for your project that takes additional
 [swagger-codegen]: https://github.com/swagger-api/swagger-codegen
 [info-object]: https://swagger.io/specification/#infoObject
 [drf-spectacular]: https://drf-spectacular.readthedocs.io/en/latest/readme.html
+[query-method]: views.md#the-query-method

@@ -45,6 +45,9 @@ class MockView(APIView):
     def put(self, request):
         return HttpResponse({'a': 1, 'b': 2, 'c': 3})
 
+    def query(self, request):
+        return HttpResponse({'a': 1, 'b': 2, 'c': 3})
+
 
 urlpatterns = [
     path(
@@ -230,6 +233,17 @@ class SessionAuthTests(TestCase):
         self.csrf_client.login(username=self.username, password=self.password)
         response = self.csrf_client.post('/session/', {'example': 'example'})
         assert response.status_code == status.HTTP_403_FORBIDDEN
+
+    def test_query_session_auth_without_csrf_token(self):
+        """
+        Ensure QUERY over session authentication succeeds without a CSRF token,
+        as QUERY is a safe method.
+        """
+        self.csrf_client.login(username=self.username, password=self.password)
+        response = self.csrf_client.query(
+            '/session/', {'example': 'example'}, format='json'
+        )
+        assert response.status_code == status.HTTP_200_OK
 
     def test_post_form_session_auth_passing_csrf(self):
         """
