@@ -2797,9 +2797,11 @@ class TestJSONField(FieldValues):
             config = serializers.JSONField()
 
         data = QueryDict(mutable=True)
-        data.update({'config': '[' * 100000 + ']' * 100000})
+        data.update({'config': '[[]]'})
         serializer = TestSerializer(data=data)
-        assert not serializer.is_valid()
+        error = RecursionError('maximum recursion depth exceeded')
+        with patch('rest_framework.utils.json.loads', side_effect=error):
+            assert not serializer.is_valid()
         assert serializer.errors == {'config': ['Value must be valid JSON.']}
 
 
