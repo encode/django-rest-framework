@@ -25,7 +25,7 @@ from rest_framework.parsers import (
     BaseParser, FormParser, JSONParser, MultiPartParser
 )
 from rest_framework.request import (
-    Request, WrappedAttributeError, is_form_media_type
+    Request, WrappedAttributeError, clone_request, is_form_media_type
 )
 from rest_framework.response import Response
 from rest_framework.test import APIClient, APIRequestFactory
@@ -484,6 +484,17 @@ class TestDeepcopy(TestCase):
     def test_deepcopy_works(self):
         request = Request(factory.get('/', secure=False))
         copy.deepcopy(request)
+
+
+class TestCloneRequest(TestCase):
+
+    def test_clone_does_not_change_original_parser_context(self):
+        request = Request(factory.post('/'), parser_context={'kwargs': {'pk': 1}})
+        cloned = clone_request(request, 'PUT')
+
+        assert request.parser_context['request'] is request
+        assert cloned.parser_context['request'] is cloned
+        assert cloned.parser_context['kwargs'] == {'pk': 1}
 
 
 class TestTyping(TestCase):

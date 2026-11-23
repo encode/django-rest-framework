@@ -103,7 +103,7 @@ def clone_request(request, method):
                   parsers=request.parsers,
                   authenticators=request.authenticators,
                   negotiator=request.negotiator,
-                  parser_context=request.parser_context)
+                  parser_context=request.parser_context.copy())
     ret._data = request._data
     ret._files = request._files
     ret._full_data = request._full_data
