@@ -2792,6 +2792,18 @@ class TestJSONField(FieldValues):
         assert serializer.is_valid()
         assert serializer.validated_data == {'config': {"a": 1}}
 
+    def test_html_input_nested_too_deep(self):
+        class TestSerializer(serializers.Serializer):
+            config = serializers.JSONField()
+
+        data = QueryDict(mutable=True)
+        data.update({'config': '[[]]'})
+        serializer = TestSerializer(data=data)
+        error = RecursionError('maximum recursion depth exceeded')
+        with patch('rest_framework.utils.json.loads', side_effect=error):
+            assert not serializer.is_valid()
+        assert serializer.errors == {'config': ['Value must be valid JSON.']}
+
 
 class TestBinaryJSONField(FieldValues):
     """

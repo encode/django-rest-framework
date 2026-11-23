@@ -1,5 +1,6 @@
 import io
 import math
+from unittest.mock import patch
 from urllib.parse import quote
 
 import pytest
@@ -144,6 +145,18 @@ class TestJSONParser(TestCase):
         assert parser.parse(self.bytes('Infinity')) == float('inf')
         assert parser.parse(self.bytes('-Infinity')) == float('-inf')
         assert math.isnan(parser.parse(self.bytes('NaN')))
+
+    def test_deeply_nested_json(self):
+        # From Python 3.14 the nesting depth json can decode depends on the
+        # C stack size, so raise the RecursionError directly.
+        parser = JSONParser()
+        error = RecursionError('maximum recursion depth exceeded')
+        with patch('rest_framework.utils.json.load', side_effect=error):
+            with pytest.raises(ParseError) as excinfo:
+                parser.parse(self.bytes('[[]]'))
+        assert str(excinfo.value) == (
+            'JSON parse error - maximum recursion depth exceeded'
+        )
 
 
 class TestGetEncoding(TestCase):
