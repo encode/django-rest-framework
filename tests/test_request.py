@@ -5,6 +5,7 @@ import bz2
 import copy
 import os.path
 import tempfile
+from collections import ChainMap
 from unittest import mock
 
 import pytest
@@ -45,6 +46,17 @@ class TestInitializer(TestCase):
         )
         with self.assertRaisesMessage(AssertionError, message):
             Request(request)
+
+    def test_parser_context_is_copied(self):
+        for mapping_class in (dict, ChainMap):
+            with self.subTest(mapping_class=mapping_class):
+                parser_context = mapping_class({'kwargs': {'pk': 1}})
+                first = Request(factory.get('/'), parser_context=parser_context)
+                second = Request(factory.get('/'), parser_context=parser_context)
+
+                assert first.parser_context['request'] is first
+                assert second.parser_context['request'] is second
+                assert parser_context == {'kwargs': {'pk': 1}}
 
 
 class PlainTextParser(BaseParser):

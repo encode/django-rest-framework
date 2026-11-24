@@ -103,7 +103,7 @@ def clone_request(request, method):
                   parsers=request.parsers,
                   authenticators=request.authenticators,
                   negotiator=request.negotiator,
-                  parser_context=request.parser_context.copy())
+                  parser_context=request.parser_context)
     ret._data = request._data
     ret._files = request._files
     ret._full_data = request._full_data
@@ -165,15 +165,14 @@ class Request:
         self.parsers = parsers or ()
         self.authenticators = authenticators or ()
         self.negotiator = negotiator or self._default_negotiator()
-        self.parser_context = parser_context
+        # Copy, as the same mapping may be passed to several requests.
+        self.parser_context = {} if parser_context is None else dict(parser_context)
         self._data = Empty
         self._files = Empty
         self._full_data = Empty
         self._content_type = Empty
         self._stream = Empty
 
-        if self.parser_context is None:
-            self.parser_context = {}
         self.parser_context['request'] = self
         self.parser_context['encoding'] = request.encoding or settings.DEFAULT_CHARSET
 
