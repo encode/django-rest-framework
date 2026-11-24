@@ -1329,6 +1329,12 @@ class ModelSerializer(Serializer):
             # `allow_blank` is only valid for textual fields.
             field_kwargs.pop('allow_blank', None)
 
+        if issubclass(field_class, BooleanField):
+            # HTML forms leave out unchecked checkboxes, and a `BooleanField`
+            # with a default reads a missing HTML value as that default, so
+            # with the model default a form could not set the field to `False`.
+            field_kwargs.pop('default', None)
+
         is_django_jsonfield = hasattr(models, 'JSONField') and isinstance(model_field, models.JSONField)
         if (postgres_fields and isinstance(model_field, postgres_fields.JSONField)) or is_django_jsonfield:
             # Populate the `encoder` argument of `JSONField` instances generated

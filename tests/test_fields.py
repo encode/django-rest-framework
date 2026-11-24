@@ -445,6 +445,18 @@ class TestBooleanHTMLInput:
         assert serializer.is_valid()
         assert serializer.validated_data == {'archived': None}
 
+    def test_empty_html_checkbox_with_default(self):
+        """
+        BooleanField should respect an explicit default when the value is
+        missing, as for a query parameter that is left out.
+        """
+        class TestSerializer(serializers.Serializer):
+            archived = serializers.BooleanField(default=True)
+
+        serializer = TestSerializer(data=QueryDict(''))
+        assert serializer.is_valid()
+        assert serializer.validated_data == {'archived': True}
+
 
 class TestHTMLInput:
     def test_empty_html_charfield_with_default(self):

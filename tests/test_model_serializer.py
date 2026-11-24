@@ -318,6 +318,50 @@ class TestRegularFieldMappings(TestCase):
         assert field.default is serializers.empty
         assert field.required is False
 
+    def test_boolean_field_default_not_propagated_for_custom_model_field(self):
+        """
+        The model default is not propagated to any generated `BooleanField`,
+        including one for a custom model field mapped to `BooleanField`.
+        """
+        class FlagField(models.Field):
+            pass
+
+        class FlagModel(models.Model):
+            flag = FlagField(default=True)
+
+        class TestSerializer(serializers.ModelSerializer):
+            serializer_field_mapping = {
+                **serializers.ModelSerializer.serializer_field_mapping,
+                FlagField: serializers.BooleanField,
+            }
+
+            class Meta:
+                model = FlagModel
+                fields = ('flag',)
+
+        serializer = TestSerializer(data=QueryDict(''))
+        assert serializer.is_valid(), serializer.errors
+        assert serializer.validated_data == {'flag': False}
+
+    def test_full_update_leaves_omitted_boolean_field_unchanged(self):
+        """
+        As the model default of a boolean field is not propagated, a full
+        update from JSON that leaves the field out does not reset it.
+        """
+        class BooleanUpdateModel(models.Model):
+            name = models.CharField(max_length=10)
+            enabled = models.BooleanField(default=True)
+
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = BooleanUpdateModel
+                fields = ('name', 'enabled')
+
+        instance = BooleanUpdateModel(name='old', enabled=False)
+        serializer = TestSerializer(instance, data={'name': 'new'})
+        assert serializer.is_valid(), serializer.errors
+        assert serializer.validated_data == {'name': 'new'}
+
     def test_callable_default_executed_on_validation(self):
         """
         Callable model defaults (e.g. `uuid.uuid4`) should be propagated as
