@@ -21,6 +21,7 @@ from django.urls import path
 from rest_framework import status
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.exceptions import ParseError
+from rest_framework.generics import GenericAPIView
 from rest_framework.negotiation import DefaultContentNegotiation
 from rest_framework.parsers import (
     BaseParser, FormParser, JSONParser, MultiPartParser
@@ -29,6 +30,7 @@ from rest_framework.request import (
     Request, WrappedAttributeError, clone_request, is_form_media_type
 )
 from rest_framework.response import Response
+from rest_framework.serializers import Serializer
 from rest_framework.test import APIClient, APIRequestFactory
 from rest_framework.utils import mediatypes
 from rest_framework.views import APIView
@@ -299,10 +301,32 @@ class FileUploadView(APIView):
         return Response(status=status.HTTP_200_OK, data=filenames)
 
 
+class RequestMethodParser(BaseParser):
+    media_type = 'text/plain'
+
+    def parse(self, stream, media_type=None, parser_context=None):
+        return parser_context['request'].method
+
+
+class CloneRequestView(GenericAPIView):
+    parser_classes = (RequestMethodParser,)
+    serializer_class = Serializer
+
+    def post(self, request):
+        return Response()
+
+    def options(self, request):
+        # Building the metadata clones the request as a POST.
+        response = super().options(request)
+        response.data['parsed_method'] = request.data
+        return response
+
+
 urlpatterns = [
     path('', MockView.as_view()),
     path('echo/', EchoView.as_view()),
-    path('upload/', FileUploadView.as_view())
+    path('upload/', FileUploadView.as_view()),
+    path('clone/', CloneRequestView.as_view()),
 ]
 
 
@@ -502,11 +526,23 @@ class TestCloneRequest(TestCase):
 
     def test_clone_does_not_change_original_parser_context(self):
         request = Request(factory.post('/'), parser_context={'kwargs': {'pk': 1}})
+        request._request.encoding = 'iso-8859-1'
         cloned = clone_request(request, 'PUT')
 
         assert request.parser_context['request'] is request
+        assert request.parser_context['encoding'] == 'utf-8'
+        assert request.parser_context['kwargs'] == {'pk': 1}
         assert cloned.parser_context['request'] is cloned
+        assert cloned.parser_context['encoding'] == 'iso-8859-1'
         assert cloned.parser_context['kwargs'] == {'pk': 1}
+
+    @override_settings(ROOT_URLCONF='tests.test_request')
+    def test_parser_gets_original_request_after_options_clone(self):
+        response = APIClient().options('/clone/', 'content', content_type='text/plain')
+
+        assert response.status_code == status.HTTP_200_OK
+        assert list(response.data['actions']) == ['POST']
+        assert response.data['parsed_method'] == 'OPTIONS'
 
 
 class TestTyping(TestCase):
