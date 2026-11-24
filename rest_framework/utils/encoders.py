@@ -82,5 +82,10 @@ class CustomScalar:
 
     @classmethod
     def represent_decimal(cls, dumper, data):
-        # As in JSONEncoder, render the decimal as a number.
-        return dumper.represent_float(float(data))
+        # Render the exact value as a number: OpenAPI needs numbers for
+        # keywords such as `maximum`, and a float could round the value.
+        if not data.is_finite():
+            return dumper.represent_float(float('nan') if data.is_nan() else float(data))
+        value = format(data, 'f')
+        tag = 'tag:yaml.org,2002:float' if '.' in value else 'tag:yaml.org,2002:int'
+        return dumper.represent_scalar(tag, value)

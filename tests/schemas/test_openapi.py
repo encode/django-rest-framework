@@ -1,5 +1,6 @@
 import uuid
 import warnings
+from decimal import Decimal
 
 import pytest
 from django.db import models
@@ -1299,7 +1300,14 @@ class TestGenerator(TestCase):
         schema = generator.get_schema(request=request)
         ret = OpenAPIRenderer().render(schema)
         assert b"!!python" not in ret
-        assert b"maximum: 500.0\n          minimum: 0.01\n" in ret
+        assert b"maximum: 500\n          minimum: 0.01\n" in ret
+
+    def test_schema_rendering_decimal_to_yaml_keeps_exact_value(self):
+        ret = OpenAPIRenderer().render({
+            'maximum': Decimal('0.12345678901234567890'),
+            'minimum': Decimal('-1E+400'),
+        })
+        assert ret == b"maximum: 0.12345678901234567890\nminimum: -1" + b"0" * 400 + b"\n"
 
     def test_schema_with_no_paths(self):
         patterns = []
