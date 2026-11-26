@@ -165,15 +165,14 @@ class Request:
         self.parsers = parsers or ()
         self.authenticators = authenticators or ()
         self.negotiator = negotiator or self._default_negotiator()
-        self.parser_context = parser_context
+        # Copy, as the same mapping may be passed to several requests.
+        self.parser_context = {} if parser_context is None else dict(parser_context)
         self._data = Empty
         self._files = Empty
         self._full_data = Empty
         self._content_type = Empty
         self._stream = Empty
 
-        if self.parser_context is None:
-            self.parser_context = {}
         self.parser_context['request'] = self
         self.parser_context['encoding'] = request.encoding or settings.DEFAULT_CHARSET
 
@@ -350,7 +349,7 @@ class Request:
             if media_type and is_form_media_type(media_type):
                 empty_data = QueryDict('', encoding=self._request._encoding)
             else:
-                empty_data = {}
+                empty_data = api_settings.DEFAULT_MISSING_DATA
             empty_files = MultiValueDict()
             return (empty_data, empty_files)
 

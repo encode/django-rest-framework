@@ -168,11 +168,11 @@ msgstr "Это поле не может быть null."
 
 #: fields.py:701
 msgid "Must be a valid boolean."
-msgstr ""
+msgstr "Введите логическое значение."
 
 #: fields.py:766
 msgid "Not a valid string."
-msgstr ""
+msgstr "Введите строку."
 
 #: fields.py:767
 msgid "This field may not be blank."
@@ -214,7 +214,7 @@ msgstr "Введите корректный URL."
 
 #: fields.py:867
 msgid "Must be a valid UUID."
-msgstr ""
+msgstr "Введите правильный UUID."
 
 #: fields.py:903
 msgid "Enter a valid IPv4 or IPv6 address."
@@ -357,12 +357,12 @@ msgstr "Этот список не может быть пустым."
 #: fields.py:1605
 #, python-brace-format
 msgid "Ensure this field has at least {min_length} elements."
-msgstr ""
+msgstr "Убедитесь, что количество элементов в списке не меньше {min_length}."
 
 #: fields.py:1606
 #, python-brace-format
 msgid "Ensure this field has no more than {max_length} elements."
-msgstr ""
+msgstr "Убедитесь, что количество элементов в списке не больше {max_length}."
 
 #: fields.py:1682
 #, python-brace-format
@@ -371,7 +371,7 @@ msgstr "Ожидался словарь со значениями, но был �
 
 #: fields.py:1683
 msgid "This dictionary may not be empty."
-msgstr ""
+msgstr "Этот словарь не может быть пустым."
 
 #: fields.py:1755
 msgid "Value must be valid JSON."
