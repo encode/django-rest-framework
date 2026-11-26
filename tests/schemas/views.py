@@ -1,5 +1,6 @@
 import uuid
 from datetime import timedelta
+from decimal import Decimal
 
 from django.core.validators import (
     DecimalValidator, MaxLengthValidator, MaxValueValidator,
@@ -137,6 +138,13 @@ class ExampleValidatedSerializer(serializers.Serializer):
     duration = serializers.DurationField(
         validators=(
             MinValueValidator(timedelta(seconds=10)),
+        )
+    )
+    price = serializers.DecimalField(
+        max_digits=6, decimal_places=2,
+        validators=(
+            MaxValueValidator(Decimal('500')),
+            MinValueValidator(Decimal('0.01')),
         )
     )
 

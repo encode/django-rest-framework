@@ -9,6 +9,7 @@ REST framework also provides an HTML renderer that renders the browsable API.
 
 import contextlib
 import datetime
+import decimal
 import sys
 
 from django import forms
@@ -927,6 +928,7 @@ class OpenAPIRenderer(BaseRenderer):
                 return True
         Dumper.add_representer(SafeString, Dumper.represent_str)
         Dumper.add_representer(datetime.timedelta, encoders.CustomScalar.represent_timedelta)
+        Dumper.add_representer(decimal.Decimal, encoders.CustomScalar.represent_decimal)
         return yaml.dump(data, default_flow_style=False, sort_keys=False, Dumper=Dumper).encode('utf-8')
 
 

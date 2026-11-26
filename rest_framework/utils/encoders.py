@@ -72,10 +72,20 @@ class JSONEncoder(json.JSONEncoder):
 
 class CustomScalar:
     """
-    CustomScalar that knows how to encode timedelta that renderer
-    can understand.
+    CustomScalar that knows how to encode timedelta and Decimal values
+    that renderer can understand.
     """
     @classmethod
     def represent_timedelta(cls, dumper, data):
         value = str(data.total_seconds())
         return dumper.represent_scalar('tag:yaml.org,2002:str', value)
+
+    @classmethod
+    def represent_decimal(cls, dumper, data):
+        # Render the exact value as a number: OpenAPI needs numbers for
+        # keywords such as `maximum`, and a float could round the value.
+        if not data.is_finite():
+            return dumper.represent_float(float('nan') if data.is_nan() else float(data))
+        value = format(data, 'f')
+        tag = 'tag:yaml.org,2002:float' if '.' in value else 'tag:yaml.org,2002:int'
+        return dumper.represent_scalar(tag, value)
