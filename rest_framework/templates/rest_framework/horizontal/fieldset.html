@@ -1,8 +1,8 @@
 {% load rest_framework %}
 <fieldset>
   {% if field.label %}
-    <div class="form-group" style="border-bottom: 1px solid #e5e5e5">
-      <legend class="control-label col-sm-2 {% if style.hide_label %}sr-only{% endif %}" style="border-bottom: 0">
+    <div class="form-group row mb-3 border-bottom">
+      <legend class="col-form-label col-sm-2 fs-4{% if style.hide_label %} visually-hidden{% endif %}">
         {{ field.label }}
       </legend>
     </div>
