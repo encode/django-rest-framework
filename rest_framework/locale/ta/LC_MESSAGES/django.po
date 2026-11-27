@@ -1,0 +1,572 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+#
+# Translators:
+# SIVA RAJA S <sivaraja5401@gmail.com>, 2026
+msgid ""
+msgstr ""
+"Project-Id-Version: Django REST framework\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-10-13 21:45+0200\n"
+"PO-Revision-Date: 2026-11-27 03:00+0000\n"
+"Last-Translator: SIVA RAJA S <sivaraja5401@gmail.com>\n"
+"Language-Team: Tamil (http://www.transifex.com/django-rest-framework-1/django-rest-framework/language/ta/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: ta\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: authentication.py:70
+msgid "Invalid basic header. No credentials provided."
+msgstr "Basic தலைப்பு தவறாக உள்ளது. உள்நுழைவு விவரங்கள் எதுவும் வழங்கப்படவில்லை."
+
+#: authentication.py:73
+msgid "Invalid basic header. Credentials string should not contain spaces."
+msgstr "தவறான Basic தலைப்பு. உள்நுழைவு விவரங்கள் உரையில் இடைவெளிகள் இருக்கக்கூடாது."
+
+#: authentication.py:83
+msgid "Invalid basic header. Credentials not correctly base64 encoded."
+msgstr "தவறான Basic தலைப்பு. உள்நுழைவு விவரங்கள் base64 குறியாக்கம் செய்யப்படவில்லை."
+
+#: authentication.py:101
+msgid "Invalid username/password."
+msgstr "பயனர்பெயர் அல்லது கடவுச்சொல் தவறாக உள்ளது."
+
+#: authentication.py:104 authentication.py:206
+msgid "User inactive or deleted."
+msgstr "பயனர் கணக்கு செயலிழக்கச் செய்யப்பட்டுள்ளது அல்லது நீக்கப்பட்டுள்ளது."
+
+#: authentication.py:184
+msgid "Invalid token header. No credentials provided."
+msgstr "தவறான டோக்கன் தலைப்பு. உள்நுழைவு விவரங்கள் எதுவும் வழங்கப்படவில்லை."
+
+#: authentication.py:187
+msgid "Invalid token header. Token string should not contain spaces."
+msgstr "தவறான டோக்கன் தலைப்பு. டோக்கன் உரையில் இடைவெளிகள் இருக்கக்கூடாது."
+
+#: authentication.py:193
+msgid ""
+"Invalid token header. Token string should not contain invalid characters."
+msgstr "தவறான டோக்கன் தலைப்பு. டோக்கன் உரையில் தவறான எழுத்துகள் இருக்கக்கூடாது."
+
+#: authentication.py:203
+msgid "Invalid token."
+msgstr "தவறான டோக்கன்."
+
+#: authtoken/apps.py:7
+msgid "Auth Token"
+msgstr "அங்கீகார டோக்கன்"
+
+#: authtoken/models.py:13
+msgid "Key"
+msgstr "விசை"
+
+#: authtoken/models.py:16
+msgid "User"
+msgstr "பயனர்"
+
+#: authtoken/models.py:18
+msgid "Created"
+msgstr "உருவாக்கப்பட்டது"
+
+#: authtoken/models.py:27 authtoken/serializers.py:19
+msgid "Token"
+msgstr "டோக்கன்"
+
+#: authtoken/models.py:28
+msgid "Tokens"
+msgstr "டோக்கன்கள்"
+
+#: authtoken/serializers.py:9
+msgid "Username"
+msgstr "பயனர்பெயர்"
+
+#: authtoken/serializers.py:13
+msgid "Password"
+msgstr "கடவுச்சொல்"
+
+#: authtoken/serializers.py:35
+msgid "Unable to log in with provided credentials."
+msgstr "வழங்கப்பட்ட உள்நுழைவு  விவரங்களைப் பயன்படுத்தி உள்நுழைய முடியவில்லை."
+
+#: authtoken/serializers.py:38
+msgid "Must include \"username\" and \"password\"."
+msgstr "\"பயனர்பெயர்\" மற்றும் \"கடவுச்சொல்\" ஆகியவை கட்டாயம் வழங்கப்பட வேண்டும்."
+
+#: exceptions.py:102
+msgid "A server error occurred."
+msgstr "சேவையகப் பிழை ஏற்பட்டது."
+
+#: exceptions.py:142
+msgid "Invalid input."
+msgstr "தவறான உள்ளீடு."
+
+#: exceptions.py:161
+msgid "Malformed request."
+msgstr "தவறாக அமைக்கப்பட்ட கோரிக்கை."
+
+#: exceptions.py:167
+msgid "Incorrect authentication credentials."
+msgstr "தவறான உள்நுழைவு விவரங்கள்."
+
+#: exceptions.py:173
+msgid "Authentication credentials were not provided."
+msgstr "உள்நுழைவு விவரங்கள் வழங்கப்படவில்லை."
+
+#: exceptions.py:179
+msgid "You do not have permission to perform this action."
+msgstr "இந்தச் செயலைச் செய்வதற்கு உங்களுக்கு அனுமதி இல்லை."
+
+#: exceptions.py:185
+msgid "Not found."
+msgstr "கண்டறியப்படவில்லை."
+
+#: exceptions.py:191
+#, python-brace-format
+msgid "Method \"{method}\" not allowed."
+msgstr "\"{method}\" முறை அனுமதிக்கப்படவில்லை."
+
+#: exceptions.py:202
+msgid "Could not satisfy the request Accept header."
+msgstr "கோரிக்கையில் குறிப்பிடப்பட்ட ஏற்றுக்கொள்ளக்கூடிய உள்ளடக்க வகையை வழங்க முடியவில்லை."
+
+#: exceptions.py:212
+#, python-brace-format
+msgid "Unsupported media type \"{media_type}\" in request."
+msgstr "கோரிக்கையில் உள்ள \"{media_type}\" ஊடக வகை ஆதரிக்கப்படவில்லை."
+
+#: exceptions.py:223
+msgid "Request was throttled."
+msgstr "கோரிக்கைகளின் எண்ணிக்கை வரம்பை மீறியுள்ளது."
+
+#: exceptions.py:224
+#, python-brace-format
+msgid "Expected available in {wait} second."
+msgstr "{wait} வினாடியில் கிடைக்கும் என எதிர்பார்க்கப்படுகிறது."
+
+#: exceptions.py:225
+#, python-brace-format
+msgid "Expected available in {wait} seconds."
+msgstr "{wait} வினாடிகளில் கிடைக்கும் என எதிர்பார்க்கப்படுகிறது."
+
+#: fields.py:316 relations.py:245 relations.py:279 validators.py:90
+#: validators.py:183
+msgid "This field is required."
+msgstr "இந்தப் புலம் கட்டாயமானது."
+
+#: fields.py:317
+msgid "This field may not be null."
+msgstr "இந்தப் புலத்தில் null மதிப்பு இருக்கக்கூடாது."
+
+#: fields.py:701
+msgid "Must be a valid boolean."
+msgstr "இது சரியான மெய் அல்லது பொய் மதிப்பாக இருக்க வேண்டும்."
+
+#: fields.py:766
+msgid "Not a valid string."
+msgstr "இது சரியான உரை மதிப்பு அல்ல."
+
+#: fields.py:767
+msgid "This field may not be blank."
+msgstr "இந்தப் புலத்தை வெற்றிடமாக விடக்கூடாது."
+
+#: fields.py:768 fields.py:1881
+#, python-brace-format
+msgid "Ensure this field has no more than {max_length} characters."
+msgstr "இந்தப் புலத்தில் {max_length} எழுத்துகளுக்கு மேல் இருக்கக்கூடாது."
+
+#: fields.py:769
+#, python-brace-format
+msgid "Ensure this field has at least {min_length} characters."
+msgstr "இந்தப் புலத்தில் குறைந்தது {min_length} எழுத்துகள் இருக்க வேண்டும்."
+
+#: fields.py:816
+msgid "Enter a valid email address."
+msgstr "சரியான மின்னஞ்சல் முகவரியை உள்ளிடவும்."
+
+#: fields.py:827
+msgid "This value does not match the required pattern."
+msgstr "இந்த மதிப்பு தேவையான வடிவத்துடன் பொருந்தவில்லை."
+
+#: fields.py:838
+msgid ""
+"Enter a valid \"slug\" consisting of letters, numbers, underscores or "
+"hyphens."
+msgstr "எழுத்துக்கள், எண்கள், அடிக்கோடுகள் அல்லது ஹைபன்கள் (-) கொண்ட சரியான \"slug\" ஒன்றை உள்ளிடவும்."
+
+#: fields.py:839
+msgid ""
+"Enter a valid \"slug\" consisting of Unicode letters, numbers, underscores, "
+"or hyphens."
+msgstr "யூனிகோட் எழுத்துகள், எண்கள், அடிக்கோடுகள் அல்லது ஹைபன்கள் (-) கொண்ட, சரியான \"slug\" ஒன்றை உள்ளிடவும்."
+
+#: fields.py:854
+msgid "Enter a valid URL."
+msgstr "சரியான இணைய முகவரியை உள்ளிடவும்."
+
+#: fields.py:867
+msgid "Must be a valid UUID."
+msgstr "இது சரியான UUID-ஆக இருக்க வேண்டும்."
+
+#: fields.py:903
+msgid "Enter a valid IPv4 or IPv6 address."
+msgstr "சரியான IPv4 அல்லது IPv6 முகவரியை உள்ளிடவும்."
+
+#: fields.py:931
+msgid "A valid integer is required."
+msgstr "சரியான முழு எண்ணை உள்ளிட வேண்டும்."
+
+#: fields.py:932 fields.py:969 fields.py:1005 fields.py:1366
+#, python-brace-format
+msgid "Ensure this value is less than or equal to {max_value}."
+msgstr "இந்த மதிப்பு {max_value}-க்கு மிகாமல் இருக்க வேண்டும்."
+
+#: fields.py:933 fields.py:970 fields.py:1006 fields.py:1367
+#, python-brace-format
+msgid "Ensure this value is greater than or equal to {min_value}."
+msgstr "இந்த மதிப்பு {min_value}-க்குக் குறையாமல் இருக்க வேண்டும்."
+
+#: fields.py:934 fields.py:971 fields.py:1010
+msgid "String value too large."
+msgstr "உரை மதிப்பு மிகவும் பெரியது."
+
+#: fields.py:968 fields.py:1004
+msgid "A valid number is required."
+msgstr "சரியான எண்ணை உள்ளிட வேண்டும்."
+
+#: fields.py:1007
+#, python-brace-format
+msgid "Ensure that there are no more than {max_digits} digits in total."
+msgstr "மொத்தம் {max_digits} இலக்கங்களுக்கு மேல் இருக்கக்கூடாது."
+
+#: fields.py:1008
+#, python-brace-format
+msgid ""
+"Ensure that there are no more than {max_decimal_places} decimal places."
+msgstr "தசமப் புள்ளிக்குப் பிறகு {max_decimal_places} இலக்கங்களுக்கு மேல் இருக்கக்கூடாது."
+#: fields.py:1009
+#, python-brace-format
+msgid ""
+"Ensure that there are no more than {max_whole_digits} digits before the "
+"decimal point."
+msgstr "தசமப் புள்ளிக்கு முன்னால் {max_whole_digits} இலக்கங்களுக்கு மேல் இருக்கக்கூடாது."
+
+#: fields.py:1148
+#, python-brace-format
+msgid "Datetime has wrong format. Use one of these formats instead: {format}."
+msgstr "தேதி மற்றும் நேரத்தின் வடிவம் தவறாக உள்ளது. அதற்குப் பதிலாக பின்வரும் வடிவங்களில் ஒன்றைப் பயன்படுத்தவும்: {format}."
+
+#: fields.py:1149
+msgid "Expected a datetime but got a date."
+msgstr "தேதி மற்றும் நேரம் எதிர்பார்க்கப்பட்டது, ஆனால் தேதி பெறப்பட்டது."
+
+#: fields.py:1150
+#, python-brace-format
+msgid "Invalid datetime for the timezone \"{timezone}\"."
+msgstr "\"{timezone}\" நேர மண்டலத்திற்கு இந்தத் தேதி மற்றும் நேரம் செல்லாது."
+
+#: fields.py:1151
+msgid "Datetime value out of range."
+msgstr "தேதி மற்றும் நேர மதிப்பு வரம்பிற்கு வெளியே உள்ளது."
+
+#: fields.py:1236
+#, python-brace-format
+msgid "Date has wrong format. Use one of these formats instead: {format}."
+msgstr "தேதி தவறான வடிவத்தில் உள்ளது. அதற்குப் பதிலாக பின்வரும் வடிவங்களில் ஒன்றைப் பயன்படுத்தவும்: {format}."
+
+#: fields.py:1237
+msgid "Expected a date but got a datetime."
+msgstr "தேதி எதிர்பார்க்கப்பட்டது, ஆனால் தேதி மற்றும் நேரம் பெறப்பட்டது."
+
+#: fields.py:1303
+#, python-brace-format
+msgid "Time has wrong format. Use one of these formats instead: {format}."
+msgstr "நேரம் தவறான வடிவத்தில் உள்ளது. அதற்குப் பதிலாக பின்வரும் வடிவங்களில் ஒன்றைப் பயன்படுத்தவும்: {format}."
+
+#: fields.py:1365
+#, python-brace-format
+msgid "Duration has wrong format. Use one of these formats instead: {format}."
+msgstr "கால அளவு தவறான வடிவத்தில் உள்ளது. அதற்குப் பதிலாக பின்வரும் வடிவங்களில் ஒன்றைப் பயன்படுத்தவும்: {format}."
+
+#: fields.py:1399 fields.py:1456
+#, python-brace-format
+msgid "\"{input}\" is not a valid choice."
+msgstr "\"{input}\" என்பது சரியான தேர்வு அல்ல."
+
+#: fields.py:1402
+#, python-brace-format
+msgid "More than {count} items..."
+msgstr "{count}-க்கும் மேற்பட்ட உருப்படிகள்..."
+
+#: fields.py:1457 fields.py:1603 relations.py:485 serializers.py:570
+#, python-brace-format
+msgid "Expected a list of items but got type \"{input_type}\"."
+msgstr "உருப்படிகளின் பட்டியல் எதிர்பார்க்கப்பட்டது, ஆனால் \"{input_type}\" வகை பெறப்பட்டது."
+
+#: fields.py:1458
+msgid "This selection may not be empty."
+msgstr "இந்தத் தேர்வு காலியாக இருக்கக்கூடாது."
+
+#: fields.py:1495
+#, python-brace-format
+msgid "\"{input}\" is not a valid path choice."
+msgstr "\"{input}\" என்பது சரியான பாதை தேர்வு அல்ல."
+
+#: fields.py:1514
+msgid "No file was submitted."
+msgstr "எந்தக் கோப்பும் அனுப்பப்படவில்லை."
+
+#: fields.py:1515
+msgid ""
+"The submitted data was not a file. Check the encoding type on the form."
+msgstr "அனுப்பப்பட்ட தரவு கோப்பாக இல்லை. படிவத்தில் உள்ள குறியாக்க வகையைச் சரிபார்க்கவும்."
+
+#: fields.py:1516
+msgid "No filename could be determined."
+msgstr "கோப்புப் பெயரைத் தீர்மானிக்க முடியவில்லை."
+
+#: fields.py:1517
+msgid "The submitted file is empty."
+msgstr "அனுப்பப்பட்ட கோப்பு காலியாக உள்ளது."
+
+#: fields.py:1518
+#, python-brace-format
+msgid ""
+"Ensure this filename has at most {max_length} characters (it has {length})."
+msgstr "இந்தக் கோப்பின் பெயரில் அதிகபட்சம் {max_length} எழுத்துகள் மட்டுமே இருக்க வேண்டும் (தற்போது {length} எழுத்துகள் உள்ளன)."
+
+#: fields.py:1566
+msgid ""
+"Upload a valid image. The file you uploaded was either not an image or a "
+"corrupted image."
+msgstr "சரியான படத்தைப் பதிவேற்றவும். நீங்கள் பதிவேற்றிய கோப்பு படமாக இல்லை அல்லது சிதைந்த நிலையில் உள்ளது."
+
+#: fields.py:1604 relations.py:486 serializers.py:571
+msgid "This list may not be empty."
+msgstr "இந்தப் பட்டியல் காலியாக இருக்கக்கூடாது."
+
+#: fields.py:1605
+#, python-brace-format
+msgid "Ensure this field has at least {min_length} elements."
+msgstr "இந்தப் புலத்தில் குறைந்தது {min_length} உறுப்புகள் இருக்க வேண்டும்."
+
+#: fields.py:1606
+#, python-brace-format
+msgid "Ensure this field has no more than {max_length} elements."
+msgstr "இந்தப் புலத்தில் {max_length} உறுப்புகளுக்கு மேல் இருக்கக்கூடாது."
+
+#: fields.py:1682
+#, python-brace-format
+msgid "Expected a dictionary of items but got type \"{input_type}\"."
+msgstr "உருப்படிகளைக் கொண்ட டிக்ஷனரி எதிர்பார்க்கப்பட்டது, ஆனால் \"{input_type}\" வகை பெறப்பட்டது."
+
+#: fields.py:1683
+msgid "This dictionary may not be empty."
+msgstr "இந்த டிக்ஷனரி காலியாக இருக்கக்கூடாது."
+
+#: fields.py:1755
+msgid "Value must be valid JSON."
+msgstr "மதிப்பு சரியான JSON வடிவத்தில் இருக்க வேண்டும்."
+
+#: filters.py:49 templates/rest_framework/filters/search.html:2
+msgid "Search"
+msgstr "தேடு"
+
+#: filters.py:50
+msgid "A search term."
+msgstr "தேடல் சொல்."
+
+#: filters.py:180 templates/rest_framework/filters/ordering.html:3
+msgid "Ordering"
+msgstr "வரிசைப்படுத்துதல்"
+
+#: filters.py:181
+msgid "Which field to use when ordering the results."
+msgstr "முடிவுகளை வரிசைப்படுத்தும்போது எந்தப் புலத்தைப் பயன்படுத்த வேண்டும்."
+
+#: filters.py:287
+msgid "ascending"
+msgstr "ஏறுவரிசை"
+
+#: filters.py:288
+msgid "descending"
+msgstr "இறங்குவரிசை"
+
+#: pagination.py:174
+msgid "A page number within the paginated result set."
+msgstr "பக்கமிடப்பட்ட முடிவுத் தொகுப்பிற்குள் உள்ள ஒரு பக்க எண்."
+
+#: pagination.py:179 pagination.py:372 pagination.py:590
+msgid "Number of results to return per page."
+msgstr "ஒவ்வொரு பக்கத்திலும் காட்டப்பட வேண்டிய முடிவுகளின் எண்ணிக்கை."
+
+#: pagination.py:189
+msgid "Invalid page."
+msgstr "தவறான பக்கம்."
+
+#: pagination.py:374
+msgid "The initial index from which to return the results."
+msgstr "முடிவுகள் தொடங்க வேண்டிய தொடக்கச் சுட்டெண்."
+
+#: pagination.py:581
+msgid "The pagination cursor value."
+msgstr "பக்கமிடல் கர்சர் மதிப்பு."
+
+#: pagination.py:583
+msgid "Invalid cursor"
+msgstr "தவறான கர்சர்"
+
+#: relations.py:246
+#, python-brace-format
+msgid "Invalid pk \"{pk_value}\" - object does not exist."
+msgstr "தவறான முதன்மை விசை \"{pk_value}\" - பொருள் இல்லை."
+
+#: relations.py:247
+#, python-brace-format
+msgid "Incorrect type. Expected pk value, received {data_type}."
+msgstr "தவறான வகை. முதன்மை விசை மதிப்பு எதிர்பார்க்கப்பட்டது, ஆனால் {data_type} பெறப்பட்டது."
+
+#: relations.py:280
+msgid "Invalid hyperlink - No URL match."
+msgstr "தவறான இணைப்பு - இணைய முகவரி பொருந்தவில்லை."
+
+#: relations.py:281
+msgid "Invalid hyperlink - Incorrect URL match."
+msgstr "தவறான இணைப்பு - தவறான இணைய முகவரி பொருத்தம்."
+
+#: relations.py:282
+msgid "Invalid hyperlink - Object does not exist."
+msgstr "தவறான இணைப்பு - பொருள் இல்லை."
+
+#: relations.py:283
+#, python-brace-format
+msgid "Incorrect type. Expected URL string, received {data_type}."
+msgstr "தவறான வகை. இணைய முகவரி உரை எதிர்பார்க்கப்பட்டது, ஆனால் {data_type} பெறப்பட்டது."
+
+#: relations.py:448
+#, python-brace-format
+msgid "Object with {slug_name}={value} does not exist."
+msgstr "{slug_name}={value} கொண்ட பொருள் இல்லை."
+
+#: relations.py:449
+msgid "Invalid value."
+msgstr "தவறான மதிப்பு."
+
+#: schemas/utils.py:32
+msgid "unique integer value"
+msgstr "தனித்துவமான முழு எண் மதிப்பு"
+
+#: schemas/utils.py:34
+msgid "UUID string"
+msgstr "UUID உரை"
+
+#: schemas/utils.py:36
+msgid "unique value"
+msgstr "தனித்துவமான மதிப்பு"
+
+#: schemas/utils.py:38
+#, python-brace-format
+msgid "A {value_type} identifying this {name}."
+msgstr "இந்த {name}-ஐ அடையாளம் காணும் ஒரு {value_type}."
+
+#: serializers.py:337
+#, python-brace-format
+msgid "Invalid data. Expected a dictionary, but got {datatype}."
+msgstr "தவறான தரவு. ஒரு டிக்ஷனரி எதிர்பார்க்கப்பட்டது, ஆனால் {datatype} பெறப்பட்டது."
+
+#: templates/rest_framework/admin.html:116
+#: templates/rest_framework/base.html:136
+msgid "Extra Actions"
+msgstr "கூடுதல் செயல்கள்"
+
+#: templates/rest_framework/admin.html:130
+#: templates/rest_framework/base.html:150
+msgid "Filters"
+msgstr "வடிகட்டிகள்"
+
+#: templates/rest_framework/base.html:37
+msgid "navbar"
+msgstr "வழிசெலுத்தல் பட்டை"
+
+#: templates/rest_framework/base.html:75
+msgid "content"
+msgstr "உள்ளடக்கம்"
+
+#: templates/rest_framework/base.html:78
+msgid "request form"
+msgstr "கோரிக்கை படிவம்"
+
+#: templates/rest_framework/base.html:157
+msgid "main content"
+msgstr "முதன்மை உள்ளடக்கம்"
+
+#: templates/rest_framework/base.html:173
+msgid "request info"
+msgstr "கோரிக்கைத் தகவல்"
+
+#: templates/rest_framework/base.html:177
+msgid "response info"
+msgstr "பதில் தகவல்"
+
+#: templates/rest_framework/horizontal/radio.html:4
+#: templates/rest_framework/inline/radio.html:3
+#: templates/rest_framework/vertical/radio.html:3
+msgid "None"
+msgstr "எதுவுமில்லை"
+
+#: templates/rest_framework/horizontal/select_multiple.html:4
+#: templates/rest_framework/inline/select_multiple.html:3
+#: templates/rest_framework/vertical/select_multiple.html:3
+msgid "No items to select."
+msgstr "தேர்வு செய்ய உருப்படிகள் எதுவும் இல்லை."
+
+#: validators.py:39
+msgid "This field must be unique."
+msgstr "இந்தப் புலம் தனித்துவமானதாக இருக்க வேண்டும்."
+
+#: validators.py:89
+#, python-brace-format
+msgid "The fields {field_names} must make a unique set."
+msgstr "{field_names} புலங்கள் ஒரு தனித்துவமான தொகுப்பை உருவாக்க வேண்டும்."
+
+#: validators.py:171
+#, python-brace-format
+msgid "Surrogate characters are not allowed: U+{code_point:X}."
+msgstr "சரோகேட் எழுத்துகள் அனுமதிக்கப்படவில்லை: U+{code_point:X}."
+
+#: validators.py:243
+#, python-brace-format
+msgid "This field must be unique for the \"{date_field}\" date."
+msgstr "இந்தப் புலம் \"{date_field}\" தேதிக்கான தனித்துவமான மதிப்பைக் கொண்டிருக்க வேண்டும்."
+
+#: validators.py:258
+#, python-brace-format
+msgid "This field must be unique for the \"{date_field}\" month."
+msgstr "இந்தப் புலம் \"{date_field}\" மாதத்திற்கு தனித்துவமானதாக இருக்க வேண்டும்."
+
+#: validators.py:271
+#, python-brace-format
+msgid "This field must be unique for the \"{date_field}\" year."
+msgstr "இந்தப் புலம் \"{date_field}\" ஆண்டிற்கு தனித்துவமானதாக இருக்க வேண்டும்."
+
+#: versioning.py:40
+msgid "Invalid version in \"Accept\" header."
+msgstr "\"Accept\" தலைப்பில் தவறான பதிப்பு உள்ளது."
+
+#: versioning.py:71
+msgid "Invalid version in URL path."
+msgstr "இணைய முகவரி பாதையில் தவறான பதிப்பு உள்ளது."
+
+#: versioning.py:116
+msgid "Invalid version in URL path. Does not match any version namespace."
+msgstr "இணைய முகவரி பாதையில் உள்ள பதிப்பு தவறானது. இது எந்தவொரு பதிப்புப் பெயர்வெளியுடனும் பொருந்தவில்லை."
+
+#: versioning.py:148
+msgid "Invalid version in hostname."
+msgstr "ஹோஸ்ட் பெயரில் தவறான பதிப்பு உள்ளது."
+
+#: versioning.py:170
+msgid "Invalid version in query parameter."
+msgstr "வினவல் அளவுருவில் தவறான பதிப்பு உள்ளது."
