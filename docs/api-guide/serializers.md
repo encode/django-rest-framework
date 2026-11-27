@@ -810,6 +810,8 @@ For example:
         class Meta:
             list_serializer_class = BookListSerializer
 
+Note that this only batches the write. Each item is still validated separately, so related-field lookups and any queries in `validate()` run once per item. Third-party packages such as [drf-batch][thirdparty-drf-batch] batch those lookups as well.
+
 ### Customizing multiple update
 
 By default the `ListSerializer` class does not support multiple updates. This is because the behavior that should be expected for insertions and deletions is ambiguous.
@@ -1232,12 +1234,17 @@ The [drf-shapeless-serializers][drf-shapeless-serializers] package provides dyna
 
 The [drf-pydantic][drf-pydantic] package allows you to use Pydantic with Django REST framework for data validation and (de)serialization. If you develop DRF APIs and rely on Pydantic for data validation, this package provides seamless integration between both libraries.
 
+### DRF Batch
+
+The [drf-batch][drf-batch] package provides batch-aware validation for writes of many objects at once. It collects every database and service lookup a payload needs once, validates the whole payload in memory, and commits it all-or-none in a single transaction, using ordinary DRF serializers and viewsets.
+
 
 [cite]: https://groups.google.com/d/topic/django-users/sVFaOfQi4wY/discussion
 [relations]: relations.md
 [model-managers]: https://docs.djangoproject.com/en/stable/topics/db/managers/
 [encapsulation-blogpost]: https://www.dabapps.com/blog/django-models-and-encapsulation/
 [thirdparty-writable-nested]: serializers.md#drf-writable-nested
+[thirdparty-drf-batch]: serializers.md#drf-batch
 [django-rest-marshmallow]: https://marshmallow-code.github.io/django-rest-marshmallow/
 [marshmallow]: https://marshmallow.readthedocs.io/en/latest/
 [serpy]: https://github.com/clarkduvall/serpy
@@ -1257,3 +1264,4 @@ The [drf-pydantic][drf-pydantic] package allows you to use Pydantic with Django 
 [drf-encrypt-content]: https://github.com/oguzhancelikarslan/drf-encrypt-content
 [drf-shapeless-serializers]: https://github.com/khaledsukkar2/drf-shapeless-serializers
 [drf-pydantic]: https://github.com/georgebv/drf-pydantic
+[drf-batch]: https://github.com/matink112/drf-batch

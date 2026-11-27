@@ -93,6 +93,7 @@ To submit new content, [create a pull request][drf-create-pr].
 * [django-restql][django-restql] - Turn your REST API into a GraphQL like API(It allows clients to control which fields will be sent in a response, uses GraphQL like syntax, supports read and write on both flat and nested fields).
 * [graphwrap][graphwrap] - Transform your REST API into a fully compliant GraphQL API with just two lines of code. Leverages [Graphene-Django](https://docs.graphene-python.org/projects/django/en/latest/) to dynamically build, at runtime, a GraphQL ObjectType for each view in your API.
 * [drf-shapeless-serializers][drf-shapeless-serializers] - Dynamically assemble, configure, and shape your Django Rest Framework serializers at runtime, much like connecting Lego bricks.
+* [drf-batch][drf-batch] - Batch-aware validation for list serializers: collects every lookup once, validates the whole payload in memory, and commits it all-or-none in a single transaction.
 
 ### Serializer fields
 
@@ -278,3 +279,4 @@ To submit new content, [create a pull request][drf-create-pr].
 [axioms-drf-py]: https://github.com/abhishektiwari/axioms-drf-py
 [django-pydantic-field]: https://github.com/surenkov/django-pydantic-field
 [drf-pydantic]: https://github.com/georgebv/drf-pydantic
+[drf-batch]: https://github.com/matink112/drf-batch
