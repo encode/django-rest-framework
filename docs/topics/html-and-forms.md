@@ -98,7 +98,7 @@ The following HTML will link to a CDN hosted version of the Bootstrap 5 CSS:
 
     <head>
         …
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.9/dist/css/bootstrap.min.css">
     </head>
 
 Third party packages may include alternate template packs, by bundling a template directory containing the necessary form and field templates.

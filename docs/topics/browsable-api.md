@@ -37,7 +37,7 @@ This means that during a `GET` request the view may be called again with `self.r
 
 ## Customizing
 
-The browsable API is built with [Bootstrap][bootstrap] (v 5.3.8), making it easy to customize the look-and-feel.
+The browsable API is built with [Bootstrap][bootstrap] (v 5.3.9), making it easy to customize the look-and-feel.
 
 To customize the default style, create a template called `rest_framework/api.html` that extends from `rest_framework/base.html`.  For example:
 
