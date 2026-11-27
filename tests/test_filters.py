@@ -9,7 +9,7 @@ from django.db.models.functions import Concat, Upper
 from django.test import SimpleTestCase, TestCase
 from django.test.utils import override_settings
 
-from rest_framework import filters, generics, serializers
+from rest_framework import filters, generics, pagination, serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.test import APIRequestFactory
 
@@ -316,6 +316,57 @@ class SearchFilterTests(TestCase):
         assert response.data == [
             {'id': 11, 'title': 'A title', 'text': 'The long text'},
         ]
+
+
+class QueryMethodSearchListView(generics.ListAPIView):
+    queryset = SearchFilterModel.objects.all()
+    serializer_class = SearchFilterSerializer
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('title', 'text')
+
+    def query(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+
+
+class SinglePagePagination(pagination.PageNumberPagination):
+    page_size = 1
+
+
+class QueryMethodSearchFilterTests(TestCase):
+    """
+    A QUERY request carries its filters in the request body, while
+    pagination parameters stay in the URL.
+    """
+
+    @classmethod
+    def setUpTestData(cls):
+        SearchFilterModel.objects.create(title='z', text='abc')
+        SearchFilterModel.objects.create(title='zz', text='bcd')
+        SearchFilterModel.objects.create(title='zzz', text='cde')
+
+    def test_search_reads_the_request_body(self):
+        view = QueryMethodSearchListView.as_view()
+        request = factory.query('/', {'search': 'b'}, format='json')
+        response = view(request)
+        assert [item['title'] for item in response.data] == ['z', 'zz']
+
+    def test_search_from_body_with_page_from_url(self):
+        view = QueryMethodSearchListView.as_view(
+            queryset=SearchFilterModel.objects.order_by('pk'),
+            pagination_class=SinglePagePagination,
+        )
+        request = factory.query('/?page=2', {'search': 'b'}, format='json')
+        response = view(request)
+        assert response.data['count'] == 2
+        assert [item['title'] for item in response.data['results']] == ['zz']
+        assert response.data['next'] is None
+        assert response.data['previous'] == 'http://testserver/'
+
+    def test_search_rejects_a_non_string_term(self):
+        view = QueryMethodSearchListView.as_view()
+        request = factory.query('/', {'search': {'title': 'b'}}, format='json')
+        response = view(request)
+        assert response.status_code == 400
 
 
 @pytest.mark.requires_postgres
@@ -745,6 +796,24 @@ class OrderingFilterTests(TestCase):
                 chr(idx + ord('c'))
             )
             OrderingFilterModel(title=title, text=text).save()
+
+    def test_ordering_reads_the_query_request_body(self):
+        class OrderingListView(generics.ListAPIView):
+            queryset = OrderingFilterModel.objects.all()
+            serializer_class = OrderingFilterSerializer
+            filter_backends = (filters.OrderingFilter,)
+            ordering = ('title',)
+            ordering_fields = ('text',)
+
+            def query(self, request, *args, **kwargs):
+                return self.list(request, *args, **kwargs)
+
+        view = OrderingListView.as_view()
+        response = view(factory.query('/', {'ordering': 'text'}, format='json'))
+        assert [item['text'] for item in response.data] == ['abc', 'bcd', 'cde']
+
+        response = view(factory.query('/', {'ordering': {'text': 'desc'}}, format='json'))
+        assert [item['title'] for item in response.data] == ['xwv', 'yxw', 'zyx']
 
     def test_ordering(self):
         class OrderingListView(generics.ListAPIView):

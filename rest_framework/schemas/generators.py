@@ -140,7 +140,7 @@ class EndpointEnumerator:
         else:
             methods = callback.cls().allowed_methods
 
-        return [method for method in methods if method not in ('OPTIONS', 'HEAD')]
+        return [method for method in methods if method not in ('OPTIONS', 'HEAD', 'QUERY')]
 
 
 class BaseSchemaGenerator:

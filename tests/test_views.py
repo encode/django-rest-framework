@@ -37,6 +37,11 @@ def basic_view(request):
         return {'method': 'PATCH', 'data': request.data}
 
 
+class QueryView(APIView):
+    def query(self, request, *args, **kwargs):
+        return Response({'method': 'QUERY', 'data': request.data})
+
+
 class ErrorView(APIView):
     def get(self, request, *args, **kwargs):
         raise Exception
@@ -93,6 +98,24 @@ class ClassBasedViewIntegrationTests(TestCase):
             response = self.view(factory.get('/', HTTP_ACCEPT=token))
         assert response.status_code == status.HTTP_406_NOT_ACCEPTABLE
         assert parse.call_args_list.count(mock.call(token)) == 1
+
+
+class QueryMethodTests(TestCase):
+    """
+    QUERY (RFC 10008) dispatches through the same generic machinery as every
+    other method, so a view opts in simply by defining a `query()` handler.
+    """
+
+    def test_query_handler_is_dispatched(self):
+        request = factory.query('/', {'search': 'abc'}, format='json')
+        response = QueryView.as_view()(request)
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data == {'method': 'QUERY', 'data': {'search': 'abc'}}
+
+    def test_view_without_query_handler_is_method_not_allowed(self):
+        request = factory.query('/', {'search': 'abc'}, format='json')
+        response = BasicView.as_view()(request)
+        assert response.status_code == status.HTTP_405_METHOD_NOT_ALLOWED
 
 
 @api_view(['GET'])

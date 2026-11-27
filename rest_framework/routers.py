@@ -98,7 +98,8 @@ class SimpleRouter(BaseRouter):
             url=r'^{prefix}{trailing_slash}$',
             mapping={
                 'get': 'list',
-                'post': 'create'
+                'post': 'create',
+                'query': 'query'
             },
             name='{basename}-list',
             detail=False,
@@ -184,6 +185,11 @@ class SimpleRouter(BaseRouter):
         known_actions = list(flatten([route.mapping.values() for route in self.routes if isinstance(route, Route)]))
         extra_actions = viewset.get_extra_actions()
 
+        # An existing `@action` named `query` keeps its own route, and isn't bound to QUERY.
+        query_is_extra_action = any(action.__name__ == 'query' for action in extra_actions)
+        if query_is_extra_action:
+            known_actions = [action for action in known_actions if action != 'query']
+
         # checking action names against the known actions list
         not_allowed = [
             action.__name__ for action in extra_actions
@@ -204,6 +210,9 @@ class SimpleRouter(BaseRouter):
                 routes += [self._get_dynamic_route(route, action) for action in detail_actions]
             elif isinstance(route, DynamicRoute) and not route.detail:
                 routes += [self._get_dynamic_route(route, action) for action in list_actions]
+            elif query_is_extra_action:
+                mapping = {method: action for method, action in route.mapping.items() if action != 'query'}
+                routes.append(route._replace(mapping=mapping))
             else:
                 routes.append(route)
 

@@ -116,6 +116,12 @@ class ViewSetMixin:
                 handler = getattr(self, action)
                 setattr(self, method, handler)
 
+            # A `query` action shares its name with the QUERY method handler.
+            if 'query' not in actions:
+                self.http_method_names = [
+                    method for method in self.http_method_names if method != 'query'
+                ]
+
             self.request = request
             self.args = args
             self.kwargs = kwargs
