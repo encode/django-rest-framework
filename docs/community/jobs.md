@@ -18,6 +18,7 @@ Looking for a new Django REST Framework related role? On this site we provide a 
 * [https://remoteok.com/remote-django-jobs][remoteok-com]
 * [https://www.remotepython.com/jobs/][remotepython-com]
 * [https://www.pyjobs.com/][pyjobs-com]
+* [https://jobsinpython.com/remote-django-jobs/][jobsinpython-com]
 
 
 Know of any other great resources for Django REST Framework jobs that are missing in our list? Please [submit a pull request][submit-pr] or [email us][anna-email].
