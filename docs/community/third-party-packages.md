@@ -202,7 +202,7 @@ To submit new content, [create a pull request][drf-create-pr].
 [django-rest-framework-mongoengine]: https://github.com/umutbozkurt/django-rest-framework-mongoengine
 [djangorestframework-gis]: https://github.com/djangonauts/django-rest-framework-gis
 [djangorestframework-hstore]: https://github.com/djangonauts/django-rest-framework-hstore
-[drf-compound-fields]: https://github.com/estebistec/drf-compound-fields
+[drf-compound-fields]: https://drf-compound-fields.readthedocs.io
 [drf-extra-fields]: https://github.com/Hipo/drf-extra-fields
 [django-rest-multiple-models]: https://github.com/MattBroach/DjangoRestMultipleModels
 [drf-nested-routers]: https://github.com/alanjds/drf-nested-routers
