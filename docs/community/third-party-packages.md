@@ -149,6 +149,7 @@ To submit new content, [create a pull request][drf-create-pr].
 * [django-rest-framework-braces][django-rest-framework-braces] - Collection of utilities for working with Django Rest Framework. The most notable ones are [FormSerializer](https://django-rest-framework-braces.readthedocs.io/en/latest/overview.html#formserializer) and [SerializerForm](https://django-rest-framework-braces.readthedocs.io/en/latest/overview.html#serializerform), which are adapters between DRF serializers and Django forms.
 * [drf-haystack][drf-haystack] - Haystack search for Django Rest Framework
 * [django-rest-framework-version-transforms][django-rest-framework-version-transforms] - Enables the use of delta transformations for versioning of DRF resource representations.
+* [django-api-versioning][django-api-versioning] - API versioning for Django REST Framework with automatic URL registration and version-specific view decorators.
 * [django-rest-messaging][django-rest-messaging], [django-rest-messaging-centrifugo][django-rest-messaging-centrifugo] and [django-rest-messaging-js][django-rest-messaging-js] - A real-time pluggable messaging service using DRM.
 * [djangorest-alchemy][djangorest-alchemy] - SQLAlchemy support for REST framework.
 * [djangorestframework-datatables][djangorestframework-datatables] - Seamless integration between Django REST framework and [Datatables](https://datatables.net).
@@ -232,6 +233,7 @@ To submit new content, [create a pull request][drf-create-pr].
 [cookiecutter-django-rest]: https://github.com/agconti/cookiecutter-django-rest
 [drf-haystack]: https://drf-haystack.readthedocs.io/en/latest/
 [django-rest-framework-version-transforms]: https://github.com/mrhwick/django-rest-framework-version-transforms
+[django-api-versioning]: https://github.com/mojtaba-arvin/django-api-versioning
 [djangorestframework-jsonapi]: https://github.com/django-json-api/django-rest-framework-json-api
 [html-json-forms]: https://github.com/wq/html-json-forms
 [django-rest-messaging]: https://github.com/raphaelgyory/django-rest-messaging
