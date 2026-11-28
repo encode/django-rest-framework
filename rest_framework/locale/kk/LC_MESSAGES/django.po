@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Django REST framework\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-01 23:03+0300\n"
+"POT-Creation-Date: 2026-11-28 15:53+0000\n"
 "PO-Revision-Date: 2025-06-01 20:03+0000\n"
 "Last-Translator: Dulat Kushibayev <kushibayev@gmail.com>\n"
 "Language-Team: \n"
@@ -15,17 +15,22 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n!=1);\n"
+
 #: authentication.py:70
 msgid "Invalid basic header. No credentials provided."
 msgstr "Негізгі тақырыптама дұрыс емес. Тіркелгі деректері берілмеген."
 
 #: authentication.py:73
 msgid "Invalid basic header. Credentials string should not contain spaces."
-msgstr "Негізгі тақырыптама дұрыс емес. Тіркелгі деректері бос орындарсыз болуы керек."
+msgstr ""
+"Негізгі тақырыптама дұрыс емес. Тіркелгі деректері бос орындарсыз болуы "
+"керек."
 
 #: authentication.py:84
 msgid "Invalid basic header. Credentials not correctly base64 encoded."
-msgstr "Негізгі тақырыптама дұрыс емес. Тіркелгі деректері base64 форматында дұрыс кодталмаған."
+msgstr ""
+"Негізгі тақырыптама дұрыс емес. Тіркелгі деректері base64 форматында дұрыс "
+"кодталмаған."
 
 #: authentication.py:101
 msgid "Invalid username/password."
@@ -46,13 +51,15 @@ msgstr "Токен тақырыптамасы дұрыс емес. Токен ж
 #: authentication.py:193
 msgid ""
 "Invalid token header. Token string should not contain invalid characters."
-msgstr "Токен тақырыптамасы дұрыс емес. Токен құрамында жарамсыз таңбалар болмауы керек."
+msgstr ""
+"Токен тақырыптамасы дұрыс емес. Токен құрамында жарамсыз таңбалар болмауы "
+"керек."
 
 #: authentication.py:203
 msgid "Invalid token."
 msgstr "Жарамсыз токен."
 
-#: authtoken/admin.py:28 authtoken/serializers.py:9
+#: authtoken/admin.py:30 authtoken/serializers.py:9
 msgid "Username"
 msgstr "Пайдаланушы аты"
 
@@ -60,23 +67,23 @@ msgstr "Пайдаланушы аты"
 msgid "Auth Token"
 msgstr "Аутентификация токені"
 
-#: authtoken/models.py:13
+#: authtoken/models.py:12
 msgid "Key"
 msgstr "Кілт"
 
-#: authtoken/models.py:16
+#: authtoken/models.py:15
 msgid "User"
 msgstr "Пайдаланушы"
 
-#: authtoken/models.py:18
+#: authtoken/models.py:17
 msgid "Created"
 msgstr "Құрылған"
 
-#: authtoken/models.py:27 authtoken/models.py:54 authtoken/serializers.py:19
+#: authtoken/models.py:26 authtoken/models.py:105 authtoken/serializers.py:19
 msgid "Token"
 msgstr "Токен"
 
-#: authtoken/models.py:28 authtoken/models.py:55
+#: authtoken/models.py:27 authtoken/models.py:106
 msgid "Tokens"
 msgstr "Токендер"
 
@@ -148,315 +155,330 @@ msgstr "{wait} секундтан кейін қайта қолжетімді б�
 msgid "Expected available in {wait} seconds."
 msgstr "{wait} секундтан кейін қайта қолжетімді болады."
 
-#: fields.py:292 relations.py:240 relations.py:276 validators.py:112
-#: validators.py:238
+#: fields.py:299 relations.py:246 relations.py:282 validators.py:137
+#: validators.py:300
 msgid "This field is required."
 msgstr "Бұл мән міндетті."
 
-#: fields.py:293
+#: fields.py:300
 msgid "This field may not be null."
 msgstr "Бұл мән null болмауы керек."
 
-#: fields.py:661
+#: fields.py:668
 msgid "Must be a valid boolean."
 msgstr "Дұрыс логикалық мән болуы керек."
 
-#: fields.py:724
+#: fields.py:732
 msgid "Not a valid string."
 msgstr "Мәтін дұрыс емес."
 
-#: fields.py:725
+#: fields.py:733
 msgid "This field may not be blank."
 msgstr "Бұл мән бос болмауы керек."
 
-#: fields.py:726 fields.py:1881
+#: fields.py:734 fields.py:1971
 #, python-brace-format
 msgid "Ensure this field has no more than {max_length} characters."
 msgstr "Бұл мән ең көбі {max_length} таңбадан аспауы керек."
 
-#: fields.py:727
+#: fields.py:735
 #, python-brace-format
 msgid "Ensure this field has at least {min_length} characters."
 msgstr "Бұл мән кемінде {min_length} таңба болуы керек."
 
-#: fields.py:774
+#: fields.py:782
 msgid "Enter a valid email address."
 msgstr "Дұрыс электрондық пошта енгізіңіз."
 
-#: fields.py:785
+#: fields.py:793
 msgid "This value does not match the required pattern."
 msgstr "Бұл мән қажетті үлгіге сәйкес келмейді."
 
-#: fields.py:796
+#: fields.py:804
 msgid ""
 "Enter a valid \"slug\" consisting of letters, numbers, underscores or "
 "hyphens."
-msgstr "Әріптерден, сандардан, астын сызу және сызықшалардан тұратын дұрыс \"slug\" енгізіңіз."
+msgstr ""
+"Әріптерден, сандардан, астын сызу және сызықшалардан тұратын дұрыс \"slug\" "
+"енгізіңіз."
 
-#: fields.py:797
+#: fields.py:805
 msgid ""
 "Enter a valid \"slug\" consisting of Unicode letters, numbers, underscores, "
 "or hyphens."
-msgstr "Юникод әріптері, сандар, астын сызу және сызықшалардан тұратын дұрыс \"slug\" енгізіңіз."
+msgstr ""
+"Юникод әріптері, сандар, астын сызу және сызықшалардан тұратын дұрыс "
+"\"slug\" енгізіңіз."
 
-#: fields.py:812
+#: fields.py:820
 msgid "Enter a valid URL."
 msgstr "Дұрыс URL енгізіңіз."
 
-#: fields.py:825
+#: fields.py:833
 msgid "Must be a valid UUID."
 msgstr "Дұрыс UUID болуы керек."
 
-#: fields.py:861
+#: fields.py:869
 msgid "Enter a valid IPv4 or IPv6 address."
 msgstr "Дұрыс IPv4 немесе IPv6 адрес енгізіңіз."
 
-#: fields.py:889
+#: fields.py:897
 msgid "A valid integer is required."
 msgstr "Дұрыс бүтін сан енгізілуі қажет."
 
-#: fields.py:890 fields.py:927 fields.py:966 fields.py:1349
+#: fields.py:898 fields.py:936 fields.py:957 fields.py:1001 fields.py:1383
 #, python-brace-format
 msgid "Ensure this value is less than or equal to {max_value}."
 msgstr "Бұл мән {max_value} немесе одан аз болуы керек."
 
-#: fields.py:891 fields.py:928 fields.py:967 fields.py:1350
+#: fields.py:899 fields.py:937 fields.py:958 fields.py:1002 fields.py:1384
 #, python-brace-format
 msgid "Ensure this value is greater than or equal to {min_value}."
 msgstr "Бұл мән кемінде {min_value} болуы керек."
 
-#: fields.py:892 fields.py:929 fields.py:971
+#: fields.py:900 fields.py:938 fields.py:959 fields.py:1006
 msgid "String value too large."
 msgstr "Жолдың мәні тым үлкен."
 
-#: fields.py:926 fields.py:965
+#: fields.py:935
+#, fuzzy
+#| msgid "A valid integer is required."
+msgid "A valid biginteger is required."
+msgstr "Дұрыс бүтін сан енгізілуі қажет."
+
+#: fields.py:956 fields.py:1000
 msgid "A valid number is required."
 msgstr "Дұрыс сан енгізілуі керек."
 
-#: fields.py:930
+#: fields.py:960
 msgid "Integer value too large to convert to float"
 msgstr "Бүтін сан тым үлкен - қалқымалы санға айналдыру мүмкін емес."
 
-#: fields.py:968
+#: fields.py:1003
 #, python-brace-format
 msgid "Ensure that there are no more than {max_digits} digits in total."
 msgstr "Барлығы {max_digits} саннан аспауы керек."
 
-#: fields.py:969
+#: fields.py:1004
 #, python-brace-format
 msgid "Ensure that there are no more than {max_decimal_places} decimal places."
 msgstr "Ондық бөлшектер саны ең көбі {max_decimal_places} болуы керек."
 
-#: fields.py:970
+#: fields.py:1005
 #, python-brace-format
 msgid ""
 "Ensure that there are no more than {max_whole_digits} digits before the "
 "decimal point."
-msgstr "Ондық нүктеге дейінгі сандар саны ең көбі {max_whole_digits} болуы керек."
+msgstr ""
+"Ондық нүктеге дейінгі сандар саны ең көбі {max_whole_digits} болуы керек."
 
-#: fields.py:1129
+#: fields.py:1168
 #, python-brace-format
 msgid "Datetime has wrong format. Use one of these formats instead: {format}."
-msgstr "Datetime пішімі дұрыс емес. Осы пішімдердің бірін пайдаланыңыз: {format}."
+msgstr ""
+"Datetime пішімі дұрыс емес. Осы пішімдердің бірін пайдаланыңыз: {format}."
 
-#: fields.py:1130
+#: fields.py:1169
 msgid "Expected a datetime but got a date."
 msgstr "Күтілгені - datetime, берілгені - date."
 
-#: fields.py:1131
+#: fields.py:1170
 #, python-brace-format
 msgid "Invalid datetime for the timezone \"{timezone}\"."
 msgstr "\"{timezone}\" уақыт белдеуі үшін күн мен уақыт дұрыс емес."
 
-#: fields.py:1132
+#: fields.py:1171
 msgid "Datetime value out of range."
 msgstr "Datetime мәні рұқсат етілген ауқымнан тыс."
 
-#: fields.py:1219
+#: fields.py:1253
 #, python-brace-format
 msgid "Date has wrong format. Use one of these formats instead: {format}."
 msgstr "Date пішімі дұрыс емес. Осы пішімдердің бірін пайдаланыңыз: {format}."
 
-#: fields.py:1220
+#: fields.py:1254
 msgid "Expected a date but got a datetime."
 msgstr "Күтілгені - date, берілгені - datetime."
 
-#: fields.py:1286
+#: fields.py:1320
 #, python-brace-format
 msgid "Time has wrong format. Use one of these formats instead: {format}."
 msgstr "Уақыт пішімі дұрыс емес. Осы пішімдердің бірін пайдаланыңыз: {format}."
 
-#: fields.py:1348
+#: fields.py:1382
 #, python-brace-format
 msgid "Duration has wrong format. Use one of these formats instead: {format}."
-msgstr "Ұзақтық пішімі дұрыс емес. Осы пішімдердің бірін пайдаланыңыз: {format}."
+msgstr ""
+"Ұзақтық пішімі дұрыс емес. Осы пішімдердің бірін пайдаланыңыз: {format}."
 
-#: fields.py:1351
+#: fields.py:1385
 #, python-brace-format
 msgid "The number of days must be between {min_days} and {max_days}."
 msgstr "Күндер саны {min_days} бен {max_days} аралығында болуы керек."
 
-#: fields.py:1386 fields.py:1446
+#: fields.py:1452 fields.py:1512
 #, python-brace-format
 msgid "\"{input}\" is not a valid choice."
 msgstr "\"{input}\" - дұрыс таңдау емес."
 
-#: fields.py:1389
+#: fields.py:1455
 #, python-brace-format
 msgid "More than {count} items..."
 msgstr "{count} элементтен артық..."
 
-#: fields.py:1447 fields.py:1596 relations.py:486 serializers.py:595
+#: fields.py:1513 fields.py:1667 relations.py:492 serializers.py:607
 #, python-brace-format
 msgid "Expected a list of items but got type \"{input_type}\"."
 msgstr "Элементтер тізімі күтілді, бірақ \"{input_type}\" түрі берілген."
 
-#: fields.py:1448
+#: fields.py:1514
 msgid "This selection may not be empty."
 msgstr "Бұл таңдау бос болмауы керек."
 
-#: fields.py:1487
+#: fields.py:1558
 #, python-brace-format
 msgid "\"{input}\" is not a valid path choice."
 msgstr "\"{input}\" - дұрыс жол таңдауы емес."
 
-#: fields.py:1507
+#: fields.py:1578
 msgid "No file was submitted."
 msgstr "Файл жіберілмеді."
 
-#: fields.py:1508
+#: fields.py:1579
 msgid "The submitted data was not a file. Check the encoding type on the form."
 msgstr "Жіберілген деректер файл емес. Формадағы кодтау түрін тексеріңіз."
 
-#: fields.py:1509
+#: fields.py:1580
 msgid "No filename could be determined."
 msgstr "Файл атауы анықталмады."
 
-#: fields.py:1510
+#: fields.py:1581
 msgid "The submitted file is empty."
 msgstr "Жіберілген файл бос."
 
-#: fields.py:1511
+#: fields.py:1582
 #, python-brace-format
 msgid ""
 "Ensure this filename has at most {max_length} characters (it has {length})."
 msgstr "Файл атауы {max_length} таңбадан аспауы керек (қазір - {length})."
 
-#: fields.py:1559
+#: fields.py:1630
 msgid ""
 "Upload a valid image. The file you uploaded was either not an image or a "
 "corrupted image."
 msgstr "Дұрыс кескін жүктеңіз. Жүктелген файл кескін емес немесе бүлінген."
 
-#: fields.py:1597 relations.py:487 serializers.py:596
+#: fields.py:1668 relations.py:493 serializers.py:608
 msgid "This list may not be empty."
 msgstr "Бұл тізім бос болмауы керек."
 
-#: fields.py:1598 serializers.py:598
+#: fields.py:1669 serializers.py:610
 #, python-brace-format
 msgid "Ensure this field has at least {min_length} elements."
 msgstr "Бұл мәнде кемінде {min_length} элемент болуы керек."
 
-#: fields.py:1599 serializers.py:597
+#: fields.py:1670 serializers.py:609
 #, python-brace-format
 msgid "Ensure this field has no more than {max_length} elements."
 msgstr "Бұл мәнде {max_length} элементтен көп болмауы керек."
 
-#: fields.py:1677
+#: fields.py:1754
 #, python-brace-format
 msgid "Expected a dictionary of items but got type \"{input_type}\"."
-msgstr "Элементтер жиыны ретінде сөздік күтілді, бірақ \"{input_type}\" түрі берілген."
+msgstr ""
+"Элементтер жиыны ретінде сөздік күтілді, бірақ \"{input_type}\" түрі "
+"берілген."
 
-#: fields.py:1678
+#: fields.py:1755
 msgid "This dictionary may not be empty."
 msgstr "Бұл сөздік бос болмауы керек."
 
-#: fields.py:1750
+#: fields.py:1840
 msgid "Value must be valid JSON."
 msgstr "Мән дұрыс JSON пішімінде болуы керек."
 
-#: filters.py:72 templates/rest_framework/filters/search.html:2
+#: filters.py:63 templates/rest_framework/filters/search.html:2
 #: templates/rest_framework/filters/search.html:8
 msgid "Search"
 msgstr "Іздеу"
 
-#: filters.py:73
+#: filters.py:64
 msgid "A search term."
 msgstr "Іздеу сөзі."
 
-#: filters.py:224 templates/rest_framework/filters/ordering.html:3
+#: filters.py:219 templates/rest_framework/filters/ordering.html:3
 msgid "Ordering"
 msgstr "Реттеу"
 
-#: filters.py:225
+#: filters.py:220
 msgid "Which field to use when ordering the results."
 msgstr "Нәтижелерді реттеу үшін қай мән пайдалану керектігін көрсетеді."
 
-#: filters.py:341
+#: filters.py:340
 msgid "ascending"
 msgstr "өсу ретімен"
 
-#: filters.py:342
+#: filters.py:341
 msgid "descending"
 msgstr "кему ретімен"
 
-#: pagination.py:180
+#: pagination.py:171
 msgid "A page number within the paginated result set."
 msgstr "Беттелген нәтиже жиынындағы бет нөмірі."
 
-#: pagination.py:185 pagination.py:382 pagination.py:599
+#: pagination.py:176 pagination.py:343 pagination.py:534
 msgid "Number of results to return per page."
 msgstr "Әр бетте қайтарылатын нәтиже саны."
 
-#: pagination.py:195
+#: pagination.py:186
 msgid "Invalid page."
 msgstr "Қате бет нөмірі."
 
-#: pagination.py:384
+#: pagination.py:345
 msgid "The initial index from which to return the results."
 msgstr "Нәтижелер қайтарылатын бастапқы индекс."
 
-#: pagination.py:590
+#: pagination.py:525
 msgid "The pagination cursor value."
 msgstr "Нәтижелерді беттеуге арналған курсор мәні."
 
-#: pagination.py:592
+#: pagination.py:527
 msgid "Invalid cursor"
 msgstr "Қате курсор"
 
-#: relations.py:241
+#: relations.py:247
 #, python-brace-format
 msgid "Invalid pk \"{pk_value}\" - object does not exist."
 msgstr "Қате pk \"{pk_value}\" - нысан табылмады."
 
-#: relations.py:242
+#: relations.py:248
 #, python-brace-format
 msgid "Incorrect type. Expected pk value, received {data_type}."
 msgstr "Дерек түрі дұрыс емес. Күтілгені - pk мәні, берілгені - {data_type}."
 
-#: relations.py:277
+#: relations.py:283
 msgid "Invalid hyperlink - No URL match."
 msgstr "Қате гиперсілтеме - URL сәйкестігі жоқ."
 
-#: relations.py:278
+#: relations.py:284
 msgid "Invalid hyperlink - Incorrect URL match."
 msgstr "Қате гиперсілтеме - URL сәйкестігі дұрыс емес."
 
-#: relations.py:279
+#: relations.py:285
 msgid "Invalid hyperlink - Object does not exist."
 msgstr "Қате гиперсілтеме - нысан табылмады."
 
-#: relations.py:280
+#: relations.py:286
 #, python-brace-format
 msgid "Incorrect type. Expected URL string, received {data_type}."
 msgstr "Дерек түрі дұрыс емес. Күтілгені - URL жолы, берілгені - {data_type}"
 
-#: relations.py:445
+#: relations.py:451
 #, python-brace-format
 msgid "Object with {slug_name}={value} does not exist."
 msgstr "{slug_name}={value} параметрі бар нысан табылмады."
 
-#: relations.py:446
+#: relations.py:452
 msgid "Invalid value."
 msgstr "Қате мән."
 
@@ -477,7 +499,7 @@ msgstr "бірегей мән"
 msgid "A {value_type} identifying this {name}."
 msgstr "{name} нысанын анықтайтын {value_type}."
 
-#: serializers.py:342
+#: serializers.py:354
 #, python-brace-format
 msgid "Invalid data. Expected a dictionary, but got {datatype}."
 msgstr "Деректер қате. Күтілгені - сөздік түрі, берілгені - {datatype}."
@@ -528,31 +550,31 @@ msgstr "Ешқайсысы"
 msgid "No items to select."
 msgstr "Таңдайтын элементтер жоқ."
 
-#: validators.py:52
+#: validators.py:75
 msgid "This field must be unique."
 msgstr "Бұл енгізу жолы бірегей болуы керек."
 
-#: validators.py:111
+#: validators.py:136
 #, python-brace-format
 msgid "The fields {field_names} must make a unique set."
 msgstr "{field_names} енгізу жолдары бірегей жинақ құрауы тиіс."
 
-#: validators.py:219
+#: validators.py:281
 #, python-brace-format
 msgid "Surrogate characters are not allowed: U+{code_point:X}."
 msgstr "Суррогат таңбалар рұқсат етілмейді: U+{code_point:X}."
 
-#: validators.py:309
+#: validators.py:372
 #, python-brace-format
 msgid "This field must be unique for the \"{date_field}\" date."
 msgstr "\"{date_field}\" күніне бұл енгізу жолы бірегей болуы керек."
 
-#: validators.py:324
+#: validators.py:387
 #, python-brace-format
 msgid "This field must be unique for the \"{date_field}\" month."
 msgstr "\"{date_field}\" айына бұл енгізу жолы бірегей болуы керек."
 
-#: validators.py:337
+#: validators.py:400
 #, python-brace-format
 msgid "This field must be unique for the \"{date_field}\" year."
 msgstr "\"{date_field}\" жылына бұл енгізу жолы бірегей болуы керек."
@@ -567,7 +589,9 @@ msgstr "URL жолында нұсқа қате көрсетілген."
 
 #: versioning.py:118
 msgid "Invalid version in URL path. Does not match any version namespace."
-msgstr "URL жолында нұсқа дұрыс көрсетілмеген. Ешбір нұсқа кеңістігімен сәйкес келмейді."
+msgstr ""
+"URL жолында нұсқа дұрыс көрсетілмеген. Ешбір нұсқа кеңістігімен сәйкес "
+"келмейді."
 
 #: versioning.py:150
 msgid "Invalid version in hostname."

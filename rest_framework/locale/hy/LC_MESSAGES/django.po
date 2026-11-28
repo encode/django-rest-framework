@@ -1,21 +1,22 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# 
+#
 # Translators:
 # Arnak Melikyan <arnak@melikyan.am>, 2019
 msgid ""
 msgstr ""
 "Project-Id-Version: Django REST framework\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-13 21:45+0200\n"
+"POT-Creation-Date: 2026-11-28 15:53+0000\n"
 "PO-Revision-Date: 2020-10-13 19:45+0000\n"
 "Last-Translator: Xavier Ordoquy <xordoquy@linovia.com>\n"
-"Language-Team: Armenian (http://www.transifex.com/django-rest-framework-1/django-rest-framework/language/hy/)\n"
+"Language-Team: Armenian (http://www.transifex.com/django-rest-framework-1/"
+"django-rest-framework/language/hy/)\n"
+"Language: hy\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: hy\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: authentication.py:70
@@ -26,9 +27,10 @@ msgstr "Անվավեր վերնագիր: Նույնականացման տվյալ
 msgid "Invalid basic header. Credentials string should not contain spaces."
 msgstr "Անվավեր վերնագիր: Նույնականացման տողը չպետք է պարունակի բացատներ:"
 
-#: authentication.py:83
+#: authentication.py:84
 msgid "Invalid basic header. Credentials not correctly base64 encoded."
-msgstr "Անվավեր վերնագիր: Նույնականացման տվյալները սխալ են ձեւակերպված base64-ում:"
+msgstr ""
+"Անվավեր վերնագիր: Նույնականացման տվյալները սխալ են ձեւակերպված base64-ում:"
 
 #: authentication.py:101
 msgid "Invalid username/password."
@@ -49,39 +51,40 @@ msgstr "Անվավեր տոկենի վերնագիր: Տոկենի տողը չպ
 #: authentication.py:193
 msgid ""
 "Invalid token header. Token string should not contain invalid characters."
-msgstr "Անվավեր տոկենի վերնագիր: Տոկենի տողը չպետք է պարունակի անթույլատրելի նիշեր:"
+msgstr ""
+"Անվավեր տոկենի վերնագիր: Տոկենի տողը չպետք է պարունակի անթույլատրելի նիշեր:"
 
 #: authentication.py:203
 msgid "Invalid token."
 msgstr "Անվավեր տոկեն։"
 
+#: authtoken/admin.py:30 authtoken/serializers.py:9
+msgid "Username"
+msgstr "Օգտանուն"
+
 #: authtoken/apps.py:7
 msgid "Auth Token"
 msgstr "Վավերացման Տոկեն։"
 
-#: authtoken/models.py:13
+#: authtoken/models.py:12
 msgid "Key"
 msgstr "Բանալի"
 
-#: authtoken/models.py:16
+#: authtoken/models.py:15
 msgid "User"
 msgstr "Օգտատեր"
 
-#: authtoken/models.py:18
+#: authtoken/models.py:17
 msgid "Created"
 msgstr "Ստեղծված է"
 
-#: authtoken/models.py:27 authtoken/serializers.py:19
+#: authtoken/models.py:26 authtoken/models.py:105 authtoken/serializers.py:19
 msgid "Token"
 msgstr "Տոկեն"
 
-#: authtoken/models.py:28
+#: authtoken/models.py:27 authtoken/models.py:106
 msgid "Tokens"
 msgstr "Տոկեններ"
-
-#: authtoken/serializers.py:9
-msgid "Username"
-msgstr "Օգտանուն"
 
 #: authtoken/serializers.py:13
 msgid "Password"
@@ -95,363 +98,390 @@ msgstr "Անհնար է մուտք գործել տրամադրված նույն�
 msgid "Must include \"username\" and \"password\"."
 msgstr "Պետք է ներառի «օգտանուն» եւ «գաղտնաբառ»:"
 
-#: exceptions.py:102
+#: exceptions.py:105
 msgid "A server error occurred."
 msgstr "Տեղի ունեցել սերվերի սխալ:"
 
-#: exceptions.py:142
+#: exceptions.py:145
 msgid "Invalid input."
 msgstr ""
 
-#: exceptions.py:161
+#: exceptions.py:166
 msgid "Malformed request."
 msgstr "Սխալ հարցում:"
 
-#: exceptions.py:167
+#: exceptions.py:172
 msgid "Incorrect authentication credentials."
 msgstr "Սխալ նույնականացման տվյալներ։"
 
-#: exceptions.py:173
+#: exceptions.py:178
 msgid "Authentication credentials were not provided."
 msgstr "Նույնականացման տվյալները տրամադրված չեն:"
 
-#: exceptions.py:179
+#: exceptions.py:184
 msgid "You do not have permission to perform this action."
 msgstr "Այս գործողությունը կատարելու թույլտվություն չունեք:"
 
-#: exceptions.py:185
+#: exceptions.py:190
 msgid "Not found."
 msgstr "Չի գտնվել։"
 
-#: exceptions.py:191
+#: exceptions.py:196
 #, python-brace-format
 msgid "Method \"{method}\" not allowed."
 msgstr "\"{method}\" մեթոդը թույլատրված չէ:"
 
-#: exceptions.py:202
+#: exceptions.py:207
 msgid "Could not satisfy the request Accept header."
 msgstr "Չհաջողվեց բավարարել հարցման Ընդունել վերնագիրը:"
 
-#: exceptions.py:212
+#: exceptions.py:217
 #, python-brace-format
 msgid "Unsupported media type \"{media_type}\" in request."
 msgstr "Անհամապատասխան մեդիա տիպ \"{media_type}\":"
 
-#: exceptions.py:223
+#: exceptions.py:228
 msgid "Request was throttled."
 msgstr "Հարցումն ընդհատվել է:"
 
-#: exceptions.py:224
+#: exceptions.py:229
 #, python-brace-format
 msgid "Expected available in {wait} second."
 msgstr ""
 
-#: exceptions.py:225
+#: exceptions.py:230
 #, python-brace-format
 msgid "Expected available in {wait} seconds."
 msgstr ""
 
-#: fields.py:316 relations.py:245 relations.py:279 validators.py:90
-#: validators.py:183
+#: fields.py:299 relations.py:246 relations.py:282 validators.py:137
+#: validators.py:300
 msgid "This field is required."
 msgstr "Այս դաշտը պարտադիր է:"
 
-#: fields.py:317
+#: fields.py:300
 msgid "This field may not be null."
 msgstr "Այս դաշտը չի կարող զրոյական լինել:"
 
-#: fields.py:701
+#: fields.py:668
 msgid "Must be a valid boolean."
 msgstr ""
 
-#: fields.py:766
+#: fields.py:732
 msgid "Not a valid string."
 msgstr ""
 
-#: fields.py:767
+#: fields.py:733
 msgid "This field may not be blank."
 msgstr "Այս դաշտը չի կարող դատարկ լինել:"
 
-#: fields.py:768 fields.py:1881
+#: fields.py:734 fields.py:1971
 #, python-brace-format
 msgid "Ensure this field has no more than {max_length} characters."
 msgstr "Համոզվեք, որ այս դաշտը լինի ոչ ավել, քան {max_length} նիշ:"
 
-#: fields.py:769
+#: fields.py:735
 #, python-brace-format
 msgid "Ensure this field has at least {min_length} characters."
 msgstr "Համոզվեք, որ այս դաշտը ունի առնվազն {min_length} նիշ:"
 
-#: fields.py:816
+#: fields.py:782
 msgid "Enter a valid email address."
 msgstr "Մուտքագրեք վավեր էլ.փոստի հասցե:"
 
-#: fields.py:827
+#: fields.py:793
 msgid "This value does not match the required pattern."
 msgstr "Այս արժեքը չի համապատասխանում պահանջվող օրինակին:"
 
-#: fields.py:838
+#: fields.py:804
 msgid ""
 "Enter a valid \"slug\" consisting of letters, numbers, underscores or "
 "hyphens."
-msgstr "Մուտքագրեք վավեր \"slug\", որը բաղկացած է տառերից, թվերից, ընդգծումից կամ դեֆիսից:"
+msgstr ""
+"Մուտքագրեք վավեր \"slug\", որը բաղկացած է տառերից, թվերից, ընդգծումից կամ "
+"դեֆիսից:"
 
-#: fields.py:839
+#: fields.py:805
 msgid ""
 "Enter a valid \"slug\" consisting of Unicode letters, numbers, underscores, "
 "or hyphens."
 msgstr ""
 
-#: fields.py:854
+#: fields.py:820
 msgid "Enter a valid URL."
 msgstr "Մուտքագրեք վավեր հղում:"
 
-#: fields.py:867
+#: fields.py:833
 msgid "Must be a valid UUID."
 msgstr ""
 
-#: fields.py:903
+#: fields.py:869
 msgid "Enter a valid IPv4 or IPv6 address."
 msgstr "Մուտքագրեք վավեր IPv4 կամ IPv6 հասցե:"
 
-#: fields.py:931
+#: fields.py:897
 msgid "A valid integer is required."
 msgstr "Պահանջվում է լիարժեք ամբողջական թիվ:"
 
-#: fields.py:932 fields.py:969 fields.py:1005 fields.py:1366
+#: fields.py:898 fields.py:936 fields.py:957 fields.py:1001 fields.py:1383
 #, python-brace-format
 msgid "Ensure this value is less than or equal to {max_value}."
 msgstr "Համոզվեք, որ արժեքը փոքր է կամ հավասար {max_value} -ին։"
 
-#: fields.py:933 fields.py:970 fields.py:1006 fields.py:1367
+#: fields.py:899 fields.py:937 fields.py:958 fields.py:1002 fields.py:1384
 #, python-brace-format
 msgid "Ensure this value is greater than or equal to {min_value}."
 msgstr "Համոզվեք, որ արժեքը մեծ է կամ հավասար {min_value} -ին։"
 
-#: fields.py:934 fields.py:971 fields.py:1010
+#: fields.py:900 fields.py:938 fields.py:959 fields.py:1006
 msgid "String value too large."
 msgstr "Տողը ունի չափազանց մեծ արժեք:"
 
-#: fields.py:968 fields.py:1004
+#: fields.py:935
+#, fuzzy
+#| msgid "A valid integer is required."
+msgid "A valid biginteger is required."
+msgstr "Պահանջվում է լիարժեք ամբողջական թիվ:"
+
+#: fields.py:956 fields.py:1000
 msgid "A valid number is required."
 msgstr "Պահանջվում է վավեր համար:"
 
-#: fields.py:1007
+#: fields.py:960
+msgid "Integer value too large to convert to float"
+msgstr ""
+
+#: fields.py:1003
 #, python-brace-format
 msgid "Ensure that there are no more than {max_digits} digits in total."
 msgstr "Համոզվեք, որ {max_digits} -ից ավել թվանշան չկա:"
 
-#: fields.py:1008
+#: fields.py:1004
 #, python-brace-format
-msgid ""
-"Ensure that there are no more than {max_decimal_places} decimal places."
+msgid "Ensure that there are no more than {max_decimal_places} decimal places."
 msgstr "Համոզվեք, որ {max_decimal_places} -ից ավել տասնորդական նշան չկա:"
 
-#: fields.py:1009
+#: fields.py:1005
 #, python-brace-format
 msgid ""
 "Ensure that there are no more than {max_whole_digits} digits before the "
 "decimal point."
-msgstr "Համոզվեք, որ տասնորդական կետից առաջ չկա {max_whole_digits} -ից ավել թվանշան:"
+msgstr ""
+"Համոզվեք, որ տասնորդական կետից առաջ չկա {max_whole_digits} -ից ավել թվանշան:"
 
-#: fields.py:1148
+#: fields.py:1168
 #, python-brace-format
 msgid "Datetime has wrong format. Use one of these formats instead: {format}."
-msgstr "Datetime -ը սխալ ձեւաչափ ունի: Փոխարենը օգտագործեք այս ձեւաչափերից մեկը. {format} ։"
+msgstr ""
+"Datetime -ը սխալ ձեւաչափ ունի: Փոխարենը օգտագործեք այս ձեւաչափերից մեկը. "
+"{format} ։"
 
-#: fields.py:1149
+#: fields.py:1169
 msgid "Expected a datetime but got a date."
 msgstr "Ակնկալվում է օրվա ժամը, սակայն ամսաթիվ է ստացել:"
 
-#: fields.py:1150
+#: fields.py:1170
 #, python-brace-format
 msgid "Invalid datetime for the timezone \"{timezone}\"."
 msgstr ""
 
-#: fields.py:1151
+#: fields.py:1171
 msgid "Datetime value out of range."
 msgstr ""
 
-#: fields.py:1236
+#: fields.py:1253
 #, python-brace-format
 msgid "Date has wrong format. Use one of these formats instead: {format}."
-msgstr "Ամսաթիվն ունի սխալ ձեւաչափ: Փոխարենը օգտագործեք այս ձեւաչափերից մեկը. {format} ։"
+msgstr ""
+"Ամսաթիվն ունի սխալ ձեւաչափ: Փոխարենը օգտագործեք այս ձեւաչափերից մեկը. "
+"{format} ։"
 
-#: fields.py:1237
+#: fields.py:1254
 msgid "Expected a date but got a datetime."
 msgstr "Ակնկալվում է ամսաթիվ, սակայն ստացել է օրվա ժամը:"
 
-#: fields.py:1303
+#: fields.py:1320
 #, python-brace-format
 msgid "Time has wrong format. Use one of these formats instead: {format}."
-msgstr "Ժամանակը սխալ ձեւաչափ ունի: Փոխարենը օգտագործեք այս ձեւաչափերից մեկը. {format} ։"
+msgstr ""
+"Ժամանակը սխալ ձեւաչափ ունի: Փոխարենը օգտագործեք այս ձեւաչափերից մեկը. "
+"{format} ։"
 
-#: fields.py:1365
+#: fields.py:1382
 #, python-brace-format
 msgid "Duration has wrong format. Use one of these formats instead: {format}."
-msgstr "Տեւողությունը սխալ ձեւաչափ ունի: Փոխարենը օգտագործեք այս ձեւաչափերից մեկը. {format} ։"
+msgstr ""
+"Տեւողությունը սխալ ձեւաչափ ունի: Փոխարենը օգտագործեք այս ձեւաչափերից մեկը. "
+"{format} ։"
 
-#: fields.py:1399 fields.py:1456
+#: fields.py:1385
+#, python-brace-format
+msgid "The number of days must be between {min_days} and {max_days}."
+msgstr ""
+
+#: fields.py:1452 fields.py:1512
 #, python-brace-format
 msgid "\"{input}\" is not a valid choice."
 msgstr "\"{input}\" -ը վավեր ընտրություն չէ:"
 
-#: fields.py:1402
+#: fields.py:1455
 #, python-brace-format
 msgid "More than {count} items..."
 msgstr "Ավելի քան {count} առարկա..."
 
-#: fields.py:1457 fields.py:1603 relations.py:485 serializers.py:570
+#: fields.py:1513 fields.py:1667 relations.py:492 serializers.py:607
 #, python-brace-format
 msgid "Expected a list of items but got type \"{input_type}\"."
 msgstr "Ակնկալվում է տարրերի ցանկ, բայց ստացել է \"{input_type}\" -ի տիպ:"
 
-#: fields.py:1458
+#: fields.py:1514
 msgid "This selection may not be empty."
 msgstr "Այս ընտրությունը չի կարող դատարկ լինել:"
 
-#: fields.py:1495
+#: fields.py:1558
 #, python-brace-format
 msgid "\"{input}\" is not a valid path choice."
 msgstr "\"{input}\" -ը վավեր ճանապարհի ընտրություն չէ:"
 
-#: fields.py:1514
+#: fields.py:1578
 msgid "No file was submitted."
 msgstr "Ոչ մի ֆայլ չի ուղարկվել:"
 
-#: fields.py:1515
-msgid ""
-"The submitted data was not a file. Check the encoding type on the form."
+#: fields.py:1579
+msgid "The submitted data was not a file. Check the encoding type on the form."
 msgstr "Ուղարկված տվյալը ֆայլ չէ: Ստուգեք կոդավորման տիպը:"
 
-#: fields.py:1516
+#: fields.py:1580
 msgid "No filename could be determined."
 msgstr "Ֆայլի անունը հնարավոր չէ որոշվել:"
 
-#: fields.py:1517
+#: fields.py:1581
 msgid "The submitted file is empty."
 msgstr "Ուղարկված ֆայլը դատարկ է:"
 
-#: fields.py:1518
+#: fields.py:1582
 #, python-brace-format
 msgid ""
 "Ensure this filename has at most {max_length} characters (it has {length})."
-msgstr "Համոզվեք, որ այս ֆայլի անունը ունի առավելագույնը {max_length} նիշ, (այն ունի {length})։"
+msgstr ""
+"Համոզվեք, որ այս ֆայլի անունը ունի առավելագույնը {max_length} նիշ, (այն ունի "
+"{length})։"
 
-#: fields.py:1566
+#: fields.py:1630
 msgid ""
 "Upload a valid image. The file you uploaded was either not an image or a "
 "corrupted image."
 msgstr "Վերբեռնեք վավեր նկար: Ձեր բեռնած ֆայլը կամ նկար չէ կամ վնասված նկար է:"
 
-#: fields.py:1604 relations.py:486 serializers.py:571
+#: fields.py:1668 relations.py:493 serializers.py:608
 msgid "This list may not be empty."
 msgstr "Այս ցանկը չի կարող դատարկ լինել:"
 
-#: fields.py:1605
+#: fields.py:1669 serializers.py:610
 #, python-brace-format
 msgid "Ensure this field has at least {min_length} elements."
 msgstr ""
 
-#: fields.py:1606
+#: fields.py:1670 serializers.py:609
 #, python-brace-format
 msgid "Ensure this field has no more than {max_length} elements."
 msgstr ""
 
-#: fields.py:1682
+#: fields.py:1754
 #, python-brace-format
 msgid "Expected a dictionary of items but got type \"{input_type}\"."
 msgstr "Ակնկալվում է տարրերի բառարան, բայց ստացել է \"{input_type}\" տիպ։"
 
-#: fields.py:1683
+#: fields.py:1755
 msgid "This dictionary may not be empty."
 msgstr ""
 
-#: fields.py:1755
+#: fields.py:1840
 msgid "Value must be valid JSON."
 msgstr "Արժեքը պետք է լինի JSON:"
 
-#: filters.py:49 templates/rest_framework/filters/search.html:2
+#: filters.py:63 templates/rest_framework/filters/search.html:2
+#: templates/rest_framework/filters/search.html:8
 msgid "Search"
 msgstr "Որոնում"
 
-#: filters.py:50
+#: filters.py:64
 msgid "A search term."
 msgstr ""
 
-#: filters.py:180 templates/rest_framework/filters/ordering.html:3
+#: filters.py:219 templates/rest_framework/filters/ordering.html:3
 msgid "Ordering"
 msgstr "Պատվիրել"
 
-#: filters.py:181
+#: filters.py:220
 msgid "Which field to use when ordering the results."
 msgstr ""
 
-#: filters.py:287
+#: filters.py:340
 msgid "ascending"
 msgstr "աճման կարգով"
 
-#: filters.py:288
+#: filters.py:341
 msgid "descending"
 msgstr "նվազման կարգով"
 
-#: pagination.py:174
+#: pagination.py:171
 msgid "A page number within the paginated result set."
 msgstr ""
 
-#: pagination.py:179 pagination.py:372 pagination.py:590
+#: pagination.py:176 pagination.py:343 pagination.py:534
 msgid "Number of results to return per page."
 msgstr ""
 
-#: pagination.py:189
+#: pagination.py:186
 msgid "Invalid page."
 msgstr "Անվավեր էջ:"
 
-#: pagination.py:374
+#: pagination.py:345
 msgid "The initial index from which to return the results."
 msgstr ""
 
-#: pagination.py:581
+#: pagination.py:525
 msgid "The pagination cursor value."
 msgstr ""
 
-#: pagination.py:583
+#: pagination.py:527
 msgid "Invalid cursor"
 msgstr "Սխալ կուրսոր"
 
-#: relations.py:246
+#: relations.py:247
 #, python-brace-format
 msgid "Invalid pk \"{pk_value}\" - object does not exist."
 msgstr "Անվավեր pk \"{pk_value}\" օբյեկտը գոյություն չունի:"
 
-#: relations.py:247
+#: relations.py:248
 #, python-brace-format
 msgid "Incorrect type. Expected pk value, received {data_type}."
 msgstr "Անհայտ տիպ: Ակնկալվում է pk արժեք, ստացված է {data_type}։"
 
-#: relations.py:280
+#: relations.py:283
 msgid "Invalid hyperlink - No URL match."
 msgstr "Անվավեր հղում - Ոչ մի հղման համընկնում:"
 
-#: relations.py:281
+#: relations.py:284
 msgid "Invalid hyperlink - Incorrect URL match."
 msgstr "Անվավեր հղում - սխալ հղման համընկնում:"
 
-#: relations.py:282
+#: relations.py:285
 msgid "Invalid hyperlink - Object does not exist."
 msgstr "Անվավեր հղում - տվյալ օբյեկտը գոյություն չունի:"
 
-#: relations.py:283
+#: relations.py:286
 #, python-brace-format
 msgid "Incorrect type. Expected URL string, received {data_type}."
 msgstr "Անվավեր տիպ: Սպասվում է հղման տողը, ստացել է {data_type}։"
 
-#: relations.py:448
+#: relations.py:451
 #, python-brace-format
 msgid "Object with {slug_name}={value} does not exist."
 msgstr "{slug_name}={value} տվյալ պարունակությամբ օբյեկտ գոյություն չունի:"
 
-#: relations.py:449
+#: relations.py:452
 msgid "Invalid value."
 msgstr "Անվավեր արժեք:"
 
@@ -472,7 +502,7 @@ msgstr ""
 msgid "A {value_type} identifying this {name}."
 msgstr ""
 
-#: serializers.py:337
+#: serializers.py:354
 #, python-brace-format
 msgid "Invalid data. Expected a dictionary, but got {datatype}."
 msgstr "Անվավեր տվյալներ: Սպասվում է բառարան, բայց ստացվել է {datatype}։"
@@ -523,31 +553,31 @@ msgstr "Ոչ մեկը"
 msgid "No items to select."
 msgstr "Ոչ մի տարր ընտրված չէ։"
 
-#: validators.py:39
+#: validators.py:75
 msgid "This field must be unique."
 msgstr "Այս դաշտը պետք է լինի եզակի:"
 
-#: validators.py:89
+#: validators.py:136
 #, python-brace-format
 msgid "The fields {field_names} must make a unique set."
 msgstr "{field_names} դաշտերը պետք է կազմեն եզակի հավաքածու:"
 
-#: validators.py:171
+#: validators.py:281
 #, python-brace-format
 msgid "Surrogate characters are not allowed: U+{code_point:X}."
 msgstr ""
 
-#: validators.py:243
+#: validators.py:372
 #, python-brace-format
 msgid "This field must be unique for the \"{date_field}\" date."
 msgstr "Այս դաշտը պետք է եզակի լինի \"{date_field}\" ամսաթվի համար:"
 
-#: validators.py:258
+#: validators.py:387
 #, python-brace-format
 msgid "This field must be unique for the \"{date_field}\" month."
 msgstr "Այս դաշտը պետք է եզակի լինի \"{date_field}\" ամսվա համար:"
 
-#: validators.py:271
+#: validators.py:400
 #, python-brace-format
 msgid "This field must be unique for the \"{date_field}\" year."
 msgstr "Այս դաշտը պետք է եզակի լինի \"{date_field}\" տարվա համար:"
@@ -560,14 +590,16 @@ msgstr "\"Accept\" վերնագրի անվավեր տարբերակ:"
 msgid "Invalid version in URL path."
 msgstr "Անվավեր տարբերակ հղման ճանապարհի մեջ:"
 
-#: versioning.py:116
+#: versioning.py:118
 msgid "Invalid version in URL path. Does not match any version namespace."
-msgstr "Անվավեր տարբերակ հղման ճանապարհի մեջ: Չի համապատասխանում որեւէ անվանման տարբերակի:"
+msgstr ""
+"Անվավեր տարբերակ հղման ճանապարհի մեջ: Չի համապատասխանում որեւէ անվանման "
+"տարբերակի:"
 
-#: versioning.py:148
+#: versioning.py:150
 msgid "Invalid version in hostname."
 msgstr "Անվավեր տարբերակ անվանման մեջ:"
 
-#: versioning.py:170
+#: versioning.py:172
 msgid "Invalid version in query parameter."
 msgstr "Անվավեր տարբերակ `հարցման պարամետրում:"
