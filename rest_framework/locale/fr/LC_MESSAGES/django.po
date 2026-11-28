@@ -253,8 +253,6 @@ msgid "String value too large."
 msgstr "Chaîne de caractères trop longue."
 
 #: fields.py:935
-#, fuzzy
-#| msgid "A valid integer is required."
 msgid "A valid biginteger is required."
 msgstr "Un nombre entier valide est requis."
 
@@ -264,7 +262,7 @@ msgstr "Un nombre valide est requis."
 
 #: fields.py:960
 msgid "Integer value too large to convert to float"
-msgstr ""
+msgstr "Nombre entier trop grand pour convertir en flottant."
 
 #: fields.py:1003
 #, python-brace-format
@@ -301,7 +299,7 @@ msgstr "Attendait une date + heure mais a reçu une date."
 #: fields.py:1170
 #, python-brace-format
 msgid "Invalid datetime for the timezone \"{timezone}\"."
-msgstr "Date et heure non valides pour le fuseau horaire \"{timezone}\"."
+msgstr "Date et heure non valides pour le fuseau horaire « {timezone} »."
 
 #: fields.py:1171
 msgid "Datetime value out of range."
@@ -333,7 +331,7 @@ msgstr ""
 #: fields.py:1385
 #, python-brace-format
 msgid "The number of days must be between {min_days} and {max_days}."
-msgstr ""
+msgstr "Le nombre de jours doit être entre {min_days} et {max_days}."
 
 #: fields.py:1452 fields.py:1512
 #, python-brace-format
