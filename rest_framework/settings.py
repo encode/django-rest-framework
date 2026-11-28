@@ -66,6 +66,7 @@ DEFAULTS = {
 
     # Pagination
     'PAGE_SIZE': None,
+    'MAX_PAGE_SIZE': None,
 
     # Filtering
     'SEARCH_PARAM': 'search',

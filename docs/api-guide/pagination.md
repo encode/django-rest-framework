@@ -24,14 +24,16 @@ Pagination can be turned off by setting the pagination class to `None`.
 
 ## Setting the pagination style
 
-The pagination style may be set globally, using the `DEFAULT_PAGINATION_CLASS` and `PAGE_SIZE` setting keys. For example, to use the built-in limit/offset pagination, you would do something like this:
+The pagination style may be set globally, using the `DEFAULT_PAGINATION_CLASS`, `PAGE_SIZE` and `MAX_PAGE_SIZE` setting keys. For example, to use the built-in limit/offset pagination, you would do something like this:
 
     REST_FRAMEWORK = {
         'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-        'PAGE_SIZE': 100
+        'PAGE_SIZE': 100,
+        'MAX_PAGE_SIZE': 250,
     }
 
-Note that you need to set both the pagination class, and the page size that should be used.  Both `DEFAULT_PAGINATION_CLASS` and `PAGE_SIZE` are `None` by default.
+Note that you need to set both the pagination class, and the page size and limit that should be used.
+`DEFAULT_PAGINATION_CLASS`, `PAGE_SIZE`, `MAX_PAGE_SIZE` are `None` by default.
 
 You can also set the pagination class on an individual view by using the `pagination_class` attribute. Typically you'll want to use the same pagination style throughout your API, although you might want to vary individual aspects of the pagination, such as default or maximum page size, on a per-view basis.
 
