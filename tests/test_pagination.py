@@ -1,3 +1,5 @@
+from base64 import b64encode
+
 import pytest
 from django.core.paginator import Paginator as DjangoPaginator
 from django.db import models
@@ -613,6 +615,14 @@ class CursorPaginationTestsMixin:
 
     def test_invalid_cursor(self):
         request = Request(factory.get('/', {'cursor': '123'}))
+        with pytest.raises(exceptions.NotFound):
+            self.pagination.paginate_queryset(self.queryset, request)
+
+    def test_invalid_cursor_position(self):
+        # A well-formed cursor whose position is not a valid value for the
+        # ordering field is a client error, not a server error.
+        cursor = b64encode(b'p=abc').decode('ascii')
+        request = Request(factory.get('/', {'cursor': cursor}))
         with pytest.raises(exceptions.NotFound):
             self.pagination.paginate_queryset(self.queryset, request)
 

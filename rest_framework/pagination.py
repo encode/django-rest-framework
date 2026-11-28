@@ -8,6 +8,7 @@ from base64 import b64decode, b64encode
 from collections import namedtuple
 from urllib import parse
 
+from django.core.exceptions import ValidationError as DjangoValidationError
 from django.core.paginator import InvalidPage
 from django.core.paginator import Paginator as DjangoPaginator
 from django.template import loader
@@ -576,7 +577,12 @@ class CursorPagination(BasePagination):
             else:
                 kwargs = {order_attr + '__gt': current_position}
 
-            queryset = queryset.filter(**kwargs)
+            try:
+                queryset = queryset.filter(**kwargs)
+            except (TypeError, ValueError, DjangoValidationError):
+                # The position in the cursor is not a valid value for the
+                # ordering field: the client sent a cursor we did not issue.
+                raise NotFound(self.invalid_cursor_message)
 
         # If we have an offset cursor then offset the entire page by that amount.
         # We also always fetch an extra item in order to determine if there is a
